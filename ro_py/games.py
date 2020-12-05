@@ -5,12 +5,19 @@ endpoint = "https://games.roblox.com/"
 
 
 class Votes:
+    """
+    Represents a game's votes.
+    """
     def __init__(self, votes_data):
         self.up_votes = votes_data["upVotes"]
         self.down_votes = votes_data["downVotes"]
 
 
 class Game:
+    """
+    Represents a Roblox game universe.
+    This class represents multiple game-related endpoints.
+    """
     def __init__(self, universe_id):
         self.id = universe_id
         game_info_req = requests.get(
@@ -36,6 +43,9 @@ class Game:
 
     @property
     def votes(self):
+        """
+        :return: An instance of Votes
+        """
         votes_info_req = requests.get(
             url=endpoint + "v1/games/votes",
             params={
@@ -48,4 +58,7 @@ class Game:
         return votes
 
     def get_icon(self, size=thumbnails.size_256x256, format=thumbnails.format_png, is_circular=False):
+        """
+        Equivalent to thumbnails.get_game_icon
+        """
         return thumbnails.get_game_icon(self.id, size, format, is_circular)

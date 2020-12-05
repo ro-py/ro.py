@@ -6,6 +6,10 @@ endpoint = "https://users.roblox.com/"
 
 
 class User:
+    """
+    Represents a Roblox user and their profile.
+    Can be initialized with either a user ID or a username.
+    """
     def __init__(self, ui):
         if isinstance(ui, str):
             is_id = False
