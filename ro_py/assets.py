@@ -1,4 +1,5 @@
 from ro_py import User, Group
+import iso8601
 import requests
 
 endpoint = "https://api.roblox.com/"
@@ -23,7 +24,9 @@ class Asset:
         if asset_info["Creator"]["CreatorType"] == "User":
             self.creator = User(asset_info["Creator"]["Id"])
         elif asset_info["Creator"]["CreatorType"] == "Group":
-            self.creator = Group(asset_info["Creator"]["Id"])
+            self.creator = Group(asset_info["Creator"]["CreatorTargetId"])
+        self.created = iso8601.parse_date(asset_info["Created"])
+        self.updated = iso8601.parse_date(asset_info["Updated"])
         self.price = asset_info["PriceInRobux"]
         self.is_new = asset_info["IsNew"]
         self.is_for_sale = asset_info["IsForSale"]
