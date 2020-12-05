@@ -18,8 +18,11 @@ class Group:
         self.name = group_info["name"]
         self.description = group_info["description"]
         self.owner = User(group_info["owner"]["userId"])
-        self.shout = Shout(group_info["shout"])
+        if group_info["shout"]:
+            self.shout = Shout(group_info["shout"])
+        else:
+            self.shout = None
         self.member_count = group_info["memberCount"]
         self.is_builders_club_only = group_info["isBuildersClubOnly"]
-        self.public_entry_allowed = group_info["public_entry_allowed"]
-        self.is_locked = group_info["isLocked"]
+        self.public_entry_allowed = group_info["publicEntryAllowed"]
+        # self.is_locked = group_info["isLocked"]

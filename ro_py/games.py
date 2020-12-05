@@ -1,4 +1,4 @@
-from ro_py import User
+from ro_py import User, Group
 import requests
 
 endpoint = "https://games.roblox.com/"
@@ -25,6 +25,8 @@ class Game:
         self.description = game_info["description"]
         if game_info["creator"]["type"] == "User":
             self.creator = User(game_info["creator"]["id"])
+        elif game_info["creator"]["type"] == "Group":
+            self.creator = Group(game_info["creator"]["id"])
         self.price = game_info["price"]
         self.allowed_gear_genres = game_info["allowedGearGenres"]
         self.allowed_gear_categories = game_info["allowedGearCategories"]
