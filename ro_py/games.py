@@ -1,4 +1,4 @@
-from ro_py import User, Group
+from ro_py import User, Group, thumbnails
 import requests
 
 endpoint = "https://games.roblox.com/"
@@ -33,7 +33,7 @@ class Game:
         self.max_players = game_info["maxPlayers"]
         self.studio_access_to_apis_allowed = game_info["studioAccessToApisAllowed"]
         self.create_vip_servers_allowed = game_info["createVipServersAllowed"]
-    
+
     @property
     def votes(self):
         votes_info_req = requests.get(
@@ -46,3 +46,6 @@ class Game:
         votes_info = votes_info["data"][0]
         votes = Votes(votes_info)
         return votes
+
+    def get_icon(self, size=thumbnails.size_256x256, format=thumbnails.format_png, is_circular=False):
+        return thumbnails.get_game_icon(self.id, size, format, is_circular)
