@@ -1,3 +1,11 @@
+"""
+
+ro.py > asset_type.py
+
+This file is a conversion table for asset type IDs to asset type names.
+
+"""
+
 asset_types = [
     None,
     "Image",

@@ -1,3 +1,11 @@
+"""
+
+ro.py > badges.py
+
+This file houses functions and classes that pertain to game-awarded badges.
+
+"""
+
 import requests
 
 endpoint = "https://badges.roblox.com/"

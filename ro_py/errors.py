@@ -1,3 +1,12 @@
+"""
+
+ro.py > errors.py
+
+This file houses custom exceptions unique to this module.
+
+"""
+
+
 class NotLimitedError(Exception):
     """Called when code attempts to read limited-only information."""
     pass

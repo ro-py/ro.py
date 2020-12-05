@@ -1,3 +1,11 @@
+"""
+
+ro.py > games.py
+
+This file houses functions and classes that pertain to Roblox universes and places.
+
+"""
+
 from ro_py import User, Group, thumbnails
 import requests
 

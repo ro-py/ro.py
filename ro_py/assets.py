@@ -1,3 +1,11 @@
+"""
+
+ro.py > assets.py
+
+This file houses functions and classes that pertain to Roblox assets.
+
+"""
+
 from ro_py import User, Group
 from ro_py.errors import NotLimitedError
 from ro_py.asset_type import asset_types

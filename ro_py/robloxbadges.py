@@ -1,3 +1,12 @@
+"""
+
+ro.py > robloxbadges.py
+
+This file houses functions and classes that pertain to roblox-awarded badges.
+
+"""
+
+
 class RobloxBadge:
     """
     Represents a Roblox badge.

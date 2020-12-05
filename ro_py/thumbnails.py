@@ -1,4 +1,11 @@
-from ro_py import errors
+"""
+
+ro.py > thumbnails.py
+
+This file houses functions and classes that pertain to Roblox icons and thumbnails.
+
+"""
+
 import requests
 
 endpoint = "https://thumbnails.roblox.com/"

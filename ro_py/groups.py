@@ -1,3 +1,11 @@
+"""
+
+ro.py > groups.py
+
+This file houses functions and classes that pertain to Roblox groups.
+
+"""
+
 from ro_py import User, thumbnails
 import requests
 

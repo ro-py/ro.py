@@ -1,3 +1,11 @@
+"""
+
+ro.py > users.py
+
+This file houses functions and classes that pertain to Roblox users and profiles.
+
+"""
+
 from ro_py.robloxbadges import RobloxBadge
 import requests
 import iso8601
