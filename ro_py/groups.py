@@ -18,11 +18,18 @@ class Group:
         self.name = group_info["name"]
         self.description = group_info["description"]
         self.owner = User(group_info["owner"]["userId"])
-        if group_info["shout"]:
-            self.shout = Shout(group_info["shout"])
-        else:
-            self.shout = None
+
         self.member_count = group_info["memberCount"]
         self.is_builders_club_only = group_info["isBuildersClubOnly"]
         self.public_entry_allowed = group_info["publicEntryAllowed"]
         # self.is_locked = group_info["isLocked"]
+
+    @property
+    def shout(self):
+        group_info_req = requests.get(endpoint + f"v1/groups/{self.id}")
+        group_info = group_info_req.json()
+
+        if group_info["shout"]:
+            return Shout(group_info["shout"])
+        else:
+            return None
