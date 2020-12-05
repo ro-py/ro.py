@@ -1,7 +1,6 @@
-from roa import read_only_attributes
 import requests
 
-endpoint = "http://badges.roblox.com/"
+endpoint = "https://badges.roblox.com/"
 
 
 class BadgeStatistics:

@@ -1,1 +1,3 @@
-from ro_py.users import *
+from ro_py.users import User
+from ro_py.badges import Badge
+from ro_py.games import Game
