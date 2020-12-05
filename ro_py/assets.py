@@ -1,5 +1,6 @@
 from ro_py import User, Group
 from ro_py.errors import NotLimitedError
+from ro_py.asset_type import asset_types
 import iso8601
 import requests
 
@@ -31,6 +32,7 @@ class Asset:
         self.name = asset_info["Name"]
         self.description = asset_info["Description"]
         self.asset_type_id = asset_info["AssetTypeId"]
+        self.asset_type_name = asset_types[self.asset_type_id]
         if asset_info["Creator"]["CreatorType"] == "User":
             self.creator = User(asset_info["Creator"]["Id"])
         elif asset_info["Creator"]["CreatorType"] == "Group":
