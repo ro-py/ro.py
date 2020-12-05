@@ -1,5 +1,10 @@
 # Welcome to ro.py
 ro.py is a Python wrapper for the Roblox web API.
+## Installation
+You can install ro.py from pip:  
+```
+pip3 install ro-py
+```
 ## Examples
 Reading a user's description:  
 ```python
