@@ -33,3 +33,16 @@ class Group:
             return Shout(group_info["shout"])
         else:
             return None
+
+    def get_icon(self, size="150x150", format="Png", is_circular=False):
+        group_icon_req = requests.get(
+            url="https://thumbnails.roblox.com/v1/groups/icons",
+            params={
+                "groupIds": str(self.id),
+                "size": size,
+                "format": format,
+                "isCircular": is_circular
+            }
+        )
+        group_icon = group_icon_req.json()["data"][0]["imageUrl"]
+        return group_icon
