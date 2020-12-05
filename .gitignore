@@ -5,3 +5,6 @@ __pycache__/
 *.bak
 *.wxg#
 *.??~
+build/
+dist/
+ro_py.egg-info/
