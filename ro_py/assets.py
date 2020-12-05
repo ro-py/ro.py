@@ -1,8 +1,18 @@
 from ro_py import User, Group
+from ro_py.errors import NotLimitedError
 import iso8601
 import requests
 
 endpoint = "https://api.roblox.com/"
+
+
+class LimitedResaleData:
+    def __init__(self, resale_data):
+        self.asset_stock = resale_data["assetStock"]
+        self.sales = resale_data["sales"]
+        self.number_remaining = resale_data["numberRemaining"]
+        self.recent_average_price = resale_data["recentAveragePrice"]
+        self.original_price = resale_data["originalPrice"]
 
 
 class Asset:
@@ -46,3 +56,11 @@ class Asset:
         )
         asset_info = asset_info_req.json()
         return asset_info["Remaining"]
+
+    @property
+    def limited_resale_data(self):
+        if self.is_limited:
+            resale_data_req = requests.get(f"https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data")
+            return LimitedResaleData(resale_data_req.json())
+        else:
+            raise NotLimitedError("You can only read this information on limited items.")
