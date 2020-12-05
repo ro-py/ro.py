@@ -1,14 +1,38 @@
 import requests
+import iso8601
 
 endpoint = "https://users.roblox.com/"
 
 
 class User:
-    def __init__(self, user_id):
-        self.id = user_id
+    def __init__(self, ui):
+        if isinstance(ui, str):
+            is_id = False
+            try:
+                int(str)
+                is_id = True
+            except TypeError:
+                is_id = False
+            if is_id:
+                self.id = int(ui)
+            else:
+                user_id_req = requests.post(
+                    url="https://users.roblox.com/v1/usernames/users",
+                    json={
+                        "usernames": [
+                            ui
+                        ]
+                    }
+                )
+                user_id = user_id_req.json()["data"][0]["id"]
+                self.id = user_id
+        elif isinstance(ui, int):
+            self.id = ui
+
         user_info_req = requests.get(endpoint + f"v1/users/{self.id}")
         user_info = user_info_req.json()
         self.description = user_info["description"]
+        self.created = iso8601.parse_date(user_info["created"])
         self.is_banned = user_info["isBanned"]
         self.name = user_info["name"]
         self.display_name = user_info["displayName"]
