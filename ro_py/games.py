@@ -33,8 +33,9 @@ class Game:
         self.max_players = game_info["maxPlayers"]
         self.studio_access_to_apis_allowed = game_info["studioAccessToApisAllowed"]
         self.create_vip_servers_allowed = game_info["createVipServersAllowed"]
-
-    def get_votes(self):
+    
+    @property
+    def votes(self):
         votes_info_req = requests.get(
             url=endpoint + "v1/games/votes",
             params={
