@@ -1,3 +1,4 @@
+from ro_py.robloxbadges import RobloxBadge
 import requests
 import iso8601
 
@@ -43,3 +44,11 @@ class User:
     def status(self):
         status_req = requests.get(endpoint + f"v1/users/{self.id}/status")
         return status_req.json()["status"]
+
+    @property
+    def roblox_badges(self):
+        roblox_badges_req = requests.get(f"https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges")
+        roblox_badges = []
+        for roblox_badge_data in roblox_badges_req.json():
+            roblox_badges.append(RobloxBadge(roblox_badge_data))
+        return roblox_badges
