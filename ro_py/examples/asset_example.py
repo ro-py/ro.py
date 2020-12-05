@@ -1,6 +1,6 @@
 from ro_py import Asset
 
-asset_id = "130213380"
+asset_id = 130213380
 print(f"Loading asset {asset_id}...")
 asset = Asset(asset_id)
 print("Loaded assset.")

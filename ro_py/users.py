@@ -15,6 +15,7 @@ class User:
         has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
         self.has_premium = has_premium_req
 
-    def get_status(self):
+    @property
+    def status(self):
         status_req = requests.get(endpoint + f"v1/users/{self.id}/status")
         return status_req.json()["status"]

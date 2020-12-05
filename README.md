@@ -8,7 +8,7 @@ user = User(576059883)
 print(f"Username: {user.name}")
 print(f"Description: {user.description}")
 ```
-Reading a game's votes:
+Reading a game's votes:  
 ```python
 from ro_py import Game
 game = Game(1732173541)  # This takes in a Universe ID and not a Place ID
@@ -18,5 +18,5 @@ print(f"Dislikes: {votes.down_votes}")
 ```
 You can read more examples in the `examples` directory.
 ## Other Libraries
-https://github.com/RbxAPI/Pyblox
-https://github.com/iranathan/robloxapi
+https://github.com/RbxAPI/Pyblox  
+https://github.com/iranathan/robloxapi  
