@@ -8,6 +8,9 @@ endpoint = "https://api.roblox.com/"
 
 
 class LimitedResaleData:
+    """
+    Represents the resale data of a limited item.
+    """
     def __init__(self, resale_data):
         self.asset_stock = resale_data["assetStock"]
         self.sales = resale_data["sales"]
@@ -17,6 +20,9 @@ class LimitedResaleData:
 
 
 class Asset:
+    """
+    Represents an asset.
+    """
     def __init__(self, asset_id):
         asset_info_req = requests.get(
             url=endpoint + "marketplace/productinfo",

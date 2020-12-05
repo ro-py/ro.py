@@ -5,12 +5,18 @@ endpoint = "https://groups.roblox.com/"
 
 
 class Shout:
+    """
+    Represents a group shout.
+    """
     def __init__(self, shout_data):
         self.body = shout_data["body"]
         self.poster = User(shout_data["poster"]["userId"])
 
 
 class Group:
+    """
+    Represents a group.
+    """
     def __init__(self, group_id):
         self.id = group_id
         group_info_req = requests.get(endpoint + f"v1/groups/{self.id}")
@@ -26,6 +32,9 @@ class Group:
 
     @property
     def shout(self):
+        """
+        :return: An instance of Shout
+        """
         group_info_req = requests.get(endpoint + f"v1/groups/{self.id}")
         group_info = group_info_req.json()
 
@@ -35,4 +44,7 @@ class Group:
             return None
 
     def get_icon(self, size=thumbnails.size_150x150, format=thumbnails.format_png, is_circular=False):
+        """
+        Equivalent to thumbnails.get_group_icon
+        """
         return thumbnails.get_group_icon(self.id, size, format, is_circular)
