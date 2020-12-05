@@ -1,4 +1,4 @@
-from ro_py import User
+from ro_py import User, thumbnails
 import requests
 
 endpoint = "https://groups.roblox.com/"
@@ -34,15 +34,5 @@ class Group:
         else:
             return None
 
-    def get_icon(self, size="150x150", format="Png", is_circular=False):
-        group_icon_req = requests.get(
-            url="https://thumbnails.roblox.com/v1/groups/icons",
-            params={
-                "groupIds": str(self.id),
-                "size": size,
-                "format": format,
-                "isCircular": is_circular
-            }
-        )
-        group_icon = group_icon_req.json()["data"][0]["imageUrl"]
-        return group_icon
+    def get_icon(self, size=thumbnails.size_150x150, format=thumbnails.format_png, is_circular=False):
+        return thumbnails.get_group_icon(self.id, size, format, is_circular)
