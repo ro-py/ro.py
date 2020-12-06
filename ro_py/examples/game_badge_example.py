@@ -15,4 +15,7 @@ print(f"Badge count: {len(badges)}")
 for badge in badges:
     badge_tab = " "*(32-len(badge.name))
     badge_stats = badge.statistics
-    print(f"{badge.name}{badge_tab}Rarity: {badge_stats.win_rate_percentage}% Won Yesterday: {badge_stats.past_date_awarded_count} Won Ever: {badge_stats.awarded_count}")
+    print(f"{badge.name}{badge_tab}"
+          f"Rarity: {badge_stats.win_rate_percentage}% "
+          f"Won Yesterday: {badge_stats.past_date_awarded_count} "
+          f"Won Ever: {badge_stats.awarded_count}")
