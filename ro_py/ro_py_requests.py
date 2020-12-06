@@ -19,7 +19,7 @@ def get(*args, **kwargs):
     except KeyError:
         return get_request
 
-    raise ApiError(str(get_request.status_code) + ": " + get_request_error[0]["message"])
+    raise ApiError(f"[{str(get_request.status_code)}] {get_request_error[0]['message']}")
 
 
 def post(*args, **kwargs):
