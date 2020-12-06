@@ -1,6 +1,7 @@
 from ro_py import User
 
 user_id = 576059883
+
 print(f"Loading user {user_id}...")
 user = User(user_id)
 print("Loaded user.")

@@ -1,9 +1,11 @@
 from ro_py import Asset
 
 asset_id = 130213380
+
 print(f"Loading asset {asset_id}...")
 asset = Asset(asset_id)
 print("Loaded assset.")
+
 print(f"Name: {asset.name}")
 print(f"Description: {asset.description}")
 print(f"Limited: {asset.is_limited}")
