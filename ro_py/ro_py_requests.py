@@ -13,12 +13,13 @@ import requests
 
 def get(*args, **kwargs):
     get_request = requests.get(*args, **kwargs)
+
     try:
         get_request_error = get_request.json()["errors"]
     except KeyError:
         return get_request
 
-    raise ApiError(get_request_error[0]["message"])
+    raise ApiError(str(get_request.status_code) + ": " + get_request_error[0]["message"])
 
 
 def post(*args, **kwargs):
