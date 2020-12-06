@@ -13,7 +13,6 @@ import requests
 
 def get(*args, **kwargs):
     get_request = requests.get(*args, **kwargs)
-
     try:
         get_request_error = get_request.json()["errors"]
     except KeyError:

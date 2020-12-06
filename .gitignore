@@ -9,3 +9,4 @@ build/
 dist/
 dist_old/
 ro_py.egg-info/
+tests/
