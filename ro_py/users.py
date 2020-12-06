@@ -49,8 +49,8 @@ class User:
         self.is_banned = user_info["isBanned"]
         self.name = user_info["name"]
         self.display_name = user_info["displayName"]
-        has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
-        self.has_premium = has_premium_req
+        # has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
+        # self.has_premium = has_premium_req
 
     @property
     def status(self):
