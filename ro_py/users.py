@@ -52,13 +52,18 @@ class User:
         # has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
         # self.has_premium = has_premium_req
 
-    @property
-    def status(self):
+    def get_status(self):
+        """
+        Gets the user's status.
+        :return: A string
+        """
         status_req = requests.get(endpoint + f"v1/users/{self.id}/status")
         return status_req.json()["status"]
 
-    @property
-    def roblox_badges(self):
+    def get_roblox_badges(self):
+        """
+        :return: A list of RobloxBadge instances
+        """
         roblox_badges_req = requests.get(f"https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges")
         roblox_badges = []
         for roblox_badge_data in roblox_badges_req.json():
