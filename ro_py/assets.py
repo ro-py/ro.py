@@ -10,7 +10,7 @@ from ro_py import User, Group
 from ro_py.errors import NotLimitedError
 from ro_py.asset_type import asset_types
 import iso8601
-import requests
+import ro_py.ro_py_requests as requests
 
 endpoint = "https://api.roblox.com/"
 

@@ -6,7 +6,7 @@ This file houses functions and classes that pertain to game-awarded badges.
 
 """
 
-import requests
+import ro_py.ro_py_requests as requests
 
 endpoint = "https://badges.roblox.com/"
 

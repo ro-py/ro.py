@@ -7,7 +7,7 @@ This file houses functions and classes that pertain to Roblox icons and thumbnai
 """
 
 from ro_py.errors import InvalidShotTypeError
-import requests
+import ro_py.ro_py_requests as requests
 
 endpoint = "https://thumbnails.roblox.com/"
 

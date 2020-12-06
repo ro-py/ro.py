@@ -20,3 +20,8 @@ class InvalidIconSizeError(Exception):
 class InvalidShotTypeError(Exception):
     """Called when code attempts to pass in an improper avatar image type to a thumbnail function."""
     pass
+
+
+class ApiError(Exception):
+    """Called in ro_py_requets when an API request fails."""
+    pass

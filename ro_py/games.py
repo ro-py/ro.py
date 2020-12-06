@@ -7,7 +7,7 @@ This file houses functions and classes that pertain to Roblox universes and plac
 """
 
 from ro_py import User, Group, Badge, thumbnails
-import requests
+import ro_py.ro_py_requests as requests
 
 endpoint = "https://games.roblox.com/"
 
