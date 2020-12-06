@@ -50,8 +50,7 @@ class Game:
         self.create_vip_servers_allowed = game_info["createVipServersAllowed"]
         self.__cached_badges = False
 
-    @property
-    def votes(self):
+    def get_votes(self):
         """
         :return: An instance of Votes
         """
