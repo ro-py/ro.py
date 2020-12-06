@@ -17,7 +17,7 @@ Reading a game's votes:
 ```python
 from ro_py import Game
 game = Game(1732173541)  # This takes in a Universe ID and not a Place ID
-votes = game.votes
+votes = game.get_votes()
 print(f"Likes: {votes.up_votes}")
 print(f"Dislikes: {votes.down_votes}")
 ```
