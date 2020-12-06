@@ -20,7 +20,8 @@ AvatarBust = 1
 AvatarHeadshot = 2
 
 size_30x30 = "30x30"
-size_42x24 = "42x42"
+size_42x42 = "42x42"
+size_48x48 = "48x48"
 size_50x50 = "50x50"
 size_60x62 = "60x62"
 size_75x75 = "75x75"
@@ -93,7 +94,7 @@ def get_game_icon(game, size=size_256x256, format=format_png, is_circular=False)
     return game_icon
 
 
-def get_avatar_image(user, shot_type=AvatarFullBody, size=size_250x250, format=format_png, is_circular=False):
+def get_avatar_image(user, shot_type=AvatarFullBody, size=None, format=format_png, is_circular=False):
     """
     Gets a full body, bust, or headshot image of a user.
     :param user: User to use for avatar.
@@ -103,15 +104,18 @@ def get_avatar_image(user, shot_type=AvatarFullBody, size=size_250x250, format=f
     :param is_circular: The circle thumbnail output parameter.
     :return: Image URL
     """
-    shot_endpoint = "v1/users/"
+    shot_endpoint = endpoint + "v1/users/"
     if shot_type == AvatarFullBody:
         shot_endpoint = shot_endpoint + "avatar"
+        size = size or size_30x30
     elif shot_type == AvatarBust:
         shot_endpoint = shot_endpoint + "avatar-bust"
+        size = size or size_50x50
     elif shot_type == AvatarHeadshot:
+        size = size or size_48x48
         shot_endpoint = shot_endpoint + "avatar-headshot"
     else:
-        raise InvalidShotTypeError
+        raise InvalidShotTypeError("Invalid shot type.")
     shot_req = requests.get(
         url=shot_endpoint,
         params={
