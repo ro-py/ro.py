@@ -6,7 +6,7 @@ This file houses functions and classes that pertain to Roblox universes and plac
 
 """
 
-from ro_py import User, Group, thumbnails
+from ro_py import User, Group, Badge, thumbnails
 import requests
 
 endpoint = "https://games.roblox.com/"
@@ -48,6 +48,7 @@ class Game:
         self.max_players = game_info["maxPlayers"]
         self.studio_access_to_apis_allowed = game_info["studioAccessToApisAllowed"]
         self.create_vip_servers_allowed = game_info["createVipServersAllowed"]
+        self.__cached_badges = False
 
     @property
     def votes(self):
@@ -70,3 +71,25 @@ class Game:
         Equivalent to thumbnails.get_game_icon
         """
         return thumbnails.get_game_icon(self.id, size, format, is_circular)
+
+    @property
+    def badges(self):
+        """
+        Note: this has a limit of 100 badges due to paging. This will be expanded soon.
+        :return: A list of Badge instances
+        """
+        if not self.__cached_badges:
+            badges_req = requests.get(
+                url=f"https://badges.roblox.com/v1/universes/{self.id}/badges",
+                params={
+                    "limit": 100,
+                    "sortOrder": "Asc"
+                }
+            )
+            badges_data = badges_req.json()["data"]
+            badges = []
+            for badge in badges_data:
+                badges.append(Badge(badge["id"]))
+            self.__cached_badges = badges
+
+        return self.__cached_badges

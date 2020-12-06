@@ -4,7 +4,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="ro-py",  # Replace with your own username
+    name="ro-py",
     version="0.0.3",
     author="jmkdev",
     author_email="jmk@jmksite.dev",
