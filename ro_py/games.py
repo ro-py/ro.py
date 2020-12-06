@@ -72,27 +72,23 @@ class Game:
         """
         return thumbnails.get_game_icon(self, size, format, is_circular)
 
-    @property
-    def badges(self):
+    def get_badges(self):
         """
         Note: this has a limit of 100 badges due to paging. This will be expanded soon.
         :return: A list of Badge instances
         """
-        if not self.__cached_badges:
-            badges_req = requests.get(
-                url=f"https://badges.roblox.com/v1/universes/{self.id}/badges",
-                params={
-                    "limit": 100,
-                    "sortOrder": "Asc"
-                }
-            )
-            badges_data = badges_req.json()["data"]
-            badges = []
-            for badge in badges_data:
-                badges.append(Badge(badge["id"]))
-            self.__cached_badges = badges
-
-        return self.__cached_badges
+        badges_req = requests.get(
+            url=f"https://badges.roblox.com/v1/universes/{self.id}/badges",
+            params={
+                "limit": 100,
+                "sortOrder": "Asc"
+            }
+        )
+        badges_data = badges_req.json()["data"]
+        badges = []
+        for badge in badges_data:
+            badges.append(Badge(badge["id"]))
+        return badges
 
 
 def place_id_to_universe_id(place_id):
