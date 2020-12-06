@@ -10,7 +10,7 @@ print(f"Name: {asset.name}")
 print(f"Description: {asset.description}")
 print(f"Limited: {asset.is_limited}")
 if asset.is_limited:
-    resale_data = asset.limited_resale_data
+    resale_data = asset.get_limited_resale_data()
     print(f"Original Price: {resale_data.original_price}")
     print(f"Number Remaining: {resale_data.number_remaining}")
     print(f"Recent Average Price: {resale_data.recent_average_price}")
