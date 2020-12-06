@@ -15,3 +15,8 @@ class NotLimitedError(Exception):
 class InvalidIconSizeError(Exception):
     """Called when code attempts to pass in an improper size to a thumbnail function."""
     pass
+
+
+class InvalidShotTypeError(Exception):
+    """Called when code attempts to pass in an improper avatar image type to a thumbnail function."""
+    pass

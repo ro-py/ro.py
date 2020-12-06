@@ -70,7 +70,7 @@ class Game:
         """
         Equivalent to thumbnails.get_game_icon
         """
-        return thumbnails.get_game_icon(self.id, size, format, is_circular)
+        return thumbnails.get_game_icon(self, size, format, is_circular)
 
     @property
     def badges(self):
@@ -93,3 +93,28 @@ class Game:
             self.__cached_badges = badges
 
         return self.__cached_badges
+
+
+def place_id_to_universe_id(place_id):
+    """
+    Returns the containing universe ID of a place ID.
+    :param place_id: Place ID
+    :return: Universe ID
+    """
+    universe_id_req = requests.get(
+        url="https://api.roblox.com/universes/get-universe-containing-place",
+        params={
+            "placeId": place_id
+        }
+    )
+    universe_id = universe_id_req.json()["UniverseId"]
+    return universe_id
+
+
+def game_from_place_id(place_id):
+    """
+    Generates an instance of Game with a place ID instead of a game ID.
+    :param place_id: Place ID
+    :return: Instace of Game
+    """
+    return Game(place_id_to_universe_id(place_id))

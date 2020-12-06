@@ -55,4 +55,4 @@ class Group:
         """
         Equivalent to thumbnails.get_group_icon
         """
-        return thumbnails.get_group_icon(self.id, size, format, is_circular)
+        return thumbnails.get_group_icon(self, size, format, is_circular)
