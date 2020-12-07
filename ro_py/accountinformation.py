@@ -7,6 +7,7 @@ This file houses functions and classes that pertain to Roblox client .
 """
 
 from datetime import datetime
+from ro_py.gender import RobloxGender
 
 endpoint = "https://accountinformation.roblox.com/"
 
@@ -60,23 +61,21 @@ class AccountInformation:
     def get_gender(self):
         """
         Returns the user's gender.
-        1: Other
-        2: Male
-        3: Female
-        :return: An integer.
+        :return: RobloxGender
         """
         gender_req = self.requests.get(endpoint + "v1/gender")
-        return gender_req.json()["gender"]
+        return RobloxGender(gender_req.json()["gender"])
 
     def set_gender(self, gender):
         """
         Sets the user's gender.
+        :param gender: RobloxGender
         :return: Nothing
         """
         gender_req = self.requests.post(
             url=endpoint + "v1/gender",
             data={
-                "gender": str(gender)
+                "gender": str(gender.value)
             }
         )
 
