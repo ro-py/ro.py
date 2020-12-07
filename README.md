@@ -6,7 +6,22 @@ You can install ro.py from pip:
 pip3 install ro-py
 ```
 ## Examples
-These examples are gone for now as I rewrite them for version 0.1.0.
+Using the client:
+```python
+from ro_py.client import Client
+client = Client("Token goes here")  # Token is optional, but allows for authentication!
+```
+Viewing a user's info:
+```python
+from ro_py.client import Client
+client = Client()
+user_id = 576059883
+user = client.get_user(user_id)
+print(f"Username: {user.name}")
+print(f"Status: {user.get_status() or 'None.'}")
+```
+Find more examples in the examples folder.
+
 ## Other Libraries
 https://github.com/RbxAPI/Pyblox  
 https://github.com/iranathan/robloxapi  
