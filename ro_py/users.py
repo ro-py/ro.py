@@ -7,7 +7,7 @@ This file houses functions and classes that pertain to Roblox users and profiles
 """
 
 from ro_py.robloxbadges import RobloxBadge
-import ro_py.ro_py_requests as requests
+import ro_py.rorequests as requests
 import iso8601
 
 endpoint = "https://users.roblox.com/"

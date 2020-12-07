@@ -7,7 +7,7 @@ This file houses functions and classes that pertain to Roblox groups.
 """
 
 from ro_py import User, thumbnails
-import ro_py.ro_py_requests as requests
+import ro_py.utilities.rorequests as requests
 
 endpoint = "https://groups.roblox.com/"
 

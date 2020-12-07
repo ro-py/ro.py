@@ -7,7 +7,7 @@ It is essentially a very limited Roblox-specific version of requests.
 
 """
 
-from ro_py.errors import ApiError
+from ro_py.utilities.errors import ApiError
 import requests
 
 
