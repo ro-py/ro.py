@@ -7,7 +7,6 @@ This file houses functions and classes that pertain to Roblox icons and thumbnai
 """
 
 from ro_py.utilities.errors import InvalidShotTypeError
-import ro_py.utilities.rorequests as requests
 
 endpoint = "https://thumbnails.roblox.com/"
 
@@ -49,80 +48,82 @@ format_jpg = "Jpeg"
 format_jpeg = "Jpeg"
 
 
-def get_group_icon(group, size=size_150x150, format=format_png, is_circular=False):
-    """
-    Gets a game's icon.
-    :param group: The group.
-    :param size: The thumbnail size, formatted widthxheight.
-    :param format: The thumbnail format
-    :param is_circular: The circle thumbnail output parameter.
-    :return: Image URL
-    """
-    group_icon_req = requests.get(
-        url=endpoint + "v1/groups/icons",
-        params={
-            "groupIds": str(group.id),
-            "size": size,
-            "format": format,
-            "isCircular": is_circular
-        }
-    )
-    group_icon = group_icon_req.json()["data"][0]["imageUrl"]
-    return group_icon
+class ThumbnailGenerator:
+    def __init__(self, requests):
+        self.requests = requests
 
+    def get_group_icon(self, group, size=size_150x150, file_format=format_png, is_circular=False):
+        """
+        Gets a game's icon.
+        :param group: The group.
+        :param size: The thumbnail size, formatted widthxheight.
+        :param file_format: The thumbnail format
+        :param is_circular: The circle thumbnail output parameter.
+        :return: Image URL
+        """
+        group_icon_req = self.requests.get(
+            url=endpoint + "v1/groups/icons",
+            params={
+                "groupIds": str(group.id),
+                "size": size,
+                "file_format": file_format,
+                "isCircular": is_circular
+            }
+        )
+        group_icon = group_icon_req.json()["data"][0]["imageUrl"]
+        return group_icon
 
-def get_game_icon(game, size=size_256x256, format=format_png, is_circular=False):
-    """
-    Gets a game's icon.
-    :param game: The game.
-    :param size: The thumbnail size, formatted widthxheight.
-    :param format: The thumbnail format
-    :param is_circular: The circle thumbnail output parameter.
-    :return: Image URL
-    """
-    game_icon_req = requests.get(
-        url=endpoint + "v1/games/icons",
-        params={
-            "universeIds": str(game.id),
-            "returnPolicy": PlaceHolder,
-            "size": size,
-            "format": format,
-            "isCircular": is_circular
-        }
-    )
-    game_icon = game_icon_req.json()["data"][0]["imageUrl"]
-    return game_icon
+    def get_game_icon(self, game, size=size_256x256, file_format=format_png, is_circular=False):
+        """
+        Gets a game's icon.
+        :param game: The game.
+        :param size: The thumbnail size, formatted widthxheight.
+        :param file_format: The thumbnail format
+        :param is_circular: The circle thumbnail output parameter.
+        :return: Image URL
+        """
+        game_icon_req = self.requests.get(
+            url=endpoint + "v1/games/icons",
+            params={
+                "universeIds": str(game.id),
+                "returnPolicy": PlaceHolder,
+                "size": size,
+                "file_format": file_format,
+                "isCircular": is_circular
+            }
+        )
+        game_icon = game_icon_req.json()["data"][0]["imageUrl"]
+        return game_icon
 
-
-def get_avatar_image(user, shot_type=AvatarFullBody, size=None, format=format_png, is_circular=False):
-    """
-    Gets a full body, bust, or headshot image of a user.
-    :param user: User to use for avatar.
-    :param shot_type: Type of shot.
-    :param size: The thumbnail size, formatted widthxheight.
-    :param format: The thumbnail format
-    :param is_circular: The circle thumbnail output parameter.
-    :return: Image URL
-    """
-    shot_endpoint = endpoint + "v1/users/"
-    if shot_type == AvatarFullBody:
-        shot_endpoint = shot_endpoint + "avatar"
-        size = size or size_30x30
-    elif shot_type == AvatarBust:
-        shot_endpoint = shot_endpoint + "avatar-bust"
-        size = size or size_50x50
-    elif shot_type == AvatarHeadshot:
-        size = size or size_48x48
-        shot_endpoint = shot_endpoint + "avatar-headshot"
-    else:
-        raise InvalidShotTypeError("Invalid shot type.")
-    shot_req = requests.get(
-        url=shot_endpoint,
-        params={
-            "userIds": str(user.id),
-            "size": size,
-            "format": format,
-            "isCircular": is_circular
-        }
-    )
-    return shot_req.json()["data"][0]["imageUrl"]
+    def get_avatar_image(self, user, shot_type=AvatarFullBody, size=None, file_format=format_png, is_circular=False):
+        """
+        Gets a full body, bust, or headshot image of a user.
+        :param user: User to use for avatar.
+        :param shot_type: Type of shot.
+        :param size: The thumbnail size, formatted widthxheight.
+        :param file_format: The thumbnail format
+        :param is_circular: The circle thumbnail output parameter.
+        :return: Image URL
+        """
+        shot_endpoint = endpoint + "v1/users/"
+        if shot_type == AvatarFullBody:
+            shot_endpoint = shot_endpoint + "avatar"
+            size = size or size_30x30
+        elif shot_type == AvatarBust:
+            shot_endpoint = shot_endpoint + "avatar-bust"
+            size = size or size_50x50
+        elif shot_type == AvatarHeadshot:
+            size = size or size_48x48
+            shot_endpoint = shot_endpoint + "avatar-headshot"
+        else:
+            raise InvalidShotTypeError("Invalid shot type.")
+        shot_req = self.requests.get(
+            url=shot_endpoint,
+            params={
+                "userIds": str(user.id),
+                "size": size,
+                "file_format": file_format,
+                "isCircular": is_circular
+            }
+        )
+        return shot_req.json()["data"][0]["imageUrl"]

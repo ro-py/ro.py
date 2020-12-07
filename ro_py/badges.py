@@ -6,8 +6,6 @@ This file houses functions and classes that pertain to game-awarded badges.
 
 """
 
-import ro_py.utilities.rorequests as requests
-
 endpoint = "https://badges.roblox.com/"
 
 
@@ -25,9 +23,19 @@ class Badge:
     """
     Represents a game-awarded badge.
     """
-    def __init__(self, badge_id):
+    def __init__(self, requests, badge_id):
         self.id = badge_id
-        badge_info_req = requests.get(endpoint + f"v1/badges/{badge_id}")
+        self.requests = requests
+        self.name = None
+        self.description = None
+        self.display_name = None
+        self.display_description = None
+        self.enabled = None
+        self.statistics = None
+        self.update()
+
+    def update(self):
+        badge_info_req = self.requests.get(endpoint + f"v1/badges/{self.id}")
         badge_info = badge_info_req.json()
         self.name = badge_info["name"]
         self.description = badge_info["description"]
