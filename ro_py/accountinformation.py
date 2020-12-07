@@ -71,7 +71,6 @@ class AccountInformation:
                 "gender": str(gender)
             }
         )
-        return gender_req.json()["gender"]
 
     def get_birthdate(self):
         """
@@ -86,3 +85,18 @@ class AccountInformation:
             day=birthdate_raw["birthDay"]
         )
         return birthdate
+
+    def set_birthdate(self, birthdate):
+        """
+        Sets the user's birthdate.
+        :param birthdate: A datetime object.
+        :return: Nothing
+        """
+        birthdate_req = self.requests.post(
+            url=endpoint + "v1/birthdate",
+            data={
+              "birthMonth": birthdate.month,
+              "birthDay": birthdate.day,
+              "birthYear": birthdate.year
+            }
+        )
