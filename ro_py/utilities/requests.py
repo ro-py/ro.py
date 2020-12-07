@@ -24,13 +24,18 @@ class Requests:
         kwargs["headers"] = self.headers
 
         post_request = requests.post(*args, **kwargs)
+        if post_request.status_code == 403:
+            if "X-CSRF-TOKEN" in post_request.headers:
+                self.headers['X-CSRF-TOKEN'] = post_request.headers["X-CSRF-TOKEN"]
+                post_request = requests.post(*args, **kwargs)
+
         try:
             post_request_error = post_request.json()["errors"]
         except KeyError:
             return post_request
 
-        raise ApiError(post_request_error[0]["message"])
+        raise ApiError(f"[{str(post_request.status_code)}] {post_request_error[0]['message']}")
 
-    def update_xsrf(self):
-        xsrf_req = requests.post('https://www.roblox.com/favorite/toggle')
+    def update_xsrf(self, url="https://www.roblox.com/favorite/toggle"):
+        xsrf_req = requests.post(url)
         self.headers['X-CSRF-TOKEN'] = xsrf_req.headers["X-CSRF-TOKEN"]
