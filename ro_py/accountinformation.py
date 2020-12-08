@@ -2,7 +2,7 @@
 
 ro.py > accountinformation.py
 
-This file houses functions and classes that pertain to Roblox client .
+This file houses functions and classes that pertain to Roblox authenticated user account information.
 
 """
 

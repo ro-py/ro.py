@@ -5,6 +5,7 @@ from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.utilities.requests import Requests
 from ro_py.accountinformation import AccountInformation
+from ro_py.accountsettings import AccountSettings
 
 
 class Client:
@@ -14,8 +15,10 @@ class Client:
         if token:
             self.requests.cookies[".ROBLOSECURITY"] = token
             self.accountinformation = AccountInformation(self.requests)
+            self.accountsettings = AccountSettings(self.requests)
         else:
             self.accountinformation = None
+            self.accountsettings = None
         self.requests.update_xsrf()
 
     def get_user(self, user_identifier):
