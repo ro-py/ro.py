@@ -12,9 +12,13 @@ class Requests:
         kwargs["headers"] = self.headers
 
         get_request = requests.get(*args, **kwargs)
-        try:
-            get_request_error = get_request.json()["errors"]
-        except KeyError:
+        get_request_json = get_request.json()
+        if isinstance(get_request_json, dict):
+            try:
+                get_request_error = get_request_json["errors"]
+            except KeyError:
+                return get_request
+        else:
             return get_request
 
         raise ApiError(f"[{str(get_request.status_code)}] {get_request_error[0]['message']}")
@@ -28,10 +32,13 @@ class Requests:
             if "X-CSRF-TOKEN" in post_request.headers:
                 self.headers['X-CSRF-TOKEN'] = post_request.headers["X-CSRF-TOKEN"]
                 post_request = requests.post(*args, **kwargs)
-
-        try:
-            post_request_error = post_request.json()["errors"]
-        except KeyError:
+        post_request_json = post_request.json()
+        if isinstance(post_request_json, dict):
+            try:
+                post_request_error = post_request_json["errors"]
+            except KeyError:
+                return post_request
+        else:
             return post_request
 
         raise ApiError(f"[{str(post_request.status_code)}] {post_request_error[0]['message']}")
