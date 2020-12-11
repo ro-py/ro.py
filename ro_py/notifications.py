@@ -1,4 +1,6 @@
 from signalrcore.hub_connection_builder import HubConnectionBuilder
+from urllib.parse import quote
+import logging
 
 
 class NotificationReceiver:
@@ -19,7 +21,7 @@ class NotificationReceiver:
             }
         )
         self.wss_url = f"wss://realtime.roblox.com/notifications?transport=websockets" \
-                       f"&connectionToken={self.negotiate_request.json()['ConnectionToken']}" \
+                       f"&connectionToken={quote(self.negotiate_request.json()['ConnectionToken'])}" \
                        f"&clientProtocol=1.5&connectionData=%5B%7B%22name%22%3A%22usernotificationhub%22%7D%5D"
         self.connection = HubConnectionBuilder()
         self.connection.with_url(
@@ -30,7 +32,7 @@ class NotificationReceiver:
                 }
             }
         )
-
+        self.connection.configure_logging(logging.DEBUG)
         self.connection.with_automatic_reconnect({
             "type": "raw",
             "keep_alive_interval": 10,
