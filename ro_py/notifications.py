@@ -29,7 +29,8 @@ class NotificationReceiver:
             options={
                 "headers": {
                     "Cookie": f".ROBLOSECURITY={self.roblosecurity};"
-                }
+                },
+                "skip_negotiation": False
             }
         )
         self.connection.configure_logging(logging.DEBUG)
