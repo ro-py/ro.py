@@ -1,3 +1,4 @@
+from ro_py.utilities.caseconvert import to_snake_case
 from signalrcore.hub_connection_builder import HubConnectionBuilder
 from urllib.parse import quote
 import logging
@@ -11,7 +12,9 @@ class Notification:
         self.type = notification_data["M"][0]["M"]
         self.atype = notification_data["M"][0]["A"][0]
         self.raw_data = json.loads(notification_data["M"][0]["A"][1])
-        
+        self.data = {}
+        for key, value in self.raw_data.items():
+            self.data[to_snake_case(key)] = value
 
 
 class NotificationReceiver:
