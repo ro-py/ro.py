@@ -1,6 +1,17 @@
 from signalrcore.hub_connection_builder import HubConnectionBuilder
 from urllib.parse import quote
 import logging
+import json
+
+
+class Notification:
+    def __init__(self, notification_data):
+        self.identifier = notification_data["C"]
+        self.hub = notification_data["M"][0]["H"]
+        self.type = notification_data["M"][0]["M"]
+        self.atype = notification_data["M"][0]["A"][0]
+        self.raw_data = json.loads(notification_data["M"][0]["A"][1])
+        
 
 
 class NotificationReceiver:
@@ -44,4 +55,5 @@ class NotificationReceiver:
         self.connection.on_open(self.on_open)
         self.connection.on_close(self.on_close)
         self.connection.on_error(self.on_error)
+        self.connection.on("UserNotificationHub", lambda b: print(b))
         self.connection.start()
