@@ -1,7 +1,6 @@
 from ro_py.utilities.caseconvert import to_snake_case
 from signalrcore.hub_connection_builder import HubConnectionBuilder
 from urllib.parse import quote
-import logging
 import json
 
 
