@@ -47,7 +47,7 @@ class NotificationReceiver:
                 "skip_negotiation": False
             }
         )
-        self.connection.configure_logging(logging.DEBUG)
+        # self.connection.configure_logging(logging.DEBUG)
         self.connection.with_automatic_reconnect({
             "type": "raw",
             "keep_alive_interval": 10,
@@ -58,5 +58,7 @@ class NotificationReceiver:
         self.connection.on_open(self.on_open)
         self.connection.on_close(self.on_close)
         self.connection.on_error(self.on_error)
-        self.connection.on("UserNotificationHub", lambda b: print(b))
         self.connection.start()
+
+    def close(self):
+        self.connection.stop()

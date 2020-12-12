@@ -23,7 +23,7 @@ print(f"Status: {user.get_status() or 'None.'}")
 Find more examples in the examples folder.
 
 ## Credits
-
+@mfd-co - helped with endpoints
 
 ## Other Libraries
 https://github.com/RbxAPI/Pyblox  
