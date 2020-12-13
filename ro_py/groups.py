@@ -29,7 +29,7 @@ class Group:
 
         self.update()
 
-    def update(self):
+    async def update(self):
         group_info_req = self.requests.get(endpoint + f"v1/groups/{self.id}")
         group_info = group_info_req.json()
         self.name = group_info["name"]
@@ -41,7 +41,7 @@ class Group:
         # self.is_locked = group_info["isLocked"]
 
     @property
-    def shout(self):
+    async def shout(self):
         """
         :return: An instance of Shout
         """

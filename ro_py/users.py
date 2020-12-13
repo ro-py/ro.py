@@ -51,7 +51,7 @@ class User:
 
         self.update()
 
-    def update(self):
+    async def update(self):
         """
         Updates some class values.
         :return: Nothing
@@ -66,7 +66,7 @@ class User:
         # has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
         # self.has_premium = has_premium_req
 
-    def get_status(self):
+    async def get_status(self):
         """
         Gets the user's status.
         :return: A string
@@ -74,7 +74,7 @@ class User:
         status_req = self.requests.get(endpoint + f"v1/users/{self.id}/status")
         return status_req.json()["status"]
 
-    def get_roblox_badges(self):
+    async def get_roblox_badges(self):
         """
         Gets the user's roblox badges.
         :return: A list of RobloxBadge instances
@@ -85,7 +85,7 @@ class User:
             roblox_badges.append(RobloxBadge(roblox_badge_data))
         return roblox_badges
 
-    def get_friends_count(self):
+    async def get_friends_count(self):
         """
         Gets the user's friends count.
         :return: An integer
@@ -94,7 +94,7 @@ class User:
         friends_count = friends_count_req.json()["count"]
         return friends_count
 
-    def get_followers_count(self):
+    async def get_followers_count(self):
         """
         Gets the user's followers count.
         :return: An integer
@@ -103,7 +103,7 @@ class User:
         followers_count = followers_count_req.json()["count"]
         return followers_count
 
-    def get_followings_count(self):
+    async def get_followings_count(self):
         """
         Gets the user's followings count.
         :return: An integer
@@ -112,7 +112,7 @@ class User:
         followings_count = followings_count_req.json()["count"]
         return followings_count
 
-    def get_friends(self):
+    async def get_friends(self):
         """
         Gets the user's friends.
         :return: A list of User instances.

@@ -106,5 +106,5 @@ Data: {notification.data}"""
 
         self.connection.start()
 
-    def close(self):
+    async def close(self):
         self.connection.stop()
