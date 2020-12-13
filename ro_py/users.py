@@ -76,6 +76,7 @@ class User:
 
     def get_roblox_badges(self):
         """
+        Gets the user's roblox badges.
         :return: A list of RobloxBadge instances
         """
         roblox_badges_req = self.requests.get(f"https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges")

@@ -49,12 +49,15 @@ format_jpeg = "Jpeg"
 
 
 class ThumbnailGenerator:
+    """
+    This object is used to generate thumbnails.
+    """
     def __init__(self, requests):
         self.requests = requests
 
     def get_group_icon(self, group, size=size_150x150, file_format=format_png, is_circular=False):
         """
-        Gets a game's icon.
+        Gets a group's icon.
         :param group: The group.
         :param size: The thumbnail size, formatted widthxheight.
         :param file_format: The thumbnail format
