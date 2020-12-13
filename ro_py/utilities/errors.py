@@ -23,5 +23,9 @@ class InvalidShotTypeError(Exception):
 
 
 class ApiError(Exception):
-    """Called in ro_py_requets when an API request fails."""
+    """Called in requests when an API request fails."""
     pass
+
+
+class ChatError(Exception):
+    """Called in chat when a chat action fails."""
