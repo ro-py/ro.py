@@ -34,17 +34,17 @@ class Client:
         auth_user_req = self.requests.get("https://users.roblox.com/v1/users/authenticated")
         self.user = User(self.requests, auth_user_req.json()["id"])
 
-    async def get_user(self, user_identifier):
+    def get_user(self, user_identifier):
         return User(self.requests, user_identifier)
 
-    async def get_group(self, group_id):
+    def get_group(self, group_id):
         return Group(self.requests, group_id)
 
-    async def get_game(self, game_id):
+    def get_game(self, game_id):
         return Game(self.requests, game_id)
 
-    async def get_asset(self, asset_id):
+    def get_asset(self, asset_id):
         return Asset(self.requests, asset_id)
 
-    async def get_badge(self, badge_id):
+    def get_badge(self, badge_id):
         return Badge(self.requests, badge_id)

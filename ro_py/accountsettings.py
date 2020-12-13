@@ -36,7 +36,7 @@ class AccountSettings:
     def __init__(self, requests):
         self.requests = requests
 
-    async def get_privacy_setting(self, privacy_setting):
+    def get_privacy_setting(self, privacy_setting):
         privacy_setting = privacy_setting.value
         privacy_endpoint = [
             "app-chat-privacy",

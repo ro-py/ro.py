@@ -48,7 +48,7 @@ class AccountInformation:
         self.promotion_channels = None
         self.update()
 
-    async def update(self):
+    def update(self):
         """
         Updates the account information.
         :return: Nothing
@@ -58,7 +58,7 @@ class AccountInformation:
         promotion_channels_req = self.requests.get("https://accountinformation.roblox.com/v1/promotion-channels")
         self.promotion_channels = PromotionChannels(promotion_channels_req.json())
 
-    async def get_gender(self):
+    def get_gender(self):
         """
         Returns the user's gender.
         :return: RobloxGender
@@ -66,7 +66,7 @@ class AccountInformation:
         gender_req = self.requests.get(endpoint + "v1/gender")
         return RobloxGender(gender_req.json()["gender"])
 
-    async def set_gender(self, gender):
+    def set_gender(self, gender):
         """
         Sets the user's gender.
         :param gender: RobloxGender
@@ -79,7 +79,7 @@ class AccountInformation:
             }
         )
 
-    async def get_birthdate(self):
+    def get_birthdate(self):
         """
         Returns the user's birthdate.
         :return: datetime
@@ -93,7 +93,7 @@ class AccountInformation:
         )
         return birthdate
 
-    async def set_birthdate(self, birthdate):
+    def set_birthdate(self, birthdate):
         """
         Sets the user's birthdate.
         :param birthdate: A datetime object.

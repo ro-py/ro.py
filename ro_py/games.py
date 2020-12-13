@@ -42,7 +42,7 @@ class Game:
         self.create_vip_servers_allowed = None
         self.update()
 
-    async def update(self):
+    def update(self):
         game_info_req = self.requests.get(
             url=endpoint + "v1/games",
             params={
@@ -64,7 +64,7 @@ class Game:
         self.studio_access_to_apis_allowed = game_info["studioAccessToApisAllowed"]
         self.create_vip_servers_allowed = game_info["createVipServersAllowed"]
 
-    async def get_votes(self):
+    def get_votes(self):
         """
         :return: An instance of Votes
         """
@@ -79,13 +79,13 @@ class Game:
         votes = Votes(votes_info)
         return votes
 
-    async def get_icon(self, size=thumbnails.size_256x256, format=thumbnails.format_png, is_circular=False):
+    def get_icon(self, size=thumbnails.size_256x256, format=thumbnails.format_png, is_circular=False):
         """
         Equivalent to thumbnails.get_game_icon
         """
         return thumbnails.get_game_icon(self, size, format, is_circular)
 
-    async def get_badges(self):
+    def get_badges(self):
         """
         Note: this has a limit of 100 badges due to paging. This will be expanded soon.
         :return: A list of Badge instances

@@ -34,7 +34,7 @@ class Badge:
         self.statistics = None
         self.update()
 
-    async def update(self):
+    def update(self):
         badge_info_req = self.requests.get(endpoint + f"v1/badges/{self.id}")
         badge_info = badge_info_req.json()
         self.name = badge_info["name"]

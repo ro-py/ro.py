@@ -55,7 +55,7 @@ class ThumbnailGenerator:
     def __init__(self, requests):
         self.requests = requests
 
-    async def get_group_icon(self, group, size=size_150x150, file_format=format_png, is_circular=False):
+    def get_group_icon(self, group, size=size_150x150, file_format=format_png, is_circular=False):
         """
         Gets a group's icon.
         :param group: The group.
@@ -76,7 +76,7 @@ class ThumbnailGenerator:
         group_icon = group_icon_req.json()["data"][0]["imageUrl"]
         return group_icon
 
-    async def get_game_icon(self, game, size=size_256x256, file_format=format_png, is_circular=False):
+    def get_game_icon(self, game, size=size_256x256, file_format=format_png, is_circular=False):
         """
         Gets a game's icon.
         :param game: The game.
@@ -98,7 +98,7 @@ class ThumbnailGenerator:
         game_icon = game_icon_req.json()["data"][0]["imageUrl"]
         return game_icon
 
-    async def get_avatar_image(self, user, shot_type=AvatarFullBody, size=None, file_format=format_png, is_circular=False):
+    def get_avatar_image(self, user, shot_type=AvatarFullBody, size=None, file_format=format_png, is_circular=False):
         """
         Gets a full body, bust, or headshot image of a user.
         :param user: User to use for avatar.

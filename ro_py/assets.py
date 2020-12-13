@@ -55,7 +55,7 @@ class Asset:
         self.content_rating_type_id = None
         self.update()
 
-    async def update(self):
+    def update(self):
         asset_info_req = self.requests.get(
             url=endpoint + "marketplace/productinfo",
             params={
@@ -86,7 +86,7 @@ class Asset:
         self.minimum_membership_level = asset_info["MinimumMembershipLevel"]
         self.content_rating_type_id = asset_info["ContentRatingTypeId"]
 
-    async def get_remaining(self):
+    def get_remaining(self):
         asset_info_req = self.requests.get(
             url=endpoint + "marketplace/productinfo",
             params={
@@ -96,7 +96,7 @@ class Asset:
         asset_info = asset_info_req.json()
         return asset_info["Remaining"]
 
-    async def get_limited_resale_data(self):
+    def get_limited_resale_data(self):
         if self.is_limited:
             resale_data_req = self.requests.get(f"https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data")
             return LimitedResaleData(resale_data_req.json())
