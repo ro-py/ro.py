@@ -14,20 +14,25 @@ class Client:
     def __init__(self, token=None):
         self.token = token
         self.requests = Requests()
-        logging.info("Initialized requests.")
+
+        logging.debug("Initialized requests.")
         if token:
-            logging.info("Found token.")
+            logging.debug("Found token.")
             self.requests.cookies[".ROBLOSECURITY"] = token
-            logging.info("Initialized token.")
+            logging.debug("Initialized token.")
             self.accountinformation = AccountInformation(self.requests)
             self.accountsettings = AccountSettings(self.requests)
-            logging.info("Initialized AccountInformation and AccountSettings.")
+            logging.debug("Initialized AccountInformation and AccountSettings.")
         else:
             self.accountinformation = None
             self.accountsettings = None
-        logging.info("Updating XSRF...")
+
+        logging.debug("Updating XSRF...")
         self.requests.update_xsrf()
-        logging.info("Done updating XSRF.")
+        logging.debug("Done updating XSRF.")
+
+        auth_user_req = self.requests.get("https://users.roblox.com/v1/users/authenticated")
+        self.user = User(self.requests, auth_user_req.json()["id"])
 
     def get_user(self, user_identifier):
         return User(self.requests, user_identifier)
