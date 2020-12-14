@@ -42,11 +42,14 @@ class Conversation:
         self.id = conversation_id
         self.typing = ConversationTyping(self.requests, conversation_id)
 
-    def send_message(self, message):
+    def get_message(self, message_id):
+        return Message(self.requests, message_id, self.id)
+
+    def send_message(self, content):
         send_message_req = self.requests.post(
             url=endpoint + "v2/send-message",
             data={
-                "message": message,
+                "message": content,
                 "conversationId": self.id
             }
         )
@@ -88,3 +91,15 @@ class Message:
 class ChatWrapper:
     def __init__(self, requests):
         self.requests = requests
+
+    def get_conversation(self, conversation_id):
+        return Conversation(self.requests, conversation_id)
+
+    def get_conversations(self, page_number=1, page_size=10):
+        conversations_req = self.requests.get(
+            url="https://chat.roblox.com/v2/get-user-conversations",
+            params={
+                "pageNumber": page_number,
+                "pageSize": page_size
+            }
+        )

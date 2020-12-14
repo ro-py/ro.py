@@ -3,6 +3,7 @@ from ro_py.games import Game
 from ro_py.groups import Group
 from ro_py.assets import Asset
 from ro_py.badges import Badge
+from ro_py.chat import ChatWrapper
 from ro_py.utilities.cache import cache
 from ro_py.utilities.requests import Requests
 from ro_py.accountinformation import AccountInformation
@@ -27,10 +28,13 @@ class Client:
             auth_user_req = self.requests.get("https://users.roblox.com/v1/users/authenticated")
             self.user = User(self.requests, auth_user_req.json()["id"])
             logging.debug("Initialized authenticated user.")
+            self.chat = ChatWrapper(self.requests)
+            logging.debug("Initialized chat wrapper.")
         else:
             self.accountinformation = None
             self.accountsettings = None
             self.user = None
+            self.chat = None
 
         logging.debug("Updating XSRF...")
         self.requests.update_xsrf()
