@@ -40,18 +40,33 @@ class Client:
         try:
             cache["users"][str(user_id)]
         except KeyError:
-            user = User(self.requests, user_id)
-            cache["users"][str(user_id)] = user
+            cache["users"][str(user_id)] = User(self.requests, user_id)
         return cache["users"][str(user_id)]
 
     def get_group(self, group_id):
-        return Group(self.requests, group_id)
+        try:
+            cache["groups"][str(group_id)]
+        except KeyError:
+            cache["groups"][str(group_id)] = Group(self.requests, group_id)
+        return cache["groups"][str(group_id)]
 
     def get_game(self, game_id):
-        return Game(self.requests, game_id)
+        try:
+            cache["games"][str(game_id)]
+        except KeyError:
+            cache["games"][str(game_id)] = Game(self.requests, game_id)
+        return cache["games"][str(game_id)]
 
     def get_asset(self, asset_id):
-        return Asset(self.requests, asset_id)
+        try:
+            cache["assets"][str(asset_id)]
+        except KeyError:
+            cache["assets"][str(asset_id)] = Asset(self.requests, asset_id)
+        return cache["assets"][str(asset_id)]
 
     def get_badge(self, badge_id):
-        return Badge(self.requests, badge_id)
+        try:
+            cache["badges"][str(badge_id)]
+        except KeyError:
+            cache["badges"][str(badge_id)] = Badge(self.requests, badge_id)
+        return cache["badges"][str(badge_id)]

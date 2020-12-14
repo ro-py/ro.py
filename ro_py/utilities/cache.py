@@ -1,3 +1,7 @@
 cache = {
-    "users": {}
+    "users": {},
+    "groups": {},
+    "games": {},
+    "assets": {},
+    "badges": {}
 }
