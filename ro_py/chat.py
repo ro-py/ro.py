@@ -37,9 +37,26 @@ class ConversationTyping:
 
 
 class Conversation:
-    def __init__(self, requests, conversation_id):
+    def __init__(self, requests, conversation_id=None, raw=False, raw_data=None):
         self.requests = requests
-        self.id = conversation_id
+
+        if raw:
+            data = raw_data
+            self.id = data["id"]
+        else:
+            self.id = conversation_id
+            conversation_req = requests.get(
+                url="https://chat.roblox.com/v2/get-conversations",
+                params={
+                    "conversationIds": self.id
+                }
+            )
+            data = conversation_req.json()[0]
+
+        self.title = data["title"]
+        self.initiator = User(self.requests, data["initiator"]["targetId"])
+        self.type = data["conversationType"]
+
         self.typing = ConversationTyping(self.requests, conversation_id)
 
     def get_message(self, message_id):
@@ -103,3 +120,12 @@ class ChatWrapper:
                 "pageSize": page_size
             }
         )
+        conversations_json = conversations_req.json()
+        conversations = []
+        for conversation_raw in conversations_json:
+            conversations.append(Conversation(
+                requests=self.requests,
+                raw=True,
+                raw_data=conversation_raw
+            ))
+        return conversations
