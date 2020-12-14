@@ -52,7 +52,7 @@ class Conversation:
         )
         send_message_json = send_message_req.json()
         if send_message_json["sent"]:
-            return Message(self.requests, send_message_json["messageId"])
+            return Message(self.requests, send_message_json["messageId"], self.id)
         else:
             raise ChatError(send_message_json["statusMessage"])
 
@@ -79,7 +79,7 @@ class Message:
             }
         )
 
-        message_json = message_req.json()
+        message_json = message_req.json()[0]
         self.content = message_json["content"]
         self.sender = User(self.requests, message_json["senderTargetId"])
         self.read = message_json["read"]
