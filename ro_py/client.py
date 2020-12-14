@@ -13,6 +13,9 @@ import logging
 
 
 class Client:
+    """
+    Represents an authenticated Roblox client.
+    """
     def __init__(self, token=None):
         self.token = token
         self.requests = Requests()
@@ -41,6 +44,10 @@ class Client:
         logging.debug("Done updating XSRF.")
 
     def get_user(self, user_id):
+        """
+        Gets a Roblox user.
+        :returns: Instance of User
+        """
         try:
             cache["users"][str(user_id)]
         except KeyError:
@@ -48,6 +55,10 @@ class Client:
         return cache["users"][str(user_id)]
 
     def get_group(self, group_id):
+        """
+        Gets a Roblox group.
+        :returns: Instance of Group
+        """
         try:
             cache["groups"][str(group_id)]
         except KeyError:
@@ -55,6 +66,10 @@ class Client:
         return cache["groups"][str(group_id)]
 
     def get_game(self, game_id):
+        """
+        Gets a Roblox game.
+        :returns: Instance of Game
+        """
         try:
             cache["games"][str(game_id)]
         except KeyError:
@@ -62,6 +77,10 @@ class Client:
         return cache["games"][str(game_id)]
 
     def get_asset(self, asset_id):
+        """
+        Gets a Roblox asset.
+        :returns: Instance of Asset
+        """
         try:
             cache["assets"][str(asset_id)]
         except KeyError:
@@ -69,6 +88,10 @@ class Client:
         return cache["assets"][str(asset_id)]
 
     def get_badge(self, badge_id):
+        """
+        Gets a Roblox badge.
+        :returns: Instance of Badge
+        """
         try:
             cache["badges"][str(badge_id)]
         except KeyError:
