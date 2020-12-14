@@ -43,6 +43,9 @@ class Game:
         self.update()
 
     def update(self):
+        """
+        Updates the game's information.
+        """
         game_info_req = self.requests.get(
             url=endpoint + "v1/games",
             params={

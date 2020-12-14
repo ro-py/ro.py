@@ -10,6 +10,9 @@ import enum
 
 
 class RobloxGender(enum.Enum):
+    """
+    Represents the gender of the authenticated Roblox client.
+    """
     Other = 1
     Female = 2
     Male = 3

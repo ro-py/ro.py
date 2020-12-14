@@ -60,7 +60,7 @@ class AccountInformation:
 
     def get_gender(self):
         """
-        Returns the user's gender.
+        Gets the user's gender.
         :return: RobloxGender
         """
         gender_req = self.requests.get(endpoint + "v1/gender")

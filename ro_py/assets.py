@@ -56,6 +56,9 @@ class Asset:
         self.update()
 
     def update(self):
+        """
+        Updates the asset's information.
+        """
         asset_info_req = self.requests.get(
             url=endpoint + "marketplace/productinfo",
             params={
@@ -87,6 +90,10 @@ class Asset:
         self.content_rating_type_id = asset_info["ContentRatingTypeId"]
 
     def get_remaining(self):
+        """
+        Gets the remaining amount of this asset. (used for Limited U items)
+        :returns: Amount remaining
+        """
         asset_info_req = self.requests.get(
             url=endpoint + "marketplace/productinfo",
             params={
@@ -97,6 +104,10 @@ class Asset:
         return asset_info["Remaining"]
 
     def get_limited_resale_data(self):
+        """
+        Gets the limited resale data
+        :returns: LimitedResaleData
+        """
         if self.is_limited:
             resale_data_req = self.requests.get(f"https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data")
             return LimitedResaleData(resale_data_req.json())

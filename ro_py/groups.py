@@ -26,10 +26,14 @@ class Group:
         self.member_count = None
         self.is_builders_club_only = None
         self.public_entry_allowed = None
+        self.shout = None
 
         self.update()
 
     def update(self):
+        """
+        Updates the group's information.
+        """
         group_info_req = self.requests.get(endpoint + f"v1/groups/{self.id}")
         group_info = group_info_req.json()
         self.name = group_info["name"]
@@ -38,23 +42,8 @@ class Group:
         self.member_count = group_info["memberCount"]
         self.is_builders_club_only = group_info["isBuildersClubOnly"]
         self.public_entry_allowed = group_info["publicEntryAllowed"]
-        # self.is_locked = group_info["isLocked"]
-
-    @property
-    def shout(self):
-        """
-        :return: An instance of Shout
-        """
-        group_info_req = self.requests.get(endpoint + f"v1/groups/{self.id}")
-        group_info = group_info_req.json()
-
-        if group_info["shout"]:
-            return Shout(self.requests, group_info["shout"])
+        if "shout" in group_info:
+            self.shout = group_info["shout"]
         else:
-            return None
-
-    # def get_icon(self, size=thumbnails.size_150x150, file_format=thumbnails.format_png, is_circular=False):
-        # """
-        # Equivalent to thumbnails.get_group_icon
-        # """
-        # return thumbnails.get_group_icon(self, size, file_format, is_circular)
+            self.shout = None
+        # self.is_locked = group_info["isLocked"]

@@ -43,7 +43,8 @@ class Notification:
 
 class NotificationReceiver:
     """
-    This object is used to receive notifications. This should only be generated once per client.
+    This object is used to receive notifications.
+    This should only be generated once per client as to not duplicate notifications.
     """
     def __init__(self, requests, on_open, on_close, on_error, on_notification):
         self.requests = requests
@@ -76,7 +77,10 @@ class NotificationReceiver:
             }
         )
 
-        def on_message(in_self, raw_notification):
+        def on_message(_self, raw_notification):
+            """
+            Internal callback when a message is received.
+            """
             try:
                 notification_json = json.loads(raw_notification)
             except:
@@ -107,4 +111,7 @@ Data: {notification.data}"""
         self.connection.start()
 
     def close(self):
+        """
+        Closes the connection and stops receiving notifications.
+        """
         self.connection.stop()
