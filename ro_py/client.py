@@ -3,6 +3,7 @@ from ro_py.games import Game
 from ro_py.groups import Group
 from ro_py.assets import Asset
 from ro_py.badges import Badge
+from ro_py.utilities.cache import cache
 from ro_py.utilities.requests import Requests
 from ro_py.accountinformation import AccountInformation
 from ro_py.accountsettings import AccountSettings
@@ -23,19 +24,25 @@ class Client:
             self.accountinformation = AccountInformation(self.requests)
             self.accountsettings = AccountSettings(self.requests)
             logging.debug("Initialized AccountInformation and AccountSettings.")
+            auth_user_req = self.requests.get("https://users.roblox.com/v1/users/authenticated")
+            self.user = User(self.requests, auth_user_req.json()["id"])
+            logging.debug("Initialized authenticated user.")
         else:
             self.accountinformation = None
             self.accountsettings = None
+            self.user = None
 
         logging.debug("Updating XSRF...")
         self.requests.update_xsrf()
         logging.debug("Done updating XSRF.")
 
-        auth_user_req = self.requests.get("https://users.roblox.com/v1/users/authenticated")
-        self.user = User(self.requests, auth_user_req.json()["id"])
-
-    def get_user(self, user_identifier):
-        return User(self.requests, user_identifier)
+    def get_user(self, user_id):
+        try:
+            cache["users"][str(user_id)]
+        except KeyError:
+            user = User(self.requests, user_id)
+            cache["users"][str(user_id)] = user
+        return cache["users"][str(user_id)]
 
     def get_group(self, group_id):
         return Group(self.requests, group_id)

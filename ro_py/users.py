@@ -20,28 +20,7 @@ class User:
     def __init__(self, requests, ui):
 
         self.requests = requests
-
-        if isinstance(ui, str):
-            try:
-                int(str)
-                is_id = True
-            except TypeError:
-                is_id = False
-            if is_id:
-                self.id = int(ui)
-            else:
-                user_id_req = self.requests.post(
-                    url="https://users.roblox.com/v1/usernames/users",
-                    json={
-                        "usernames": [
-                            ui
-                        ]
-                    }
-                )
-                user_id = user_id_req.json()["data"][0]["id"]
-                self.id = user_id
-        elif isinstance(ui, int):
-            self.id = ui
+        self.id = ui
 
         self.description = None
         self.created = None
