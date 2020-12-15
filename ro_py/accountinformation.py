@@ -72,7 +72,7 @@ class AccountInformation:
         :param gender: RobloxGender
         :return: Nothing
         """
-        gender_req = self.requests.post(
+        self.requests.post(
             url=endpoint + "v1/gender",
             data={
                 "gender": str(gender.value)
@@ -99,7 +99,7 @@ class AccountInformation:
         :param birthdate: A datetime object.
         :return: Nothing
         """
-        birthdate_req = self.requests.post(
+        self.requests.post(
             url=endpoint + "v1/birthdate",
             data={
               "birthMonth": birthdate.month,

@@ -18,7 +18,7 @@ class ConversationTyping:
         self.id = conversation_id
 
     def __enter__(self):
-        enter_req = self.requests.post(
+        self.requests.post(
             url=endpoint + "v2/update-user-typing-status",
             data={
                 "conversationId": self.id,
@@ -27,7 +27,7 @@ class ConversationTyping:
         )
 
     def __exit__(self, *args, **kwargs):
-        exit_req = self.requests.post(
+        self.requests.post(
             url=endpoint + "v2/update-user-typing-status",
             data={
                 "conversationId": self.id,

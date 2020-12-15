@@ -9,7 +9,6 @@ This file houses functions and classes that pertain to Roblox universes and plac
 from ro_py.users import User
 from ro_py.groups import Group
 from ro_py.badges import Badge
-from ro_py import thumbnails
 
 endpoint = "https://games.roblox.com/"
 
@@ -81,12 +80,6 @@ class Game:
         votes_info = votes_info["data"][0]
         votes = Votes(votes_info)
         return votes
-
-    def get_icon(self, size=thumbnails.size_256x256, format=thumbnails.format_png, is_circular=False):
-        """
-        Equivalent to thumbnails.get_game_icon
-        """
-        return thumbnails.get_game_icon(self, size, format, is_circular)
 
     def get_badges(self):
         """

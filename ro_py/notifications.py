@@ -10,6 +10,7 @@ class Notification:
     """
     Represents a Roblox notification as you would see in the notifications menu on the top of the Roblox web client.
     """
+
     def __init__(self, notification_data):
         self.identifier = notification_data["C"]
         self.hub = notification_data["M"][0]["H"]
@@ -46,6 +47,7 @@ class NotificationReceiver:
     This object is used to receive notifications.
     This should only be generated once per client as to not duplicate notifications.
     """
+
     def __init__(self, requests, on_open, on_close, on_error, on_notification):
         self.requests = requests
 
