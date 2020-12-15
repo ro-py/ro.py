@@ -41,7 +41,25 @@ class Requests:
         else:
             return post_request
 
-        raise ApiError(f"[{str(post_request.status_code)}] {post_request_error[0]['message']}")
+    def patch(self, *args, **kwargs):
+        kwargs["cookies"] = self.cookies
+        kwargs["headers"] = self.headers
+
+        patch_request = requests.post(*args, **kwargs)
+        if patch_request.status_code == 403:
+            if "X-CSRF-TOKEN" in patch_request.headers:
+                self.headers['X-CSRF-TOKEN'] = patch_request.headers["X-CSRF-TOKEN"]
+                patch_request = requests.patch(*args, **kwargs)
+        patch_request_json = patch_request.json()
+        if isinstance(patch_request_json, dict):
+            try:
+                patch_request_error = patch_request_json["errors"]
+            except KeyError:
+                return patch_request
+        else:
+            return patch_request
+
+        raise ApiError(f"[{str(patch_request.status_code)}] {patch_request_error[0]['message']}")
 
     def update_xsrf(self, url="https://www.roblox.com/favorite/toggle"):
         xsrf_req = requests.post(url)
