@@ -12,3 +12,4 @@ ro_py.egg-info/
 tests/
 ro_py_old/
 other/
+build.bat
