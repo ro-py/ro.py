@@ -45,7 +45,7 @@ class Requests:
         kwargs["cookies"] = self.cookies
         kwargs["headers"] = self.headers
 
-        patch_request = requests.post(*args, **kwargs)
+        patch_request = requests.patch(*args, **kwargs)
         if patch_request.status_code == 403:
             if "X-CSRF-TOKEN" in patch_request.headers:
                 self.headers['X-CSRF-TOKEN'] = patch_request.headers["X-CSRF-TOKEN"]
