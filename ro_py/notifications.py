@@ -85,7 +85,7 @@ class NotificationReceiver:
             """
             try:
                 notification_json = json.loads(raw_notification)
-            except:
+            except json.decoder.JSONDecodeError:
                 return
             if len(notification_json) > 0:
                 notification = Notification(notification_json)
