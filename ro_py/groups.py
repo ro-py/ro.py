@@ -47,3 +47,11 @@ class Group:
         else:
             self.shout = None
         # self.is_locked = group_info["isLocked"]
+
+    def update_shout(self, message):
+        self.requests.patch(
+            url=f"https://groups.roblox.com/v1/groups/{self.id}/status",
+            data={
+                "message": message
+            }
+        )
