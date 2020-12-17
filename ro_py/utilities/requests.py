@@ -1,4 +1,5 @@
 from ro_py.utilities.errors import ApiError
+from json.decoder import JSONDecodeError
 import requests
 
 
@@ -12,7 +13,12 @@ class Requests:
         kwargs["headers"] = self.headers
 
         get_request = requests.get(*args, **kwargs)
-        get_request_json = get_request.json()
+
+        try:
+            get_request_json = get_request.json()
+        except JSONDecodeError:
+            return get_request
+
         if isinstance(get_request_json, dict):
             try:
                 get_request_error = get_request_json["errors"]
@@ -28,11 +34,16 @@ class Requests:
         kwargs["headers"] = self.headers
 
         post_request = requests.post(*args, **kwargs)
+
         if post_request.status_code == 403:
             if "X-CSRF-TOKEN" in post_request.headers:
                 self.headers['X-CSRF-TOKEN'] = post_request.headers["X-CSRF-TOKEN"]
                 post_request = requests.post(*args, **kwargs)
-        post_request_json = post_request.json()
+        try:
+            post_request_json = post_request.json()
+        except JSONDecodeError:
+            return post_request
+
         if isinstance(post_request_json, dict):
             try:
                 post_request_error = post_request_json["errors"]
