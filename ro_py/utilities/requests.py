@@ -7,12 +7,13 @@ class Requests:
     def __init__(self):
         self.cookies = {}
         self.headers = {}
+        self.session = requests.Session()
 
     def get(self, *args, **kwargs):
         kwargs["cookies"] = self.cookies
         kwargs["headers"] = self.headers
 
-        get_request = requests.get(*args, **kwargs)
+        get_request = self.session.get(*args, **kwargs)
 
         try:
             get_request_json = get_request.json()
@@ -33,12 +34,13 @@ class Requests:
         kwargs["cookies"] = self.cookies
         kwargs["headers"] = self.headers
 
-        post_request = requests.post(*args, **kwargs)
+        post_request = self.session.post(*args, **kwargs)
 
         if post_request.status_code == 403:
             if "X-CSRF-TOKEN" in post_request.headers:
                 self.headers['X-CSRF-TOKEN'] = post_request.headers["X-CSRF-TOKEN"]
-                post_request = requests.post(*args, **kwargs)
+                post_request = self.session.post(*args, **kwargs)
+
         try:
             post_request_json = post_request.json()
         except JSONDecodeError:
@@ -56,12 +58,15 @@ class Requests:
         kwargs["cookies"] = self.cookies
         kwargs["headers"] = self.headers
 
-        patch_request = requests.patch(*args, **kwargs)
+        patch_request = self.session.patch(*args, **kwargs)
+
         if patch_request.status_code == 403:
             if "X-CSRF-TOKEN" in patch_request.headers:
                 self.headers['X-CSRF-TOKEN'] = patch_request.headers["X-CSRF-TOKEN"]
-                patch_request = requests.patch(*args, **kwargs)
+                patch_request = self.session.patch(*args, **kwargs)
+
         patch_request_json = patch_request.json()
+
         if isinstance(patch_request_json, dict):
             try:
                 patch_request_error = patch_request_json["errors"]
@@ -73,5 +78,5 @@ class Requests:
         raise ApiError(f"[{str(patch_request.status_code)}] {patch_request_error[0]['message']}")
 
     def update_xsrf(self, url="https://www.roblox.com/favorite/toggle"):
-        xsrf_req = requests.post(url)
+        xsrf_req = self.session.post(url)
         self.headers['X-CSRF-TOKEN'] = xsrf_req.headers["X-CSRF-TOKEN"]
