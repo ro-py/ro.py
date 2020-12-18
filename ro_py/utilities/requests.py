@@ -5,12 +5,10 @@ import requests
 
 class Requests:
     def __init__(self):
-        self.cookies = {}
         self.headers = {}
         self.session = requests.Session()
 
     def get(self, *args, **kwargs):
-        kwargs["cookies"] = self.cookies
         kwargs["headers"] = self.headers
 
         get_request = self.session.get(*args, **kwargs)
@@ -31,7 +29,6 @@ class Requests:
         raise ApiError(f"[{str(get_request.status_code)}] {get_request_error[0]['message']}")
 
     def post(self, *args, **kwargs):
-        kwargs["cookies"] = self.cookies
         kwargs["headers"] = self.headers
 
         post_request = self.session.post(*args, **kwargs)
@@ -48,14 +45,13 @@ class Requests:
 
         if isinstance(post_request_json, dict):
             try:
-                post_request_error = post_request_json["errors"]
+                post_request_json["errors"]
             except KeyError:
                 return post_request
         else:
             return post_request
 
     def patch(self, *args, **kwargs):
-        kwargs["cookies"] = self.cookies
         kwargs["headers"] = self.headers
 
         patch_request = self.session.patch(*args, **kwargs)

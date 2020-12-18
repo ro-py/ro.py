@@ -23,7 +23,7 @@ class Client:
         logging.debug("Initialized requests.")
         if token:
             logging.debug("Found token.")
-            self.requests.cookies[".ROBLOSECURITY"] = token
+            self.requests.session.cookies[".ROBLOSECURITY"] = token
             logging.debug("Initialized token.")
             self.accountinformation = AccountInformation(self.requests)
             self.accountsettings = AccountSettings(self.requests)
