@@ -56,7 +56,7 @@ class NotificationReceiver:
         self.on_error = on_error
         self.on_notification = on_notification
 
-        self.roblosecurity = self.requests.cookies[".ROBLOSECURITY"]
+        self.roblosecurity = self.requests.session.cookies[".ROBLOSECURITY"]
         self.negotiate_request = self.requests.get(
             url="https://realtime.roblox.com/notifications/negotiate"
                 "?clientProtocol=1.5"
