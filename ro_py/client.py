@@ -39,10 +39,6 @@ class Client:
             self.user = None
             self.chat = None
 
-        logging.debug("Updating XSRF...")
-        self.requests.update_xsrf()
-        logging.debug("Done updating XSRF.")
-
     def get_user(self, user_id):
         """
         Gets a Roblox user.

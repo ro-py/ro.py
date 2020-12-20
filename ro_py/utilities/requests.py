@@ -71,7 +71,3 @@ class Requests:
             return patch_request
 
         raise ApiError(f"[{str(patch_request.status_code)}] {patch_request_error[0]['message']}")
-
-    def update_xsrf(self, url="https://www.roblox.com/favorite/toggle"):
-        xsrf_req = self.session.post(url)
-        self.session.headers['X-CSRF-TOKEN'] = xsrf_req.headers["X-CSRF-TOKEN"]
