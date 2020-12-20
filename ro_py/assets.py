@@ -9,22 +9,11 @@ This file houses functions and classes that pertain to Roblox assets.
 from ro_py.users import User
 from ro_py.groups import Group
 from ro_py.utilities.errors import NotLimitedError
+from ro_py.economy import LimitedResaleData
 from ro_py.utilities.asset_type import asset_types
 import iso8601
 
 endpoint = "https://api.roblox.com/"
-
-
-class LimitedResaleData:
-    """
-    Represents the resale data of a limited item.
-    """
-    def __init__(self, resale_data):
-        self.asset_stock = resale_data["assetStock"]
-        self.sales = resale_data["sales"]
-        self.number_remaining = resale_data["numberRemaining"]
-        self.recent_average_price = resale_data["recentAveragePrice"]
-        self.original_price = resale_data["originalPrice"]
 
 
 class Asset:
