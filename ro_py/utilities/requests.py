@@ -5,12 +5,15 @@ import requests
 
 class Requests:
     def __init__(self):
-        self.headers = {}
         self.session = requests.Session()
+        """
+        Thank you @nsg for letting me know about this!
+        This allows us to access some extra content.
+        ▼▼▼
+        """
+        self.session.headers["User-Agent"] = "Roblox/WinInet"
 
     def get(self, *args, **kwargs):
-        kwargs["headers"] = self.headers
-
         get_request = self.session.get(*args, **kwargs)
 
         try:
@@ -29,13 +32,11 @@ class Requests:
         raise ApiError(f"[{str(get_request.status_code)}] {get_request_error[0]['message']}")
 
     def post(self, *args, **kwargs):
-        kwargs["headers"] = self.headers
-
         post_request = self.session.post(*args, **kwargs)
 
         if post_request.status_code == 403:
             if "X-CSRF-TOKEN" in post_request.headers:
-                self.headers['X-CSRF-TOKEN'] = post_request.headers["X-CSRF-TOKEN"]
+                self.session.headers['X-CSRF-TOKEN'] = post_request.headers["X-CSRF-TOKEN"]
                 post_request = self.session.post(*args, **kwargs)
 
         try:
@@ -52,13 +53,11 @@ class Requests:
             return post_request
 
     def patch(self, *args, **kwargs):
-        kwargs["headers"] = self.headers
-
         patch_request = self.session.patch(*args, **kwargs)
 
         if patch_request.status_code == 403:
             if "X-CSRF-TOKEN" in patch_request.headers:
-                self.headers['X-CSRF-TOKEN'] = patch_request.headers["X-CSRF-TOKEN"]
+                self.session.headers['X-CSRF-TOKEN'] = patch_request.headers["X-CSRF-TOKEN"]
                 patch_request = self.session.patch(*args, **kwargs)
 
         patch_request_json = patch_request.json()
@@ -75,4 +74,4 @@ class Requests:
 
     def update_xsrf(self, url="https://www.roblox.com/favorite/toggle"):
         xsrf_req = self.session.post(url)
-        self.headers['X-CSRF-TOKEN'] = xsrf_req.headers["X-CSRF-TOKEN"]
+        self.session.headers['X-CSRF-TOKEN'] = xsrf_req.headers["X-CSRF-TOKEN"]
