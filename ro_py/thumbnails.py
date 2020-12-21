@@ -53,7 +53,7 @@ class ThumbnailGenerator:
     This object is used to generate thumbnails.
     """
     def __init__(self, requests):
-        self.requests = requests
+        self.__dict__["requests"] = requests
 
     def get_group_icon(self, group, size=size_150x150, file_format=format_png, is_circular=False):
         """
@@ -64,7 +64,7 @@ class ThumbnailGenerator:
         :param is_circular: The circle thumbnail output parameter.
         :return: Image URL
         """
-        group_icon_req = self.requests.get(
+        group_icon_req = self.__dict__["requests"].get(
             url=endpoint + "v1/groups/icons",
             params={
                 "groupIds": str(group.id),
@@ -85,7 +85,7 @@ class ThumbnailGenerator:
         :param is_circular: The circle thumbnail output parameter.
         :return: Image URL
         """
-        game_icon_req = self.requests.get(
+        game_icon_req = self.__dict__["requests"].get(
             url=endpoint + "v1/games/icons",
             params={
                 "universeIds": str(game.id),
@@ -120,7 +120,7 @@ class ThumbnailGenerator:
             shot_endpoint = shot_endpoint + "avatar-headshot"
         else:
             raise InvalidShotTypeError("Invalid shot type.")
-        shot_req = self.requests.get(
+        shot_req = self.__dict__["requests"].get(
             url=shot_endpoint,
             params={
                 "userIds": str(user.id),

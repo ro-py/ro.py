@@ -22,7 +22,7 @@ class Asset:
     """
     def __init__(self, requests, asset_id):
         self.id = asset_id
-        self.requests = requests
+        self.__dict__["requests"] = requests
         self.target_id = None
         self.product_type = None
         self.asset_id = None
@@ -48,7 +48,7 @@ class Asset:
         """
         Updates the asset's information.
         """
-        asset_info_req = self.requests.get(
+        asset_info_req = self.__dict__["requests"].get(
             url=endpoint + "marketplace/productinfo",
             params={
                 "assetId": self.id
@@ -64,9 +64,9 @@ class Asset:
         self.asset_type_id = asset_info["AssetTypeId"]
         self.asset_type_name = asset_types[self.asset_type_id]
         if asset_info["Creator"]["CreatorType"] == "User":
-            self.creator = User(self.requests, asset_info["Creator"]["Id"])
+            self.creator = User(self.__dict__["requests"], asset_info["Creator"]["Id"])
         elif asset_info["Creator"]["CreatorType"] == "Group":
-            self.creator = Group(self.requests, asset_info["Creator"]["CreatorTargetId"])
+            self.creator = Group(self.__dict__["requests"], asset_info["Creator"]["CreatorTargetId"])
         self.created = iso8601.parse_date(asset_info["Created"])
         self.updated = iso8601.parse_date(asset_info["Updated"])
         self.price = asset_info["PriceInRobux"]
@@ -83,7 +83,7 @@ class Asset:
         Gets the remaining amount of this asset. (used for Limited U items)
         :returns: Amount remaining
         """
-        asset_info_req = self.requests.get(
+        asset_info_req = self.__dict__["requests"].get(
             url=endpoint + "marketplace/productinfo",
             params={
                 "assetId": self.asset_id
@@ -98,7 +98,7 @@ class Asset:
         :returns: LimitedResaleData
         """
         if self.is_limited:
-            resale_data_req = self.requests.get(f"https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data")
+            resale_data_req = self.__dict__["requests"].get(f"https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data")
             return LimitedResaleData(resale_data_req.json())
         else:
             raise NotLimitedError("You can only read this information on limited items.")

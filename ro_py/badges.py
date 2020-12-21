@@ -25,7 +25,7 @@ class Badge:
     """
     def __init__(self, requests, badge_id):
         self.id = badge_id
-        self.requests = requests
+        self.__dict__["requests"] = requests
         self.name = None
         self.description = None
         self.display_name = None
@@ -35,7 +35,7 @@ class Badge:
         self.update()
 
     def update(self):
-        badge_info_req = self.requests.get(endpoint + f"v1/badges/{self.id}")
+        badge_info_req = self.__dict__["requests"].get(endpoint + f"v1/badges/{self.id}")
         badge_info = badge_info_req.json()
         self.name = badge_info["name"]
         self.description = badge_info["description"]

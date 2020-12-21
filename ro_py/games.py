@@ -29,7 +29,7 @@ class Game:
     """
     def __init__(self, requests, universe_id):
         self.id = universe_id
-        self.requests = requests
+        self.__dict__["requests"] = requests
         self.name = None
         self.description = None
         self.creator = None
@@ -45,7 +45,7 @@ class Game:
         """
         Updates the game's information.
         """
-        game_info_req = self.requests.get(
+        game_info_req = self.__dict__["requests"].get(
             url=endpoint + "v1/games",
             params={
                 "universeIds": str(self.id)
@@ -56,9 +56,9 @@ class Game:
         self.name = game_info["name"]
         self.description = game_info["description"]
         if game_info["creator"]["type"] == "User":
-            self.creator = User(self.requests, game_info["creator"]["id"])
+            self.creator = User(self.__dict__["requests"], game_info["creator"]["id"])
         elif game_info["creator"]["type"] == "Group":
-            self.creator = Group(self.requests, game_info["creator"]["id"])
+            self.creator = Group(self.__dict__["requests"], game_info["creator"]["id"])
         self.price = game_info["price"]
         self.allowed_gear_genres = game_info["allowedGearGenres"]
         self.allowed_gear_categories = game_info["allowedGearCategories"]
@@ -70,7 +70,7 @@ class Game:
         """
         :return: An instance of Votes
         """
-        votes_info_req = self.requests.get(
+        votes_info_req = self.__dict__["requests"].get(
             url=endpoint + "v1/games/votes",
             params={
                 "universeIds": str(self.id)
@@ -86,7 +86,7 @@ class Game:
         Note: this has a limit of 100 badges due to paging. This will be expanded soon.
         :return: A list of Badge instances
         """
-        badges_req = self.requests.get(
+        badges_req = self.__dict__["requests"].get(
             url=f"https://badges.roblox.com/v1/universes/{self.id}/badges",
             params={
                 "limit": 100,
@@ -96,7 +96,7 @@ class Game:
         badges_data = badges_req.json()["data"]
         badges = []
         for badge in badges_data:
-            badges.append(Badge(self.requests, badge["id"]))
+            badges.append(Badge(self.__dict__["requests"], badge["id"]))
         return badges
 
 
@@ -107,7 +107,7 @@ def place_id_to_universe_id(place_id):
     :param place_id: Place ID
     :return: Universe ID
     \"""
-    universe_id_req = self.requests.get(
+    universe_id_req = self.__dict__["requests"].get(
         url="https://api.roblox.com/universes/get-universe-containing-place",
         params={
             "placeId": place_id
@@ -123,5 +123,5 @@ def game_from_place_id(place_id):
     :param place_id: Place ID
     :return: Instace of Game
     \"""
-    return Game(self.requests, place_id_to_universe_id(place_id))
+    return Game(self.__dict__["requests"], place_id_to_universe_id(place_id))
 """

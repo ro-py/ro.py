@@ -49,15 +49,15 @@ class NotificationReceiver:
     """
 
     def __init__(self, requests, on_open, on_close, on_error, on_notification):
-        self.requests = requests
+        self.__dict__["requests"] = requests
 
         self.on_open = on_open
         self.on_close = on_close
         self.on_error = on_error
         self.on_notification = on_notification
 
-        self.roblosecurity = self.requests.session.cookies[".ROBLOSECURITY"]
-        self.negotiate_request = self.requests.get(
+        self.roblosecurity = self.__dict__["requests"].session.cookies[".ROBLOSECURITY"]
+        self.negotiate_request = self.__dict__["requests"].get(
             url="https://realtime.roblox.com/notifications/negotiate"
                 "?clientProtocol=1.5"
                 "&connectionData=%5B%7B%22name%22%3A%22usernotificationhub%22%7D%5D",

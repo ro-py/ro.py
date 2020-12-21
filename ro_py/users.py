@@ -19,7 +19,7 @@ class User:
     """
     def __init__(self, requests, ui):
 
-        self.requests = requests
+        self.__dict__["requests"] = requests
         self.id = ui
 
         self.description = None
@@ -35,7 +35,7 @@ class User:
         Updates some class values.
         :return: Nothing
         """
-        user_info_req = self.requests.get(endpoint + f"v1/users/{self.id}")
+        user_info_req = self.__dict__["requests"].get(endpoint + f"v1/users/{self.id}")
         user_info = user_info_req.json()
         self.description = user_info["description"]
         self.created = iso8601.parse_date(user_info["created"])
@@ -50,7 +50,7 @@ class User:
         Gets the user's status.
         :return: A string
         """
-        status_req = self.requests.get(endpoint + f"v1/users/{self.id}/status")
+        status_req = self.__dict__["requests"].get(endpoint + f"v1/users/{self.id}/status")
         return status_req.json()["status"]
 
     def get_roblox_badges(self):
@@ -58,7 +58,7 @@ class User:
         Gets the user's roblox badges.
         :return: A list of RobloxBadge instances
         """
-        roblox_badges_req = self.requests.get(f"https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges")
+        roblox_badges_req = self.__dict__["requests"].get(f"https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges")
         roblox_badges = []
         for roblox_badge_data in roblox_badges_req.json():
             roblox_badges.append(RobloxBadge(roblox_badge_data))
@@ -69,7 +69,7 @@ class User:
         Gets the user's friends count.
         :return: An integer
         """
-        friends_count_req = self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/friends/count")
+        friends_count_req = self.__dict__["requests"].get(f"https://friends.roblox.com/v1/users/{self.id}/friends/count")
         friends_count = friends_count_req.json()["count"]
         return friends_count
 
@@ -78,7 +78,7 @@ class User:
         Gets the user's followers count.
         :return: An integer
         """
-        followers_count_req = self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/followers/count")
+        followers_count_req = self.__dict__["requests"].get(f"https://friends.roblox.com/v1/users/{self.id}/followers/count")
         followers_count = followers_count_req.json()["count"]
         return followers_count
 
@@ -87,7 +87,7 @@ class User:
         Gets the user's followings count.
         :return: An integer
         """
-        followings_count_req = self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/followings/count")
+        followings_count_req = self.__dict__["requests"].get(f"https://friends.roblox.com/v1/users/{self.id}/followings/count")
         followings_count = followings_count_req.json()["count"]
         return followings_count
 
@@ -96,11 +96,11 @@ class User:
         Gets the user's friends.
         :return: A list of User instances.
         """
-        friends_req = self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/friends")
+        friends_req = self.__dict__["requests"].get(f"https://friends.roblox.com/v1/users/{self.id}/friends")
         friends_raw = friends_req.json()["data"]
         friends_list = []
         for friend_raw in friends_raw:
             friends_list.append(
-                User(self.requests, friend_raw["id"])
+                User(self.__dict__["requests"], friend_raw["id"])
             )
         return friends_list
