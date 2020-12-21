@@ -17,27 +17,47 @@ class Client:
     Represents an authenticated Roblox client.
     """
     def __init__(self, token=None):
-        self.token = token
-        self.requests = Requests()
+        self.__dict__["token"] = token
+        self.__dict__["requests"] = Requests()
 
         logging.debug("Initialized requests.")
         if token:
             logging.debug("Found token.")
-            self.requests.session.cookies[".ROBLOSECURITY"] = token
+            self.__dict__["requests"].session.cookies[".ROBLOSECURITY"] = token
             logging.debug("Initialized token.")
-            self.accountinformation = AccountInformation(self.requests)
-            self.accountsettings = AccountSettings(self.requests)
+            self.__dict__["accountinformation"] = AccountInformation(self.__dict__["requests"])
+            self.__dict__["accountsettings"] = AccountSettings(self.__dict__["requests"])
             logging.debug("Initialized AccountInformation and AccountSettings.")
-            auth_user_req = self.requests.get("https://users.roblox.com/v1/users/authenticated")
-            self.user = User(self.requests, auth_user_req.json()["id"])
+            auth_user_req = self.__dict__["requests"].get("https://users.roblox.com/v1/users/authenticated")
+            self.__dict__["user"] = User(self.__dict__["requests"], auth_user_req.json()["id"])
             logging.debug("Initialized authenticated user.")
-            self.chat = ChatWrapper(self.requests)
+            self.__dict__["chat"] = ChatWrapper(self.__dict__["requests"])
             logging.debug("Initialized chat wrapper.")
         else:
-            self.accountinformation = None
-            self.accountsettings = None
-            self.user = None
-            self.chat = None
+            self.__dict__["accountinformation"] = None
+            self.__dict__["accountsettings"] = None
+            self.__dict__["user"] = None
+            self.__dict__["chat"] = None
+
+    @property
+    def requests(self):
+        return self.__dict__["requests"]
+
+    @property
+    def accountinformation(self):
+        return self.__dict__["accountinformation"]
+
+    @property
+    def accountsettings(self):
+        return self.__dict__["accountsettings"]
+
+    @property
+    def user(self):
+        return self.__dict__["user"]
+
+    @property
+    def chat(self):
+        return self.__dict__["chat"]
 
     def get_user(self, user_id):
         """
@@ -47,7 +67,7 @@ class Client:
         try:
             cache["users"][str(user_id)]
         except KeyError:
-            cache["users"][str(user_id)] = User(self.requests, user_id)
+            cache["users"][str(user_id)] = User(self.__dict__["requests"], user_id)
         return cache["users"][str(user_id)]
 
     def get_group(self, group_id):
@@ -58,7 +78,7 @@ class Client:
         try:
             cache["groups"][str(group_id)]
         except KeyError:
-            cache["groups"][str(group_id)] = Group(self.requests, group_id)
+            cache["groups"][str(group_id)] = Group(self.__dict__["requests"], group_id)
         return cache["groups"][str(group_id)]
 
     def get_game(self, game_id):
@@ -69,7 +89,7 @@ class Client:
         try:
             cache["games"][str(game_id)]
         except KeyError:
-            cache["games"][str(game_id)] = Game(self.requests, game_id)
+            cache["games"][str(game_id)] = Game(self.__dict__["requests"], game_id)
         return cache["games"][str(game_id)]
 
     def get_asset(self, asset_id):
@@ -80,7 +100,7 @@ class Client:
         try:
             cache["assets"][str(asset_id)]
         except KeyError:
-            cache["assets"][str(asset_id)] = Asset(self.requests, asset_id)
+            cache["assets"][str(asset_id)] = Asset(self.__dict__["requests"], asset_id)
         return cache["assets"][str(asset_id)]
 
     def get_badge(self, badge_id):
@@ -91,5 +111,5 @@ class Client:
         try:
             cache["badges"][str(badge_id)]
         except KeyError:
-            cache["badges"][str(badge_id)] = Badge(self.requests, badge_id)
+            cache["badges"][str(badge_id)] = Badge(self.__dict__["requests"], badge_id)
         return cache["badges"][str(badge_id)]
