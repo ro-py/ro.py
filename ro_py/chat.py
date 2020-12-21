@@ -12,6 +12,12 @@ from ro_py.users import User
 endpoint = "https://chat.roblox.com/"
 
 
+class ChatSettings:
+    def __init__(self, settings_data):
+        self.enabled = settings_data["chatEnabled"]
+        self.is_active_chat_user = settings_data["isActiveChatUser"]
+
+
 class ConversationTyping:
     def __init__(self, requests, conversation_id):
         self.requests = requests
