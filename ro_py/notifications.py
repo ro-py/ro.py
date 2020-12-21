@@ -105,9 +105,12 @@ Data: {notification.data}"""
             "max_attempts": 5
         }).build()
 
-        self.connection.on_open(self.on_open)
-        self.connection.on_close(self.on_close)
-        self.connection.on_error(self.on_error)
+        if self.on_open:
+            self.connection.on_open(self.on_open)
+        if self.on_close:
+            self.connection.on_close(self.on_close)
+        if self.on_error:
+            self.connection.on_error(self.on_error)
         self.connection.hub.on_message = on_message
 
         self.connection.start()
