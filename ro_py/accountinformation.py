@@ -17,12 +17,13 @@ class AccountInformationMetadata:
     Represents account information metadata.
     """
     def __init__(self, metadata_raw):
-        self.is_allowed_notifications_endpoint_disabled = metadata_raw["isAllowedNotificationsEndpointDisabled"]
-        self.is_account_settings_policy_enabled = metadata_raw["isAccountSettingsPolicyEnabled"]
-        self.is_phone_number_enabled = metadata_raw["isPhoneNumberEnabled"]
-        self.max_user_description_length = metadata_raw["MaxUserDescriptionLength"]
-        self.is_user_description_enabled = metadata_raw["isUserDescriptionEnabled"]
-        self.is_user_block_endpoints_updated = metadata_raw["isUserBlockEndpointsUpdated"]
+        self.__dict__["is_allowed_notifications_endpoint_disabled"] = \
+            metadata_raw["isAllowedNotificationsEndpointDisabled"]
+        self.__dict__["is_account_settings_policy_enabled"] = metadata_raw["isAccountSettingsPolicyEnabled"]
+        self.__dict__["is_phone_number_enabled"] = metadata_raw["isPhoneNumberEnabled"]
+        self.__dict__["max_user_description_length"] = metadata_raw["MaxUserDescriptionLength"]
+        self.__dict__["is_user_description_enabled"] = metadata_raw["isUserDescriptionEnabled"]
+        self.__dict__["is_user_block_endpoints_updated"] = metadata_raw["isUserBlockEndpointsUpdated"]
 
 
 class PromotionChannels:
@@ -30,11 +31,31 @@ class PromotionChannels:
     Represents account information promotion channels.
     """
     def __init__(self, promotion_raw):
-        self.promotion_channels_visibility_privacy = promotion_raw["promotionChannelsVisibilityPrivacy"]
-        self.facebook = promotion_raw["facebook"]
-        self.twitter = promotion_raw["twitter"]
-        self.youtube = promotion_raw["youtube"]
-        self.twitch = promotion_raw["twitch"]
+        self.__dict__["promotion_channels_visibility_privacy"] = promotion_raw["promotionChannelsVisibilityPrivacy"]
+        self.__dict__["facebook"] = promotion_raw["facebook"]
+        self.__dict__["twitter"] = promotion_raw["twitter"]
+        self.__dict__["youtube"] = promotion_raw["youtube"]
+        self.__dict__["twitch"] = promotion_raw["twitch"]
+
+    @property
+    def promotion_channels_visibility_privacy(self):
+        return self.__dict__["promotion_channels_visibility_privacy"]
+
+    @property
+    def facebook(self):
+        return self.__dict__["facebook"]
+
+    @property
+    def twitter(self):
+        return self.__dict__["twitter"]
+
+    @property
+    def youtube(self):
+        return self.__dict__["youtube"]
+
+    @property
+    def twitch(self):
+        return self.__dict__["twitch"]
 
 
 class AccountInformation:
@@ -44,8 +65,8 @@ class AccountInformation:
     """
     def __init__(self, requests):
         self.__dict__["requests"] = requests
-        self.account_information_metadata = None
-        self.promotion_channels = None
+        self.__dict__["account_information_metadata"] = None
+        self.__dict__["promotion_channels"] = None
         self.update()
 
     def update(self):
@@ -53,10 +74,23 @@ class AccountInformation:
         Updates the account information.
         :return: Nothing
         """
-        account_information_req = self.__dict__["requests"].get("https://accountinformation.roblox.com/v1/metadata")
-        self.account_information_metadata = AccountInformationMetadata(account_information_req.json())
-        promotion_channels_req = self.__dict__["requests"].get("https://accountinformation.roblox.com/v1/promotion-channels")
-        self.promotion_channels = PromotionChannels(promotion_channels_req.json())
+        account_information_req = self.__dict__["requests"].get(
+            url="https://accountinformation.roblox.com/v1/metadata"
+        )
+        self.__dict__["account_information_metadata"] = AccountInformationMetadata(account_information_req.json())
+
+        promotion_channels_req = self.__dict__["requests"].get(
+            url="https://accountinformation.roblox.com/v1/promotion-channels"
+        )
+        self.__dict__["promotion_channels"] = PromotionChannels(promotion_channels_req.json())
+
+    @property
+    def account_information_metadata(self):
+        return self.__dict__["account_information_metadata"]
+
+    @property
+    def promotion_channels(self):
+        return self.__dict__["promotion_channels"]
 
     def get_gender(self):
         """
