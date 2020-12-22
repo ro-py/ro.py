@@ -15,3 +15,8 @@ class TradesMetadata:
         self.min_value_ratio = trades_metadata_data["minValueRatio"]
         self.trade_system_max_robux_percent = trades_metadata_data["tradeSystemMaxRobuxPercent"]
         self.trade_system_robux_fee = trades_metadata_data["tradeSystemRobuxFee"]
+
+
+class TradesWrapper:
+    def __init__(self, requests):
+        self.requests = requests
