@@ -7,7 +7,14 @@ class SortOrder(enum.Enum):
     Descending = "Desc"
 
 
-class PagedObject:
+class Page:
+    def __init__(self, data):
+        self.previous_page_cursor = data["previousPageCursor"]
+        self.next_page_cursor = data["nextPageCursor"]
+        self.data = data["data"]
+
+
+class Pages:
     def __init__(self, requests, url, extra_parameters=None, sort_order=SortOrder.Ascending, limit=10):
         if extra_parameters is None:
             extra_parameters = {}
@@ -19,6 +26,8 @@ class PagedObject:
         self.requests = requests
         self.url = url
         self.page = 0
+
+        print(self.parameters)
         self.data = self._get_page()
 
     def _get_page(self, cursor=None):
@@ -30,16 +39,16 @@ class PagedObject:
             url=self.url,
             params=this_parameters
         )
-        return page_req.json()
+        return Page(page_req.json())
 
     def previous(self):
-        if self.data["previousPageCursor"]:
-            self.data = self._get_page(self.data["previousPageCursor"])
+        if self.data.previous_page_cursor:
+            self.data = self._get_page(self.data.previous_page_cursor)
         else:
             raise InvalidPageError
 
     def next(self):
-        if self.data["nextPageCursor"]:
-            self.data = self._get_page(self.data["nextPageCursor"])
+        if self.data.next_page_cursor:
+            self.data = self._get_page(self.data.next_page_cursor)
         else:
             raise InvalidPageError
