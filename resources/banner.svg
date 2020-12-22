@@ -8,13 +8,12 @@
   padding: 0;
 }
 .root {
-  width: 100%;
-  height: 100%;
+  width: 800px;
+  height: 250px;
   margin: 0;
   padding: 15px;
   box-sizing: border-box;
   color: white;
-  background: red;
 }
       </style>
       <h1>Test test test</h1>
