@@ -17,8 +17,8 @@ endpoint = "https://trades.roblox.com/"
 def trade_page_handler(requests, this_page):
     trades_out = []
     for raw_trade in this_page:
-        Trade(requests, raw_trade["id"])
-    return this_page
+        trades_out.append(Trade(requests, raw_trade["id"]))
+    return trades_out
 
 
 class Trade:
@@ -68,7 +68,8 @@ class TradesWrapper:
             requests=self.requests,
             url=endpoint + f"/v1/trades/{trade_status_type.value}",
             sort_order=sort_order,
-            limit=limit
+            limit=limit,
+            handler=trade_page_handler
         )
         return trades
 

@@ -32,7 +32,6 @@ class Pages:
         self.url = url
         self.page = 0
 
-        print(self.parameters)
         self.data = self._get_page()
 
     def _get_page(self, cursor=None):
