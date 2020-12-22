@@ -22,7 +22,6 @@ class Client:
 
         logging.debug("Initialized requests.")
         if token:
-            logging.debug("Found token.")
             self.requests.session.cookies[".ROBLOSECURITY"] = token
             logging.debug("Initialized token.")
             self.accountinformation = AccountInformation(self.requests)
@@ -36,6 +35,7 @@ class Client:
             self.trade = TradesWrapper(self.requests)
             logging.debug("Initialized trade wrapper.")
         else:
+            logging.warning("The active client is not authenticated, so some features will not be enabled.")
             self.accountinformation = None
             self.accountsettings = None
             self.user = None
