@@ -7,9 +7,32 @@ This file houses functions and classes that pertain to Roblox trades.
 """
 
 from ro_py.utilities.pages import Pages, SortOrder
+from ro_py.users import User
+import iso8601
 import enum
 
 endpoint = "https://trades.roblox.com/"
+
+
+def trade_page_handler(this_page):
+    trades_out = []
+    for raw_trade in this_page:
+        pass
+    return this_page
+
+
+class Trade:
+    def __init__(self, requests, trade_id):
+        self.requests = requests
+        trade_req = self.requests.get(
+            url=endpoint + f"v1/trades/{trade_id}"
+        )
+        trade_data = trade_req.json()
+        self.id = trade_data["id"]
+        self.user = User(self.requests, trade_data["user"]["id"])
+        self.created = iso8601.parse_date(trade_data["created"])
+        self.is_active = trade_data["isActive"]
+        self.status = trade_data["status"]
 
 
 class TradeStatusType(enum.Enum):
