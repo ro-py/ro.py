@@ -64,15 +64,9 @@ class AccountInformation:
     This is only available for authenticated clients as it cannot be accessed otherwise.
     """
     def __init__(self, requests):
-<<<<<<< HEAD
-        self.__dict__["requests"] = requests
-        self.__dict__["account_information_metadata"] = None
-        self.__dict__["promotion_channels"] = None
-=======
         self.requests = requests
         self.account_information_metadata = None
         self.promotion_channels = None
->>>>>>> parent of 5a7703f... Read only requests
         self.update()
 
     def update(self):
@@ -80,30 +74,14 @@ class AccountInformation:
         Updates the account information.
         :return: Nothing
         """
-<<<<<<< HEAD
-        account_information_req = self.__dict__["requests"].get(
+        account_information_req = self.requests.get(
             url="https://accountinformation.roblox.com/v1/metadata"
         )
-        self.__dict__["account_information_metadata"] = AccountInformationMetadata(account_information_req.json())
-
-        promotion_channels_req = self.__dict__["requests"].get(
+        self.account_information_metadata = AccountInformationMetadata(account_information_req.json())
+        promotion_channels_req = self.requests.get(
             url="https://accountinformation.roblox.com/v1/promotion-channels"
         )
-        self.__dict__["promotion_channels"] = PromotionChannels(promotion_channels_req.json())
-
-    @property
-    def account_information_metadata(self):
-        return self.__dict__["account_information_metadata"]
-
-    @property
-    def promotion_channels(self):
-        return self.__dict__["promotion_channels"]
-=======
-        account_information_req = self.requests.get("https://accountinformation.roblox.com/v1/metadata")
-        self.account_information_metadata = AccountInformationMetadata(account_information_req.json())
-        promotion_channels_req = self.requests.get("https://accountinformation.roblox.com/v1/promotion-channels")
         self.promotion_channels = PromotionChannels(promotion_channels_req.json())
->>>>>>> parent of 5a7703f... Read only requests
 
     def get_gender(self):
         """
