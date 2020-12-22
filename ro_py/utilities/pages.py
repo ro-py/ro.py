@@ -8,16 +8,21 @@ class SortOrder(enum.Enum):
 
 
 class Page:
-    def __init__(self, data):
+    def __init__(self, data, handler=None):
         self.previous_page_cursor = data["previousPageCursor"]
         self.next_page_cursor = data["nextPageCursor"]
-        self.data = data["data"]
+        if handler:
+            self.data = handler(data["data"])
+        else:
+            self.data = data["data"]
 
 
 class Pages:
-    def __init__(self, requests, url, extra_parameters=None, sort_order=SortOrder.Ascending, limit=10):
+    def __init__(self, requests, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None):
         if extra_parameters is None:
             extra_parameters = {}
+
+        self.handler = handler
 
         extra_parameters["sortOrder"] = sort_order.value
         extra_parameters["limit"] = limit
@@ -39,7 +44,10 @@ class Pages:
             url=self.url,
             params=this_parameters
         )
-        return Page(page_req.json())
+        return Page(
+            data=page_req.json(),
+            handler=self.handler
+        )
 
     def previous(self):
         if self.data.previous_page_cursor:

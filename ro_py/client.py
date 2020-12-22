@@ -4,6 +4,7 @@ from ro_py.groups import Group
 from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
+from ro_py.trades import TradesWrapper
 from ro_py.utilities.cache import cache
 from ro_py.utilities.requests import Requests
 from ro_py.accountinformation import AccountInformation
@@ -32,11 +33,14 @@ class Client:
             logging.debug("Initialized authenticated user.")
             self.chat = ChatWrapper(self.requests)
             logging.debug("Initialized chat wrapper.")
+            self.trade = TradesWrapper(self.requests)
+            logging.debug("Initialized trade wrapper.")
         else:
             self.accountinformation = None
             self.accountsettings = None
             self.user = None
             self.chat = None
+            self.trade = None
 
     def get_user(self, user_id):
         """

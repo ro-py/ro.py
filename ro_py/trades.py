@@ -6,6 +6,7 @@ This file houses functions and classes that pertain to Roblox trades.
 
 """
 
+from ro_py.utilities.pages import Pages, SortOrder
 import enum
 
 endpoint = "https://trades.roblox.com/"
@@ -38,6 +39,15 @@ class TradesWrapper:
     """
     def __init__(self, requests):
         self.requests = requests
+
+    def get_trades(self, trade_status_type: TradeStatusType, sort_order=SortOrder.Ascending, limit=10):
+        trades = Pages(
+            requests=self.requests,
+            url=endpoint + f"/v1/trades/{trade_status_type.value}",
+            sort_order=sort_order,
+            limit=limit
+        )
+        return trades
 
     def send_trade(self):
         pass
