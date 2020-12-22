@@ -2,6 +2,11 @@
   <foreignObject width="100%" height="100%">
     <div class="root" xmlns="http://www.w3.org/1999/xhtml">
       <style>
+
+foreignObject {
+  margin: 0;
+  padding: 0;
+}
 .root {
   width: 100%;
   height: 100%;
