@@ -29,3 +29,7 @@ class ApiError(Exception):
 
 class ChatError(Exception):
     """Called in chat when a chat action fails."""
+
+
+class InvalidPageError(Exception):
+    """Called when an invalid page is requested."""
