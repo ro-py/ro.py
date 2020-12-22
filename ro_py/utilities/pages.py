@@ -8,11 +8,11 @@ class SortOrder(enum.Enum):
 
 
 class Page:
-    def __init__(self, data, handler=None):
+    def __init__(self, requests, data, handler=None):
         self.previous_page_cursor = data["previousPageCursor"]
         self.next_page_cursor = data["nextPageCursor"]
         if handler:
-            self.data = handler(data["data"])
+            self.data = handler(requests, data["data"])
         else:
             self.data = data["data"]
 
@@ -45,6 +45,7 @@ class Pages:
             params=this_parameters
         )
         return Page(
+            requests=self.requests,
             data=page_req.json(),
             handler=self.handler
         )

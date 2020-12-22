@@ -14,10 +14,10 @@ import enum
 endpoint = "https://trades.roblox.com/"
 
 
-def trade_page_handler(this_page):
+def trade_page_handler(requests, this_page):
     trades_out = []
     for raw_trade in this_page:
-        pass
+        Trade(requests, raw_trade["id"])
     return this_page
 
 
