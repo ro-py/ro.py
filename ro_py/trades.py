@@ -6,10 +6,25 @@ This file houses functions and classes that pertain to Roblox trades.
 
 """
 
+import enum
+
 endpoint = "https://trades.roblox.com/"
 
 
+class TradeStatusType(enum.Enum):
+    """
+    Represents a trade status type.
+    """
+    Inbound = "Inbound"
+    Outbound = "Outbound"
+    Completed = "Completed"
+    Inactive = "Inactive"
+
+
 class TradesMetadata:
+    """
+    Represents trade system metadata at /v1/trades/metadata
+    """
     def __init__(self, trades_metadata_data):
         self.max_items_per_side = trades_metadata_data["maxItemsPerSide"]
         self.min_value_ratio = trades_metadata_data["minValueRatio"]
@@ -18,5 +33,12 @@ class TradesMetadata:
 
 
 class TradesWrapper:
+    """
+    Represents the Roblox trades page.
+    """
     def __init__(self, requests):
         self.requests = requests
+
+    def send_trade(self):
+        pass
+
