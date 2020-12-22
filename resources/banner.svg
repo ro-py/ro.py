@@ -8,7 +8,7 @@ html, body {
 }
 body {
   color: white;
-  background: transparent;
+  background: red;
 }
       </style>
       <h1>Test test test</h1>
