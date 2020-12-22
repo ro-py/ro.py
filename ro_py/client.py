@@ -17,7 +17,6 @@ class Client:
     Represents an authenticated Roblox client.
     """
     def __init__(self, token=None):
-        self.token = token
         self.requests = Requests()
 
         logging.debug("Initialized requests.")
