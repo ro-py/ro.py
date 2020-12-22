@@ -55,7 +55,7 @@ class AccountSettings:
     This is only available for authenticated clients as it cannot be accessed otherwise.
     """
     def __init__(self, requests):
-        self.__dict__["requests"] = requests
+        self.requests = requests
 
     def get_privacy_setting(self, privacy_setting):
         """
@@ -79,5 +79,5 @@ class AccountSettings:
             "privateMessagePrivacy"
         ][privacy_setting]
         privacy_endpoint = endpoint + "v1/" + privacy_endpoint
-        privacy_req = self.__dict__["requests"].get(privacy_endpoint)
+        privacy_req = self.requests.get(privacy_endpoint)
         return privacy_req.json()[privacy_key]

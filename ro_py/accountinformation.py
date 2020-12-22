@@ -64,9 +64,15 @@ class AccountInformation:
     This is only available for authenticated clients as it cannot be accessed otherwise.
     """
     def __init__(self, requests):
+<<<<<<< HEAD
         self.__dict__["requests"] = requests
         self.__dict__["account_information_metadata"] = None
         self.__dict__["promotion_channels"] = None
+=======
+        self.requests = requests
+        self.account_information_metadata = None
+        self.promotion_channels = None
+>>>>>>> parent of 5a7703f... Read only requests
         self.update()
 
     def update(self):
@@ -74,6 +80,7 @@ class AccountInformation:
         Updates the account information.
         :return: Nothing
         """
+<<<<<<< HEAD
         account_information_req = self.__dict__["requests"].get(
             url="https://accountinformation.roblox.com/v1/metadata"
         )
@@ -91,13 +98,19 @@ class AccountInformation:
     @property
     def promotion_channels(self):
         return self.__dict__["promotion_channels"]
+=======
+        account_information_req = self.requests.get("https://accountinformation.roblox.com/v1/metadata")
+        self.account_information_metadata = AccountInformationMetadata(account_information_req.json())
+        promotion_channels_req = self.requests.get("https://accountinformation.roblox.com/v1/promotion-channels")
+        self.promotion_channels = PromotionChannels(promotion_channels_req.json())
+>>>>>>> parent of 5a7703f... Read only requests
 
     def get_gender(self):
         """
         Gets the user's gender.
         :return: RobloxGender
         """
-        gender_req = self.__dict__["requests"].get(endpoint + "v1/gender")
+        gender_req = self.requests.get(endpoint + "v1/gender")
         return RobloxGender(gender_req.json()["gender"])
 
     def set_gender(self, gender):
@@ -106,7 +119,7 @@ class AccountInformation:
         :param gender: RobloxGender
         :return: Nothing
         """
-        self.__dict__["requests"].post(
+        self.requests.post(
             url=endpoint + "v1/gender",
             data={
                 "gender": str(gender.value)
@@ -118,7 +131,7 @@ class AccountInformation:
         Returns the user's birthdate.
         :return: datetime
         """
-        birthdate_req = self.__dict__["requests"].get(endpoint + "v1/birthdate")
+        birthdate_req = self.requests.get(endpoint + "v1/birthdate")
         birthdate_raw = birthdate_req.json()
         birthdate = datetime(
             year=birthdate_raw["birthYear"],
@@ -133,7 +146,7 @@ class AccountInformation:
         :param birthdate: A datetime object.
         :return: Nothing
         """
-        self.__dict__["requests"].post(
+        self.requests.post(
             url=endpoint + "v1/birthdate",
             data={
               "birthMonth": birthdate.month,

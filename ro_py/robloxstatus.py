@@ -37,7 +37,7 @@ class RobloxStatusOverall:
 
 class RobloxStatus:
     def __init__(self, requests):
-        self.__dict__["requests"] = requests
+        self.requests = requests
 
         self.overall = None
         self.user = None
@@ -47,7 +47,7 @@ class RobloxStatus:
         self.update()
 
     def update(self):
-        status_req = self.__dict__["requests"].get(
+        status_req = self.requests.get(
             url=endpoint
         )
         status_data = status_req.json()["result"]

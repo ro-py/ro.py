@@ -17,7 +17,7 @@ class Group:
     Represents a group.
     """
     def __init__(self, requests, group_id):
-        self.__dict__["requests"] = requests
+        self.requests = requests
         self.id = group_id
 
         self.name = None
@@ -34,11 +34,11 @@ class Group:
         """
         Updates the group's information.
         """
-        group_info_req = self.__dict__["requests"].get(endpoint + f"v1/groups/{self.id}")
+        group_info_req = self.requests.get(endpoint + f"v1/groups/{self.id}")
         group_info = group_info_req.json()
         self.name = group_info["name"]
         self.description = group_info["description"]
-        self.owner = User(self.__dict__["requests"], group_info["owner"]["userId"])
+        self.owner = User(self.requests, group_info["owner"]["userId"])
         self.member_count = group_info["memberCount"]
         self.is_builders_club_only = group_info["isBuildersClubOnly"]
         self.public_entry_allowed = group_info["publicEntryAllowed"]
@@ -49,7 +49,7 @@ class Group:
         # self.is_locked = group_info["isLocked"]
 
     def update_shout(self, message):
-        self.__dict__["requests"].patch(
+        self.requests.patch(
             url=f"https://groups.roblox.com/v1/groups/{self.id}/status",
             data={
                 "message": message
