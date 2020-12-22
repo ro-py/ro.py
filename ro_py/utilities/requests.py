@@ -1,11 +1,14 @@
 from ro_py.utilities.errors import ApiError
 from json.decoder import JSONDecodeError
+from cachecontrol import CacheControl
 import requests
 
 
 class Requests:
-    def __init__(self):
+    def __init__(self, cache=True):
         self.session = requests.Session()
+        if cache:
+            self.session = CacheControl(self.session)
         """
         Thank you @nsg for letting me know about this!
         This allows us to access some extra content.

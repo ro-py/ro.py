@@ -17,8 +17,10 @@ class Client:
     """
     Represents an authenticated Roblox client.
     """
-    def __init__(self, token=None):
-        self.requests = Requests()
+    def __init__(self, token=None, requests_cache=False):
+        self.requests = Requests(
+            cache=requests_cache
+        )
 
         logging.debug("Initialized requests.")
         if token:
