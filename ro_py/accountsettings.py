@@ -16,7 +16,7 @@ class PrivacyLevel(enum.Enum):
     Represents a privacy level as you might see at https://www.roblox.com/my/account#!/privacy.
     """
     no_one = "NoOne"
-    friends = "Friends",
+    friends = "Friends"
     everyone = "AllUsers"
 
 
@@ -37,8 +37,16 @@ class RobloxEmail:
     Represents an obfuscated version of the email you have set on your account.
     """
     def __init__(self, email_data):
-        self.email_address = email_data["emailAddress"]
-        self.verified = email_data["verified"]
+        self.__dict__["email_address"] = email_data["emailAddress"]
+        self.__dict__["verified"] = email_data["verified"]
+
+    @property
+    def email_address(self):
+        return self.__dict__["email_address"]
+
+    @property
+    def verified(self):
+        return self.__dict__["verified"]
 
 
 class AccountSettings:
