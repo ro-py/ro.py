@@ -3,7 +3,7 @@
     <div class="root" xmlns="http://www.w3.org/1999/xhtml">
       <style>
 
-foreignObject {
+* {
   margin: 0;
   padding: 0;
 }
