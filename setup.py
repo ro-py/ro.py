@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="ro-py",
-    version="0.1.6.5",
+    version="0.1.7",
     author="jmkdev",
     author_email="jmk@jmksite.dev",
     description="ro.py is a Python wrapper for the Roblox web API.",
