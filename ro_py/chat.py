@@ -114,9 +114,15 @@ class ChatWrapper:
         self.requests = requests
 
     def get_conversation(self, conversation_id):
+        """
+        Gets a conversation by the conversation ID.
+        """
         return Conversation(self.requests, conversation_id)
 
     def get_conversations(self, page_number=1, page_size=10):
+        """
+        Gets the list of conversations. This will be updated soon to use the new Pages object.
+        """
         conversations_req = self.requests.get(
             url="https://chat.roblox.com/v2/get-user-conversations",
             params={

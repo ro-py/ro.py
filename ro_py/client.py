@@ -29,6 +29,13 @@ class Client:
         )
 
         logging.debug("Initialized requests.")
+
+        self.accountinformation = None
+        self.accountsettings = None
+        self.user = None
+        self.chat = None
+        self.trade = None
+
         if token:
             self.requests.session.cookies[".ROBLOSECURITY"] = token
             logging.debug("Initialized token.")
@@ -44,16 +51,10 @@ class Client:
             logging.debug("Initialized trade wrapper.")
         else:
             logging.warning("The active client is not authenticated, so some features will not be enabled.")
-            self.accountinformation = None
-            self.accountsettings = None
-            self.user = None
-            self.chat = None
-            self.trade = None
 
     def get_user(self, user_id):
         """
         Gets a Roblox user.
-        :returns: Instance of User
         """
         try:
             cache["users"][str(user_id)]
@@ -64,7 +65,6 @@ class Client:
     def get_group(self, group_id):
         """
         Gets a Roblox group.
-        :returns: Instance of Group
         """
         try:
             cache["groups"][str(group_id)]
@@ -75,7 +75,6 @@ class Client:
     def get_game(self, game_id):
         """
         Gets a Roblox game.
-        :returns: Instance of Game
         """
         try:
             cache["games"][str(game_id)]
@@ -86,7 +85,6 @@ class Client:
     def get_asset(self, asset_id):
         """
         Gets a Roblox asset.
-        :returns: Instance of Asset
         """
         try:
             cache["assets"][str(asset_id)]
@@ -97,7 +95,6 @@ class Client:
     def get_badge(self, badge_id):
         """
         Gets a Roblox badge.
-        :returns: Instance of Badge
         """
         try:
             cache["badges"][str(badge_id)]

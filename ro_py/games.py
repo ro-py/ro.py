@@ -81,8 +81,8 @@ class Game:
 
     def get_badges(self):
         """
-        Note: this has a limit of 100 badges due to paging. This will be expanded soon.
-        :return: A list of Badge instances
+        Gets the game's badges.
+        This will be updated soon to use the new Page object.
         """
         badges_req = self.requests.get(
             url=f"https://badges.roblox.com/v1/universes/{self.id}/badges",

@@ -17,6 +17,10 @@ class Requests:
         self.session.headers["User-Agent"] = "Roblox/WinInet"
 
     def get(self, *args, **kwargs):
+        """
+        Essentially identical to requests.Session.get.
+        """
+
         get_request = self.session.get(*args, **kwargs)
 
         try:
@@ -35,6 +39,10 @@ class Requests:
         raise ApiError(f"[{str(get_request.status_code)}] {get_request_error[0]['message']}")
 
     def post(self, *args, **kwargs):
+        """
+        Essentially identical to requests.Session.post.
+        """
+
         post_request = self.session.post(*args, **kwargs)
 
         if post_request.status_code == 403:
@@ -56,6 +64,10 @@ class Requests:
             return post_request
 
     def patch(self, *args, **kwargs):
+        """
+        Essentially identical to requests.Session.patch.
+        """
+
         patch_request = self.session.patch(*args, **kwargs)
 
         if patch_request.status_code == 403:
