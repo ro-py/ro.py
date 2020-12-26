@@ -22,6 +22,13 @@ import logging
 class Client:
     """
     Represents an authenticated Roblox client.
+
+    Parameters
+    ----------
+    token : str
+        Authentication token. You can take this from the .ROBLOSECURITY cookie in your browser.
+    requests_cache: bool
+        Toggle for cached requests using CacheControl.
     """
     def __init__(self, token=None, requests_cache=False):
         self.requests = Requests(
@@ -31,10 +38,15 @@ class Client:
         logging.debug("Initialized requests.")
 
         self.accountinformation = None
+        """AccountInformation object. Only available for authenticated clients."""
         self.accountsettings = None
+        """AccountSettings object. Only available for authenticated clients."""
         self.user = None
+        """User object. Only available for authenticated clients."""
         self.chat = None
+        """ChatWrapper object. Only available for authenticated clients."""
         self.trade = None
+        """TradesWrapper object. Only available for authenticated clients."""
 
         if token:
             self.requests.session.cookies[".ROBLOSECURITY"] = token
