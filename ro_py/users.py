@@ -1,7 +1,5 @@
 """
 
-ro.py > users.py
-
 This file houses functions and classes that pertain to Roblox users and profiles.
 
 """

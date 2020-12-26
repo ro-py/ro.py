@@ -1,7 +1,5 @@
 """
 
-ro.py > badges.py
-
 This file houses functions and classes that pertain to game-awarded badges.
 
 """

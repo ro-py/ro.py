@@ -1,3 +1,9 @@
+"""
+
+This file houses functions and classes that represent the core Roblox web client.
+
+"""
+
 from ro_py.users import User
 from ro_py.games import Game
 from ro_py.groups import Group

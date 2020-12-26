@@ -1,8 +1,8 @@
 """
 
-ro.py > robloxstatus.py
-
 This file houses functions and classes that pertain to the Roblox status page (at status.roblox.com)
+I don't know if this is really that useful, but I was able to find the status API endpoint by looking in the status
+page source and some of the status.io documentation.
 
 """
 
@@ -56,6 +56,3 @@ class RobloxStatus:
         self.user = RobloxStatusContainer(status_data["status"][0])
         self.player = RobloxStatusContainer(status_data["status"][1])
         self.creator = RobloxStatusContainer(status_data["status"][2])
-
-
-

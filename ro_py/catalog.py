@@ -1,7 +1,5 @@
 """
 
-ro.py > catalog.py
-
 This file houses functions and classes that pertain to the Roblox catalog.
 
 """

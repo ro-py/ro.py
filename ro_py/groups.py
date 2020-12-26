@@ -1,3 +1,9 @@
+"""
+
+This file houses functions and classes that pertain to Roblox groups.
+
+"""
+
 from ro_py.users import User
 
 endpoint = "https://groups.roblox.com/"

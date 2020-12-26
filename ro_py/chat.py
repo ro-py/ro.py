@@ -1,7 +1,5 @@
 """
 
-ro.py > chat.py
-
 This file houses functions and classes that pertain to chatting and messaging.
 
 """

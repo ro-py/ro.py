@@ -1,7 +1,5 @@
 """
 
-ro.py > accountsettings.py
-
 This file houses functions and classes that pertain to Roblox client .
 
 """

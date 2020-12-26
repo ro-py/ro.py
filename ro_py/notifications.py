@@ -1,3 +1,14 @@
+"""
+
+This file houses functions and classes that pertain to Roblox notifications as you would see in the hamburger
+notification menu on the Roblox web client.
+
+.. warning::
+    This part of ro.py may have bugs and I don't recommend relying on it for daily use.
+    Though it may contain bugs it's fairly reliable in my experience and is powerful enough to create bots that respond
+    to Roblox chat messages, which is pretty neat.
+"""
+
 from ro_py.utilities.caseconvert import to_snake_case
 
 from signalrcore.hub_connection_builder import HubConnectionBuilder

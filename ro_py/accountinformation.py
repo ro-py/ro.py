@@ -1,7 +1,5 @@
 """
 
-ro.py > accountinformation.py
-
 This file houses functions and classes that pertain to Roblox authenticated user account information.
 
 """

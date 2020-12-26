@@ -1,7 +1,5 @@
 """
 
-ro.py > games.py
-
 This file houses functions and classes that pertain to Roblox universes and places.
 
 """

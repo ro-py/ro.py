@@ -1,8 +1,6 @@
 """
 
-ro.py > robloxbadges.py
-
-This file houses functions and classes that pertain to roblox-awarded badges.
+This file houses functions and classes that pertain to Roblox-awarded badges.
 
 """
 
