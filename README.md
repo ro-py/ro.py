@@ -1,5 +1,3 @@
-![Banner image for ro.py](https://raw.githubusercontent.com/jmk-developer/ro.py/main/resources/banner.svg)
-
 # Welcome to ro.py
 ro.py is a Python wrapper for the Roblox web API.
 ## Installation
