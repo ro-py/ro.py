@@ -25,7 +25,7 @@ class Client:
 
     Parameters
     ----------
-    token : str
+    token: str
         Authentication token. You can take this from the .ROBLOSECURITY cookie in your browser.
     requests_cache: bool
         Toggle for cached requests using CacheControl.

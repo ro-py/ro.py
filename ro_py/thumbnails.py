@@ -50,6 +50,11 @@ format_jpeg = "Jpeg"
 class ThumbnailGenerator:
     """
     This object is used to generate thumbnails.
+
+    Parameters
+    ----------
+    requests: Requests
+        Requests object.
     """
     def __init__(self, requests):
         self.requests = requests
@@ -57,11 +62,17 @@ class ThumbnailGenerator:
     def get_group_icon(self, group, size=size_150x150, file_format=format_png, is_circular=False):
         """
         Gets a group's icon.
-        :param group: The group.
-        :param size: The thumbnail size, formatted widthxheight.
-        :param file_format: The thumbnail format
-        :param is_circular: The circle thumbnail output parameter.
-        :return: Image URL
+
+        Parameters
+        ----------
+        group: Group
+            The group.
+        size: str
+            The thumbnail size, formatted WIDTHxHEIGHT.
+        file_format: str
+            The thumbnail format.
+        is_circular: bool
+            Whether to output a circular version of the thumbnail.
         """
         group_icon_req = self.requests.get(
             url=endpoint + "v1/groups/icons",
