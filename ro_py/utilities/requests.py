@@ -57,11 +57,13 @@ class Requests:
 
         if isinstance(post_request_json, dict):
             try:
-                post_request_json["errors"]
+                post_request_error = post_request_json["errors"]
             except KeyError:
                 return post_request
         else:
             return post_request
+
+        raise ApiError(f"[{str(post_request.status_code)}] {post_request_error[0]['message']}")
 
     def patch(self, *args, **kwargs):
         """
