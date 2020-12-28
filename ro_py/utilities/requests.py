@@ -5,7 +5,7 @@ import requests
 
 
 class Requests:
-    def __init__(self, cache=True):
+    def __init__(self, cache=True, jmk_endpoint="https://roblox.jmksite.dev/"):
         self.session = requests.Session()
         if cache:
             self.session = CacheControl(self.session)
