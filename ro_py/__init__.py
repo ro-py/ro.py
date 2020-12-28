@@ -8,5 +8,6 @@ ro.py is a powerful wrapper for the Roblox web API.
 It can be used to create (almost) anything from chat bots to group management systems.
 ro.py is still fairly new and may have bugs. If you have any issues, you can contact me at https://jmksite.dev/
 You can view the source code at https://github.com/jmk-developer/ro.py/
+You can also view the documentation at https://ro.py.jmksite.dev/.
 
 """
