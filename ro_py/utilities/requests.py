@@ -21,7 +21,7 @@ class Requests:
         Essentially identical to requests.Session.get.
         """
 
-        get_request = self.session.get(*args, **kwargs)
+        get_request = await self.session.get(*args, **kwargs)
 
         try:
             get_request_json = get_request.json()
@@ -43,12 +43,12 @@ class Requests:
         Essentially identical to requests.Session.post.
         """
 
-        post_request = self.session.post(*args, **kwargs)
+        post_request = await self.session.post(*args, **kwargs)
 
         if post_request.status_code == 403:
             if "X-CSRF-TOKEN" in post_request.headers:
                 self.session.headers['X-CSRF-TOKEN'] = post_request.headers["X-CSRF-TOKEN"]
-                post_request = self.session.post(*args, **kwargs)
+                post_request = await self.session.post(*args, **kwargs)
 
         try:
             post_request_json = post_request.json()
@@ -70,12 +70,12 @@ class Requests:
         Essentially identical to requests.Session.patch.
         """
 
-        patch_request = self.session.patch(*args, **kwargs)
+        patch_request = await self.session.patch(*args, **kwargs)
 
         if patch_request.status_code == 403:
             if "X-CSRF-TOKEN" in patch_request.headers:
                 self.session.headers['X-CSRF-TOKEN'] = patch_request.headers["X-CSRF-TOKEN"]
-                patch_request = self.session.patch(*args, **kwargs)
+                patch_request = await self.session.patch(*args, **kwargs)
 
         patch_request_json = patch_request.json()
 
