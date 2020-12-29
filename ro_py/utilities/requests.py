@@ -1,12 +1,12 @@
 from ro_py.utilities.errors import ApiError
 from json.decoder import JSONDecodeError
 from cachecontrol import CacheControl
-import requests
+import requests_async
 
 
 class Requests:
     def __init__(self, cache=True, jmk_endpoint="https://roblox.jmksite.dev/"):
-        self.session = requests.Session()
+        self.session = requests_async.Session()
         if cache:
             self.session = CacheControl(self.session)
         """
@@ -16,7 +16,7 @@ class Requests:
         """
         self.session.headers["User-Agent"] = "Roblox/WinInet"
 
-    def get(self, *args, **kwargs):
+    async def get(self, *args, **kwargs):
         """
         Essentially identical to requests.Session.get.
         """
@@ -38,7 +38,7 @@ class Requests:
 
         raise ApiError(f"[{str(get_request.status_code)}] {get_request_error[0]['message']}")
 
-    def post(self, *args, **kwargs):
+    async def post(self, *args, **kwargs):
         """
         Essentially identical to requests.Session.post.
         """
@@ -65,7 +65,7 @@ class Requests:
 
         raise ApiError(f"[{str(post_request.status_code)}] {post_request_error[0]['message']}")
 
-    def patch(self, *args, **kwargs):
+    async def patch(self, *args, **kwargs):
         """
         Essentially identical to requests.Session.patch.
         """

@@ -42,8 +42,8 @@ class Client:
         """AccountInformation object. Only available for authenticated clients."""
         self.accountsettings = None
         """AccountSettings object. Only available for authenticated clients."""
-        self.user = None
-        """User object. Only available for authenticated clients."""
+        # self.user = None
+        # """User object. Only available for authenticated clients."""
         self.chat = None
         """ChatWrapper object. Only available for authenticated clients."""
         self.trade = None
@@ -56,8 +56,8 @@ class Client:
             self.accountsettings = AccountSettings(self.requests)
             logging.debug("Initialized AccountInformation and AccountSettings.")
             auth_user_req = self.requests.get("https://users.roblox.com/v1/users/authenticated")
-            self.user = User(self.requests, auth_user_req.json()["id"])
-            logging.debug("Initialized authenticated user.")
+            # self.user = User(self.requests, auth_user_req.json()["id"])
+            # logging.debug("Initialized authenticated user.")
             self.chat = ChatWrapper(self.requests)
             logging.debug("Initialized chat wrapper.")
             self.trade = TradesWrapper(self.requests)
@@ -65,7 +65,7 @@ class Client:
         else:
             logging.warning("The active client is not authenticated, so some features will not be enabled.")
 
-    def get_user(self, user_id):
+    async def get_user(self, user_id):
         """
         Gets a Roblox user.
         """
@@ -73,9 +73,10 @@ class Client:
             cache["users"][str(user_id)]
         except KeyError:
             cache["users"][str(user_id)] = User(self.requests, user_id)
+            await cache["users"][str(user_id)].update()
         return cache["users"][str(user_id)]
 
-    def get_group(self, group_id):
+    async def get_group(self, group_id):
         """
         Gets a Roblox group.
         """
@@ -83,9 +84,10 @@ class Client:
             cache["groups"][str(group_id)]
         except KeyError:
             cache["groups"][str(group_id)] = Group(self.requests, group_id)
+            await cache["groups"][str(group_id)].update()
         return cache["groups"][str(group_id)]
 
-    def get_game(self, game_id):
+    async def get_game(self, game_id):
         """
         Gets a Roblox game.
         """
@@ -93,9 +95,10 @@ class Client:
             cache["games"][str(game_id)]
         except KeyError:
             cache["games"][str(game_id)] = Game(self.requests, game_id)
+            await cache["games"][str(game_id)].update()
         return cache["games"][str(game_id)]
 
-    def get_asset(self, asset_id):
+    async def get_asset(self, asset_id):
         """
         Gets a Roblox asset.
         """
@@ -103,9 +106,10 @@ class Client:
             cache["assets"][str(asset_id)]
         except KeyError:
             cache["assets"][str(asset_id)] = Asset(self.requests, asset_id)
+            await cache["assets"][str(asset_id)].update()
         return cache["assets"][str(asset_id)]
 
-    def get_badge(self, badge_id):
+    async def get_badge(self, badge_id):
         """
         Gets a Roblox badge.
         """
