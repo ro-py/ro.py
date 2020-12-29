@@ -57,7 +57,7 @@ class Pages:
 
         self.data = self._get_page()
 
-    def _get_page(self, cursor=None):
+    async def _get_page(self, cursor=None):
         """
         Gets a page at the specified cursor position.
         """
@@ -65,7 +65,7 @@ class Pages:
         if cursor:
             this_parameters["cursor"] = cursor
 
-        page_req = self.requests.get(
+        page_req = await self.requests.get(
             url=self.url,
             params=this_parameters
         )
@@ -75,20 +75,20 @@ class Pages:
             handler=self.handler
         )
 
-    def previous(self):
+    async def previous(self):
         """
         Moves to the previous page.
         """
         if self.data.previous_page_cursor:
-            self.data = self._get_page(self.data.previous_page_cursor)
+            self.data = await self._get_page(self.data.previous_page_cursor)
         else:
             raise InvalidPageError
 
-    def next(self):
+    async def next(self):
         """
         Moves to the next page.
         """
         if self.data.next_page_cursor:
-            self.data = self._get_page(self.data.next_page_cursor)
+            self.data = await self._get_page(self.data.next_page_cursor)
         else:
             raise InvalidPageError

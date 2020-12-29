@@ -9,7 +9,7 @@ from ro_py.users import User
 import iso8601
 import enum
 
-endpoint = "https://trades.roblox.com/"
+endpoint = "https://trades.roblox.com"
 
 
 def trade_page_handler(requests, this_page):
@@ -23,7 +23,7 @@ class Trade:
     def __init__(self, requests, trade_id):
         self.requests = requests
         trade_req = self.requests.get(
-            url=endpoint + f"v1/trades/{trade_id}"
+            url=endpoint + f"/v1/trades/{trade_id}"
         )
         trade_data = trade_req.json()
         self.id = trade_data["id"]
@@ -61,16 +61,16 @@ class TradesWrapper:
     def __init__(self, requests):
         self.requests = requests
 
-    def get_trades(self, trade_status_type: TradeStatusType, sort_order=SortOrder.Ascending, limit=10):
-        trades = Pages(
+    async def get_trades(self, trade_status_type: TradeStatusType.Inbound, sort_order=SortOrder.Ascending, limit=10):
+        trades = await Pages(
             requests=self.requests,
-            url=endpoint + f"/v1/trades/{trade_status_type.value}",
+            url=endpoint + f"/v1/trades/{trade_status_type}",
             sort_order=sort_order,
             limit=limit,
             handler=trade_page_handler
         )
         return trades
 
-    def send_trade(self):
+    async def send_trade(self):
         pass
 

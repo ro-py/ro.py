@@ -36,11 +36,11 @@ class Group:
 
         self.update()
 
-    def update(self):
+    async def update(self):
         """
         Updates the group's information.
         """
-        group_info_req = self.requests.get(endpoint + f"v1/groups/{self.id}")
+        group_info_req = await self.requests.get(endpoint + f"v1/groups/{self.id}")
         group_info = group_info_req.json()
         self.name = group_info["name"]
         self.description = group_info["description"]
@@ -54,10 +54,11 @@ class Group:
             self.shout = None
         # self.is_locked = group_info["isLocked"]
 
-    def update_shout(self, message):
-        self.requests.patch(
+    async def update_shout(self, message):
+        shout_req = await self.requests.patch(
             url=f"https://groups.roblox.com/v1/groups/{self.id}/status",
             data={
                 "message": message
             }
         )
+        return shout_req.status_code == 200
