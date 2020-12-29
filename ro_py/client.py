@@ -30,7 +30,8 @@ class Client:
     requests_cache: bool
         Toggle for cached requests using CacheControl.
     """
-    def __init__(self, token=None, requests_cache=False):
+
+    def __init__(self, token: str = None, requests_cache: bool = False):
         self.requests = Requests(
             cache=requests_cache
         )
