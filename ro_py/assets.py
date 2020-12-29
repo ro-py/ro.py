@@ -42,11 +42,11 @@ class Asset:
         self.content_rating_type_id = None
         self.update()
 
-    def update(self):
+    async def update(self):
         """
         Updates the asset's information.
         """
-        asset_info_req = self.requests.get(
+        asset_info_req = await self.requests.get(
             url=endpoint + "marketplace/productinfo",
             params={
                 "assetId": self.id
@@ -76,12 +76,12 @@ class Asset:
         self.minimum_membership_level = asset_info["MinimumMembershipLevel"]
         self.content_rating_type_id = asset_info["ContentRatingTypeId"]
 
-    def get_remaining(self):
+    async def get_remaining(self):
         """
         Gets the remaining amount of this asset. (used for Limited U items)
         :returns: Amount remaining
         """
-        asset_info_req = self.requests.get(
+        asset_info_req = await self.requests.get(
             url=endpoint + "marketplace/productinfo",
             params={
                 "assetId": self.asset_id
@@ -90,13 +90,13 @@ class Asset:
         asset_info = asset_info_req.json()
         return asset_info["Remaining"]
 
-    def get_limited_resale_data(self):
+    async def get_limited_resale_data(self):
         """
         Gets the limited resale data
         :returns: LimitedResaleData
         """
         if self.is_limited:
-            resale_data_req = self.requests.get(f"https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data")
+            resale_data_req = await self.requests.get(f"https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data")
             return LimitedResaleData(resale_data_req.json())
         else:
             raise NotLimitedError("You can only read this information on limited items.")
