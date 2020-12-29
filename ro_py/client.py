@@ -11,7 +11,7 @@ from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
 from ro_py.trades import TradesWrapper
-from ro_py.utilities.cache import cache
+from ro_py.utilities.cache import CacheType
 from ro_py.utilities.requests import Requests
 from ro_py.accountinformation import AccountInformation
 from ro_py.accountsettings import AccountSettings
@@ -33,7 +33,7 @@ class Client:
 
     def __init__(self, token: str = None, requests_cache: bool = False):
         self.requests = Requests(
-            cache=requests_cache
+            request_cache=requests_cache
         )
 
         logging.debug("Initialized requests.")
@@ -55,7 +55,7 @@ class Client:
             self.accountinformation = AccountInformation(self.requests)
             self.accountsettings = AccountSettings(self.requests)
             logging.debug("Initialized AccountInformation and AccountSettings.")
-            auth_user_req = self.requests.get("https://users.roblox.com/v1/users/authenticated")
+            # auth_user_req = self.requests.get("https://users.roblox.com/v1/users/authenticated")
             # self.user = User(self.requests, auth_user_req.json()["id"])
             # logging.debug("Initialized authenticated user.")
             self.chat = ChatWrapper(self.requests)
@@ -69,52 +69,53 @@ class Client:
         """
         Gets a Roblox user.
         """
-        try:
-            cache["users"][str(user_id)]
-        except KeyError:
-            cache["users"][str(user_id)] = User(self.requests, user_id)
-            await cache["users"][str(user_id)].update()
-        return cache["users"][str(user_id)]
+        user = self.requests.cache.get(CacheType.Users, user_id)
+        if not user:
+            user = User(self.requests, user_id)
+            self.requests.cache.set(CacheType.Users, user_id, user)
+            await user.update()
+        return user
 
     async def get_group(self, group_id):
         """
         Gets a Roblox group.
         """
-        try:
-            cache["groups"][str(group_id)]
-        except KeyError:
-            cache["groups"][str(group_id)] = Group(self.requests, group_id)
-            await cache["groups"][str(group_id)].update()
-        return cache["groups"][str(group_id)]
+        group = self.requests.cache.get(CacheType.Groups, group_id)
+        if not group:
+            group = Group(self.requests, group_id)
+            self.requests.cache.set(CacheType.Groups, group_id, group)
+            await group.update()
+        return group
 
     async def get_game(self, game_id):
         """
         Gets a Roblox game.
         """
-        try:
-            cache["games"][str(game_id)]
-        except KeyError:
-            cache["games"][str(game_id)] = Game(self.requests, game_id)
-            await cache["games"][str(game_id)].update()
-        return cache["games"][str(game_id)]
+        game = self.requests.cache.get(CacheType.Games, game_id)
+        if not game:
+            game = Game(self.requests, game_id)
+            self.requests.cache.set(CacheType.Games, game_id, game)
+            await game.update()
+        return game
 
     async def get_asset(self, asset_id):
         """
         Gets a Roblox asset.
         """
-        try:
-            cache["assets"][str(asset_id)]
-        except KeyError:
-            cache["assets"][str(asset_id)] = Asset(self.requests, asset_id)
-            await cache["assets"][str(asset_id)].update()
-        return cache["assets"][str(asset_id)]
+        asset = self.requests.cache.get(CacheType.Assets, asset_id)
+        if not asset:
+            asset = Asset(self.requests, asset_id)
+            self.requests.cache.set(CacheType.Assets, asset_id, asset)
+            await asset.update()
+        return asset
 
     async def get_badge(self, badge_id):
         """
         Gets a Roblox badge.
         """
-        try:
-            cache["badges"][str(badge_id)]
-        except KeyError:
-            cache["badges"][str(badge_id)] = Badge(self.requests, badge_id)
-        return cache["badges"][str(badge_id)]
+        badge = self.requests.cache.get(CacheType.Assets, badge_id)
+        if not badge:
+            badge = Badge(self.requests, badge_id)
+            self.requests.cache.set(CacheType.Assets, badge_id, badge)
+            await badge.update()
+        return badge

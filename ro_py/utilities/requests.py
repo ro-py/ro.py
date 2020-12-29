@@ -6,9 +6,12 @@ import requests_async
 
 
 class Requests:
-    def __init__(self, cache=True, jmk_endpoint="https://roblox.jmksite.dev/"):
+    def __init__(self, request_cache=True, jmk_endpoint="https://roblox.jmksite.dev/"):
         self.session = requests_async.Session()
-        if cache:
+        """Session to use for requests."""
+        self.cache = Cache()
+        """Cache object to use for object storage."""
+        if request_cache:
             self.session = CacheControl(self.session)
         """
         Thank you @nsg for letting me know about this!
