@@ -1,4 +1,5 @@
 from ro_py.utilities.errors import ApiError
+from ro_py.utilities.cache import cache
 from json.decoder import JSONDecodeError
 from cachecontrol import CacheControl
 import requests_async
