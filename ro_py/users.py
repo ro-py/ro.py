@@ -15,11 +15,9 @@ class User:
     Represents a Roblox user and their profile.
     Can be initialized with either a user ID or a username.
     """
-    def __init__(self, requests, ui):
-
+    def __init__(self, requests, id):
         self.requests = requests
-        self.id = ui
-
+        self.id = id
         self.description = None
         self.created = None
         self.is_banned = None
