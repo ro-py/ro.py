@@ -22,7 +22,7 @@ class Requests:
 
     async def get(self, *args, **kwargs):
         """
-        Essentially identical to requests.Session.get.
+        Essentially identical to requests_async.Session.get.
         """
 
         get_request = await self.session.get(*args, **kwargs)
@@ -44,7 +44,7 @@ class Requests:
 
     async def post(self, *args, **kwargs):
         """
-        Essentially identical to requests.Session.post.
+        Essentially identical to requests_async.Session.post.
         """
 
         post_request = await self.session.post(*args, **kwargs)
@@ -71,7 +71,7 @@ class Requests:
 
     async def patch(self, *args, **kwargs):
         """
-        Essentially identical to requests.Session.patch.
+        Essentially identical to requests_async.Session.patch.
         """
 
         patch_request = await self.session.patch(*args, **kwargs)
