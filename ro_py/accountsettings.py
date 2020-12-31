@@ -33,24 +33,26 @@ class PrivacySettings(enum.Enum):
 class RobloxEmail:
     """
     Represents an obfuscated version of the email you have set on your account.
+
+    Parameters
+    ----------
+    email_data : dict
+        Raw data to parse from.
     """
-    def __init__(self, email_data):
-        self.__dict__["email_address"] = email_data["emailAddress"]
-        self.__dict__["verified"] = email_data["verified"]
-
-    @property
-    def email_address(self):
-        return self.__dict__["email_address"]
-
-    @property
-    def verified(self):
-        return self.__dict__["verified"]
+    def __init__(self, email_data: dict):
+        self.email_address = email_data["emailAddress"]
+        self.verified = email_data["verified"]
 
 
 class AccountSettings:
     """
     Represents authenticated client account settings (https://accountsettings.roblox.com/)
     This is only available for authenticated clients as it cannot be accessed otherwise.
+
+    Parameters
+    ----------
+    requests : requests.Requests
+        Requests object to use for API requests.
     """
     def __init__(self, requests):
         self.requests = requests

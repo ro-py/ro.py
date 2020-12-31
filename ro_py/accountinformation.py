@@ -16,11 +16,17 @@ class AccountInformationMetadata:
     """
     def __init__(self, metadata_raw):
         self.is_allowed_notifications_endpoint_disabled = metadata_raw["isAllowedNotificationsEndpointDisabled"]
+        """Unsure what this does."""
         self.is_account_settings_policy_enabled = metadata_raw["isAccountSettingsPolicyEnabled"]
+        """Whether the account settings policy is enabled (unsure exactly what this does)"""
         self.is_phone_number_enabled = metadata_raw["isPhoneNumberEnabled"]
+        """Whether the user's linked phone number is enabled."""
         self.max_user_description_length = metadata_raw["MaxUserDescriptionLength"]
+        """Maximum length of the user's description."""
         self.is_user_description_enabled = metadata_raw["isUserDescriptionEnabled"]
+        """Whether the user's description is enabled."""
         self.is_user_block_endpoints_updated = metadata_raw["isUserBlockEndpointsUpdated"]
+        """Whether the UserBlock endpoints are updated (unsure exactly what this does)"""
 
 
 class PromotionChannels:
@@ -29,10 +35,15 @@ class PromotionChannels:
     """
     def __init__(self, promotion_raw):
         self.promotion_channels_visibility_privacy = promotion_raw["promotionChannelsVisibilityPrivacy"]
+        """Visibility of promotion channels."""
         self.facebook = promotion_raw["facebook"]
+        """Link to the user's Facebook page."""
         self.twitter = promotion_raw["twitter"]
+        """Link to the user's Twitter page."""
         self.youtube = promotion_raw["youtube"]
+        """Link to the user's YouTube page."""
         self.twitch = promotion_raw["twitch"]
+        """Link to the user's Twitch page."""
 
 
 class AccountInformation:

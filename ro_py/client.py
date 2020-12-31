@@ -25,9 +25,9 @@ class Client:
 
     Parameters
     ----------
-    token: str
+    token : str
         Authentication token. You can take this from the .ROBLOSECURITY cookie in your browser.
-    requests_cache: bool
+    requests_cache : bool
         Toggle for cached requests using CacheControl.
     """
 
@@ -68,6 +68,11 @@ class Client:
     async def get_user(self, user_id):
         """
         Gets a Roblox user.
+
+        Parameters
+        ----------
+        user_id
+            ID of the user to generate the object from.
         """
         user = self.requests.cache.get(CacheType.Users, user_id)
         if not user:
@@ -79,6 +84,11 @@ class Client:
     async def get_group(self, group_id):
         """
         Gets a Roblox group.
+
+        Parameters
+        ----------
+        group_id
+            ID of the group to generate the object from.
         """
         group = self.requests.cache.get(CacheType.Groups, group_id)
         if not group:
@@ -90,6 +100,11 @@ class Client:
     async def get_game(self, game_id):
         """
         Gets a Roblox game.
+
+        Parameters
+        ----------
+        game_id
+            ID of the game to generate the object from.
         """
         game = self.requests.cache.get(CacheType.Games, game_id)
         if not game:
@@ -101,6 +116,11 @@ class Client:
     async def get_asset(self, asset_id):
         """
         Gets a Roblox asset.
+
+        Parameters
+        ----------
+        asset_id
+            ID of the asset to generate the object from.
         """
         asset = self.requests.cache.get(CacheType.Assets, asset_id)
         if not asset:
@@ -112,6 +132,11 @@ class Client:
     async def get_badge(self, badge_id):
         """
         Gets a Roblox badge.
+
+        Parameters
+        ----------
+        badge_id
+            ID of the badge to generate the object from.
         """
         badge = self.requests.cache.get(CacheType.Assets, badge_id)
         if not badge:
