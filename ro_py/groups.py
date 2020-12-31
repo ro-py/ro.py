@@ -5,8 +5,9 @@ This file houses functions and classes that pertain to Roblox groups.
 """
 
 from ro_py.users import User
+from ro_py.roles import Role
 
-endpoint = "https://groups.roblox.com/"
+endpoint = "https://groups.roblox.com"
 
 
 class Shout:
@@ -40,7 +41,7 @@ class Group:
         """
         Updates the group's information.
         """
-        group_info_req = await self.requests.get(endpoint + f"v1/groups/{self.id}")
+        group_info_req = await self.requests.get(endpoint + f"/v1/groups/{self.id}")
         group_info = group_info_req.json()
         self.name = group_info["name"]
         self.description = group_info["description"]
@@ -56,9 +57,18 @@ class Group:
 
     async def update_shout(self, message):
         shout_req = await self.requests.patch(
-            url=f"https://groups.roblox.com/v1/groups/{self.id}/status",
+            url=endpoint+ f"/v1/groups/{self.id}/status",
             data={
                 "message": message
             }
         )
         return shout_req.status_code == 200
+
+    async def get_roles(self):
+        role_req = await self.requests.get(
+            url=endpoint + f"/v1/groups/{self.id}/roles"
+        )
+        roles = []
+        for role in role_req.json()['roles']:
+            roles.append(Role(self.requests, self, role))
+        return roles
