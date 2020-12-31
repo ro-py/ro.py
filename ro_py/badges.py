@@ -20,6 +20,13 @@ class BadgeStatistics:
 class Badge:
     """
     Represents a game-awarded badge.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    badge_id
+        ID of the badge.
     """
     def __init__(self, requests, badge_id):
         self.id = badge_id
@@ -33,6 +40,9 @@ class Badge:
         self.update()
 
     def update(self):
+        """
+        Updates the badge's information.
+        """
         badge_info_req = self.requests.get(endpoint + f"v1/badges/{self.id}")
         badge_info = badge_info_req.json()
         self.name = badge_info["name"]

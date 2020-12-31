@@ -79,6 +79,11 @@ format_jpeg = &#34;Jpeg&#34;
 class ThumbnailGenerator:
     &#34;&#34;&#34;
     This object is used to generate thumbnails.
+
+    Parameters
+    ----------
+    requests: Requests
+        Requests object.
     &#34;&#34;&#34;
     def __init__(self, requests):
         self.requests = requests
@@ -86,11 +91,17 @@ class ThumbnailGenerator:
     def get_group_icon(self, group, size=size_150x150, file_format=format_png, is_circular=False):
         &#34;&#34;&#34;
         Gets a group&#39;s icon.
-        :param group: The group.
-        :param size: The thumbnail size, formatted widthxheight.
-        :param file_format: The thumbnail format
-        :param is_circular: The circle thumbnail output parameter.
-        :return: Image URL
+
+        Parameters
+        ----------
+        group: Group
+            The group.
+        size: str
+            The thumbnail size, formatted WIDTHxHEIGHT.
+        file_format: str
+            The thumbnail format.
+        is_circular: bool
+            Whether to output a circular version of the thumbnail.
         &#34;&#34;&#34;
         group_icon_req = self.requests.get(
             url=endpoint + &#34;v1/groups/icons&#34;,
@@ -174,7 +185,12 @@ class ThumbnailGenerator:
 <span>(</span><span>requests)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>This object is used to generate thumbnails.</p></div>
+<div class="desc"><p>This object is used to generate thumbnails.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>requests</code></strong> :&ensp;<code>Requests</code></dt>
+<dd>Requests object.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -182,6 +198,11 @@ class ThumbnailGenerator:
 <pre><code class="python">class ThumbnailGenerator:
     &#34;&#34;&#34;
     This object is used to generate thumbnails.
+
+    Parameters
+    ----------
+    requests: Requests
+        Requests object.
     &#34;&#34;&#34;
     def __init__(self, requests):
         self.requests = requests
@@ -189,11 +210,17 @@ class ThumbnailGenerator:
     def get_group_icon(self, group, size=size_150x150, file_format=format_png, is_circular=False):
         &#34;&#34;&#34;
         Gets a group&#39;s icon.
-        :param group: The group.
-        :param size: The thumbnail size, formatted widthxheight.
-        :param file_format: The thumbnail format
-        :param is_circular: The circle thumbnail output parameter.
-        :return: Image URL
+
+        Parameters
+        ----------
+        group: Group
+            The group.
+        size: str
+            The thumbnail size, formatted WIDTHxHEIGHT.
+        file_format: str
+            The thumbnail format.
+        is_circular: bool
+            Whether to output a circular version of the thumbnail.
         &#34;&#34;&#34;
         group_icon_req = self.requests.get(
             url=endpoint + &#34;v1/groups/icons&#34;,
@@ -354,12 +381,18 @@ class ThumbnailGenerator:
 <span>def <span class="ident">get_group_icon</span></span>(<span>self, group, size='150x150', file_format='Png', is_circular=False)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Gets a group's icon.
-:param group: The group.
-:param size: The thumbnail size, formatted widthxheight.
-:param file_format: The thumbnail format
-:param is_circular: The circle thumbnail output parameter.
-:return: Image URL</p></div>
+<div class="desc"><p>Gets a group's icon.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>group</code></strong> :&ensp;<code>Group</code></dt>
+<dd>The group.</dd>
+<dt><strong><code>size</code></strong> :&ensp;<code>str</code></dt>
+<dd>The thumbnail size, formatted WIDTHxHEIGHT.</dd>
+<dt><strong><code>file_format</code></strong> :&ensp;<code>str</code></dt>
+<dd>The thumbnail format.</dd>
+<dt><strong><code>is_circular</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether to output a circular version of the thumbnail.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -367,11 +400,17 @@ class ThumbnailGenerator:
 <pre><code class="python">def get_group_icon(self, group, size=size_150x150, file_format=format_png, is_circular=False):
     &#34;&#34;&#34;
     Gets a group&#39;s icon.
-    :param group: The group.
-    :param size: The thumbnail size, formatted widthxheight.
-    :param file_format: The thumbnail format
-    :param is_circular: The circle thumbnail output parameter.
-    :return: Image URL
+
+    Parameters
+    ----------
+    group: Group
+        The group.
+    size: str
+        The thumbnail size, formatted WIDTHxHEIGHT.
+    file_format: str
+        The thumbnail format.
+    is_circular: bool
+        Whether to output a circular version of the thumbnail.
     &#34;&#34;&#34;
     group_icon_req = self.requests.get(
         url=endpoint + &#34;v1/groups/icons&#34;,

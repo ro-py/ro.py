@@ -111,6 +111,18 @@ class Conversation:
 
 
 class Message:
+    &#34;&#34;&#34;
+    Represents a single message in a chat conversation.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    message_id
+        ID of the message.
+    conversation_id
+        ID of the conversation that contains the message.
+    &#34;&#34;&#34;
     def __init__(self, requests, message_id, conversation_id):
         self.requests = requests
         self.id = message_id
@@ -120,10 +132,11 @@ class Message:
         self.sender = None
         self.read = None
 
-        self.update()
-
-    def update(self):
-        message_req = self.requests.get(
+    async def update(self):
+        &#34;&#34;&#34;
+        Updates the message with new data.
+        &#34;&#34;&#34;
+        message_req = await self.requests.get(
             url=&#34;https://chat.roblox.com/v2/get-messages&#34;,
             params={
                 &#34;conversationId&#34;: self.conversation_id,
@@ -139,18 +152,28 @@ class Message:
 
 
 class ChatWrapper:
+    &#34;&#34;&#34;
+    Represents the Roblox chat client. It essentially mirrors the functionality of the chat window at the bottom right
+    of the Roblox web client.
+    &#34;&#34;&#34;
     def __init__(self, requests):
         self.requests = requests
 
-    def get_conversation(self, conversation_id):
+    async def get_conversation(self, conversation_id):
         &#34;&#34;&#34;
         Gets a conversation by the conversation ID.
-        &#34;&#34;&#34;
-        return Conversation(self.requests, conversation_id)
 
-    def get_conversations(self, page_number=1, page_size=10):
+        Parameters
+        ----------
+        conversation_id
+            ID of the conversation.
         &#34;&#34;&#34;
-        Gets the list of conversations. This will be updated soon to use the new Pages object.
+        conversation = Conversation(self.requests, conversation_id)
+        await conversation.update()
+
+    async def get_conversations(self, page_number=1, page_size=10):
+        &#34;&#34;&#34;
+        Gets the list of conversations. This will be updated soon to use the new Pages object, so it is not documented.
         &#34;&#34;&#34;
         conversations_req = self.requests.get(
             url=&#34;https://chat.roblox.com/v2/get-user-conversations&#34;,
@@ -200,24 +223,35 @@ class ChatWrapper:
 <span>(</span><span>requests)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Represents the Roblox chat client. It essentially mirrors the functionality of the chat window at the bottom right
+of the Roblox web client.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ChatWrapper:
+    &#34;&#34;&#34;
+    Represents the Roblox chat client. It essentially mirrors the functionality of the chat window at the bottom right
+    of the Roblox web client.
+    &#34;&#34;&#34;
     def __init__(self, requests):
         self.requests = requests
 
-    def get_conversation(self, conversation_id):
+    async def get_conversation(self, conversation_id):
         &#34;&#34;&#34;
         Gets a conversation by the conversation ID.
-        &#34;&#34;&#34;
-        return Conversation(self.requests, conversation_id)
 
-    def get_conversations(self, page_number=1, page_size=10):
+        Parameters
+        ----------
+        conversation_id
+            ID of the conversation.
         &#34;&#34;&#34;
-        Gets the list of conversations. This will be updated soon to use the new Pages object.
+        conversation = Conversation(self.requests, conversation_id)
+        await conversation.update()
+
+    async def get_conversations(self, page_number=1, page_size=10):
+        &#34;&#34;&#34;
+        Gets the list of conversations. This will be updated soon to use the new Pages object, so it is not documented.
         &#34;&#34;&#34;
         conversations_req = self.requests.get(
             url=&#34;https://chat.roblox.com/v2/get-user-conversations&#34;,
@@ -239,33 +273,44 @@ class ChatWrapper:
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.chat.ChatWrapper.get_conversation"><code class="name flex">
-<span>def <span class="ident">get_conversation</span></span>(<span>self, conversation_id)</span>
+<span>async def <span class="ident">get_conversation</span></span>(<span>self, conversation_id)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Gets a conversation by the conversation ID.</p></div>
+<div class="desc"><p>Gets a conversation by the conversation ID.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>conversation_id</code></strong></dt>
+<dd>ID of the conversation.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_conversation(self, conversation_id):
+<pre><code class="python">async def get_conversation(self, conversation_id):
     &#34;&#34;&#34;
     Gets a conversation by the conversation ID.
+
+    Parameters
+    ----------
+    conversation_id
+        ID of the conversation.
     &#34;&#34;&#34;
-    return Conversation(self.requests, conversation_id)</code></pre>
+    conversation = Conversation(self.requests, conversation_id)
+    await conversation.update()</code></pre>
 </details>
 </dd>
 <dt id="ro_py.chat.ChatWrapper.get_conversations"><code class="name flex">
-<span>def <span class="ident">get_conversations</span></span>(<span>self, page_number=1, page_size=10)</span>
+<span>async def <span class="ident">get_conversations</span></span>(<span>self, page_number=1, page_size=10)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Gets the list of conversations. This will be updated soon to use the new Pages object.</p></div>
+<div class="desc"><p>Gets the list of conversations. This will be updated soon to use the new Pages object, so it is not documented.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_conversations(self, page_number=1, page_size=10):
+<pre><code class="python">async def get_conversations(self, page_number=1, page_size=10):
     &#34;&#34;&#34;
-    Gets the list of conversations. This will be updated soon to use the new Pages object.
+    Gets the list of conversations. This will be updated soon to use the new Pages object, so it is not documented.
     &#34;&#34;&#34;
     conversations_req = self.requests.get(
         url=&#34;https://chat.roblox.com/v2/get-user-conversations&#34;,
@@ -417,12 +462,33 @@ class ChatWrapper:
 <span>(</span><span>requests, message_id, conversation_id)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Represents a single message in a chat conversation.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>requests</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
+<dd>Requests object to use for API requests.</dd>
+<dt><strong><code>message_id</code></strong></dt>
+<dd>ID of the message.</dd>
+<dt><strong><code>conversation_id</code></strong></dt>
+<dd>ID of the conversation that contains the message.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Message:
+    &#34;&#34;&#34;
+    Represents a single message in a chat conversation.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    message_id
+        ID of the message.
+    conversation_id
+        ID of the conversation that contains the message.
+    &#34;&#34;&#34;
     def __init__(self, requests, message_id, conversation_id):
         self.requests = requests
         self.id = message_id
@@ -432,10 +498,11 @@ class ChatWrapper:
         self.sender = None
         self.read = None
 
-        self.update()
-
-    def update(self):
-        message_req = self.requests.get(
+    async def update(self):
+        &#34;&#34;&#34;
+        Updates the message with new data.
+        &#34;&#34;&#34;
+        message_req = await self.requests.get(
             url=&#34;https://chat.roblox.com/v2/get-messages&#34;,
             params={
                 &#34;conversationId&#34;: self.conversation_id,
@@ -452,16 +519,19 @@ class ChatWrapper:
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.chat.Message.update"><code class="name flex">
-<span>def <span class="ident">update</span></span>(<span>self)</span>
+<span>async def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Updates the message with new data.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def update(self):
-    message_req = self.requests.get(
+<pre><code class="python">async def update(self):
+    &#34;&#34;&#34;
+    Updates the message with new data.
+    &#34;&#34;&#34;
+    message_req = await self.requests.get(
         url=&#34;https://chat.roblox.com/v2/get-messages&#34;,
         params={
             &#34;conversationId&#34;: self.conversation_id,

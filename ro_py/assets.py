@@ -17,6 +17,13 @@ endpoint = "https://api.roblox.com/"
 class Asset:
     """
     Represents an asset.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    asset_id
+        ID of the asset.
     """
     def __init__(self, requests, asset_id):
         self.id = asset_id
@@ -79,7 +86,10 @@ class Asset:
     async def get_remaining(self):
         """
         Gets the remaining amount of this asset. (used for Limited U items)
-        :returns: Amount remaining
+
+        Returns
+        -------
+        int
         """
         asset_info_req = await self.requests.get(
             url=endpoint + "marketplace/productinfo",
@@ -93,7 +103,10 @@ class Asset:
     async def get_limited_resale_data(self):
         """
         Gets the limited resale data
-        :returns: LimitedResaleData
+
+        Returns
+        -------
+        LimitedResaleData
         """
         if self.is_limited:
             resale_data_req = await self.requests.get(f"https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data")

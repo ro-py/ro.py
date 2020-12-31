@@ -50,6 +50,11 @@ class AccountInformation:
     """
     Represents authenticated client account information (https://accountinformation.roblox.com/)
     This is only available for authenticated clients as it cannot be accessed otherwise.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
     """
     def __init__(self, requests):
         self.requests = requests
@@ -75,7 +80,7 @@ class AccountInformation:
 
         Returns
         -------
-        RobloxGender
+        ro_py.gender.RobloxGender
         """
         gender_req = await self.requests.get(endpoint + "v1/gender")
         return RobloxGender(gender_req.json()["gender"])
@@ -86,7 +91,7 @@ class AccountInformation:
 
         Parameters
         ----------
-        gender : RobloxGender
+        gender : ro_py.gender.RobloxGender
         """
         await self.requests.post(
             url=endpoint + "v1/gender",

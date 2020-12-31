@@ -6,7 +6,17 @@ import requests_async
 
 
 class Requests:
-    def __init__(self, request_cache=True, jmk_endpoint="https://roblox.jmksite.dev/"):
+    """
+    This wrapper functions similarly to requests_async.Session, but made specifically for Roblox.
+
+    Parameters
+    ----------
+    request_cache: bool
+        Enable this to wrap the session in a CacheControl object. Untested.
+    jmk_endpoint: str
+        Not currently in use.
+    """
+    def __init__(self, request_cache: bool = True, jmk_endpoint="https://roblox.jmksite.dev/"):
         self.session = requests_async.Session()
         """Session to use for requests."""
         self.cache = Cache()

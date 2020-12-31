@@ -65,11 +65,11 @@ class Group:
 
         self.update()
 
-    def update(self):
+    async def update(self):
         &#34;&#34;&#34;
         Updates the group&#39;s information.
         &#34;&#34;&#34;
-        group_info_req = self.requests.get(endpoint + f&#34;v1/groups/{self.id}&#34;)
+        group_info_req = await self.requests.get(endpoint + f&#34;v1/groups/{self.id}&#34;)
         group_info = group_info_req.json()
         self.name = group_info[&#34;name&#34;]
         self.description = group_info[&#34;description&#34;]
@@ -83,13 +83,14 @@ class Group:
             self.shout = None
         # self.is_locked = group_info[&#34;isLocked&#34;]
 
-    def update_shout(self, message):
-        self.requests.patch(
+    async def update_shout(self, message):
+        shout_req = await self.requests.patch(
             url=f&#34;https://groups.roblox.com/v1/groups/{self.id}/status&#34;,
             data={
                 &#34;message&#34;: message
             }
-        )</code></pre>
+        )
+        return shout_req.status_code == 200</code></pre>
 </details>
 </section>
 <section>
@@ -129,11 +130,11 @@ class Group:
 
         self.update()
 
-    def update(self):
+    async def update(self):
         &#34;&#34;&#34;
         Updates the group&#39;s information.
         &#34;&#34;&#34;
-        group_info_req = self.requests.get(endpoint + f&#34;v1/groups/{self.id}&#34;)
+        group_info_req = await self.requests.get(endpoint + f&#34;v1/groups/{self.id}&#34;)
         group_info = group_info_req.json()
         self.name = group_info[&#34;name&#34;]
         self.description = group_info[&#34;description&#34;]
@@ -147,18 +148,19 @@ class Group:
             self.shout = None
         # self.is_locked = group_info[&#34;isLocked&#34;]
 
-    def update_shout(self, message):
-        self.requests.patch(
+    async def update_shout(self, message):
+        shout_req = await self.requests.patch(
             url=f&#34;https://groups.roblox.com/v1/groups/{self.id}/status&#34;,
             data={
                 &#34;message&#34;: message
             }
-        )</code></pre>
+        )
+        return shout_req.status_code == 200</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.groups.Group.update"><code class="name flex">
-<span>def <span class="ident">update</span></span>(<span>self)</span>
+<span>async def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Updates the group's information.</p></div>
@@ -166,11 +168,11 @@ class Group:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def update(self):
+<pre><code class="python">async def update(self):
     &#34;&#34;&#34;
     Updates the group&#39;s information.
     &#34;&#34;&#34;
-    group_info_req = self.requests.get(endpoint + f&#34;v1/groups/{self.id}&#34;)
+    group_info_req = await self.requests.get(endpoint + f&#34;v1/groups/{self.id}&#34;)
     group_info = group_info_req.json()
     self.name = group_info[&#34;name&#34;]
     self.description = group_info[&#34;description&#34;]
@@ -185,7 +187,7 @@ class Group:
 </details>
 </dd>
 <dt id="ro_py.groups.Group.update_shout"><code class="name flex">
-<span>def <span class="ident">update_shout</span></span>(<span>self, message)</span>
+<span>async def <span class="ident">update_shout</span></span>(<span>self, message)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -193,13 +195,14 @@ class Group:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def update_shout(self, message):
-    self.requests.patch(
+<pre><code class="python">async def update_shout(self, message):
+    shout_req = await self.requests.patch(
         url=f&#34;https://groups.roblox.com/v1/groups/{self.id}/status&#34;,
         data={
             &#34;message&#34;: message
         }
-    )</code></pre>
+    )
+    return shout_req.status_code == 200</code></pre>
 </details>
 </dd>
 </dl>

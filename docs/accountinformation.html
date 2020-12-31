@@ -44,13 +44,18 @@ class AccountInformationMetadata:
     Represents account information metadata.
     &#34;&#34;&#34;
     def __init__(self, metadata_raw):
-        self.__dict__[&#34;is_allowed_notifications_endpoint_disabled&#34;] = \
-            metadata_raw[&#34;isAllowedNotificationsEndpointDisabled&#34;]
-        self.__dict__[&#34;is_account_settings_policy_enabled&#34;] = metadata_raw[&#34;isAccountSettingsPolicyEnabled&#34;]
-        self.__dict__[&#34;is_phone_number_enabled&#34;] = metadata_raw[&#34;isPhoneNumberEnabled&#34;]
-        self.__dict__[&#34;max_user_description_length&#34;] = metadata_raw[&#34;MaxUserDescriptionLength&#34;]
-        self.__dict__[&#34;is_user_description_enabled&#34;] = metadata_raw[&#34;isUserDescriptionEnabled&#34;]
-        self.__dict__[&#34;is_user_block_endpoints_updated&#34;] = metadata_raw[&#34;isUserBlockEndpointsUpdated&#34;]
+        self.is_allowed_notifications_endpoint_disabled = metadata_raw[&#34;isAllowedNotificationsEndpointDisabled&#34;]
+        &#34;&#34;&#34;Unsure what this does.&#34;&#34;&#34;
+        self.is_account_settings_policy_enabled = metadata_raw[&#34;isAccountSettingsPolicyEnabled&#34;]
+        &#34;&#34;&#34;Whether the account settings policy is enabled (unsure exactly what this does)&#34;&#34;&#34;
+        self.is_phone_number_enabled = metadata_raw[&#34;isPhoneNumberEnabled&#34;]
+        &#34;&#34;&#34;Whether the user&#39;s linked phone number is enabled.&#34;&#34;&#34;
+        self.max_user_description_length = metadata_raw[&#34;MaxUserDescriptionLength&#34;]
+        &#34;&#34;&#34;Maximum length of the user&#39;s description.&#34;&#34;&#34;
+        self.is_user_description_enabled = metadata_raw[&#34;isUserDescriptionEnabled&#34;]
+        &#34;&#34;&#34;Whether the user&#39;s description is enabled.&#34;&#34;&#34;
+        self.is_user_block_endpoints_updated = metadata_raw[&#34;isUserBlockEndpointsUpdated&#34;]
+        &#34;&#34;&#34;Whether the UserBlock endpoints are updated (unsure exactly what this does)&#34;&#34;&#34;
 
 
 class PromotionChannels:
@@ -58,85 +63,81 @@ class PromotionChannels:
     Represents account information promotion channels.
     &#34;&#34;&#34;
     def __init__(self, promotion_raw):
-        self.__dict__[&#34;promotion_channels_visibility_privacy&#34;] = promotion_raw[&#34;promotionChannelsVisibilityPrivacy&#34;]
-        self.__dict__[&#34;facebook&#34;] = promotion_raw[&#34;facebook&#34;]
-        self.__dict__[&#34;twitter&#34;] = promotion_raw[&#34;twitter&#34;]
-        self.__dict__[&#34;youtube&#34;] = promotion_raw[&#34;youtube&#34;]
-        self.__dict__[&#34;twitch&#34;] = promotion_raw[&#34;twitch&#34;]
-
-    @property
-    def promotion_channels_visibility_privacy(self):
-        return self.__dict__[&#34;promotion_channels_visibility_privacy&#34;]
-
-    @property
-    def facebook(self):
-        return self.__dict__[&#34;facebook&#34;]
-
-    @property
-    def twitter(self):
-        return self.__dict__[&#34;twitter&#34;]
-
-    @property
-    def youtube(self):
-        return self.__dict__[&#34;youtube&#34;]
-
-    @property
-    def twitch(self):
-        return self.__dict__[&#34;twitch&#34;]
+        self.promotion_channels_visibility_privacy = promotion_raw[&#34;promotionChannelsVisibilityPrivacy&#34;]
+        &#34;&#34;&#34;Visibility of promotion channels.&#34;&#34;&#34;
+        self.facebook = promotion_raw[&#34;facebook&#34;]
+        &#34;&#34;&#34;Link to the user&#39;s Facebook page.&#34;&#34;&#34;
+        self.twitter = promotion_raw[&#34;twitter&#34;]
+        &#34;&#34;&#34;Link to the user&#39;s Twitter page.&#34;&#34;&#34;
+        self.youtube = promotion_raw[&#34;youtube&#34;]
+        &#34;&#34;&#34;Link to the user&#39;s YouTube page.&#34;&#34;&#34;
+        self.twitch = promotion_raw[&#34;twitch&#34;]
+        &#34;&#34;&#34;Link to the user&#39;s Twitch page.&#34;&#34;&#34;
 
 
 class AccountInformation:
     &#34;&#34;&#34;
     Represents authenticated client account information (https://accountinformation.roblox.com/)
     This is only available for authenticated clients as it cannot be accessed otherwise.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
     &#34;&#34;&#34;
     def __init__(self, requests):
         self.requests = requests
         self.account_information_metadata = None
         self.promotion_channels = None
-        self.update()
 
-    def update(self):
+    async def update(self):
         &#34;&#34;&#34;
         Updates the account information.
-        :return: Nothing
         &#34;&#34;&#34;
-        account_information_req = self.requests.get(
+        account_information_req = await self.requests.get(
             url=&#34;https://accountinformation.roblox.com/v1/metadata&#34;
         )
         self.account_information_metadata = AccountInformationMetadata(account_information_req.json())
-        promotion_channels_req = self.requests.get(
+        promotion_channels_req = await self.requests.get(
             url=&#34;https://accountinformation.roblox.com/v1/promotion-channels&#34;
         )
         self.promotion_channels = PromotionChannels(promotion_channels_req.json())
 
-    def get_gender(self):
+    async def get_gender(self):
         &#34;&#34;&#34;
         Gets the user&#39;s gender.
-        :return: RobloxGender
+
+        Returns
+        -------
+        ro_py.gender.RobloxGender
         &#34;&#34;&#34;
-        gender_req = self.requests.get(endpoint + &#34;v1/gender&#34;)
+        gender_req = await self.requests.get(endpoint + &#34;v1/gender&#34;)
         return RobloxGender(gender_req.json()[&#34;gender&#34;])
 
-    def set_gender(self, gender):
+    async def set_gender(self, gender):
         &#34;&#34;&#34;
         Sets the user&#39;s gender.
-        :param gender: RobloxGender
-        :return: Nothing
+
+        Parameters
+        ----------
+        gender : ro_py.gender.RobloxGender
         &#34;&#34;&#34;
-        self.requests.post(
+        await self.requests.post(
             url=endpoint + &#34;v1/gender&#34;,
             data={
                 &#34;gender&#34;: str(gender.value)
             }
         )
 
-    def get_birthdate(self):
+    async def get_birthdate(self):
         &#34;&#34;&#34;
-        Returns the user&#39;s birthdate.
-        :return: datetime
+        Grabs the user&#39;s birthdate.
+
+        Returns
+        -------
+        datetime.datetime
         &#34;&#34;&#34;
-        birthdate_req = self.requests.get(endpoint + &#34;v1/birthdate&#34;)
+        birthdate_req = await self.requests.get(endpoint + &#34;v1/birthdate&#34;)
         birthdate_raw = birthdate_req.json()
         birthdate = datetime(
             year=birthdate_raw[&#34;birthYear&#34;],
@@ -145,13 +146,15 @@ class AccountInformation:
         )
         return birthdate
 
-    def set_birthdate(self, birthdate):
+    async def set_birthdate(self, birthdate):
         &#34;&#34;&#34;
         Sets the user&#39;s birthdate.
-        :param birthdate: A datetime object.
-        :return: Nothing
+
+        Parameters
+        ----------
+        birthdate : datetime.datetime
         &#34;&#34;&#34;
-        self.requests.post(
+        await self.requests.post(
             url=endpoint + &#34;v1/birthdate&#34;,
             data={
               &#34;birthMonth&#34;: birthdate.month,
@@ -176,7 +179,12 @@ class AccountInformation:
 </code></dt>
 <dd>
 <div class="desc"><p>Represents authenticated client account information (<a href="https://accountinformation.roblox.com/">https://accountinformation.roblox.com/</a>)
-This is only available for authenticated clients as it cannot be accessed otherwise.</p></div>
+This is only available for authenticated clients as it cannot be accessed otherwise.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>requests</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
+<dd>Requests object to use for API requests.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -185,54 +193,65 @@ This is only available for authenticated clients as it cannot be accessed otherw
     &#34;&#34;&#34;
     Represents authenticated client account information (https://accountinformation.roblox.com/)
     This is only available for authenticated clients as it cannot be accessed otherwise.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
     &#34;&#34;&#34;
     def __init__(self, requests):
         self.requests = requests
         self.account_information_metadata = None
         self.promotion_channels = None
-        self.update()
 
-    def update(self):
+    async def update(self):
         &#34;&#34;&#34;
         Updates the account information.
-        :return: Nothing
         &#34;&#34;&#34;
-        account_information_req = self.requests.get(
+        account_information_req = await self.requests.get(
             url=&#34;https://accountinformation.roblox.com/v1/metadata&#34;
         )
         self.account_information_metadata = AccountInformationMetadata(account_information_req.json())
-        promotion_channels_req = self.requests.get(
+        promotion_channels_req = await self.requests.get(
             url=&#34;https://accountinformation.roblox.com/v1/promotion-channels&#34;
         )
         self.promotion_channels = PromotionChannels(promotion_channels_req.json())
 
-    def get_gender(self):
+    async def get_gender(self):
         &#34;&#34;&#34;
         Gets the user&#39;s gender.
-        :return: RobloxGender
+
+        Returns
+        -------
+        ro_py.gender.RobloxGender
         &#34;&#34;&#34;
-        gender_req = self.requests.get(endpoint + &#34;v1/gender&#34;)
+        gender_req = await self.requests.get(endpoint + &#34;v1/gender&#34;)
         return RobloxGender(gender_req.json()[&#34;gender&#34;])
 
-    def set_gender(self, gender):
+    async def set_gender(self, gender):
         &#34;&#34;&#34;
         Sets the user&#39;s gender.
-        :param gender: RobloxGender
-        :return: Nothing
+
+        Parameters
+        ----------
+        gender : ro_py.gender.RobloxGender
         &#34;&#34;&#34;
-        self.requests.post(
+        await self.requests.post(
             url=endpoint + &#34;v1/gender&#34;,
             data={
                 &#34;gender&#34;: str(gender.value)
             }
         )
 
-    def get_birthdate(self):
+    async def get_birthdate(self):
         &#34;&#34;&#34;
-        Returns the user&#39;s birthdate.
-        :return: datetime
+        Grabs the user&#39;s birthdate.
+
+        Returns
+        -------
+        datetime.datetime
         &#34;&#34;&#34;
-        birthdate_req = self.requests.get(endpoint + &#34;v1/birthdate&#34;)
+        birthdate_req = await self.requests.get(endpoint + &#34;v1/birthdate&#34;)
         birthdate_raw = birthdate_req.json()
         birthdate = datetime(
             year=birthdate_raw[&#34;birthYear&#34;],
@@ -241,13 +260,15 @@ This is only available for authenticated clients as it cannot be accessed otherw
         )
         return birthdate
 
-    def set_birthdate(self, birthdate):
+    async def set_birthdate(self, birthdate):
         &#34;&#34;&#34;
         Sets the user&#39;s birthdate.
-        :param birthdate: A datetime object.
-        :return: Nothing
+
+        Parameters
+        ----------
+        birthdate : datetime.datetime
         &#34;&#34;&#34;
-        self.requests.post(
+        await self.requests.post(
             url=endpoint + &#34;v1/birthdate&#34;,
             data={
               &#34;birthMonth&#34;: birthdate.month,
@@ -259,21 +280,28 @@ This is only available for authenticated clients as it cannot be accessed otherw
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.accountinformation.AccountInformation.get_birthdate"><code class="name flex">
-<span>def <span class="ident">get_birthdate</span></span>(<span>self)</span>
+<span>async def <span class="ident">get_birthdate</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns the user's birthdate.
-:return: datetime</p></div>
+<div class="desc"><p>Grabs the user's birthdate.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>datetime.datetime</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_birthdate(self):
+<pre><code class="python">async def get_birthdate(self):
     &#34;&#34;&#34;
-    Returns the user&#39;s birthdate.
-    :return: datetime
+    Grabs the user&#39;s birthdate.
+
+    Returns
+    -------
+    datetime.datetime
     &#34;&#34;&#34;
-    birthdate_req = self.requests.get(endpoint + &#34;v1/birthdate&#34;)
+    birthdate_req = await self.requests.get(endpoint + &#34;v1/birthdate&#34;)
     birthdate_raw = birthdate_req.json()
     birthdate = datetime(
         year=birthdate_raw[&#34;birthYear&#34;],
@@ -284,42 +312,54 @@ This is only available for authenticated clients as it cannot be accessed otherw
 </details>
 </dd>
 <dt id="ro_py.accountinformation.AccountInformation.get_gender"><code class="name flex">
-<span>def <span class="ident">get_gender</span></span>(<span>self)</span>
+<span>async def <span class="ident">get_gender</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Gets the user's gender.
-:return: RobloxGender</p></div>
+<div class="desc"><p>Gets the user's gender.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="ro_py.gender.RobloxGender" href="gender.html#ro_py.gender.RobloxGender">RobloxGender</a></code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_gender(self):
+<pre><code class="python">async def get_gender(self):
     &#34;&#34;&#34;
     Gets the user&#39;s gender.
-    :return: RobloxGender
+
+    Returns
+    -------
+    ro_py.gender.RobloxGender
     &#34;&#34;&#34;
-    gender_req = self.requests.get(endpoint + &#34;v1/gender&#34;)
+    gender_req = await self.requests.get(endpoint + &#34;v1/gender&#34;)
     return RobloxGender(gender_req.json()[&#34;gender&#34;])</code></pre>
 </details>
 </dd>
 <dt id="ro_py.accountinformation.AccountInformation.set_birthdate"><code class="name flex">
-<span>def <span class="ident">set_birthdate</span></span>(<span>self, birthdate)</span>
+<span>async def <span class="ident">set_birthdate</span></span>(<span>self, birthdate)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Sets the user's birthdate.
-:param birthdate: A datetime object.
-:return: Nothing</p></div>
+<div class="desc"><p>Sets the user's birthdate.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>birthdate</code></strong> :&ensp;<code>datetime.datetime</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_birthdate(self, birthdate):
+<pre><code class="python">async def set_birthdate(self, birthdate):
     &#34;&#34;&#34;
     Sets the user&#39;s birthdate.
-    :param birthdate: A datetime object.
-    :return: Nothing
+
+    Parameters
+    ----------
+    birthdate : datetime.datetime
     &#34;&#34;&#34;
-    self.requests.post(
+    await self.requests.post(
         url=endpoint + &#34;v1/birthdate&#34;,
         data={
           &#34;birthMonth&#34;: birthdate.month,
@@ -330,23 +370,28 @@ This is only available for authenticated clients as it cannot be accessed otherw
 </details>
 </dd>
 <dt id="ro_py.accountinformation.AccountInformation.set_gender"><code class="name flex">
-<span>def <span class="ident">set_gender</span></span>(<span>self, gender)</span>
+<span>async def <span class="ident">set_gender</span></span>(<span>self, gender)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Sets the user's gender.
-:param gender: RobloxGender
-:return: Nothing</p></div>
+<div class="desc"><p>Sets the user's gender.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>gender</code></strong> :&ensp;<code><a title="ro_py.gender.RobloxGender" href="gender.html#ro_py.gender.RobloxGender">RobloxGender</a></code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def set_gender(self, gender):
+<pre><code class="python">async def set_gender(self, gender):
     &#34;&#34;&#34;
     Sets the user&#39;s gender.
-    :param gender: RobloxGender
-    :return: Nothing
+
+    Parameters
+    ----------
+    gender : ro_py.gender.RobloxGender
     &#34;&#34;&#34;
-    self.requests.post(
+    await self.requests.post(
         url=endpoint + &#34;v1/gender&#34;,
         data={
             &#34;gender&#34;: str(gender.value)
@@ -355,25 +400,23 @@ This is only available for authenticated clients as it cannot be accessed otherw
 </details>
 </dd>
 <dt id="ro_py.accountinformation.AccountInformation.update"><code class="name flex">
-<span>def <span class="ident">update</span></span>(<span>self)</span>
+<span>async def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Updates the account information.
-:return: Nothing</p></div>
+<div class="desc"><p>Updates the account information.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def update(self):
+<pre><code class="python">async def update(self):
     &#34;&#34;&#34;
     Updates the account information.
-    :return: Nothing
     &#34;&#34;&#34;
-    account_information_req = self.requests.get(
+    account_information_req = await self.requests.get(
         url=&#34;https://accountinformation.roblox.com/v1/metadata&#34;
     )
     self.account_information_metadata = AccountInformationMetadata(account_information_req.json())
-    promotion_channels_req = self.requests.get(
+    promotion_channels_req = await self.requests.get(
         url=&#34;https://accountinformation.roblox.com/v1/promotion-channels&#34;
     )
     self.promotion_channels = PromotionChannels(promotion_channels_req.json())</code></pre>
@@ -396,14 +439,46 @@ This is only available for authenticated clients as it cannot be accessed otherw
     Represents account information metadata.
     &#34;&#34;&#34;
     def __init__(self, metadata_raw):
-        self.__dict__[&#34;is_allowed_notifications_endpoint_disabled&#34;] = \
-            metadata_raw[&#34;isAllowedNotificationsEndpointDisabled&#34;]
-        self.__dict__[&#34;is_account_settings_policy_enabled&#34;] = metadata_raw[&#34;isAccountSettingsPolicyEnabled&#34;]
-        self.__dict__[&#34;is_phone_number_enabled&#34;] = metadata_raw[&#34;isPhoneNumberEnabled&#34;]
-        self.__dict__[&#34;max_user_description_length&#34;] = metadata_raw[&#34;MaxUserDescriptionLength&#34;]
-        self.__dict__[&#34;is_user_description_enabled&#34;] = metadata_raw[&#34;isUserDescriptionEnabled&#34;]
-        self.__dict__[&#34;is_user_block_endpoints_updated&#34;] = metadata_raw[&#34;isUserBlockEndpointsUpdated&#34;]</code></pre>
+        self.is_allowed_notifications_endpoint_disabled = metadata_raw[&#34;isAllowedNotificationsEndpointDisabled&#34;]
+        &#34;&#34;&#34;Unsure what this does.&#34;&#34;&#34;
+        self.is_account_settings_policy_enabled = metadata_raw[&#34;isAccountSettingsPolicyEnabled&#34;]
+        &#34;&#34;&#34;Whether the account settings policy is enabled (unsure exactly what this does)&#34;&#34;&#34;
+        self.is_phone_number_enabled = metadata_raw[&#34;isPhoneNumberEnabled&#34;]
+        &#34;&#34;&#34;Whether the user&#39;s linked phone number is enabled.&#34;&#34;&#34;
+        self.max_user_description_length = metadata_raw[&#34;MaxUserDescriptionLength&#34;]
+        &#34;&#34;&#34;Maximum length of the user&#39;s description.&#34;&#34;&#34;
+        self.is_user_description_enabled = metadata_raw[&#34;isUserDescriptionEnabled&#34;]
+        &#34;&#34;&#34;Whether the user&#39;s description is enabled.&#34;&#34;&#34;
+        self.is_user_block_endpoints_updated = metadata_raw[&#34;isUserBlockEndpointsUpdated&#34;]
+        &#34;&#34;&#34;Whether the UserBlock endpoints are updated (unsure exactly what this does)&#34;&#34;&#34;</code></pre>
 </details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="ro_py.accountinformation.AccountInformationMetadata.is_account_settings_policy_enabled"><code class="name">var <span class="ident">is_account_settings_policy_enabled</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the account settings policy is enabled (unsure exactly what this does)</p></div>
+</dd>
+<dt id="ro_py.accountinformation.AccountInformationMetadata.is_allowed_notifications_endpoint_disabled"><code class="name">var <span class="ident">is_allowed_notifications_endpoint_disabled</span></code></dt>
+<dd>
+<div class="desc"><p>Unsure what this does.</p></div>
+</dd>
+<dt id="ro_py.accountinformation.AccountInformationMetadata.is_phone_number_enabled"><code class="name">var <span class="ident">is_phone_number_enabled</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the user's linked phone number is enabled.</p></div>
+</dd>
+<dt id="ro_py.accountinformation.AccountInformationMetadata.is_user_block_endpoints_updated"><code class="name">var <span class="ident">is_user_block_endpoints_updated</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the UserBlock endpoints are updated (unsure exactly what this does)</p></div>
+</dd>
+<dt id="ro_py.accountinformation.AccountInformationMetadata.is_user_description_enabled"><code class="name">var <span class="ident">is_user_description_enabled</span></code></dt>
+<dd>
+<div class="desc"><p>Whether the user's description is enabled.</p></div>
+</dd>
+<dt id="ro_py.accountinformation.AccountInformationMetadata.max_user_description_length"><code class="name">var <span class="ident">max_user_description_length</span></code></dt>
+<dd>
+<div class="desc"><p>Maximum length of the user's description.</p></div>
+</dd>
+</dl>
 </dd>
 <dt id="ro_py.accountinformation.PromotionChannels"><code class="flex name class">
 <span>class <span class="ident">PromotionChannels</span></span>
@@ -420,93 +495,38 @@ This is only available for authenticated clients as it cannot be accessed otherw
     Represents account information promotion channels.
     &#34;&#34;&#34;
     def __init__(self, promotion_raw):
-        self.__dict__[&#34;promotion_channels_visibility_privacy&#34;] = promotion_raw[&#34;promotionChannelsVisibilityPrivacy&#34;]
-        self.__dict__[&#34;facebook&#34;] = promotion_raw[&#34;facebook&#34;]
-        self.__dict__[&#34;twitter&#34;] = promotion_raw[&#34;twitter&#34;]
-        self.__dict__[&#34;youtube&#34;] = promotion_raw[&#34;youtube&#34;]
-        self.__dict__[&#34;twitch&#34;] = promotion_raw[&#34;twitch&#34;]
-
-    @property
-    def promotion_channels_visibility_privacy(self):
-        return self.__dict__[&#34;promotion_channels_visibility_privacy&#34;]
-
-    @property
-    def facebook(self):
-        return self.__dict__[&#34;facebook&#34;]
-
-    @property
-    def twitter(self):
-        return self.__dict__[&#34;twitter&#34;]
-
-    @property
-    def youtube(self):
-        return self.__dict__[&#34;youtube&#34;]
-
-    @property
-    def twitch(self):
-        return self.__dict__[&#34;twitch&#34;]</code></pre>
+        self.promotion_channels_visibility_privacy = promotion_raw[&#34;promotionChannelsVisibilityPrivacy&#34;]
+        &#34;&#34;&#34;Visibility of promotion channels.&#34;&#34;&#34;
+        self.facebook = promotion_raw[&#34;facebook&#34;]
+        &#34;&#34;&#34;Link to the user&#39;s Facebook page.&#34;&#34;&#34;
+        self.twitter = promotion_raw[&#34;twitter&#34;]
+        &#34;&#34;&#34;Link to the user&#39;s Twitter page.&#34;&#34;&#34;
+        self.youtube = promotion_raw[&#34;youtube&#34;]
+        &#34;&#34;&#34;Link to the user&#39;s YouTube page.&#34;&#34;&#34;
+        self.twitch = promotion_raw[&#34;twitch&#34;]
+        &#34;&#34;&#34;Link to the user&#39;s Twitch page.&#34;&#34;&#34;</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
 <dt id="ro_py.accountinformation.PromotionChannels.facebook"><code class="name">var <span class="ident">facebook</span></code></dt>
 <dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@property
-def facebook(self):
-    return self.__dict__[&#34;facebook&#34;]</code></pre>
-</details>
+<div class="desc"><p>Link to the user's Facebook page.</p></div>
 </dd>
 <dt id="ro_py.accountinformation.PromotionChannels.promotion_channels_visibility_privacy"><code class="name">var <span class="ident">promotion_channels_visibility_privacy</span></code></dt>
 <dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@property
-def promotion_channels_visibility_privacy(self):
-    return self.__dict__[&#34;promotion_channels_visibility_privacy&#34;]</code></pre>
-</details>
+<div class="desc"><p>Visibility of promotion channels.</p></div>
 </dd>
 <dt id="ro_py.accountinformation.PromotionChannels.twitch"><code class="name">var <span class="ident">twitch</span></code></dt>
 <dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@property
-def twitch(self):
-    return self.__dict__[&#34;twitch&#34;]</code></pre>
-</details>
+<div class="desc"><p>Link to the user's Twitch page.</p></div>
 </dd>
 <dt id="ro_py.accountinformation.PromotionChannels.twitter"><code class="name">var <span class="ident">twitter</span></code></dt>
 <dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@property
-def twitter(self):
-    return self.__dict__[&#34;twitter&#34;]</code></pre>
-</details>
+<div class="desc"><p>Link to the user's Twitter page.</p></div>
 </dd>
 <dt id="ro_py.accountinformation.PromotionChannels.youtube"><code class="name">var <span class="ident">youtube</span></code></dt>
 <dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@property
-def youtube(self):
-    return self.__dict__[&#34;youtube&#34;]</code></pre>
-</details>
+<div class="desc"><p>Link to the user's YouTube page.</p></div>
 </dd>
 </dl>
 </dd>
@@ -538,6 +558,14 @@ def youtube(self):
 </li>
 <li>
 <h4><code><a title="ro_py.accountinformation.AccountInformationMetadata" href="#ro_py.accountinformation.AccountInformationMetadata">AccountInformationMetadata</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.accountinformation.AccountInformationMetadata.is_account_settings_policy_enabled" href="#ro_py.accountinformation.AccountInformationMetadata.is_account_settings_policy_enabled">is_account_settings_policy_enabled</a></code></li>
+<li><code><a title="ro_py.accountinformation.AccountInformationMetadata.is_allowed_notifications_endpoint_disabled" href="#ro_py.accountinformation.AccountInformationMetadata.is_allowed_notifications_endpoint_disabled">is_allowed_notifications_endpoint_disabled</a></code></li>
+<li><code><a title="ro_py.accountinformation.AccountInformationMetadata.is_phone_number_enabled" href="#ro_py.accountinformation.AccountInformationMetadata.is_phone_number_enabled">is_phone_number_enabled</a></code></li>
+<li><code><a title="ro_py.accountinformation.AccountInformationMetadata.is_user_block_endpoints_updated" href="#ro_py.accountinformation.AccountInformationMetadata.is_user_block_endpoints_updated">is_user_block_endpoints_updated</a></code></li>
+<li><code><a title="ro_py.accountinformation.AccountInformationMetadata.is_user_description_enabled" href="#ro_py.accountinformation.AccountInformationMetadata.is_user_description_enabled">is_user_description_enabled</a></code></li>
+<li><code><a title="ro_py.accountinformation.AccountInformationMetadata.max_user_description_length" href="#ro_py.accountinformation.AccountInformationMetadata.max_user_description_length">max_user_description_length</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="ro_py.accountinformation.PromotionChannels" href="#ro_py.accountinformation.PromotionChannels">PromotionChannels</a></code></h4>

@@ -44,25 +44,21 @@ class User:
     Represents a Roblox user and their profile.
     Can be initialized with either a user ID or a username.
     &#34;&#34;&#34;
-    def __init__(self, requests, ui):
-
+    def __init__(self, requests, id, name=None):
         self.requests = requests
-        self.id = ui
-
+        self.id = id
         self.description = None
         self.created = None
         self.is_banned = None
-        self.name = None
+        self.name = name
         self.display_name = None
 
-        self.update()
-
-    def update(self):
+    async def update(self):
         &#34;&#34;&#34;
         Updates some class values.
         :return: Nothing
         &#34;&#34;&#34;
-        user_info_req = self.requests.get(endpoint + f&#34;v1/users/{self.id}&#34;)
+        user_info_req = await self.requests.get(endpoint + f&#34;v1/users/{self.id}&#34;)
         user_info = user_info_req.json()
         self.description = user_info[&#34;description&#34;]
         self.created = iso8601.parse_date(user_info[&#34;created&#34;])
@@ -72,58 +68,58 @@ class User:
         # has_premium_req = requests.get(f&#34;https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership&#34;)
         # self.has_premium = has_premium_req
 
-    def get_status(self):
+    async def get_status(self):
         &#34;&#34;&#34;
         Gets the user&#39;s status.
         :return: A string
         &#34;&#34;&#34;
-        status_req = self.requests.get(endpoint + f&#34;v1/users/{self.id}/status&#34;)
+        status_req = await self.requests.get(endpoint + f&#34;v1/users/{self.id}/status&#34;)
         return status_req.json()[&#34;status&#34;]
 
-    def get_roblox_badges(self):
+    async def get_roblox_badges(self):
         &#34;&#34;&#34;
         Gets the user&#39;s roblox badges.
         :return: A list of RobloxBadge instances
         &#34;&#34;&#34;
-        roblox_badges_req = self.requests.get(f&#34;https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges&#34;)
+        roblox_badges_req = await self.requests.get(f&#34;https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges&#34;)
         roblox_badges = []
         for roblox_badge_data in roblox_badges_req.json():
             roblox_badges.append(RobloxBadge(roblox_badge_data))
         return roblox_badges
 
-    def get_friends_count(self):
+    async def get_friends_count(self):
         &#34;&#34;&#34;
         Gets the user&#39;s friends count.
         :return: An integer
         &#34;&#34;&#34;
-        friends_count_req = self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends/count&#34;)
+        friends_count_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends/count&#34;)
         friends_count = friends_count_req.json()[&#34;count&#34;]
         return friends_count
 
-    def get_followers_count(self):
+    async def get_followers_count(self):
         &#34;&#34;&#34;
         Gets the user&#39;s followers count.
         :return: An integer
         &#34;&#34;&#34;
-        followers_count_req = self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/followers/count&#34;)
+        followers_count_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/followers/count&#34;)
         followers_count = followers_count_req.json()[&#34;count&#34;]
         return followers_count
 
-    def get_followings_count(self):
+    async def get_followings_count(self):
         &#34;&#34;&#34;
         Gets the user&#39;s followings count.
         :return: An integer
         &#34;&#34;&#34;
-        followings_count_req = self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/followings/count&#34;)
+        followings_count_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/followings/count&#34;)
         followings_count = followings_count_req.json()[&#34;count&#34;]
         return followings_count
 
-    def get_friends(self):
+    async def get_friends(self):
         &#34;&#34;&#34;
         Gets the user&#39;s friends.
         :return: A list of User instances.
         &#34;&#34;&#34;
-        friends_req = self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends&#34;)
+        friends_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends&#34;)
         friends_raw = friends_req.json()[&#34;data&#34;]
         friends_list = []
         for friend_raw in friends_raw:
@@ -144,7 +140,7 @@ class User:
 <dl>
 <dt id="ro_py.users.User"><code class="flex name class">
 <span>class <span class="ident">User</span></span>
-<span>(</span><span>requests, ui)</span>
+<span>(</span><span>requests, id, name=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a Roblox user and their profile.
@@ -158,25 +154,21 @@ Can be initialized with either a user ID or a username.</p></div>
     Represents a Roblox user and their profile.
     Can be initialized with either a user ID or a username.
     &#34;&#34;&#34;
-    def __init__(self, requests, ui):
-
+    def __init__(self, requests, id, name=None):
         self.requests = requests
-        self.id = ui
-
+        self.id = id
         self.description = None
         self.created = None
         self.is_banned = None
-        self.name = None
+        self.name = name
         self.display_name = None
 
-        self.update()
-
-    def update(self):
+    async def update(self):
         &#34;&#34;&#34;
         Updates some class values.
         :return: Nothing
         &#34;&#34;&#34;
-        user_info_req = self.requests.get(endpoint + f&#34;v1/users/{self.id}&#34;)
+        user_info_req = await self.requests.get(endpoint + f&#34;v1/users/{self.id}&#34;)
         user_info = user_info_req.json()
         self.description = user_info[&#34;description&#34;]
         self.created = iso8601.parse_date(user_info[&#34;created&#34;])
@@ -186,58 +178,58 @@ Can be initialized with either a user ID or a username.</p></div>
         # has_premium_req = requests.get(f&#34;https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership&#34;)
         # self.has_premium = has_premium_req
 
-    def get_status(self):
+    async def get_status(self):
         &#34;&#34;&#34;
         Gets the user&#39;s status.
         :return: A string
         &#34;&#34;&#34;
-        status_req = self.requests.get(endpoint + f&#34;v1/users/{self.id}/status&#34;)
+        status_req = await self.requests.get(endpoint + f&#34;v1/users/{self.id}/status&#34;)
         return status_req.json()[&#34;status&#34;]
 
-    def get_roblox_badges(self):
+    async def get_roblox_badges(self):
         &#34;&#34;&#34;
         Gets the user&#39;s roblox badges.
         :return: A list of RobloxBadge instances
         &#34;&#34;&#34;
-        roblox_badges_req = self.requests.get(f&#34;https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges&#34;)
+        roblox_badges_req = await self.requests.get(f&#34;https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges&#34;)
         roblox_badges = []
         for roblox_badge_data in roblox_badges_req.json():
             roblox_badges.append(RobloxBadge(roblox_badge_data))
         return roblox_badges
 
-    def get_friends_count(self):
+    async def get_friends_count(self):
         &#34;&#34;&#34;
         Gets the user&#39;s friends count.
         :return: An integer
         &#34;&#34;&#34;
-        friends_count_req = self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends/count&#34;)
+        friends_count_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends/count&#34;)
         friends_count = friends_count_req.json()[&#34;count&#34;]
         return friends_count
 
-    def get_followers_count(self):
+    async def get_followers_count(self):
         &#34;&#34;&#34;
         Gets the user&#39;s followers count.
         :return: An integer
         &#34;&#34;&#34;
-        followers_count_req = self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/followers/count&#34;)
+        followers_count_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/followers/count&#34;)
         followers_count = followers_count_req.json()[&#34;count&#34;]
         return followers_count
 
-    def get_followings_count(self):
+    async def get_followings_count(self):
         &#34;&#34;&#34;
         Gets the user&#39;s followings count.
         :return: An integer
         &#34;&#34;&#34;
-        followings_count_req = self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/followings/count&#34;)
+        followings_count_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/followings/count&#34;)
         followings_count = followings_count_req.json()[&#34;count&#34;]
         return followings_count
 
-    def get_friends(self):
+    async def get_friends(self):
         &#34;&#34;&#34;
         Gets the user&#39;s friends.
         :return: A list of User instances.
         &#34;&#34;&#34;
-        friends_req = self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends&#34;)
+        friends_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends&#34;)
         friends_raw = friends_req.json()[&#34;data&#34;]
         friends_list = []
         for friend_raw in friends_raw:
@@ -249,7 +241,7 @@ Can be initialized with either a user ID or a username.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.users.User.get_followers_count"><code class="name flex">
-<span>def <span class="ident">get_followers_count</span></span>(<span>self)</span>
+<span>async def <span class="ident">get_followers_count</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the user's followers count.
@@ -258,18 +250,18 @@ Can be initialized with either a user ID or a username.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_followers_count(self):
+<pre><code class="python">async def get_followers_count(self):
     &#34;&#34;&#34;
     Gets the user&#39;s followers count.
     :return: An integer
     &#34;&#34;&#34;
-    followers_count_req = self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/followers/count&#34;)
+    followers_count_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/followers/count&#34;)
     followers_count = followers_count_req.json()[&#34;count&#34;]
     return followers_count</code></pre>
 </details>
 </dd>
 <dt id="ro_py.users.User.get_followings_count"><code class="name flex">
-<span>def <span class="ident">get_followings_count</span></span>(<span>self)</span>
+<span>async def <span class="ident">get_followings_count</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the user's followings count.
@@ -278,18 +270,18 @@ Can be initialized with either a user ID or a username.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_followings_count(self):
+<pre><code class="python">async def get_followings_count(self):
     &#34;&#34;&#34;
     Gets the user&#39;s followings count.
     :return: An integer
     &#34;&#34;&#34;
-    followings_count_req = self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/followings/count&#34;)
+    followings_count_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/followings/count&#34;)
     followings_count = followings_count_req.json()[&#34;count&#34;]
     return followings_count</code></pre>
 </details>
 </dd>
 <dt id="ro_py.users.User.get_friends"><code class="name flex">
-<span>def <span class="ident">get_friends</span></span>(<span>self)</span>
+<span>async def <span class="ident">get_friends</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the user's friends.
@@ -298,12 +290,12 @@ Can be initialized with either a user ID or a username.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_friends(self):
+<pre><code class="python">async def get_friends(self):
     &#34;&#34;&#34;
     Gets the user&#39;s friends.
     :return: A list of User instances.
     &#34;&#34;&#34;
-    friends_req = self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends&#34;)
+    friends_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends&#34;)
     friends_raw = friends_req.json()[&#34;data&#34;]
     friends_list = []
     for friend_raw in friends_raw:
@@ -314,7 +306,7 @@ Can be initialized with either a user ID or a username.</p></div>
 </details>
 </dd>
 <dt id="ro_py.users.User.get_friends_count"><code class="name flex">
-<span>def <span class="ident">get_friends_count</span></span>(<span>self)</span>
+<span>async def <span class="ident">get_friends_count</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the user's friends count.
@@ -323,18 +315,18 @@ Can be initialized with either a user ID or a username.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_friends_count(self):
+<pre><code class="python">async def get_friends_count(self):
     &#34;&#34;&#34;
     Gets the user&#39;s friends count.
     :return: An integer
     &#34;&#34;&#34;
-    friends_count_req = self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends/count&#34;)
+    friends_count_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends/count&#34;)
     friends_count = friends_count_req.json()[&#34;count&#34;]
     return friends_count</code></pre>
 </details>
 </dd>
 <dt id="ro_py.users.User.get_roblox_badges"><code class="name flex">
-<span>def <span class="ident">get_roblox_badges</span></span>(<span>self)</span>
+<span>async def <span class="ident">get_roblox_badges</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the user's roblox badges.
@@ -343,12 +335,12 @@ Can be initialized with either a user ID or a username.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_roblox_badges(self):
+<pre><code class="python">async def get_roblox_badges(self):
     &#34;&#34;&#34;
     Gets the user&#39;s roblox badges.
     :return: A list of RobloxBadge instances
     &#34;&#34;&#34;
-    roblox_badges_req = self.requests.get(f&#34;https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges&#34;)
+    roblox_badges_req = await self.requests.get(f&#34;https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges&#34;)
     roblox_badges = []
     for roblox_badge_data in roblox_badges_req.json():
         roblox_badges.append(RobloxBadge(roblox_badge_data))
@@ -356,7 +348,7 @@ Can be initialized with either a user ID or a username.</p></div>
 </details>
 </dd>
 <dt id="ro_py.users.User.get_status"><code class="name flex">
-<span>def <span class="ident">get_status</span></span>(<span>self)</span>
+<span>async def <span class="ident">get_status</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the user's status.
@@ -365,17 +357,17 @@ Can be initialized with either a user ID or a username.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_status(self):
+<pre><code class="python">async def get_status(self):
     &#34;&#34;&#34;
     Gets the user&#39;s status.
     :return: A string
     &#34;&#34;&#34;
-    status_req = self.requests.get(endpoint + f&#34;v1/users/{self.id}/status&#34;)
+    status_req = await self.requests.get(endpoint + f&#34;v1/users/{self.id}/status&#34;)
     return status_req.json()[&#34;status&#34;]</code></pre>
 </details>
 </dd>
 <dt id="ro_py.users.User.update"><code class="name flex">
-<span>def <span class="ident">update</span></span>(<span>self)</span>
+<span>async def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Updates some class values.
@@ -384,12 +376,12 @@ Can be initialized with either a user ID or a username.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def update(self):
+<pre><code class="python">async def update(self):
     &#34;&#34;&#34;
     Updates some class values.
     :return: Nothing
     &#34;&#34;&#34;
-    user_info_req = self.requests.get(endpoint + f&#34;v1/users/{self.id}&#34;)
+    user_info_req = await self.requests.get(endpoint + f&#34;v1/users/{self.id}&#34;)
     user_info = user_info_req.json()
     self.description = user_info[&#34;description&#34;]
     self.created = iso8601.parse_date(user_info[&#34;created&#34;])

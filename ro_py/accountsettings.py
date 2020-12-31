@@ -51,7 +51,7 @@ class AccountSettings:
 
     Parameters
     ----------
-    requests : requests.Requests
+    requests : ro_py.utilities.requests.Requests
         Requests object to use for API requests.
     """
     def __init__(self, requests):

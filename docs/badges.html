@@ -49,6 +49,13 @@ class BadgeStatistics:
 class Badge:
     &#34;&#34;&#34;
     Represents a game-awarded badge.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    badge_id
+        ID of the badge.
     &#34;&#34;&#34;
     def __init__(self, requests, badge_id):
         self.id = badge_id
@@ -62,6 +69,9 @@ class Badge:
         self.update()
 
     def update(self):
+        &#34;&#34;&#34;
+        Updates the badge&#39;s information.
+        &#34;&#34;&#34;
         badge_info_req = self.requests.get(endpoint + f&#34;v1/badges/{self.id}&#34;)
         badge_info = badge_info_req.json()
         self.name = badge_info[&#34;name&#34;]
@@ -91,7 +101,14 @@ class Badge:
 <span>(</span><span>requests, badge_id)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a game-awarded badge.</p></div>
+<div class="desc"><p>Represents a game-awarded badge.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>requests</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
+<dd>Requests object to use for API requests.</dd>
+<dt><strong><code>badge_id</code></strong></dt>
+<dd>ID of the badge.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -99,6 +116,13 @@ class Badge:
 <pre><code class="python">class Badge:
     &#34;&#34;&#34;
     Represents a game-awarded badge.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    badge_id
+        ID of the badge.
     &#34;&#34;&#34;
     def __init__(self, requests, badge_id):
         self.id = badge_id
@@ -112,6 +136,9 @@ class Badge:
         self.update()
 
     def update(self):
+        &#34;&#34;&#34;
+        Updates the badge&#39;s information.
+        &#34;&#34;&#34;
         badge_info_req = self.requests.get(endpoint + f&#34;v1/badges/{self.id}&#34;)
         badge_info = badge_info_req.json()
         self.name = badge_info[&#34;name&#34;]
@@ -132,12 +159,15 @@ class Badge:
 <span>def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Updates the badge's information.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def update(self):
+    &#34;&#34;&#34;
+    Updates the badge&#39;s information.
+    &#34;&#34;&#34;
     badge_info_req = self.requests.get(endpoint + f&#34;v1/badges/{self.id}&#34;)
     badge_info = badge_info_req.json()
     self.name = badge_info[&#34;name&#34;]

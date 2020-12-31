@@ -46,6 +46,13 @@ endpoint = &#34;https://api.roblox.com/&#34;
 class Asset:
     &#34;&#34;&#34;
     Represents an asset.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    asset_id
+        ID of the asset.
     &#34;&#34;&#34;
     def __init__(self, requests, asset_id):
         self.id = asset_id
@@ -71,11 +78,11 @@ class Asset:
         self.content_rating_type_id = None
         self.update()
 
-    def update(self):
+    async def update(self):
         &#34;&#34;&#34;
         Updates the asset&#39;s information.
         &#34;&#34;&#34;
-        asset_info_req = self.requests.get(
+        asset_info_req = await self.requests.get(
             url=endpoint + &#34;marketplace/productinfo&#34;,
             params={
                 &#34;assetId&#34;: self.id
@@ -105,12 +112,15 @@ class Asset:
         self.minimum_membership_level = asset_info[&#34;MinimumMembershipLevel&#34;]
         self.content_rating_type_id = asset_info[&#34;ContentRatingTypeId&#34;]
 
-    def get_remaining(self):
+    async def get_remaining(self):
         &#34;&#34;&#34;
         Gets the remaining amount of this asset. (used for Limited U items)
-        :returns: Amount remaining
+
+        Returns
+        -------
+        int
         &#34;&#34;&#34;
-        asset_info_req = self.requests.get(
+        asset_info_req = await self.requests.get(
             url=endpoint + &#34;marketplace/productinfo&#34;,
             params={
                 &#34;assetId&#34;: self.asset_id
@@ -119,13 +129,16 @@ class Asset:
         asset_info = asset_info_req.json()
         return asset_info[&#34;Remaining&#34;]
 
-    def get_limited_resale_data(self):
+    async def get_limited_resale_data(self):
         &#34;&#34;&#34;
         Gets the limited resale data
-        :returns: LimitedResaleData
+
+        Returns
+        -------
+        LimitedResaleData
         &#34;&#34;&#34;
         if self.is_limited:
-            resale_data_req = self.requests.get(f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
+            resale_data_req = await self.requests.get(f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
             return LimitedResaleData(resale_data_req.json())
         else:
             raise NotLimitedError(&#34;You can only read this information on limited items.&#34;)</code></pre>
@@ -145,7 +158,14 @@ class Asset:
 <span>(</span><span>requests, asset_id)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents an asset.</p></div>
+<div class="desc"><p>Represents an asset.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>requests</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
+<dd>Requests object to use for API requests.</dd>
+<dt><strong><code>asset_id</code></strong></dt>
+<dd>ID of the asset.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -153,6 +173,13 @@ class Asset:
 <pre><code class="python">class Asset:
     &#34;&#34;&#34;
     Represents an asset.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    asset_id
+        ID of the asset.
     &#34;&#34;&#34;
     def __init__(self, requests, asset_id):
         self.id = asset_id
@@ -178,11 +205,11 @@ class Asset:
         self.content_rating_type_id = None
         self.update()
 
-    def update(self):
+    async def update(self):
         &#34;&#34;&#34;
         Updates the asset&#39;s information.
         &#34;&#34;&#34;
-        asset_info_req = self.requests.get(
+        asset_info_req = await self.requests.get(
             url=endpoint + &#34;marketplace/productinfo&#34;,
             params={
                 &#34;assetId&#34;: self.id
@@ -212,12 +239,15 @@ class Asset:
         self.minimum_membership_level = asset_info[&#34;MinimumMembershipLevel&#34;]
         self.content_rating_type_id = asset_info[&#34;ContentRatingTypeId&#34;]
 
-    def get_remaining(self):
+    async def get_remaining(self):
         &#34;&#34;&#34;
         Gets the remaining amount of this asset. (used for Limited U items)
-        :returns: Amount remaining
+
+        Returns
+        -------
+        int
         &#34;&#34;&#34;
-        asset_info_req = self.requests.get(
+        asset_info_req = await self.requests.get(
             url=endpoint + &#34;marketplace/productinfo&#34;,
             params={
                 &#34;assetId&#34;: self.asset_id
@@ -226,13 +256,16 @@ class Asset:
         asset_info = asset_info_req.json()
         return asset_info[&#34;Remaining&#34;]
 
-    def get_limited_resale_data(self):
+    async def get_limited_resale_data(self):
         &#34;&#34;&#34;
         Gets the limited resale data
-        :returns: LimitedResaleData
+
+        Returns
+        -------
+        LimitedResaleData
         &#34;&#34;&#34;
         if self.is_limited:
-            resale_data_req = self.requests.get(f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
+            resale_data_req = await self.requests.get(f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
             return LimitedResaleData(resale_data_req.json())
         else:
             raise NotLimitedError(&#34;You can only read this information on limited items.&#34;)</code></pre>
@@ -240,43 +273,57 @@ class Asset:
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.assets.Asset.get_limited_resale_data"><code class="name flex">
-<span>def <span class="ident">get_limited_resale_data</span></span>(<span>self)</span>
+<span>async def <span class="ident">get_limited_resale_data</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Gets the limited resale data
-:returns: LimitedResaleData</p></div>
+<div class="desc"><p>Gets the limited resale data</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>LimitedResaleData</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_limited_resale_data(self):
+<pre><code class="python">async def get_limited_resale_data(self):
     &#34;&#34;&#34;
     Gets the limited resale data
-    :returns: LimitedResaleData
+
+    Returns
+    -------
+    LimitedResaleData
     &#34;&#34;&#34;
     if self.is_limited:
-        resale_data_req = self.requests.get(f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
+        resale_data_req = await self.requests.get(f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
         return LimitedResaleData(resale_data_req.json())
     else:
         raise NotLimitedError(&#34;You can only read this information on limited items.&#34;)</code></pre>
 </details>
 </dd>
 <dt id="ro_py.assets.Asset.get_remaining"><code class="name flex">
-<span>def <span class="ident">get_remaining</span></span>(<span>self)</span>
+<span>async def <span class="ident">get_remaining</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Gets the remaining amount of this asset. (used for Limited U items)
-:returns: Amount remaining</p></div>
+<div class="desc"><p>Gets the remaining amount of this asset. (used for Limited U items)</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_remaining(self):
+<pre><code class="python">async def get_remaining(self):
     &#34;&#34;&#34;
     Gets the remaining amount of this asset. (used for Limited U items)
-    :returns: Amount remaining
+
+    Returns
+    -------
+    int
     &#34;&#34;&#34;
-    asset_info_req = self.requests.get(
+    asset_info_req = await self.requests.get(
         url=endpoint + &#34;marketplace/productinfo&#34;,
         params={
             &#34;assetId&#34;: self.asset_id
@@ -287,7 +334,7 @@ class Asset:
 </details>
 </dd>
 <dt id="ro_py.assets.Asset.update"><code class="name flex">
-<span>def <span class="ident">update</span></span>(<span>self)</span>
+<span>async def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Updates the asset's information.</p></div>
@@ -295,11 +342,11 @@ class Asset:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def update(self):
+<pre><code class="python">async def update(self):
     &#34;&#34;&#34;
     Updates the asset&#39;s information.
     &#34;&#34;&#34;
-    asset_info_req = self.requests.get(
+    asset_info_req = await self.requests.get(
         url=endpoint + &#34;marketplace/productinfo&#34;,
         params={
             &#34;assetId&#34;: self.id

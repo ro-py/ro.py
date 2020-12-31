@@ -82,6 +82,18 @@ class Conversation:
 
 
 class Message:
+    """
+    Represents a single message in a chat conversation.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    message_id
+        ID of the message.
+    conversation_id
+        ID of the conversation that contains the message.
+    """
     def __init__(self, requests, message_id, conversation_id):
         self.requests = requests
         self.id = message_id
@@ -91,10 +103,11 @@ class Message:
         self.sender = None
         self.read = None
 
-        self.update()
-
-    def update(self):
-        message_req = self.requests.get(
+    async def update(self):
+        """
+        Updates the message with new data.
+        """
+        message_req = await self.requests.get(
             url="https://chat.roblox.com/v2/get-messages",
             params={
                 "conversationId": self.conversation_id,
@@ -110,18 +123,28 @@ class Message:
 
 
 class ChatWrapper:
+    """
+    Represents the Roblox chat client. It essentially mirrors the functionality of the chat window at the bottom right
+    of the Roblox web client.
+    """
     def __init__(self, requests):
         self.requests = requests
 
-    def get_conversation(self, conversation_id):
+    async def get_conversation(self, conversation_id):
         """
         Gets a conversation by the conversation ID.
-        """
-        return Conversation(self.requests, conversation_id)
 
-    def get_conversations(self, page_number=1, page_size=10):
+        Parameters
+        ----------
+        conversation_id
+            ID of the conversation.
         """
-        Gets the list of conversations. This will be updated soon to use the new Pages object.
+        conversation = Conversation(self.requests, conversation_id)
+        await conversation.update()
+
+    async def get_conversations(self, page_number=1, page_size=10):
+        """
+        Gets the list of conversations. This will be updated soon to use the new Pages object, so it is not documented.
         """
         conversations_req = self.requests.get(
             url="https://chat.roblox.com/v2/get-user-conversations",
