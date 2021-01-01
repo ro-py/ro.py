@@ -54,6 +54,18 @@ class Group:
         # self.is_locked = group_info["isLocked"]
 
     async def update_shout(self, message):
+        """
+        Changes the shout in the group.
+
+        Parameters
+        ----------
+        message : str
+            Message that will overwrite the current shout of a group.
+
+        Returns
+        -------
+        int
+        """
         shout_req = await self.requests.patch(
             url=endpoint+ f"/v1/groups/{self.id}/status",
             data={
@@ -63,6 +75,13 @@ class Group:
         return shout_req.status_code == 200
 
     async def get_roles(self):
+        """
+        Gets all roles of the group.
+
+        Returns
+        -------
+        list
+        """
         role_req = await self.requests.get(
             url=endpoint + f"/v1/groups/{self.id}/roles"
         )

@@ -1,6 +1,6 @@
 """
 
-IRA PUT THINGS HERE
+This file contains classes and functions related to Roblox roles.
 
 """
 
@@ -32,6 +32,17 @@ class RolePermissions(enum.Enum):
 
 
 def get_rp_names(rp):
+    """
+    Converts permissions into something Roblox can read.
+
+    Parameters
+    ----------
+    rp : ro_py.roles.RolePermissions
+
+    Returns
+    -------
+    dict
+    """
     return {
         "viewWall": rp.view_wall,
         "PostToWall": rp.post_to_wall,
@@ -75,6 +86,9 @@ class Role:
         self.member_count = role_data['memberCount']
 
     async def update(self):
+        """
+        Updates information of the role.
+        """
         update_req = await self.requests.get(
             url=endpoint + f"/v1/groups/{self.group.id}/roles"
         )
@@ -88,6 +102,22 @@ class Role:
                 break
 
     async def edit(self, name=None, description=None, rank=None):
+        """
+        Edits the name, description or rank of a role
+
+        Parameters
+        ----------
+        name : str, optional
+            New name for the role.
+        description : str, optional
+            New description for the role.
+        rank : int, optional
+            Number from 1-254 that determains the new rank number for the role.
+
+        Returns
+        -------
+        int
+        """
         edit_req = await self.requests.patch(
             url=endpoint + f"/v1/groups/{self.group.id}/rolesets/{self.id}",
             data={
@@ -99,6 +129,18 @@ class Role:
         return edit_req.status_code == 200
 
     async def edit_permissions(self, role_permissions):
+        """
+        Edits the permissions of a role.
+
+        Parameters
+        ----------
+        role_permissions : ro_py.roles.RolePermissions
+            New permissions that will overwrite the old ones.
+
+        Returns
+        -------
+        int
+        """
         data = {
             "permissions": {}
         }
