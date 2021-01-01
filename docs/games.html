@@ -66,13 +66,12 @@ class Game:
         self.max_players = None
         self.studio_access_to_apis_allowed = None
         self.create_vip_servers_allowed = None
-        self.update()
 
-    def update(self):
+    async def update(self):
         &#34;&#34;&#34;
         Updates the game&#39;s information.
         &#34;&#34;&#34;
-        game_info_req = self.requests.get(
+        game_info_req = await self.requests.get(
             url=endpoint + &#34;v1/games&#34;,
             params={
                 &#34;universeIds&#34;: str(self.id)
@@ -93,11 +92,11 @@ class Game:
         self.studio_access_to_apis_allowed = game_info[&#34;studioAccessToApisAllowed&#34;]
         self.create_vip_servers_allowed = game_info[&#34;createVipServersAllowed&#34;]
 
-    def get_votes(self):
+    async def get_votes(self):
         &#34;&#34;&#34;
         :return: An instance of Votes
         &#34;&#34;&#34;
-        votes_info_req = self.requests.get(
+        votes_info_req = await self.requests.get(
             url=endpoint + &#34;v1/games/votes&#34;,
             params={
                 &#34;universeIds&#34;: str(self.id)
@@ -108,12 +107,12 @@ class Game:
         votes = Votes(votes_info)
         return votes
 
-    def get_badges(self):
+    async def get_badges(self):
         &#34;&#34;&#34;
         Gets the game&#39;s badges.
         This will be updated soon to use the new Page object.
         &#34;&#34;&#34;
-        badges_req = self.requests.get(
+        badges_req = await self.requests.get(
             url=f&#34;https://badges.roblox.com/v1/universes/{self.id}/badges&#34;,
             params={
                 &#34;limit&#34;: 100,
@@ -191,13 +190,12 @@ This class represents multiple game-related endpoints.</p></div>
         self.max_players = None
         self.studio_access_to_apis_allowed = None
         self.create_vip_servers_allowed = None
-        self.update()
 
-    def update(self):
+    async def update(self):
         &#34;&#34;&#34;
         Updates the game&#39;s information.
         &#34;&#34;&#34;
-        game_info_req = self.requests.get(
+        game_info_req = await self.requests.get(
             url=endpoint + &#34;v1/games&#34;,
             params={
                 &#34;universeIds&#34;: str(self.id)
@@ -218,11 +216,11 @@ This class represents multiple game-related endpoints.</p></div>
         self.studio_access_to_apis_allowed = game_info[&#34;studioAccessToApisAllowed&#34;]
         self.create_vip_servers_allowed = game_info[&#34;createVipServersAllowed&#34;]
 
-    def get_votes(self):
+    async def get_votes(self):
         &#34;&#34;&#34;
         :return: An instance of Votes
         &#34;&#34;&#34;
-        votes_info_req = self.requests.get(
+        votes_info_req = await self.requests.get(
             url=endpoint + &#34;v1/games/votes&#34;,
             params={
                 &#34;universeIds&#34;: str(self.id)
@@ -233,12 +231,12 @@ This class represents multiple game-related endpoints.</p></div>
         votes = Votes(votes_info)
         return votes
 
-    def get_badges(self):
+    async def get_badges(self):
         &#34;&#34;&#34;
         Gets the game&#39;s badges.
         This will be updated soon to use the new Page object.
         &#34;&#34;&#34;
-        badges_req = self.requests.get(
+        badges_req = await self.requests.get(
             url=f&#34;https://badges.roblox.com/v1/universes/{self.id}/badges&#34;,
             params={
                 &#34;limit&#34;: 100,
@@ -254,7 +252,7 @@ This class represents multiple game-related endpoints.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.games.Game.get_badges"><code class="name flex">
-<span>def <span class="ident">get_badges</span></span>(<span>self)</span>
+<span>async def <span class="ident">get_badges</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the game's badges.
@@ -263,12 +261,12 @@ This will be updated soon to use the new Page object.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_badges(self):
+<pre><code class="python">async def get_badges(self):
     &#34;&#34;&#34;
     Gets the game&#39;s badges.
     This will be updated soon to use the new Page object.
     &#34;&#34;&#34;
-    badges_req = self.requests.get(
+    badges_req = await self.requests.get(
         url=f&#34;https://badges.roblox.com/v1/universes/{self.id}/badges&#34;,
         params={
             &#34;limit&#34;: 100,
@@ -283,7 +281,7 @@ This will be updated soon to use the new Page object.</p></div>
 </details>
 </dd>
 <dt id="ro_py.games.Game.get_votes"><code class="name flex">
-<span>def <span class="ident">get_votes</span></span>(<span>self)</span>
+<span>async def <span class="ident">get_votes</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>:return: An instance of Votes</p></div>
@@ -291,11 +289,11 @@ This will be updated soon to use the new Page object.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_votes(self):
+<pre><code class="python">async def get_votes(self):
     &#34;&#34;&#34;
     :return: An instance of Votes
     &#34;&#34;&#34;
-    votes_info_req = self.requests.get(
+    votes_info_req = await self.requests.get(
         url=endpoint + &#34;v1/games/votes&#34;,
         params={
             &#34;universeIds&#34;: str(self.id)
@@ -308,7 +306,7 @@ This will be updated soon to use the new Page object.</p></div>
 </details>
 </dd>
 <dt id="ro_py.games.Game.update"><code class="name flex">
-<span>def <span class="ident">update</span></span>(<span>self)</span>
+<span>async def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Updates the game's information.</p></div>
@@ -316,11 +314,11 @@ This will be updated soon to use the new Page object.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def update(self):
+<pre><code class="python">async def update(self):
     &#34;&#34;&#34;
     Updates the game&#39;s information.
     &#34;&#34;&#34;
-    game_info_req = self.requests.get(
+    game_info_req = await self.requests.get(
         url=endpoint + &#34;v1/games&#34;,
         params={
             &#34;universeIds&#34;: str(self.id)
