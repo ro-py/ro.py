@@ -1,6 +1,47 @@
 endpoint = "https://groups.roblox.com"
 
 
+class RolePermissions(enum.Enum):
+    """
+    Represents role permissions.
+    """
+    view_wall = None
+    post_to_wall = None
+    delete_from_wall = None
+    view_status = None
+    post_to_status = None
+    change_rank = None
+    invite_members = None
+    remove_members = None
+    manage_relationships = None
+    view_audit_logs = None
+    spend_group_funds = None
+    advertise_group = None
+    create_items = None
+    manage_items = None
+    manage_group_games = None
+
+
+def get_rp_names(rp):
+    return {
+        "viewWall": rp.view_wall,
+        "PostToWall": rp.post_to_wall,
+        "deleteFromWall": rp.delete_from_wall,
+        "viewStatus": rp.view_status,
+        "postToStatus": rp.post_to_status,
+        "changeRank": rp.change_rank,
+        "inviteMembers": rp.invite_members,
+        "removeMembers": rp.remove_members,
+        "manageRelationships": rp.manage_relationships,
+        "viewAuditLogs": rp.view_audit_logs,
+        "spendGroupFunds": rp.spend_group_funds,
+        "advertiseGroup": rp.advertise_group,
+        "createItems": rp.create_items,
+        "manageItems": rp.manage_items,
+        "manageGroupGames": rp.manage_group_games
+    }
+
+
 class Role:
     """
     Represents a role
@@ -48,6 +89,18 @@ class Role:
         )
         return edit_req.status_code == 200
 
-    # TODO:
-    async def edit_permissions(self):
-        pass
+    async def edit_permissions(self, role_permissions):
+        data = {
+            "permissions": {}
+        }
+
+        for key, value in get_rp_names(role_permissions):
+            if value is True or False:
+                data['permissions'][key] = value
+
+        edit_req = await self.requests.patch(
+            url=endpoint + f"/v1/groups/{self.group.id}/roles/{self.id}/permissions",
+            data=data
+        )
+
+        return edit_req.status_code == 200
