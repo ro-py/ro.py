@@ -35,8 +35,6 @@ class Group:
         self.public_entry_allowed = None
         self.shout = None
 
-        self.update()
-
     async def update(self):
         """
         Updates the group's information.
