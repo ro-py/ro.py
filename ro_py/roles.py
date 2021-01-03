@@ -81,7 +81,7 @@ class Role:
         self.group = group
         self.id = role_data['id']
         self.name = role_data['name']
-        self.description = role_data['description']
+        self.description = role_data.get('description')
         self.rank = role_data['rank']
         self.member_count = role_data['memberCount']
 
