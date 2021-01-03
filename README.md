@@ -10,21 +10,7 @@ pip3 install ro-py
 ```
 
 ## Examples
-Using the client:
-```python
-from ro_py.client import Client
-client = Client("Token goes here")  # Token is optional, but allows for authentication!
-```
-Viewing a user's info:
-```python
-from ro_py.client import Client
-client = Client()
-user_id = 576059883
-user = client.get_user(user_id)
-print(f"Username: {user.name}")
-print(f"Status: {user.get_status() or 'None.'}")
-```
-Find more examples in the examples folder.
+(Update: I'm writing new examples. For now, look in the examples folder.)
 
 ## Credits
 [@iranathan](https://github.com/iranathan) - maintainer
