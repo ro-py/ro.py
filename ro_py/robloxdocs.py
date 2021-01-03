@@ -10,9 +10,25 @@ from lxml import html
 from io import StringIO
 
 
+class EndpointDocsPathRequestTypeParameters:
+    def __init__(self):
+        pass
+
+
+class EndpointDocsPathRequestType:
+    def __init__(self, data):
+        self.tags = data["tags"]
+        self.summary = data["summary"]
+        self.description = data["description"]
+        self.consumes = data["consumes"]
+        self.produces = data["produces"]
+
+
 class EndpointDocsPath:
     def __init__(self, data):
         self.data = data
+        for type_k, type_v in self.data:
+            setattr(self, type_k, EndpointDocsPathRequestType(type_v))
 
 
 class EndpointDocsDataInfo:
