@@ -10,6 +10,11 @@ from lxml import html
 from io import StringIO
 
 
+class EndpointDocsPath:
+    def __init__(self, data):
+        self.data = data
+
+
 class EndpointDocsDataInfo:
     def __init__(self, data):
         self.version = data["version"]
@@ -22,6 +27,9 @@ class EndpointDocsData:
         self.info = EndpointDocsDataInfo(data["info"])
         self.host = data["host"]
         self.schemes = data["schemes"]
+        self.paths = {}
+        for path_k, path_v in data["paths"].items():
+            self.paths[path_k] = EndpointDocsPath(path_v)
 
 
 class EndpointDocs:
