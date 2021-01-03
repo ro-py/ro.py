@@ -18,25 +18,43 @@ class EndpointDocsPathRequestTypeProperties:
 
 class EndpointDocsPathRequestTypeResponse:
     def __init__(self, data):
-        self.description = data["description"]
-        self.schema = data["schema"]
+        self.description = None
+        self.schema = None
+        if "description" in data:
+            self.description = data["description"]
+        if "schema" in data:
+            self.schema = data["schema"]
 
 
 class EndpointDocsPathRequestTypeParameter:
     def __init__(self, data):
         self.name = data["name"]
         self.iin = data["in"]  # I can't make this say "in" so this is close enough
-        self.description = data["description"]
+
+        if "description" in data:
+            self.description = data["description"]
+        else:
+            self.description = None
+
         self.required = data["required"]
         self.type = data["type"]  # TODO: actually convert this to python types
-        self.format = data["format"]
+
+        if "format" in data:
+            self.format = data["format"]
+        else:
+            self.format = None
 
 
 class EndpointDocsPathRequestType:
     def __init__(self, data):
         self.tags = data["tags"]
         self.summary = data["summary"]
-        self.description = data["description"]
+
+        if "description" in data:
+            self.description = data["description"]
+        else:
+            self.description = None
+
         self.consumes = data["consumes"]
         self.produces = data["produces"]
         self.parameters = []
@@ -44,14 +62,14 @@ class EndpointDocsPathRequestType:
         self.properties = EndpointDocsPathRequestTypeProperties(data["properties"])
         for raw_parameter in data["parameters"]:
             self.parameters.append(EndpointDocsPathRequestTypeParameter(raw_parameter))
-        for rr_k, rr_v in data["responses"]:
+        for rr_k, rr_v in data["responses"].items():
             self.responses[rr_k] = EndpointDocsPathRequestTypeResponse(rr_v)
 
 
 class EndpointDocsPath:
     def __init__(self, data):
         self.data = data
-        for type_k, type_v in self.data:
+        for type_k, type_v in self.data.items():
             setattr(self, type_k, EndpointDocsPathRequestType(type_v))
 
 
@@ -78,7 +96,7 @@ class EndpointDocs:
         self.url = docs_url
 
     async def get_versions(self):
-        docs_req = self.requests.get(self.url + "/docs")
+        docs_req = await self.requests.get(self.url + "/docs")
         root = html.parse(StringIO(docs_req.text)).getroot()
         try:
             vs_element = root.get_element_by_id("version-selector")
@@ -87,6 +105,6 @@ class EndpointDocs:
             return ["v1"]
 
     async def get_data_for_version(self, version):
-        data_req = self.requests.get(self.url + "/docs/json/" + version)
+        data_req = await self.requests.get(self.url + "/docs/json/" + version)
         version_data = data_req.json()
         return EndpointDocsData(version_data)
