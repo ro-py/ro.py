@@ -10,9 +10,26 @@ from lxml import html
 from io import StringIO
 
 
-class EndpointDocsPathRequestTypeParameters:
-    def __init__(self):
-        pass
+class EndpointDocsPathRequestTypeProperties:
+    def __init__(self, data):
+        self.internal = data["internal"]
+        self.metric_ids = data["metricIds"]
+
+
+class EndpointDocsPathRequestTypeResponse:
+    def __init__(self, data):
+        self.description = data["description"]
+        self.schema = data["schema"]
+
+
+class EndpointDocsPathRequestTypeParameter:
+    def __init__(self, data):
+        self.name = data["name"]
+        self.iin = data["in"]  # I can't make this say "in" so this is close enough
+        self.description = data["description"]
+        self.required = data["required"]
+        self.type = data["type"]  # TODO: actually convert this to python types
+        self.format = data["format"]
 
 
 class EndpointDocsPathRequestType:
@@ -22,6 +39,13 @@ class EndpointDocsPathRequestType:
         self.description = data["description"]
         self.consumes = data["consumes"]
         self.produces = data["produces"]
+        self.parameters = []
+        self.responses = {}
+        self.properties = EndpointDocsPathRequestTypeProperties(data["properties"])
+        for raw_parameter in data["parameters"]:
+            self.parameters.append(EndpointDocsPathRequestTypeParameter(raw_parameter))
+        for rr_k, rr_v in data["responses"]:
+            self.responses[rr_k] = EndpointDocsPathRequestTypeResponse(rr_v)
 
 
 class EndpointDocsPath:
