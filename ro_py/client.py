@@ -62,8 +62,6 @@ class Client:
             logging.debug("Initialized chat wrapper.")
             self.trade = TradesWrapper(self.requests)
             logging.debug("Initialized trade wrapper.")
-        else:
-            logging.warning("The active client is not authenticated, so some features will not be enabled.")
 
     async def get_user(self, user_id):
         """
