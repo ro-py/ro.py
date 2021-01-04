@@ -15,6 +15,7 @@ from ro_py.utilities.cache import CacheType
 from ro_py.utilities.requests import Requests
 from ro_py.accountsettings import AccountSettings
 from ro_py.accountinformation import AccountInformation
+from ro_py.utilities.errors import UserDoesNotExistError
 
 import logging
 
@@ -78,6 +79,38 @@ class Client:
             self.requests.cache.set(CacheType.Users, user_id, user)
             await user.update()
         return user
+
+    async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False):
+        """
+        Gets a Roblox user by their username..
+
+        Parameters
+        ----------
+        user_name : str
+            Name of the user to generate the object from.
+        exclude_banned_users : bool
+            Whether to exclude banned users in the request.
+        """
+        username_req = await self.requests.post(
+            url="https://users.roblox.com/v1/usernames/users",
+            data={
+                "usernames": [
+                    user_name
+                ],
+                "excludeBannedUsers": exclude_banned_users
+            }
+        )
+        username_data = username_req.json()
+        if len(username_data["data"]) > 0:
+            user_id = username_req.json()["data"][0]["id"]  # TODO: make this a partialuser
+            user = self.requests.cache.get(CacheType.Users, user_id)
+            if not user:
+                user = User(self.requests, user_id)
+                self.requests.cache.set(CacheType.Users, user_id, user)
+                await user.update()
+            return user
+        else:
+            raise UserDoesNotExistError
 
     async def get_group(self, group_id):
         """
