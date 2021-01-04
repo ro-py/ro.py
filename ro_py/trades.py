@@ -21,7 +21,7 @@ def trade_page_handler(requests, this_page) -> list:
 
 
 class Trade:
-    def __init__(self, requests, trade_id: int, sender: User, recieve_items: list[Asset], send_items: list[Asset], created, expiration, status: bool):
+    def __init__(self, requests, trade_id: int, sender: User, recieve_items, send_items, created, expiration, status: bool):
         self.trade_id = trade_id
         self.requests = requests
         self.sender = sender

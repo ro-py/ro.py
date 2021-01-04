@@ -14,7 +14,7 @@ class Page:
     """
     Represents a single page from a Pages object.
     """
-    def __init__(self, requests, data, handler=None):
+    def __init__(self, requests, data, handler=None, handler_args=None):
         self.previous_page_cursor = data["previousPageCursor"]
         """Cursor to navigate to the previous page."""
         self.next_page_cursor = data["nextPageCursor"]
@@ -24,7 +24,7 @@ class Page:
         """Raw data from this page."""
 
         if handler:
-            self.data = handler(requests, self.data)
+            self.data = handler(requests, self.data, handler_args)
 
 
 class Pages:
@@ -36,7 +36,7 @@ class Pages:
         Automatic page caching will be added in the future. It is suggested to
         cache the pages yourself if speed is required.
     """
-    def __init__(self, requests, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None):
+    def __init__(self, requests, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None, handler_args=None):
         if extra_parameters is None:
             extra_parameters = {}
 
@@ -72,7 +72,8 @@ class Pages:
         return Page(
             requests=self.requests,
             data=page_req.json(),
-            handler=self.handler
+            handler=self.handler,
+            handler_args=handler_args
         )
 
     async def previous(self):

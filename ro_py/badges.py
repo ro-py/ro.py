@@ -37,13 +37,12 @@ class Badge:
         self.display_description = None
         self.enabled = None
         self.statistics = None
-        self.update()
 
-    def update(self):
+    async def update(self):
         """
         Updates the badge's information.
         """
-        badge_info_req = self.requests.get(endpoint + f"v1/badges/{self.id}")
+        badge_info_req = await self.requests.get(endpoint + f"v1/badges/{self.id}")
         badge_info = badge_info_req.json()
         self.name = badge_info["name"]
         self.description = badge_info["description"]
