@@ -41,7 +41,7 @@ class Role:
         edit_req = await self.requests.patch(
             url=endpoint + f"/v1/groups/{self.group.id}/rolesets/{self.id}",
             data={
-                "description": description if description else self.description
+                "description": description if description else self.description,
                 "name": name if name else self.name,
                 "rank": rank if rank else self.rank
             }
