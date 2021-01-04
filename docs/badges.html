@@ -66,13 +66,12 @@ class Badge:
         self.display_description = None
         self.enabled = None
         self.statistics = None
-        self.update()
 
-    def update(self):
+    async def update(self):
         &#34;&#34;&#34;
         Updates the badge&#39;s information.
         &#34;&#34;&#34;
-        badge_info_req = self.requests.get(endpoint + f&#34;v1/badges/{self.id}&#34;)
+        badge_info_req = await self.requests.get(endpoint + f&#34;v1/badges/{self.id}&#34;)
         badge_info = badge_info_req.json()
         self.name = badge_info[&#34;name&#34;]
         self.description = badge_info[&#34;description&#34;]
@@ -133,13 +132,12 @@ class Badge:
         self.display_description = None
         self.enabled = None
         self.statistics = None
-        self.update()
 
-    def update(self):
+    async def update(self):
         &#34;&#34;&#34;
         Updates the badge&#39;s information.
         &#34;&#34;&#34;
-        badge_info_req = self.requests.get(endpoint + f&#34;v1/badges/{self.id}&#34;)
+        badge_info_req = await self.requests.get(endpoint + f&#34;v1/badges/{self.id}&#34;)
         badge_info = badge_info_req.json()
         self.name = badge_info[&#34;name&#34;]
         self.description = badge_info[&#34;description&#34;]
@@ -156,7 +154,7 @@ class Badge:
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.badges.Badge.update"><code class="name flex">
-<span>def <span class="ident">update</span></span>(<span>self)</span>
+<span>async def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Updates the badge's information.</p></div>
@@ -164,11 +162,11 @@ class Badge:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def update(self):
+<pre><code class="python">async def update(self):
     &#34;&#34;&#34;
     Updates the badge&#39;s information.
     &#34;&#34;&#34;
-    badge_info_req = self.requests.get(endpoint + f&#34;v1/badges/{self.id}&#34;)
+    badge_info_req = await self.requests.get(endpoint + f&#34;v1/badges/{self.id}&#34;)
     badge_info = badge_info_req.json()
     self.name = badge_info[&#34;name&#34;]
     self.description = badge_info[&#34;description&#34;]

@@ -47,7 +47,6 @@ class Asset:
         self.is_limited_unique = None
         self.minimum_membership_level = None
         self.content_rating_type_id = None
-        self.update()
 
     async def update(self):
         """

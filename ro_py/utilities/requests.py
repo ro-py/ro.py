@@ -102,3 +102,27 @@ class Requests:
             return patch_request
 
         raise ApiError(f"[{str(patch_request.status_code)}] {patch_request_error[0]['message']}")
+
+    async def delete(self, *args, **kwargs):
+        """
+        Essentially identical to requests_async.Session.delete.
+        """
+
+        delete_request = await self.session.delete(*args, **kwargs)
+
+        if delete_request.status_code == 403:
+            if "X-CSRF-TOKEN" in delete_request.headers:
+                self.session.headers['X-CSRF-TOKEN'] = delete_request.headers["X-CSRF-TOKEN"]
+                delete_request = await self.session.delete(*args, **kwargs)
+
+        delete_request_json = delete_request.json()
+
+        if isinstance(delete_request_json, dict):
+            try:
+                delete_request_error = delete_request_json["errors"]
+            except KeyError:
+                return delete_request
+        else:
+            return delete_request
+
+        raise ApiError(f"[{str(delete_request.status_code)}] {delete_request_error[0]['message']}")

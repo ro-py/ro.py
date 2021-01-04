@@ -34,8 +34,9 @@ This file houses functions and classes that pertain to Roblox groups.
 &#34;&#34;&#34;
 
 from ro_py.users import User
+from ro_py.roles import Role
 
-endpoint = &#34;https://groups.roblox.com/&#34;
+endpoint = &#34;https://groups.roblox.com&#34;
 
 
 class Shout:
@@ -63,13 +64,11 @@ class Group:
         self.public_entry_allowed = None
         self.shout = None
 
-        self.update()
-
     async def update(self):
         &#34;&#34;&#34;
         Updates the group&#39;s information.
         &#34;&#34;&#34;
-        group_info_req = await self.requests.get(endpoint + f&#34;v1/groups/{self.id}&#34;)
+        group_info_req = await self.requests.get(endpoint + f&#34;/v1/groups/{self.id}&#34;)
         group_info = group_info_req.json()
         self.name = group_info[&#34;name&#34;]
         self.description = group_info[&#34;description&#34;]
@@ -85,12 +84,21 @@ class Group:
 
     async def update_shout(self, message):
         shout_req = await self.requests.patch(
-            url=f&#34;https://groups.roblox.com/v1/groups/{self.id}/status&#34;,
+            url=endpoint+ f&#34;/v1/groups/{self.id}/status&#34;,
             data={
                 &#34;message&#34;: message
             }
         )
-        return shout_req.status_code == 200</code></pre>
+        return shout_req.status_code == 200
+
+    async def get_roles(self):
+        role_req = await self.requests.get(
+            url=endpoint + f&#34;/v1/groups/{self.id}/roles&#34;
+        )
+        roles = []
+        for role in role_req.json()[&#39;roles&#39;]:
+            roles.append(Role(self.requests, self, role))
+        return roles</code></pre>
 </details>
 </section>
 <section>
@@ -128,13 +136,11 @@ class Group:
         self.public_entry_allowed = None
         self.shout = None
 
-        self.update()
-
     async def update(self):
         &#34;&#34;&#34;
         Updates the group&#39;s information.
         &#34;&#34;&#34;
-        group_info_req = await self.requests.get(endpoint + f&#34;v1/groups/{self.id}&#34;)
+        group_info_req = await self.requests.get(endpoint + f&#34;/v1/groups/{self.id}&#34;)
         group_info = group_info_req.json()
         self.name = group_info[&#34;name&#34;]
         self.description = group_info[&#34;description&#34;]
@@ -150,15 +156,43 @@ class Group:
 
     async def update_shout(self, message):
         shout_req = await self.requests.patch(
-            url=f&#34;https://groups.roblox.com/v1/groups/{self.id}/status&#34;,
+            url=endpoint+ f&#34;/v1/groups/{self.id}/status&#34;,
             data={
                 &#34;message&#34;: message
             }
         )
-        return shout_req.status_code == 200</code></pre>
+        return shout_req.status_code == 200
+
+    async def get_roles(self):
+        role_req = await self.requests.get(
+            url=endpoint + f&#34;/v1/groups/{self.id}/roles&#34;
+        )
+        roles = []
+        for role in role_req.json()[&#39;roles&#39;]:
+            roles.append(Role(self.requests, self, role))
+        return roles</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
+<dt id="ro_py.groups.Group.get_roles"><code class="name flex">
+<span>async def <span class="ident">get_roles</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_roles(self):
+    role_req = await self.requests.get(
+        url=endpoint + f&#34;/v1/groups/{self.id}/roles&#34;
+    )
+    roles = []
+    for role in role_req.json()[&#39;roles&#39;]:
+        roles.append(Role(self.requests, self, role))
+    return roles</code></pre>
+</details>
+</dd>
 <dt id="ro_py.groups.Group.update"><code class="name flex">
 <span>async def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
@@ -172,7 +206,7 @@ class Group:
     &#34;&#34;&#34;
     Updates the group&#39;s information.
     &#34;&#34;&#34;
-    group_info_req = await self.requests.get(endpoint + f&#34;v1/groups/{self.id}&#34;)
+    group_info_req = await self.requests.get(endpoint + f&#34;/v1/groups/{self.id}&#34;)
     group_info = group_info_req.json()
     self.name = group_info[&#34;name&#34;]
     self.description = group_info[&#34;description&#34;]
@@ -197,7 +231,7 @@ class Group:
 </summary>
 <pre><code class="python">async def update_shout(self, message):
     shout_req = await self.requests.patch(
-        url=f&#34;https://groups.roblox.com/v1/groups/{self.id}/status&#34;,
+        url=endpoint+ f&#34;/v1/groups/{self.id}/status&#34;,
         data={
             &#34;message&#34;: message
         }
@@ -245,6 +279,7 @@ class Group:
 <li>
 <h4><code><a title="ro_py.groups.Group" href="#ro_py.groups.Group">Group</a></code></h4>
 <ul class="">
+<li><code><a title="ro_py.groups.Group.get_roles" href="#ro_py.groups.Group.get_roles">get_roles</a></code></li>
 <li><code><a title="ro_py.groups.Group.update" href="#ro_py.groups.Group.update">update</a></code></li>
 <li><code><a title="ro_py.groups.Group.update_shout" href="#ro_py.groups.Group.update_shout">update_shout</a></code></li>
 </ul>

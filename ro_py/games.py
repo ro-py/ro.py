@@ -37,13 +37,12 @@ class Game:
         self.max_players = None
         self.studio_access_to_apis_allowed = None
         self.create_vip_servers_allowed = None
-        self.update()
 
-    def update(self):
+    async def update(self):
         """
         Updates the game's information.
         """
-        game_info_req = self.requests.get(
+        game_info_req = await self.requests.get(
             url=endpoint + "v1/games",
             params={
                 "universeIds": str(self.id)
@@ -64,11 +63,11 @@ class Game:
         self.studio_access_to_apis_allowed = game_info["studioAccessToApisAllowed"]
         self.create_vip_servers_allowed = game_info["createVipServersAllowed"]
 
-    def get_votes(self):
+    async def get_votes(self):
         """
         :return: An instance of Votes
         """
-        votes_info_req = self.requests.get(
+        votes_info_req = await self.requests.get(
             url=endpoint + "v1/games/votes",
             params={
                 "universeIds": str(self.id)
@@ -79,12 +78,12 @@ class Game:
         votes = Votes(votes_info)
         return votes
 
-    def get_badges(self):
+    async def get_badges(self):
         """
         Gets the game's badges.
         This will be updated soon to use the new Page object.
         """
-        badges_req = self.requests.get(
+        badges_req = await self.requests.get(
             url=f"https://badges.roblox.com/v1/universes/{self.id}/badges",
             params={
                 "limit": 100,

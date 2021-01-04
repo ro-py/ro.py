@@ -33,3 +33,7 @@ class ChatError(Exception):
 
 class InvalidPageError(Exception):
     """Called when an invalid page is requested."""
+
+
+class UserDoesNotExistError(Exception):
+    """Called when a user does not exist."""
