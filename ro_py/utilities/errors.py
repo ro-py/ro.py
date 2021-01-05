@@ -33,3 +33,7 @@ class ChatError(Exception):
 
 class InvalidPageError(Exception):
     """Called when an invalid page is requested."""
+
+
+class NotFound(Exception):
+    """Called when something is not found."""

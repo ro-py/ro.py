@@ -7,6 +7,7 @@ import iso8601
 from typing import List
 from ro_py.users import User
 from ro_py.roles import Role
+from ro_py.utilities.errors import NotFound
 from ro_py.utilities.pages import Pages, SortOrder
 
 endpoint = "https://groups.roblox.com"
@@ -129,3 +130,58 @@ class Group:
             handler_args=self
         )
         return wall_req
+
+    async def get_member_by_id(self, roblox_id):
+        # Get list of group user is in.
+        member_req = await self.requests.get(
+            url=endpoint + f"/v2/users/{roblox_id}/groups/roles"
+        )
+        data = member_req.json()
+
+        # Find group in list.
+        group_data = None
+        for group in data['data']:
+            if group['group']['id'] == self.id:
+                group_data = group
+                break
+
+        # Check if user is in group.
+        if not group_data:
+            raise NotFound(f"The user {roblox_id} was not found in group {self.id}")
+
+        # Create data to return.
+        role = Role(self.requests, self, group_data['role'])
+        member = Member(self.requests, roblox_id, None, self, role)
+        return await member.update()
+
+
+class Member(User):
+    """
+    Represents a user in a group.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+            Requests object to use for API requests.
+    roblox_id : int
+            The id of a user.
+    name : str
+            The name of the user.
+    group : ro_py.groups.Group
+            The group the user is in.
+    role : ro_py.roles.Role
+            The role the user has is the group.
+    """
+    def __init__(self, requests, roblox_id, name=None, group=None, role=None):
+        super().__init__(requests, roblox_id, name)
+        self.role = role
+        self.group = group
+
+    async def promote(self):
+        pass
+
+    async def demote(self):
+        pass
+
+    async def setrank(self):
+        pass
