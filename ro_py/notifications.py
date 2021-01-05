@@ -14,7 +14,7 @@ from ro_py.utilities.caseconvert import to_snake_case
 from signalrcore.hub_connection_builder import HubConnectionBuilder
 from urllib.parse import quote
 import json
-import logging
+import asyncio
 
 
 class Notification:
@@ -68,7 +68,15 @@ class NotificationReceiver:
         self.on_notification = on_notification
 
         self.roblosecurity = self.requests.session.cookies[".ROBLOSECURITY"]
-        self.negotiate_request = self.requests.get(
+        self.connection = None
+
+        self.negotiate_request = None
+        self.wss_url = None
+
+    async def initialize(self):
+        loop = asyncio.new_event_loop()
+
+        self.negotiate_request = await self.requests.get(
             url="https://realtime.roblox.com/notifications/negotiate"
                 "?clientProtocol=1.5"
                 "&connectionData=%5B%7B%22name%22%3A%22usernotificationhub%22%7D%5D",
@@ -100,12 +108,7 @@ class NotificationReceiver:
                 return
             if len(notification_json) > 0:
                 notification = Notification(notification_json)
-                self.on_notification(notification)
-                logging.debug(
-                    f"""Notification:
-Type: {notification.type}
-Data: {notification.data}"""
-                )
+                loop.run_until_complete(self.on_notification(notification))
             else:
                 return
 
@@ -126,7 +129,7 @@ Data: {notification.data}"""
 
         self.connection.start()
 
-    def close(self):
+    async def close(self):
         """
         Closes the connection and stops receiving notifications.
         """
