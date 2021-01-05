@@ -37,7 +37,10 @@ class EndpointDocsPathRequestTypeParameter:
             self.description = None
 
         self.required = data["required"]
-        self.type = data["type"]  # TODO: actually convert this to python types
+        self.type = None
+
+        if "type" in data:
+            self.type = data["type"]
 
         if "format" in data:
             self.format = data["format"]
@@ -48,12 +51,14 @@ class EndpointDocsPathRequestTypeParameter:
 class EndpointDocsPathRequestType:
     def __init__(self, data):
         self.tags = data["tags"]
-        self.summary = data["summary"]
+        self.description = None
+        self.summary = None
+
+        if "summary" in data:
+            self.summary = data["summary"]
 
         if "description" in data:
             self.description = data["description"]
-        else:
-            self.description = None
 
         self.consumes = data["consumes"]
         self.produces = data["produces"]
@@ -68,9 +73,9 @@ class EndpointDocsPathRequestType:
 
 class EndpointDocsPath:
     def __init__(self, data):
-        self.data = data
-        for type_k, type_v in self.data.items():
-            setattr(self, type_k, EndpointDocsPathRequestType(type_v))
+        self.data = {}
+        for type_k, type_v in data.items():
+            self.data[type_k] = EndpointDocsPathRequestType(type_v)
 
 
 class EndpointDocsDataInfo:

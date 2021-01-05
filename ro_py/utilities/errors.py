@@ -37,3 +37,8 @@ class InvalidPageError(Exception):
 
 class NotFound(Exception):
     """Called when something is not found."""
+
+
+class UserDoesNotExistError(Exception):
+    """Called when a user does not exist."""
+

@@ -63,11 +63,11 @@ class Conversation:
 
         self.typing = ConversationTyping(self.requests, conversation_id)
 
-    def get_message(self, message_id):
+    async def get_message(self, message_id):
         return Message(self.requests, message_id, self.id)
 
-    def send_message(self, content):
-        send_message_req = self.requests.post(
+    async def send_message(self, content):
+        send_message_req = await self.requests.post(
             url=endpoint + "v2/send-message",
             data={
                 "message": content,
@@ -146,7 +146,7 @@ class ChatWrapper:
         """
         Gets the list of conversations. This will be updated soon to use the new Pages object, so it is not documented.
         """
-        conversations_req = self.requests.get(
+        conversations_req = await self.requests.get(
             url="https://chat.roblox.com/v2/get-user-conversations",
             params={
                 "pageNumber": page_number,
