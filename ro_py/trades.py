@@ -6,7 +6,7 @@ This file houses functions and classes that pertain to Roblox trades and trading
 
 from ro_py.utilities.pages import Pages, SortOrder
 from ro_py.assets import Asset
-from ro_py.users import User
+from ro_py.users import User, PartialUser
 import iso8601
 import enum
 
@@ -16,12 +16,12 @@ endpoint = "https://trades.roblox.com"
 def trade_page_handler(requests, this_page) -> list:
     trades_out = []
     for raw_trade in this_page:
-        trades_out.append(Trade(requests, raw_trade["id"], User(requests, raw_trade["user"]['id'], raw_trade['user']['name']), raw_trade['created'], raw_trade['expiration'], raw_trade['status']))
+        trades_out.append(PartialTrade(requests, raw_trade["id"], PartialUser(requests, raw_trade["user"]['id'], raw_trade['user']['name']), raw_trade['created'], raw_trade['expiration'], raw_trade['status']))
     return trades_out
 
 
 class Trade:
-    def __init__(self, requests, trade_id: int, sender: User, recieve_items, send_items, created, expiration, status: bool):
+    def __init__(self, requests, trade_id: int, sender: PartialUser, recieve_items, send_items, created, expiration, status: bool):
         self.trade_id = trade_id
         self.requests = requests
         self.sender = sender
@@ -53,7 +53,7 @@ class Trade:
 
 
 class PartialTrade:
-    def __init__(self, requests, trade_id: int, user: User, created, expiration, status: bool):
+    def __init__(self, requests, trade_id: int, user: PartialUser, created, expiration, status: bool):
         self.requests = requests
         self.trade_id = trade_id
         self.user = user
