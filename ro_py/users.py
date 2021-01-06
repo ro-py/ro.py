@@ -14,10 +14,19 @@ class User:
     """
     Represents a Roblox user and their profile.
     Can be initialized with either a user ID or a username.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+            Requests object to use for API requests.
+    roblox_id : int
+            The id of a user.
+    name : str
+            The name of the user.
     """
-    def __init__(self, requests, id, name=None):
+    def __init__(self, requests, roblox_id, name=None):
         self.requests = requests
-        self.id = id
+        self.id = roblox_id
         self.description = None
         self.created = None
         self.is_banned = None
@@ -38,6 +47,7 @@ class User:
         self.display_name = user_info["displayName"]
         # has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
         # self.has_premium = has_premium_req
+        return self
 
     async def get_status(self):
         """
@@ -98,3 +108,10 @@ class User:
                 User(self.requests, friend_raw["id"])
             )
         return friends_list
+
+
+class PartialUser(User):
+    """
+    Represents a user with less information then the normal User class.
+    """
+    pass

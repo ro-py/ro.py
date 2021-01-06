@@ -83,7 +83,7 @@ class Role:
         self.name = role_data['name']
         self.description = role_data.get('description')
         self.rank = role_data['rank']
-        self.member_count = role_data['memberCount']
+        self.member_count = role_data.get('memberCount')
 
     async def update(self):
         """
