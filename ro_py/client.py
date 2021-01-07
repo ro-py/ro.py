@@ -51,7 +51,7 @@ class Client:
         """TradesWrapper object. Only available for authenticated clients."""
 
         if token:
-            self.requests.session.cookies[".ROBLOSECURITY"] = token
+            self.token_login(token)
             logging.debug("Initialized token.")
             self.accountinformation = AccountInformation(self.requests)
             self.accountsettings = AccountSettings(self.requests)
@@ -63,6 +63,19 @@ class Client:
             logging.debug("Initialized chat wrapper.")
             self.trade = TradesWrapper(self.requests)
             logging.debug("Initialized trade wrapper.")
+
+    def token_login(self, token):
+        self.requests.session.cookies[".ROBLOSECURITY"] = token
+
+    async def user_login(self, username, password):
+        login_req = self.requests.post(
+            url="https://auth.roblox.com/v2/login",
+            json={
+                "ctype": "Username",
+                "cvalue": username,
+                "password": password
+            }
+        )
 
     async def get_user(self, user_id):
         """
