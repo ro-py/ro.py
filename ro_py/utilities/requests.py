@@ -35,6 +35,8 @@ class Requests:
         Essentially identical to requests_async.Session.get.
         """
 
+        quickreturn = kwargs.pop("quickreturn", False)
+
         get_request = await self.session.get(*args, **kwargs)
 
         try:
@@ -50,12 +52,17 @@ class Requests:
         else:
             return get_request
 
+        if quickreturn:
+            return get_request
+
         raise ApiError(f"[{str(get_request.status_code)}] {get_request_error[0]['message']}")
 
     async def post(self, *args, **kwargs):
         """
         Essentially identical to requests_async.Session.post.
         """
+
+        quickreturn = kwargs.pop("quickreturn", False)
 
         post_request = await self.session.post(*args, **kwargs)
 
@@ -75,6 +82,9 @@ class Requests:
             except KeyError:
                 return post_request
         else:
+            return post_request
+
+        if quickreturn:
             return post_request
 
         raise ApiError(f"[{str(post_request.status_code)}] {post_request_error[0]['message']}")
