@@ -121,7 +121,7 @@ class Group:
         return roles
 
     async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit=100):
-        wall_req = await Pages(
+        wall_req = Pages(
             requests=self.requests,
             url=endpoint + f"/v2/groups/{self.id}/wall/posts",
             sort_order=sort_order,
