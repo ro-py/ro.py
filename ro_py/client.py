@@ -11,11 +11,12 @@ from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
 from ro_py.trades import TradesWrapper
+from ro_py.captcha import UnsolvedCaptcha
 from ro_py.utilities.cache import CacheType
 from ro_py.utilities.requests import Requests
 from ro_py.accountsettings import AccountSettings
 from ro_py.accountinformation import AccountInformation
-from ro_py.utilities.errors import UserDoesNotExistError
+from ro_py.utilities.errors import UserDoesNotExistError, ApiError
 
 import logging
 
@@ -51,7 +52,7 @@ class Client:
         """TradesWrapper object. Only available for authenticated clients."""
 
         if token:
-            self.requests.session.cookies[".ROBLOSECURITY"] = token
+            self.token_login(token)
             logging.debug("Initialized token.")
             self.accountinformation = AccountInformation(self.requests)
             self.accountsettings = AccountSettings(self.requests)
@@ -63,6 +64,47 @@ class Client:
             logging.debug("Initialized chat wrapper.")
             self.trade = TradesWrapper(self.requests)
             logging.debug("Initialized trade wrapper.")
+
+    def token_login(self, token):
+        self.requests.session.cookies[".ROBLOSECURITY"] = token
+
+    async def user_login(self, username, password, token=None):
+        if token:
+            login_req = await self.requests.post(
+                url="https://auth.roblox.com/v2/login",
+                json={
+                    "cvalue": username,
+                    "ctype": "Username",
+                    "password": password,
+                    "captchaToken": token,
+                    "captchaProvider": "PROVIDER_ARKOSE_LABS"
+                }
+            )
+        else:
+            login_req = await self.requests.post(
+                url="https://auth.roblox.com/v2/login",
+                json={
+                    "ctype": "Username",
+                    "cvalue": username,
+                    "password": password
+                },
+                quickreturn=True
+            )
+            if login_req.status_code == 200:
+                # If we're here, no captcha is required and we're already logged in, so we can return.
+                return
+            elif login_req.status_code == 403:
+                # A captcha is required, so we need to return the captcha to solve.
+                field_data = login_req.json()["errors"][0]["fieldData"]
+                captcha_req = await self.requests.post(
+                    url="https://roblox-api.arkoselabs.com/fc/gt2/public_key/476068BF-9607-4799-B53D-966BE98E2B81",
+                    headers={
+                        "content-type": "application/x-www-form-urlencoded; charset=UTF-8"
+                    },
+                    data=f"public_key=476068BF-9607-4799-B53D-966BE98E2B81&data[blob]={field_data}"
+                )
+                captcha_json = captcha_req.json()
+                return UnsolvedCaptcha(captcha_json, "476068BF-9607-4799-B53D-966BE98E2B81")
 
     async def get_user(self, user_id):
         """
