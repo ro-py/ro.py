@@ -18,9 +18,17 @@ class Command:
     def __init__(self, func, **kwargs):
         if not asyncio.iscoroutinefunction(func):
             raise TypeError('Callback must be a coroutine.')
+        self._callback = func
+
+    @property
+    def callback(self):
+        return self._callback
+
+    async def __call__(self, *args, **kwargs):
+        return await self.callback(*args, **kwargs)
 
 
-def command(function, **attrs):
+def command(**attrs):
     def decorator(func):
         if isinstance(func, Command):
             raise TypeError('Callback is already a command.')
