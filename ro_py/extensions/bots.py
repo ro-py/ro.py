@@ -6,6 +6,7 @@ This extension houses functions that allow generation of Bot objects, which inte
 
 
 from ro_py.client import Client
+import asyncio
 
 
 class Bot(Client):
@@ -14,14 +15,15 @@ class Bot(Client):
 
 
 class Command:
-    def __init__(self):
-        pass
+    def __init__(self, func, **kwargs):
+        if not asyncio.iscoroutinefunction(func):
+            raise TypeError('Callback must be a coroutine.')
 
 
-def command(function):
+def command(function, **attrs):
     def decorator(func):
         if isinstance(func, Command):
             raise TypeError('Callback is already a command.')
-        return Command(func, name=name, **attrs)
+        return Command(func, **attrs)
 
     return decorator
