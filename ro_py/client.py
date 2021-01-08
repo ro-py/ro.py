@@ -79,11 +79,15 @@ class Client:
                     "captchaToken": token,
                     "captchaProvider": "PROVIDER_ARKOSE_LABS"
 <<<<<<< HEAD
+<<<<<<< HEAD
                 },
                 doxcsrf=False
 =======
                 }
 >>>>>>> parent of e505e9e... Merge pull request #3 from nsg-mfd/main
+=======
+                }
+>>>>>>> parent of e99fc6f... Change some things, like using no asycn requests fixes the socket hangup? lol this is eternally fucking with my mind
             )
         else:
             login_req = await self.requests.post(
