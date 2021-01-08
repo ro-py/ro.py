@@ -1,3 +1,15 @@
+"""
+
+ro.py
+UILogin Example
+
+This example uses wxPython to log in to an account with a username, password and captcha.
+At the time of writing, Roblox doesn't have any OAuth support, so the best we can do
+is a dialog like this.
+
+"""
+
+
 import wx
 import asyncio
 import pytweening
