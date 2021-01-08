@@ -11,19 +11,17 @@ is a dialog like this.
 
 
 import wx
+from wx import html2
+import os
 import asyncio
 import pytweening
-from ro_py.client import Client
-import wx.html2
-
-roblox = Client()
 
 
-async def user_login(username, password, key=None):
+async def user_login(client, username, password, key=None):
     if key:
-        return await roblox.user_login(username, password, key)
+        return await client.user_login(username, password, key)
     else:
-        return await roblox.user_login(username, password)
+        return await client.user_login(username, password)
 
 
 class RbxLogin(wx.Frame):
@@ -33,9 +31,12 @@ class RbxLogin(wx.Frame):
         self.SetSize((512, 512))
         self.SetTitle("Login with Roblox")
         self.SetBackgroundColour(wx.Colour(255, 255, 255))
+        self.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "appicon.png")))
 
         self.username = None
         self.password = None
+        self.client = None
+        self.status = False
 
         root_sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -88,16 +89,20 @@ class RbxLogin(wx.Frame):
             token = False
         if token:
             self.web_view.Hide()
-            """
-            for i in range(0, 600):
-                self.web_view.SetPosition((0, int(0 + pytweening.easeOutQuad(i / 600) * 600)))
-            """
-            lr = asyncio.get_event_loop().run_until_complete(user_login(self.username, self.password, token))
-            if ".ROBLOSECURITY" in roblox.requests.session.cookies:
+            lr = asyncio.get_event_loop().run_until_complete(user_login(
+                self.client,
+                self.username,
+                self.password,
+                token
+            ))
+            if ".ROBLOSECURITY" in self.client.requests.session.cookies:
+                self.status = True
                 self.Close()
             else:
+                self.status = False
                 wx.MessageBox(f"Failed to log in.\n"
-                              f"Detailed information from server: {lr.json()['errors'][0]['message']}", "Error", wx.OK | wx.ICON_ERROR)
+                              f"Detailed information from server: {lr.json()['errors'][0]['message']}",
+                              "Error", wx.OK | wx.ICON_ERROR)
                 self.Close()
 
     def login_click(self, event):
@@ -137,7 +142,7 @@ class RbxLogin(wx.Frame):
             self.SetSize((512, int(512 + pytweening.easeOutQuad(i / 88) * 88)))
 
         # Runs the user_login function.
-        fd = asyncio.get_event_loop().run_until_complete(user_login(self.username, self.password))
+        fd = asyncio.get_event_loop().run_until_complete(user_login(self.client, self.username, self.password))
 
         # Load the captcha URL.
         if fd:
@@ -148,7 +153,7 @@ class RbxLogin(wx.Frame):
             self.Close()
 
 
-class MyApp(wx.App):
+class AuthApp(wx.App):
     def OnInit(self):
         self.rbx_login = RbxLogin(None, wx.ID_ANY, "")
         self.SetTopWindow(self.rbx_login)
@@ -156,6 +161,8 @@ class MyApp(wx.App):
         return True
 
 
-if __name__ == "__main__":
-    app = MyApp(0)
+def authenticate_prompt(client):
+    app = AuthApp(0)
+    app.rbx_login.client = client
     app.MainLoop()
+    return app.rbx_login.status
