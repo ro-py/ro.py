@@ -17,6 +17,7 @@ from ro_py.utilities.requests import Requests
 from ro_py.accountsettings import AccountSettings
 from ro_py.accountinformation import AccountInformation
 from ro_py.utilities.errors import UserDoesNotExistError, ApiError
+import requests
 
 import logging
 
@@ -69,17 +70,21 @@ class Client:
         self.requests.session.cookies[".ROBLOSECURITY"] = token
 
     async def user_login(self, username, password, token=None):
+        print(token)
         if token:
-            login_req = await self.requests.post(
+            # TVF
+            login_req2 = requests.post(
                 url="https://auth.roblox.com/v2/login",
-                json={
-                    "cvalue": username,
-                    "ctype": "Username",
-                    "password": password,
-                    "captchaToken": token,
-                    "captchaProvider": "PROVIDER_ARKOSE_LABS"
-                }
+                headers={"Content-Type":"application/json"},
+                data=f"{{\"cvalue\": \"{username}\", \"ctype\":\"Username\",\"password\":\"{password}\",\"captchaToken\":\"{str(token)}\", \"captchaProvider\":\"PROVIDER_ARKOSE_LABS\"}}"
             )
+            # TVF_RESOL
+            login_req3 = requests.post(
+                url="https://auth.roblox.com/v2/login",
+                headers={"Content-Type":"application/json", "x-csrf-token": login_req2.headers.get('x-csrf-token')},
+                data=f"{{\"cvalue\": \"{username}\", \"ctype\":\"Username\",\"password\":\"{password}\",\"captchaToken\":\"{str(token)}\", \"captchaProvider\":\"PROVIDER_ARKOSE_LABS\"}}"
+            )
+            return login_req3.json()
         else:
             login_req = await self.requests.post(
                 url="https://auth.roblox.com/v2/login",
@@ -90,10 +95,11 @@ class Client:
                 },
                 quickreturn=True
             )
-            if login_req.status_code == 200:
-                # If we're here, no captcha is required and we're already logged in, so we can return.
-                return
-            elif login_req.status_code == 403:
+            try:
+                print(login_req.json(), login_req2.json())
+            except:
+                print();
+            if login_req.status_code == 403 and login_req.json()["errors"][0]['message'] != "Token Validation Failed":
                 # A captcha is required, so we need to return the captcha to solve.
                 field_data = login_req.json()["errors"][0]["fieldData"]
                 captcha_req = await self.requests.post(
