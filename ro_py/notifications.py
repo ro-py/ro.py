@@ -11,9 +11,10 @@ notification menu on the Roblox web client.
 
 from ro_py.utilities.caseconvert import to_snake_case
 
-from signalrcore.hub_connection_builder import HubConnectionBuilder
+from signalrcore_async.hub_connection_builder import HubConnectionBuilder
 from urllib.parse import quote
 import json
+import time
 import asyncio
 
 
@@ -74,8 +75,6 @@ class NotificationReceiver:
         self.wss_url = None
 
     async def initialize(self):
-        loop = asyncio.new_event_loop()
-
         self.negotiate_request = await self.requests.get(
             url="https://realtime.roblox.com/notifications/negotiate"
                 "?clientProtocol=1.5"
@@ -98,7 +97,7 @@ class NotificationReceiver:
             }
         )
 
-        def on_message(_self, raw_notification):
+        async def on_message(_self, raw_notification):
             """
             Internal callback when a message is received.
             """
@@ -108,11 +107,27 @@ class NotificationReceiver:
                 return
             if len(notification_json) > 0:
                 notification = Notification(notification_json)
-                loop.run_until_complete(self.on_notification(notification))
+                await self.on_notification(notification)
             else:
                 return
 
-        self.connection.with_automatic_reconnect({
+        def _internal_send(_self, message, protocol=None):
+
+            _self.logger.debug("Sending message {0}".format(message))
+
+            try:
+                protocol = _self.protocol if protocol is None else protocol
+
+                _self._ws.send(protocol.encode(message))
+                _self.connection_checker.last_message = time.time()
+
+                if _self.reconnection_handler is not None:
+                    _self.reconnection_handler.reset()
+
+            except Exception as ex:
+                raise ex
+
+        self.connection = self.connection.with_automatic_reconnect({
             "type": "raw",
             "keep_alive_interval": 10,
             "reconnect_interval": 5,
@@ -125,9 +140,10 @@ class NotificationReceiver:
             self.connection.on_close(self.on_close)
         if self.on_error:
             self.connection.on_error(self.on_error)
-        self.connection.hub.on_message = on_message
+        self.connection.on_message = on_message
+        self.connection._internal_send = _internal_send
 
-        self.connection.start()
+        await self.connection.start()
 
     async def close(self):
         """
