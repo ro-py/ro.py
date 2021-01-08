@@ -3,6 +3,7 @@ from ro_py.utilities.cache import Cache
 from json.decoder import JSONDecodeError
 from cachecontrol import CacheControl
 import requests_async
+import requests
 
 
 class Requests:
@@ -56,6 +57,12 @@ class Requests:
             return get_request
 
         raise ApiError(f"[{str(get_request.status_code)}] {get_request_error[0]['message']}")
+
+    def back_post(self, *args, **kwargs):
+        kwargs["cookies"] = kwargs.pop("cookies", self.session.cookies)
+        post_request = requests.post(*args, **kwargs)
+        self.session.cookies = post_request.cookies
+        return post_request
 
     async def post(self, *args, **kwargs):
         """

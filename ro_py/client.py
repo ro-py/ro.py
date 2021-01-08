@@ -70,7 +70,7 @@ class Client:
 
     async def user_login(self, username, password, token=None):
         if token:
-            login_req = await self.requests.post(
+            login_req = self.requests.back_post(
                 url="https://auth.roblox.com/v2/login",
                 json={
                     "cvalue": username,
@@ -80,6 +80,7 @@ class Client:
                     "captchaProvider": "PROVIDER_ARKOSE_LABS"
                 }
             )
+            return login_req
         else:
             login_req = await self.requests.post(
                 url="https://auth.roblox.com/v2/login",
