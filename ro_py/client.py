@@ -78,8 +78,12 @@ class Client:
                     "password": password,
                     "captchaToken": token,
                     "captchaProvider": "PROVIDER_ARKOSE_LABS"
+<<<<<<< HEAD
                 },
                 doxcsrf=False
+=======
+                }
+>>>>>>> parent of e505e9e... Merge pull request #3 from nsg-mfd/main
             )
         else:
             login_req = await self.requests.post(
