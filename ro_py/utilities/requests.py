@@ -60,7 +60,14 @@ class Requests:
 
     def back_post(self, *args, **kwargs):
         kwargs["cookies"] = kwargs.pop("cookies", self.session.cookies)
+        kwargs["headers"] = kwargs.pop("headers", self.session.headers)
+
         post_request = requests.post(*args, **kwargs)
+
+        if "X-CSRF-TOKEN" in post_request.headers:
+            self.session.headers['X-CSRF-TOKEN'] = post_request.headers["X-CSRF-TOKEN"]
+            post_request = requests.post(*args, **kwargs)
+
         self.session.cookies = post_request.cookies
         return post_request
 

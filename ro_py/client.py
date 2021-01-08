@@ -73,8 +73,8 @@ class Client:
             login_req = self.requests.back_post(
                 url="https://auth.roblox.com/v2/login",
                 json={
-                    "cvalue": username,
                     "ctype": "Username",
+                    "cvalue": username,
                     "password": password,
                     "captchaToken": token,
                     "captchaProvider": "PROVIDER_ARKOSE_LABS"
