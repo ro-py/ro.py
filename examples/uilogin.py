@@ -80,12 +80,12 @@ class RbxLogin(wx.Frame):
             for i in range(0, 600):
                 self.web_view.SetPosition((0, int(0 + pytweening.easeOutQuad(i / 600) * 600)))
             """
-            asyncio.get_event_loop().run_until_complete(user_login(self.username, self.password, token))
-            print(roblox.requests.session.cookies)
+            lr = asyncio.get_event_loop().run_until_complete(user_login(self.username, self.password, token))
             if ".ROBLOSECURITY" in roblox.requests.session.cookies:
                 self.Close()
             else:
-                wx.MessageBox(f"Failed to log in.", "Error", wx.OK | wx.ICON_ERROR)
+                wx.MessageBox(f"Failed to log in.\n"
+                              f"Detailed information from server: {lr.json()['errors'][0]['message']}", "Error", wx.OK | wx.ICON_ERROR)
                 self.Close()
 
     def login_click(self, event):
