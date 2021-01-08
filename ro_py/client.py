@@ -78,7 +78,8 @@ class Client:
                     "password": password,
                     "captchaToken": token,
                     "captchaProvider": "PROVIDER_ARKOSE_LABS"
-                }
+                },
+                doxcsrf=False
             )
         else:
             login_req = await self.requests.post(

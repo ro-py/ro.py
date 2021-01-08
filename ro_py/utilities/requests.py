@@ -63,13 +63,15 @@ class Requests:
         """
 
         quickreturn = kwargs.pop("quickreturn", False)
+        doxcsrf = kwargs.pop("doxcsrf", True)
 
         post_request = await self.session.post(*args, **kwargs)
 
-        if post_request.status_code == 403:
-            if "X-CSRF-TOKEN" in post_request.headers:
-                self.session.headers['X-CSRF-TOKEN'] = post_request.headers["X-CSRF-TOKEN"]
-                post_request = await self.session.post(*args, **kwargs)
+        if doxcsrf:
+            if post_request.status_code == 403:
+                if "X-CSRF-TOKEN" in post_request.headers:
+                    self.session.headers['X-CSRF-TOKEN'] = post_request.headers["X-CSRF-TOKEN"]
+                    post_request = await self.session.post(*args, **kwargs)
 
         try:
             post_request_json = post_request.json()
