@@ -23,8 +23,6 @@ setuptools.setup(
         "iso8601",
         "signalrcore",
         "cachecontrol",
-        "requests-async",
-        "trio",
-        "greenback"
+        "requests-async"
     ]
 )
