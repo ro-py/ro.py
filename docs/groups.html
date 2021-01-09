@@ -32,9 +32,12 @@
 This file houses functions and classes that pertain to Roblox groups.
 
 &#34;&#34;&#34;
-
+import iso8601
+from typing import List
 from ro_py.users import User
 from ro_py.roles import Role
+from ro_py.utilities.errors import NotFound
+from ro_py.utilities.pages import Pages, SortOrder
 
 endpoint = &#34;https://groups.roblox.com&#34;
 
@@ -46,6 +49,33 @@ class Shout:
     def __init__(self, requests, shout_data):
         self.body = shout_data[&#34;body&#34;]
         self.poster = User(requests, shout_data[&#34;poster&#34;][&#34;userId&#34;])
+
+
+class WallPost:
+    &#34;&#34;&#34;
+    Represents a roblox wall post.
+    &#34;&#34;&#34;
+    def __init__(self, requests, wall_data, group):
+        self.requests = requests
+        self.group = group
+        self.id = wall_data[&#39;id&#39;]
+        self.body = wall_data[&#39;body&#39;]
+        self.created = iso8601.parse(wall_data[&#39;created&#39;])
+        self.updated = iso8601.parse(wall_data[&#39;updated&#39;])
+        self.poster = User(requests, wall_data[&#39;user&#39;][&#39;userId&#39;], wall_data[&#39;user&#39;][&#39;username&#39;])
+
+    async def delete(self):
+        wall_req = await self.requests.delete(
+            url=endpoint + f&#34;/v1/groups/{self.id}/wall/posts/{self.id}&#34;
+        )
+        return wall_req.status == 200
+
+
+def wall_post_handeler(requests, this_page, args) -&gt; List[WallPost]:
+    wall_posts = []
+    for wall_post in this_page:
+        wall_posts.append(WallPost(requests, wall_post, args))
+    return wall_posts
 
 
 class Group:
@@ -83,8 +113,20 @@ class Group:
         # self.is_locked = group_info[&#34;isLocked&#34;]
 
     async def update_shout(self, message):
+        &#34;&#34;&#34;
+        Updates the shout of the group.
+
+        Parameters
+        ----------
+        message : str
+            Message that will overwrite the current shout of a group.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
         shout_req = await self.requests.patch(
-            url=endpoint+ f&#34;/v1/groups/{self.id}/status&#34;,
+            url=endpoint + f&#34;/v1/groups/{self.id}/status&#34;,
             data={
                 &#34;message&#34;: message
             }
@@ -92,13 +134,86 @@ class Group:
         return shout_req.status_code == 200
 
     async def get_roles(self):
+        &#34;&#34;&#34;
+        Gets all roles of the group.
+
+        Returns
+        -------
+        list
+        &#34;&#34;&#34;
         role_req = await self.requests.get(
             url=endpoint + f&#34;/v1/groups/{self.id}/roles&#34;
         )
         roles = []
         for role in role_req.json()[&#39;roles&#39;]:
             roles.append(Role(self.requests, self, role))
-        return roles</code></pre>
+        return roles
+
+    async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit=100):
+        wall_req = Pages(
+            requests=self.requests,
+            url=endpoint + f&#34;/v2/groups/{self.id}/wall/posts&#34;,
+            sort_order=sort_order,
+            limit=limit,
+            handler=wall_post_handeler,
+            handler_args=self
+        )
+        return wall_req
+
+    async def get_member_by_id(self, roblox_id):
+        # Get list of group user is in.
+        member_req = await self.requests.get(
+            url=endpoint + f&#34;/v2/users/{roblox_id}/groups/roles&#34;
+        )
+        data = member_req.json()
+
+        # Find group in list.
+        group_data = None
+        for group in data[&#39;data&#39;]:
+            if group[&#39;group&#39;][&#39;id&#39;] == self.id:
+                group_data = group
+                break
+
+        # Check if user is in group.
+        if not group_data:
+            raise NotFound(f&#34;The user {roblox_id} was not found in group {self.id}&#34;)
+
+        # Create data to return.
+        role = Role(self.requests, self, group_data[&#39;role&#39;])
+        member = Member(self.requests, roblox_id, None, self, role)
+        return await member.update()
+
+
+class Member(User):
+    &#34;&#34;&#34;
+    Represents a user in a group.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+            Requests object to use for API requests.
+    roblox_id : int
+            The id of a user.
+    name : str
+            The name of the user.
+    group : ro_py.groups.Group
+            The group the user is in.
+    role : ro_py.roles.Role
+            The role the user has is the group.
+    &#34;&#34;&#34;
+    def __init__(self, requests, roblox_id, name=None, group=None, role=None):
+        super().__init__(requests, roblox_id, name)
+        self.role = role
+        self.group = group
+
+    async def promote(self):
+        pass
+
+    async def demote(self):
+        pass
+
+    async def setrank(self):
+        pass</code></pre>
 </details>
 </section>
 <section>
@@ -106,6 +221,25 @@ class Group:
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="ro_py.groups.wall_post_handeler"><code class="name flex">
+<span>def <span class="ident">wall_post_handeler</span></span>(<span>requests, this_page, args) ‑> List[<a title="ro_py.groups.WallPost" href="#ro_py.groups.WallPost">WallPost</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def wall_post_handeler(requests, this_page, args) -&gt; List[WallPost]:
+    wall_posts = []
+    for wall_post in this_page:
+        wall_posts.append(WallPost(requests, wall_post, args))
+    return wall_posts</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
@@ -155,8 +289,20 @@ class Group:
         # self.is_locked = group_info[&#34;isLocked&#34;]
 
     async def update_shout(self, message):
+        &#34;&#34;&#34;
+        Updates the shout of the group.
+
+        Parameters
+        ----------
+        message : str
+            Message that will overwrite the current shout of a group.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
         shout_req = await self.requests.patch(
-            url=endpoint+ f&#34;/v1/groups/{self.id}/status&#34;,
+            url=endpoint + f&#34;/v1/groups/{self.id}/status&#34;,
             data={
                 &#34;message&#34;: message
             }
@@ -164,18 +310,59 @@ class Group:
         return shout_req.status_code == 200
 
     async def get_roles(self):
+        &#34;&#34;&#34;
+        Gets all roles of the group.
+
+        Returns
+        -------
+        list
+        &#34;&#34;&#34;
         role_req = await self.requests.get(
             url=endpoint + f&#34;/v1/groups/{self.id}/roles&#34;
         )
         roles = []
         for role in role_req.json()[&#39;roles&#39;]:
             roles.append(Role(self.requests, self, role))
-        return roles</code></pre>
+        return roles
+
+    async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit=100):
+        wall_req = Pages(
+            requests=self.requests,
+            url=endpoint + f&#34;/v2/groups/{self.id}/wall/posts&#34;,
+            sort_order=sort_order,
+            limit=limit,
+            handler=wall_post_handeler,
+            handler_args=self
+        )
+        return wall_req
+
+    async def get_member_by_id(self, roblox_id):
+        # Get list of group user is in.
+        member_req = await self.requests.get(
+            url=endpoint + f&#34;/v2/users/{roblox_id}/groups/roles&#34;
+        )
+        data = member_req.json()
+
+        # Find group in list.
+        group_data = None
+        for group in data[&#39;data&#39;]:
+            if group[&#39;group&#39;][&#39;id&#39;] == self.id:
+                group_data = group
+                break
+
+        # Check if user is in group.
+        if not group_data:
+            raise NotFound(f&#34;The user {roblox_id} was not found in group {self.id}&#34;)
+
+        # Create data to return.
+        role = Role(self.requests, self, group_data[&#39;role&#39;])
+        member = Member(self.requests, roblox_id, None, self, role)
+        return await member.update()</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
-<dt id="ro_py.groups.Group.get_roles"><code class="name flex">
-<span>async def <span class="ident">get_roles</span></span>(<span>self)</span>
+<dt id="ro_py.groups.Group.get_member_by_id"><code class="name flex">
+<span>async def <span class="ident">get_member_by_id</span></span>(<span>self, roblox_id)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -183,7 +370,52 @@ class Group:
 <summary>
 <span>Expand source code</span>
 </summary>
+<pre><code class="python">async def get_member_by_id(self, roblox_id):
+    # Get list of group user is in.
+    member_req = await self.requests.get(
+        url=endpoint + f&#34;/v2/users/{roblox_id}/groups/roles&#34;
+    )
+    data = member_req.json()
+
+    # Find group in list.
+    group_data = None
+    for group in data[&#39;data&#39;]:
+        if group[&#39;group&#39;][&#39;id&#39;] == self.id:
+            group_data = group
+            break
+
+    # Check if user is in group.
+    if not group_data:
+        raise NotFound(f&#34;The user {roblox_id} was not found in group {self.id}&#34;)
+
+    # Create data to return.
+    role = Role(self.requests, self, group_data[&#39;role&#39;])
+    member = Member(self.requests, roblox_id, None, self, role)
+    return await member.update()</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Group.get_roles"><code class="name flex">
+<span>async def <span class="ident">get_roles</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets all roles of the group.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
 <pre><code class="python">async def get_roles(self):
+    &#34;&#34;&#34;
+    Gets all roles of the group.
+
+    Returns
+    -------
+    list
+    &#34;&#34;&#34;
     role_req = await self.requests.get(
         url=endpoint + f&#34;/v1/groups/{self.id}/roles&#34;
     )
@@ -191,6 +423,27 @@ class Group:
     for role in role_req.json()[&#39;roles&#39;]:
         roles.append(Role(self.requests, self, role))
     return roles</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Group.get_wall_posts"><code class="name flex">
+<span>async def <span class="ident">get_wall_posts</span></span>(<span>self, sort_order=SortOrder.Ascending, limit=100)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit=100):
+    wall_req = Pages(
+        requests=self.requests,
+        url=endpoint + f&#34;/v2/groups/{self.id}/wall/posts&#34;,
+        sort_order=sort_order,
+        limit=limit,
+        handler=wall_post_handeler,
+        handler_args=self
+    )
+    return wall_req</code></pre>
 </details>
 </dd>
 <dt id="ro_py.groups.Group.update"><code class="name flex">
@@ -224,14 +477,36 @@ class Group:
 <span>async def <span class="ident">update_shout</span></span>(<span>self, message)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Updates the shout of the group.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>message</code></strong> :&ensp;<code>str</code></dt>
+<dd>Message that will overwrite the current shout of a group.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def update_shout(self, message):
+    &#34;&#34;&#34;
+    Updates the shout of the group.
+
+    Parameters
+    ----------
+    message : str
+        Message that will overwrite the current shout of a group.
+
+    Returns
+    -------
+    int
+    &#34;&#34;&#34;
     shout_req = await self.requests.patch(
-        url=endpoint+ f&#34;/v1/groups/{self.id}/status&#34;,
+        url=endpoint + f&#34;/v1/groups/{self.id}/status&#34;,
         data={
             &#34;message&#34;: message
         }
@@ -240,6 +515,121 @@ class Group:
 </details>
 </dd>
 </dl>
+</dd>
+<dt id="ro_py.groups.Member"><code class="flex name class">
+<span>class <span class="ident">Member</span></span>
+<span>(</span><span>requests, roblox_id, name=None, group=None, role=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a user in a group.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>requests</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
+<dd>Requests object to use for API requests.</dd>
+<dt><strong><code>roblox_id</code></strong> :&ensp;<code>int</code></dt>
+<dd>The id of a user.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the user.</dd>
+<dt><strong><code>group</code></strong> :&ensp;<code><a title="ro_py.groups.Group" href="#ro_py.groups.Group">Group</a></code></dt>
+<dd>The group the user is in.</dd>
+<dt><strong><code>role</code></strong> :&ensp;<code><a title="ro_py.roles.Role" href="roles.html#ro_py.roles.Role">Role</a></code></dt>
+<dd>The role the user has is the group.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Member(User):
+    &#34;&#34;&#34;
+    Represents a user in a group.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+            Requests object to use for API requests.
+    roblox_id : int
+            The id of a user.
+    name : str
+            The name of the user.
+    group : ro_py.groups.Group
+            The group the user is in.
+    role : ro_py.roles.Role
+            The role the user has is the group.
+    &#34;&#34;&#34;
+    def __init__(self, requests, roblox_id, name=None, group=None, role=None):
+        super().__init__(requests, roblox_id, name)
+        self.role = role
+        self.group = group
+
+    async def promote(self):
+        pass
+
+    async def demote(self):
+        pass
+
+    async def setrank(self):
+        pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.users.User" href="users.html#ro_py.users.User">User</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.groups.Member.demote"><code class="name flex">
+<span>async def <span class="ident">demote</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def demote(self):
+    pass</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Member.promote"><code class="name flex">
+<span>async def <span class="ident">promote</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def promote(self):
+    pass</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Member.setrank"><code class="name flex">
+<span>async def <span class="ident">setrank</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def setrank(self):
+    pass</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="ro_py.users.User" href="users.html#ro_py.users.User">User</a></b></code>:
+<ul class="hlist">
+<li><code><a title="ro_py.users.User.get_followers_count" href="users.html#ro_py.users.User.get_followers_count">get_followers_count</a></code></li>
+<li><code><a title="ro_py.users.User.get_followings_count" href="users.html#ro_py.users.User.get_followings_count">get_followings_count</a></code></li>
+<li><code><a title="ro_py.users.User.get_friends" href="users.html#ro_py.users.User.get_friends">get_friends</a></code></li>
+<li><code><a title="ro_py.users.User.get_friends_count" href="users.html#ro_py.users.User.get_friends_count">get_friends_count</a></code></li>
+<li><code><a title="ro_py.users.User.get_roblox_badges" href="users.html#ro_py.users.User.get_roblox_badges">get_roblox_badges</a></code></li>
+<li><code><a title="ro_py.users.User.get_status" href="users.html#ro_py.users.User.get_status">get_status</a></code></li>
+<li><code><a title="ro_py.users.User.update" href="users.html#ro_py.users.User.update">update</a></code></li>
+</ul>
+</li>
+</ul>
 </dd>
 <dt id="ro_py.groups.Shout"><code class="flex name class">
 <span>class <span class="ident">Shout</span></span>
@@ -260,6 +650,55 @@ class Group:
         self.poster = User(requests, shout_data[&#34;poster&#34;][&#34;userId&#34;])</code></pre>
 </details>
 </dd>
+<dt id="ro_py.groups.WallPost"><code class="flex name class">
+<span>class <span class="ident">WallPost</span></span>
+<span>(</span><span>requests, wall_data, group)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a roblox wall post.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class WallPost:
+    &#34;&#34;&#34;
+    Represents a roblox wall post.
+    &#34;&#34;&#34;
+    def __init__(self, requests, wall_data, group):
+        self.requests = requests
+        self.group = group
+        self.id = wall_data[&#39;id&#39;]
+        self.body = wall_data[&#39;body&#39;]
+        self.created = iso8601.parse(wall_data[&#39;created&#39;])
+        self.updated = iso8601.parse(wall_data[&#39;updated&#39;])
+        self.poster = User(requests, wall_data[&#39;user&#39;][&#39;userId&#39;], wall_data[&#39;user&#39;][&#39;username&#39;])
+
+    async def delete(self):
+        wall_req = await self.requests.delete(
+            url=endpoint + f&#34;/v1/groups/{self.id}/wall/posts/{self.id}&#34;
+        )
+        return wall_req.status == 200</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.groups.WallPost.delete"><code class="name flex">
+<span>async def <span class="ident">delete</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def delete(self):
+    wall_req = await self.requests.delete(
+        url=endpoint + f&#34;/v1/groups/{self.id}/wall/posts/{self.id}&#34;
+    )
+    return wall_req.status == 200</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
 </dl>
 </section>
 </article>
@@ -274,18 +713,39 @@ class Group:
 <li><code><a title="ro_py" href="index.html">ro_py</a></code></li>
 </ul>
 </li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="ro_py.groups.wall_post_handeler" href="#ro_py.groups.wall_post_handeler">wall_post_handeler</a></code></li>
+</ul>
+</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
 <h4><code><a title="ro_py.groups.Group" href="#ro_py.groups.Group">Group</a></code></h4>
 <ul class="">
+<li><code><a title="ro_py.groups.Group.get_member_by_id" href="#ro_py.groups.Group.get_member_by_id">get_member_by_id</a></code></li>
 <li><code><a title="ro_py.groups.Group.get_roles" href="#ro_py.groups.Group.get_roles">get_roles</a></code></li>
+<li><code><a title="ro_py.groups.Group.get_wall_posts" href="#ro_py.groups.Group.get_wall_posts">get_wall_posts</a></code></li>
 <li><code><a title="ro_py.groups.Group.update" href="#ro_py.groups.Group.update">update</a></code></li>
 <li><code><a title="ro_py.groups.Group.update_shout" href="#ro_py.groups.Group.update_shout">update_shout</a></code></li>
 </ul>
 </li>
 <li>
+<h4><code><a title="ro_py.groups.Member" href="#ro_py.groups.Member">Member</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.groups.Member.demote" href="#ro_py.groups.Member.demote">demote</a></code></li>
+<li><code><a title="ro_py.groups.Member.promote" href="#ro_py.groups.Member.promote">promote</a></code></li>
+<li><code><a title="ro_py.groups.Member.setrank" href="#ro_py.groups.Member.setrank">setrank</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="ro_py.groups.Shout" href="#ro_py.groups.Shout">Shout</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.groups.WallPost" href="#ro_py.groups.WallPost">WallPost</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.groups.WallPost.delete" href="#ro_py.groups.WallPost.delete">delete</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

@@ -1,6 +1,6 @@
 """
 
-Will put something here. -jmkdev
+This file houses functions and classes that pertain to the Roblox captcha.
 
 """
 

@@ -1,6 +1,6 @@
 """
 
-This file houses functions and classes that pertain to Roblox client .
+This file houses functions and classes that pertain to Roblox client settings.
 
 """
 

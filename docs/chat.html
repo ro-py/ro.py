@@ -92,11 +92,11 @@ class Conversation:
 
         self.typing = ConversationTyping(self.requests, conversation_id)
 
-    def get_message(self, message_id):
+    async def get_message(self, message_id):
         return Message(self.requests, message_id, self.id)
 
-    def send_message(self, content):
-        send_message_req = self.requests.post(
+    async def send_message(self, content):
+        send_message_req = await self.requests.post(
             url=endpoint + &#34;v2/send-message&#34;,
             data={
                 &#34;message&#34;: content,
@@ -175,7 +175,7 @@ class ChatWrapper:
         &#34;&#34;&#34;
         Gets the list of conversations. This will be updated soon to use the new Pages object, so it is not documented.
         &#34;&#34;&#34;
-        conversations_req = self.requests.get(
+        conversations_req = await self.requests.get(
             url=&#34;https://chat.roblox.com/v2/get-user-conversations&#34;,
             params={
                 &#34;pageNumber&#34;: page_number,
@@ -253,7 +253,7 @@ of the Roblox web client.</p></div>
         &#34;&#34;&#34;
         Gets the list of conversations. This will be updated soon to use the new Pages object, so it is not documented.
         &#34;&#34;&#34;
-        conversations_req = self.requests.get(
+        conversations_req = await self.requests.get(
             url=&#34;https://chat.roblox.com/v2/get-user-conversations&#34;,
             params={
                 &#34;pageNumber&#34;: page_number,
@@ -312,7 +312,7 @@ of the Roblox web client.</p></div>
     &#34;&#34;&#34;
     Gets the list of conversations. This will be updated soon to use the new Pages object, so it is not documented.
     &#34;&#34;&#34;
-    conversations_req = self.requests.get(
+    conversations_req = await self.requests.get(
         url=&#34;https://chat.roblox.com/v2/get-user-conversations&#34;,
         params={
             &#34;pageNumber&#34;: page_number,
@@ -365,11 +365,11 @@ of the Roblox web client.</p></div>
 
         self.typing = ConversationTyping(self.requests, conversation_id)
 
-    def get_message(self, message_id):
+    async def get_message(self, message_id):
         return Message(self.requests, message_id, self.id)
 
-    def send_message(self, content):
-        send_message_req = self.requests.post(
+    async def send_message(self, content):
+        send_message_req = await self.requests.post(
             url=endpoint + &#34;v2/send-message&#34;,
             data={
                 &#34;message&#34;: content,
@@ -385,7 +385,7 @@ of the Roblox web client.</p></div>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.chat.Conversation.get_message"><code class="name flex">
-<span>def <span class="ident">get_message</span></span>(<span>self, message_id)</span>
+<span>async def <span class="ident">get_message</span></span>(<span>self, message_id)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -393,12 +393,12 @@ of the Roblox web client.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def get_message(self, message_id):
+<pre><code class="python">async def get_message(self, message_id):
     return Message(self.requests, message_id, self.id)</code></pre>
 </details>
 </dd>
 <dt id="ro_py.chat.Conversation.send_message"><code class="name flex">
-<span>def <span class="ident">send_message</span></span>(<span>self, content)</span>
+<span>async def <span class="ident">send_message</span></span>(<span>self, content)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -406,8 +406,8 @@ of the Roblox web client.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def send_message(self, content):
-    send_message_req = self.requests.post(
+<pre><code class="python">async def send_message(self, content):
+    send_message_req = await self.requests.post(
         url=endpoint + &#34;v2/send-message&#34;,
         data={
             &#34;message&#34;: content,

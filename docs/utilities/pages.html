@@ -42,7 +42,7 @@ class Page:
     &#34;&#34;&#34;
     Represents a single page from a Pages object.
     &#34;&#34;&#34;
-    def __init__(self, requests, data, handler=None):
+    def __init__(self, requests, data, handler=None, handler_args=None):
         self.previous_page_cursor = data[&#34;previousPageCursor&#34;]
         &#34;&#34;&#34;Cursor to navigate to the previous page.&#34;&#34;&#34;
         self.next_page_cursor = data[&#34;nextPageCursor&#34;]
@@ -52,7 +52,7 @@ class Page:
         &#34;&#34;&#34;Raw data from this page.&#34;&#34;&#34;
 
         if handler:
-            self.data = handler(requests, self.data)
+            self.data = handler(requests, self.data, handler_args)
 
 
 class Pages:
@@ -64,7 +64,7 @@ class Pages:
         Automatic page caching will be added in the future. It is suggested to
         cache the pages yourself if speed is required.
     &#34;&#34;&#34;
-    def __init__(self, requests, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None):
+    def __init__(self, requests, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None, handler_args=None):
         if extra_parameters is None:
             extra_parameters = {}
 
@@ -100,7 +100,8 @@ class Pages:
         return Page(
             requests=self.requests,
             data=page_req.json(),
-            handler=self.handler
+            handler=self.handler,
+            handler_args=handler_args
         )
 
     async def previous(self):
@@ -133,7 +134,7 @@ class Pages:
 <dl>
 <dt id="ro_py.utilities.pages.Page"><code class="flex name class">
 <span>class <span class="ident">Page</span></span>
-<span>(</span><span>requests, data, handler=None)</span>
+<span>(</span><span>requests, data, handler=None, handler_args=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a single page from a Pages object.</p></div>
@@ -145,7 +146,7 @@ class Pages:
     &#34;&#34;&#34;
     Represents a single page from a Pages object.
     &#34;&#34;&#34;
-    def __init__(self, requests, data, handler=None):
+    def __init__(self, requests, data, handler=None, handler_args=None):
         self.previous_page_cursor = data[&#34;previousPageCursor&#34;]
         &#34;&#34;&#34;Cursor to navigate to the previous page.&#34;&#34;&#34;
         self.next_page_cursor = data[&#34;nextPageCursor&#34;]
@@ -155,7 +156,7 @@ class Pages:
         &#34;&#34;&#34;Raw data from this page.&#34;&#34;&#34;
 
         if handler:
-            self.data = handler(requests, self.data)</code></pre>
+            self.data = handler(requests, self.data, handler_args)</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -175,7 +176,7 @@ class Pages:
 </dd>
 <dt id="ro_py.utilities.pages.Pages"><code class="flex name class">
 <span>class <span class="ident">Pages</span></span>
-<span>(</span><span>requests, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None)</span>
+<span>(</span><span>requests, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None, handler_args=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a paged object.</p>
@@ -198,7 +199,7 @@ cache the pages yourself if speed is required.</p>
         Automatic page caching will be added in the future. It is suggested to
         cache the pages yourself if speed is required.
     &#34;&#34;&#34;
-    def __init__(self, requests, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None):
+    def __init__(self, requests, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None, handler_args=None):
         if extra_parameters is None:
             extra_parameters = {}
 
@@ -234,7 +235,8 @@ cache the pages yourself if speed is required.</p>
         return Page(
             requests=self.requests,
             data=page_req.json(),
-            handler=self.handler
+            handler=self.handler,
+            handler_args=handler_args
         )
 
     async def previous(self):

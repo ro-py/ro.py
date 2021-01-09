@@ -35,7 +35,7 @@ This file houses functions and classes that pertain to Roblox trades and trading
 
 from ro_py.utilities.pages import Pages, SortOrder
 from ro_py.assets import Asset
-from ro_py.users import User
+from ro_py.users import User, PartialUser
 import iso8601
 import enum
 
@@ -45,12 +45,12 @@ endpoint = &#34;https://trades.roblox.com&#34;
 def trade_page_handler(requests, this_page) -&gt; list:
     trades_out = []
     for raw_trade in this_page:
-        trades_out.append(Trade(requests, raw_trade[&#34;id&#34;], User(requests, raw_trade[&#34;user&#34;][&#39;id&#39;], raw_trade[&#39;user&#39;][&#39;name&#39;]), raw_trade[&#39;created&#39;], raw_trade[&#39;expiration&#39;], raw_trade[&#39;status&#39;]))
+        trades_out.append(PartialTrade(requests, raw_trade[&#34;id&#34;], PartialUser(requests, raw_trade[&#34;user&#34;][&#39;id&#39;], raw_trade[&#39;user&#39;][&#39;name&#39;]), raw_trade[&#39;created&#39;], raw_trade[&#39;expiration&#39;], raw_trade[&#39;status&#39;]))
     return trades_out
 
 
 class Trade:
-    def __init__(self, requests, trade_id: int, sender: User, recieve_items: list[Asset], send_items: list[Asset], created, expiration, status: bool):
+    def __init__(self, requests, trade_id: int, sender: PartialUser, recieve_items, send_items, created, expiration, status: bool):
         self.trade_id = trade_id
         self.requests = requests
         self.sender = sender
@@ -82,7 +82,7 @@ class Trade:
 
 
 class PartialTrade:
-    def __init__(self, requests, trade_id: int, user: User, created, expiration, status: bool):
+    def __init__(self, requests, trade_id: int, user: PartialUser, created, expiration, status: bool):
         self.requests = requests
         self.trade_id = trade_id
         self.user = user
@@ -200,7 +200,7 @@ class TradesWrapper:
 <pre><code class="python">def trade_page_handler(requests, this_page) -&gt; list:
     trades_out = []
     for raw_trade in this_page:
-        trades_out.append(Trade(requests, raw_trade[&#34;id&#34;], User(requests, raw_trade[&#34;user&#34;][&#39;id&#39;], raw_trade[&#39;user&#39;][&#39;name&#39;]), raw_trade[&#39;created&#39;], raw_trade[&#39;expiration&#39;], raw_trade[&#39;status&#39;]))
+        trades_out.append(PartialTrade(requests, raw_trade[&#34;id&#34;], PartialUser(requests, raw_trade[&#34;user&#34;][&#39;id&#39;], raw_trade[&#39;user&#39;][&#39;name&#39;]), raw_trade[&#39;created&#39;], raw_trade[&#39;expiration&#39;], raw_trade[&#39;status&#39;]))
     return trades_out</code></pre>
 </details>
 </dd>
@@ -211,7 +211,7 @@ class TradesWrapper:
 <dl>
 <dt id="ro_py.trades.PartialTrade"><code class="flex name class">
 <span>class <span class="ident">PartialTrade</span></span>
-<span>(</span><span>requests, trade_id: int, user: <a title="ro_py.users.User" href="users.html#ro_py.users.User">User</a>, created, expiration, status: bool)</span>
+<span>(</span><span>requests, trade_id: int, user: <a title="ro_py.users.PartialUser" href="users.html#ro_py.users.PartialUser">PartialUser</a>, created, expiration, status: bool)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -220,7 +220,7 @@ class TradesWrapper:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class PartialTrade:
-    def __init__(self, requests, trade_id: int, user: User, created, expiration, status: bool):
+    def __init__(self, requests, trade_id: int, user: PartialUser, created, expiration, status: bool):
         self.requests = requests
         self.trade_id = trade_id
         self.user = user
@@ -363,7 +363,7 @@ class TradesWrapper:
 </dd>
 <dt id="ro_py.trades.Trade"><code class="flex name class">
 <span>class <span class="ident">Trade</span></span>
-<span>(</span><span>requests, trade_id: int, sender: <a title="ro_py.users.User" href="users.html#ro_py.users.User">User</a>, recieve_items: list, send_items: list, created, expiration, status: bool)</span>
+<span>(</span><span>requests, trade_id: int, sender: <a title="ro_py.users.PartialUser" href="users.html#ro_py.users.PartialUser">PartialUser</a>, recieve_items, send_items, created, expiration, status: bool)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -372,7 +372,7 @@ class TradesWrapper:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Trade:
-    def __init__(self, requests, trade_id: int, sender: User, recieve_items: list[Asset], send_items: list[Asset], created, expiration, status: bool):
+    def __init__(self, requests, trade_id: int, sender: PartialUser, recieve_items, send_items, created, expiration, status: bool):
         self.trade_id = trade_id
         self.requests = requests
         self.sender = sender

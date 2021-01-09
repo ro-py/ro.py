@@ -1,11 +1,6 @@
 """
 
-ro.py
-UILogin Example
-
-This example uses wxPython to log in to an account with a username, password and captcha.
-At the time of writing, Roblox doesn't have any OAuth support, so the best we can do
-is a dialog like this.
+This extension houses functions that allow human verification prompts for interactive applications.
 
 """
 
@@ -25,6 +20,9 @@ async def user_login(client, username, password, key=None):
 
 
 class RbxLogin(wx.Frame):
+    """
+    wx.Frame wrapper for Roblox authentication.
+    """
     def __init__(self, *args, **kwds):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
@@ -154,6 +152,12 @@ class RbxLogin(wx.Frame):
 
 
 class AuthApp(wx.App):
+    """
+    wx.App wrapper for Roblox authentication.
+    """
+    def __init__(self):
+        """"""
+
     def OnInit(self):
         self.rbx_login = RbxLogin(None, wx.ID_ANY, "")
         self.SetTopWindow(self.rbx_login)
@@ -162,6 +166,19 @@ class AuthApp(wx.App):
 
 
 def authenticate_prompt(client):
+    """
+    Prompts a login screen.
+    Returns True if the user has sucessfully been authenticated and False if they have not.
+
+    Parameters
+    ----------
+    client : ro_py.client.Client
+        Client object to authenticate.
+
+    Returns
+    ------
+    bool
+    """
     app = AuthApp(0)
     app.rbx_login.client = client
     app.MainLoop()

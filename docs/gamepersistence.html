@@ -39,6 +39,7 @@ import re
 
 endpoint = &#34;http://gamepersistence.roblox.com/&#34;
 
+
 class DataStore:
     &#34;&#34;&#34;
     Represents the in-game datastore system for storing data for games (https://gamepersistence.roblox.com).
@@ -48,7 +49,7 @@ class DataStore:
     ----------
     requests : ro_py.utilities.requests.Requests
         Requests object to use for API requests.
-    placeId : int
+    place_id : int
         PlaceId to modify the DataStores for, 
         if the currently authenticated user doesn&#39;t have sufficient permissions, 
         it will raise a NotAuthorizedToModifyPlaceDataStores exception
@@ -63,18 +64,19 @@ class DataStore:
     legacy : bool, optional
         Describes whether or not this will use the legacy endpoints, 
         over the new v1 endpoints (Does not apply to getSortedValues)
-    legacyNamingScheme : bool, optional
+    legacy_naming_scheme : bool, optional
         Describes whether or not this will use legacy names for data stores, if true, the qkeys[idx].scope will match the current scope (global by default), 
         there will be no qkeys[idx].target (normally the key that is passed into each method), 
         and the qkeys[idx].key will match the key passed into each method.
     &#34;&#34;&#34;
-    def __init__(self, requests, placeId, name, scope, legacy = True, legacyNamingScheme = False):
-       self.requests = requests
-       self.placeId = placeId
-       self.legacy = legacy
-       self.legacyNamingScheme = legacyNamingScheme
-       self.name = name
-       self.scope = scope if scope != None else &#34;global&#34;
+
+    def __init__(self, requests, place_id, name, scope, legacy=True, legacy_naming_scheme=False):
+        self.requests = requests
+        self.place_id = place_id
+        self.legacy = legacy
+        self.legacy_naming_scheme = legacy_naming_scheme
+        self.name = name
+        self.scope = scope if scope is not None else &#34;global&#34;
 
     async def get(self, key):
         &#34;&#34;&#34;
@@ -92,30 +94,30 @@ class DataStore:
         -------
         typing.Any
         &#34;&#34;&#34;
-        if self.legacy == True:
-            data = f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target=&amp;qkeys[0].key={quote(key)}&#34; if self.legacyNamingScheme == True else f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target={quote(key)}&amp;qkeys[0].key={quote(self.name)}&#34;
+        if self.legacy:
+            data = f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target=&amp;qkeys[0].key={quote(key)}&#34; if self.legacy_naming_scheme == True else f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target={quote(key)}&amp;qkeys[0].key={quote(self.name)}&#34;
             r = await self.requests.post(
-                url=endpoint + f&#34;persistence/getV2?placeId={str(self.placeId)}&amp;type=standard&amp;scope={quote(self.scope)}&#34;, 
+                url=endpoint + f&#34;persistence/getV2?placeId={str(self.place_id)}&amp;type=standard&amp;scope={quote(self.scope)}&#34;,
                 headers={
-                    &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
                     &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-            }, data=data)
+                }, data=data)
             if len(r.json()[&#39;data&#39;]) == 0:
                 return None
             else:
                 return r.json()[&#39;data&#39;][0][&#39;Value&#39;]
         else:
-            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
             r = await self.requests.get(
                 url=url,
                 headers={
-                    &#39;Roblox-Place-Id&#39;: str(self.placeId)
-            })
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id)
+                })
             if r.status_code == 204:
                 return None
             else:
-                return r.text;
-            
+                return r.text
+
     async def set(self, key, value):
         &#34;&#34;&#34;
         Represents a set request to a data store,
@@ -136,32 +138,32 @@ class DataStore:
         -------
         typing.Any
         &#34;&#34;&#34;
-        if self.legacy == True:
+        if self.legacy:
             data = f&#34;value={quote(str(value))}&#34;
-            url = endpoint + f&#34;persistence/set?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&#34; if self.legacyNamingScheme == True else endpoint + f&#34;persistence/set?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&#34;
+            url = endpoint + f&#34;persistence/set?placeId={self.place_id}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&#34;
             r = await self.requests.post(
-                url=url, 
+                url=url,
                 headers={
-                    &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
                     &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-            }, data=data)
+                }, data=data)
             if len(r.json()[&#39;data&#39;]) == 0:
                 return None
             else:
                 return r.json()[&#39;data&#39;]
         else:
-            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
             r = await self.requests.post(
                 url=url,
                 headers={
-                    &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
                     &#39;Content-Type&#39;: &#39;*/*&#39;,
                     &#39;Content-Length&#39;: str(len(str(value)))
-            }, data=quote(str(value)))
+                }, data=quote(str(value)))
             if r.status_code == 200:
-                return value;
+                return value
 
-    async def setIfValue(self, key, value, expectedValue):
+    async def set_if_value(self, key, value, expected_value):
         &#34;&#34;&#34;
         Represents a conditional set request to a data store,
         only supports legacy
@@ -176,28 +178,28 @@ class DataStore:
             The value to set for the key,
             as in the 3rd parameter of
             `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
-        expectedValue
-            The expectedValue for that key, if you know the key doesn&#39;t exist, then set this as None
+        expected_value
+            The expected_value for that key, if you know the key doesn&#39;t exist, then set this as None
 
         Returns
         -------
         typing.Any
         &#34;&#34;&#34;
-        data = f&#34;value={quote(str(value))}&amp;expectedValue={quote(str(expectedValue)) if expectedValue != None else &#39;&#39;}&#34;
-        url = endpoint + f&#34;persistence/set?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expectedValue))) if expectedValue != None else str(0)}&#34; if self.legacyNamingScheme == True else endpoint + f&#34;persistence/set?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expectedValue))) if expectedValue != None else str(0)}&#34;
+        data = f&#34;value={quote(str(value))}&amp;expectedValue={quote(str(expected_value)) if expected_value is not None else &#39;&#39;}&#34;
+        url = endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expected_value))) if expected_value is not None else str(0)}&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expected_value))) if expected_value is not None else str(0)}&#34;
         r = await self.requests.post(
-            url=url, 
+            url=url,
             headers={
-                &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
                 &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-        }, data=data)
+            }, data=data)
         try:
             if r.json()[&#39;data&#39;] != 0:
                 return r.json()[&#39;data&#39;]
         except KeyError:
             return r.json()[&#39;error&#39;]
 
-    async def setIfIdx(self, key, value, idx):
+    async def set_if_idx(self, key, value, idx):
         &#34;&#34;&#34;
         Represents a conditional set request to a data store,
         only supports new endpoints,
@@ -219,33 +221,33 @@ class DataStore:
         -------
         typing.Any
         &#34;&#34;&#34;
-        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn=0.0&#34;
+        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn=0.0&#34;
         r = await self.requests.post(
             url=url,
             headers={
-                &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
                 &#39;Content-Type&#39;: &#39;*/*&#39;,
                 &#39;Content-Length&#39;: str(len(str(value)))
-        }, data=quote(str(value)))
+            }, data=quote(str(value)))
         if r.status_code == 409:
             usn = r.headers[&#39;roblox-usn&#39;]
             split = usn.split(&#39;.&#39;)
             msn_hash = split[0]
             current_value = split[1]
-            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn={msn_hash}.{hex(idx).split(&#39;x&#39;)[1]}&#34;
+            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn={msn_hash}.{hex(idx).split(&#39;x&#39;)[1]}&#34;
             r2 = await self.requests.post(
                 url=url,
                 headers={
-                    &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
                     &#39;Content-Type&#39;: &#39;*/*&#39;,
                     &#39;Content-Length&#39;: str(len(str(value)))
-            }, data=quote(str(value)))
+                }, data=quote(str(value)))
             if r2.status_code == 409:
                 return &#34;Expected idx did not match current idx, current idx is &#34; + str(floor(int(current_value, 16)))
             else:
                 return value
 
-    async def increment(self, key, delta = 0):
+    async def increment(self, key, delta=0):
         &#34;&#34;&#34;
         Represents a conditional set request to a data store,
         only supports legacy
@@ -266,14 +268,14 @@ class DataStore:
         typing.Any
         &#34;&#34;&#34;
         data = &#34;&#34;
-        url = endpoint + f&#34;persistence/increment?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;value={str(delta)}&#34; if self.legacyNamingScheme else endpoint + f&#34;persistence/increment?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;value={str(delta)}&#34;
+        url = endpoint + f&#34;persistence/increment?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;value={str(delta)}&#34; if self.legacy_naming_scheme else endpoint + f&#34;persistence/increment?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;value={str(delta)}&#34;
 
         r = await self.requests.post(
-            url=url, 
+            url=url,
             headers={
-                &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
                 &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-        }, data=data)
+            }, data=data)
         try:
             if r.json()[&#39;data&#39;] != 0:
                 return r.json()[&#39;data&#39;]
@@ -282,7 +284,7 @@ class DataStore:
             reason = cap.group(0).replace(&#34;(&#34;, &#34;&#34;).replace(&#34;)&#34;, &#34;&#34;)
             if reason == &#34;ExistingValueNotNumeric&#34;:
                 return &#34;The requested key you tried to increment had a different value other than byte, short, int, long, long long, float, double or long double&#34;
-    
+
     async def remove(self, key):
         &#34;&#34;&#34;
         Represents a get request to a data store,
@@ -299,30 +301,30 @@ class DataStore:
         -------
         typing.Any
         &#34;&#34;&#34;
-        if self.legacy == True:
+        if self.legacy:
             data = &#34;&#34;
-            url = endpoint + f&#34;persistence/remove?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme else endpoint + f&#34;persistence/remove?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            url = endpoint + f&#34;persistence/remove?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme else endpoint + f&#34;persistence/remove?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
             r = await self.requests.post(
-                url=url, 
+                url=url,
                 headers={
-                    &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
                     &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-            }, data=data)
-            if r.json()[&#39;data&#39;] == None:
+                }, data=data)
+            if r.json()[&#39;data&#39;] is None:
                 return None
             else:
                 return r.json()[&#39;data&#39;]
         else:
-            url = endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            url = endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
             r = await self.requests.post(
                 url=url,
                 headers={
-                    &#39;Roblox-Place-Id&#39;: str(self.placeId)
-            })
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id)
+                })
             if r.status_code == 204:
                 return None
             else:
-                return r.text;</code></pre>
+                return r.text</code></pre>
 </details>
 </section>
 <section>
@@ -336,7 +338,7 @@ class DataStore:
 <dl>
 <dt id="ro_py.gamepersistence.DataStore"><code class="flex name class">
 <span>class <span class="ident">DataStore</span></span>
-<span>(</span><span>requests, placeId, name, scope, legacy=True, legacyNamingScheme=False)</span>
+<span>(</span><span>requests, place_id, name, scope, legacy=True, legacy_naming_scheme=False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents the in-game datastore system for storing data for games (<a href="https://gamepersistence.roblox.com">https://gamepersistence.roblox.com</a>).
@@ -345,7 +347,7 @@ This is only available for authenticated clients, and games that they own.</p>
 <dl>
 <dt><strong><code>requests</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
 <dd>Requests object to use for API requests.</dd>
-<dt><strong><code>placeId</code></strong> :&ensp;<code>int</code></dt>
+<dt><strong><code>place_id</code></strong> :&ensp;<code>int</code></dt>
 <dd>PlaceId to modify the DataStores for,
 if the currently authenticated user doesn't have sufficient permissions,
 it will raise a NotAuthorizedToModifyPlaceDataStores exception</dd>
@@ -360,7 +362,7 @@ as on the Second Parameter of
 <dt><strong><code>legacy</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Describes whether or not this will use the legacy endpoints,
 over the new v1 endpoints (Does not apply to getSortedValues)</dd>
-<dt><strong><code>legacyNamingScheme</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dt><strong><code>legacy_naming_scheme</code></strong> :&ensp;<code>bool</code>, optional</dt>
 <dd>Describes whether or not this will use legacy names for data stores, if true, the qkeys[idx].scope will match the current scope (global by default),
 there will be no qkeys[idx].target (normally the key that is passed into each method),
 and the qkeys[idx].key will match the key passed into each method.</dd>
@@ -378,7 +380,7 @@ and the qkeys[idx].key will match the key passed into each method.</dd>
     ----------
     requests : ro_py.utilities.requests.Requests
         Requests object to use for API requests.
-    placeId : int
+    place_id : int
         PlaceId to modify the DataStores for, 
         if the currently authenticated user doesn&#39;t have sufficient permissions, 
         it will raise a NotAuthorizedToModifyPlaceDataStores exception
@@ -393,18 +395,19 @@ and the qkeys[idx].key will match the key passed into each method.</dd>
     legacy : bool, optional
         Describes whether or not this will use the legacy endpoints, 
         over the new v1 endpoints (Does not apply to getSortedValues)
-    legacyNamingScheme : bool, optional
+    legacy_naming_scheme : bool, optional
         Describes whether or not this will use legacy names for data stores, if true, the qkeys[idx].scope will match the current scope (global by default), 
         there will be no qkeys[idx].target (normally the key that is passed into each method), 
         and the qkeys[idx].key will match the key passed into each method.
     &#34;&#34;&#34;
-    def __init__(self, requests, placeId, name, scope, legacy = True, legacyNamingScheme = False):
-       self.requests = requests
-       self.placeId = placeId
-       self.legacy = legacy
-       self.legacyNamingScheme = legacyNamingScheme
-       self.name = name
-       self.scope = scope if scope != None else &#34;global&#34;
+
+    def __init__(self, requests, place_id, name, scope, legacy=True, legacy_naming_scheme=False):
+        self.requests = requests
+        self.place_id = place_id
+        self.legacy = legacy
+        self.legacy_naming_scheme = legacy_naming_scheme
+        self.name = name
+        self.scope = scope if scope is not None else &#34;global&#34;
 
     async def get(self, key):
         &#34;&#34;&#34;
@@ -422,30 +425,30 @@ and the qkeys[idx].key will match the key passed into each method.</dd>
         -------
         typing.Any
         &#34;&#34;&#34;
-        if self.legacy == True:
-            data = f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target=&amp;qkeys[0].key={quote(key)}&#34; if self.legacyNamingScheme == True else f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target={quote(key)}&amp;qkeys[0].key={quote(self.name)}&#34;
+        if self.legacy:
+            data = f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target=&amp;qkeys[0].key={quote(key)}&#34; if self.legacy_naming_scheme == True else f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target={quote(key)}&amp;qkeys[0].key={quote(self.name)}&#34;
             r = await self.requests.post(
-                url=endpoint + f&#34;persistence/getV2?placeId={str(self.placeId)}&amp;type=standard&amp;scope={quote(self.scope)}&#34;, 
+                url=endpoint + f&#34;persistence/getV2?placeId={str(self.place_id)}&amp;type=standard&amp;scope={quote(self.scope)}&#34;,
                 headers={
-                    &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
                     &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-            }, data=data)
+                }, data=data)
             if len(r.json()[&#39;data&#39;]) == 0:
                 return None
             else:
                 return r.json()[&#39;data&#39;][0][&#39;Value&#39;]
         else:
-            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
             r = await self.requests.get(
                 url=url,
                 headers={
-                    &#39;Roblox-Place-Id&#39;: str(self.placeId)
-            })
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id)
+                })
             if r.status_code == 204:
                 return None
             else:
-                return r.text;
-            
+                return r.text
+
     async def set(self, key, value):
         &#34;&#34;&#34;
         Represents a set request to a data store,
@@ -466,32 +469,32 @@ and the qkeys[idx].key will match the key passed into each method.</dd>
         -------
         typing.Any
         &#34;&#34;&#34;
-        if self.legacy == True:
+        if self.legacy:
             data = f&#34;value={quote(str(value))}&#34;
-            url = endpoint + f&#34;persistence/set?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&#34; if self.legacyNamingScheme == True else endpoint + f&#34;persistence/set?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&#34;
+            url = endpoint + f&#34;persistence/set?placeId={self.place_id}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&#34;
             r = await self.requests.post(
-                url=url, 
+                url=url,
                 headers={
-                    &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
                     &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-            }, data=data)
+                }, data=data)
             if len(r.json()[&#39;data&#39;]) == 0:
                 return None
             else:
                 return r.json()[&#39;data&#39;]
         else:
-            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
             r = await self.requests.post(
                 url=url,
                 headers={
-                    &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
                     &#39;Content-Type&#39;: &#39;*/*&#39;,
                     &#39;Content-Length&#39;: str(len(str(value)))
-            }, data=quote(str(value)))
+                }, data=quote(str(value)))
             if r.status_code == 200:
-                return value;
+                return value
 
-    async def setIfValue(self, key, value, expectedValue):
+    async def set_if_value(self, key, value, expected_value):
         &#34;&#34;&#34;
         Represents a conditional set request to a data store,
         only supports legacy
@@ -506,28 +509,28 @@ and the qkeys[idx].key will match the key passed into each method.</dd>
             The value to set for the key,
             as in the 3rd parameter of
             `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
-        expectedValue
-            The expectedValue for that key, if you know the key doesn&#39;t exist, then set this as None
+        expected_value
+            The expected_value for that key, if you know the key doesn&#39;t exist, then set this as None
 
         Returns
         -------
         typing.Any
         &#34;&#34;&#34;
-        data = f&#34;value={quote(str(value))}&amp;expectedValue={quote(str(expectedValue)) if expectedValue != None else &#39;&#39;}&#34;
-        url = endpoint + f&#34;persistence/set?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expectedValue))) if expectedValue != None else str(0)}&#34; if self.legacyNamingScheme == True else endpoint + f&#34;persistence/set?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expectedValue))) if expectedValue != None else str(0)}&#34;
+        data = f&#34;value={quote(str(value))}&amp;expectedValue={quote(str(expected_value)) if expected_value is not None else &#39;&#39;}&#34;
+        url = endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expected_value))) if expected_value is not None else str(0)}&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expected_value))) if expected_value is not None else str(0)}&#34;
         r = await self.requests.post(
-            url=url, 
+            url=url,
             headers={
-                &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
                 &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-        }, data=data)
+            }, data=data)
         try:
             if r.json()[&#39;data&#39;] != 0:
                 return r.json()[&#39;data&#39;]
         except KeyError:
             return r.json()[&#39;error&#39;]
 
-    async def setIfIdx(self, key, value, idx):
+    async def set_if_idx(self, key, value, idx):
         &#34;&#34;&#34;
         Represents a conditional set request to a data store,
         only supports new endpoints,
@@ -549,33 +552,33 @@ and the qkeys[idx].key will match the key passed into each method.</dd>
         -------
         typing.Any
         &#34;&#34;&#34;
-        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn=0.0&#34;
+        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn=0.0&#34;
         r = await self.requests.post(
             url=url,
             headers={
-                &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
                 &#39;Content-Type&#39;: &#39;*/*&#39;,
                 &#39;Content-Length&#39;: str(len(str(value)))
-        }, data=quote(str(value)))
+            }, data=quote(str(value)))
         if r.status_code == 409:
             usn = r.headers[&#39;roblox-usn&#39;]
             split = usn.split(&#39;.&#39;)
             msn_hash = split[0]
             current_value = split[1]
-            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn={msn_hash}.{hex(idx).split(&#39;x&#39;)[1]}&#34;
+            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn={msn_hash}.{hex(idx).split(&#39;x&#39;)[1]}&#34;
             r2 = await self.requests.post(
                 url=url,
                 headers={
-                    &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
                     &#39;Content-Type&#39;: &#39;*/*&#39;,
                     &#39;Content-Length&#39;: str(len(str(value)))
-            }, data=quote(str(value)))
+                }, data=quote(str(value)))
             if r2.status_code == 409:
                 return &#34;Expected idx did not match current idx, current idx is &#34; + str(floor(int(current_value, 16)))
             else:
                 return value
 
-    async def increment(self, key, delta = 0):
+    async def increment(self, key, delta=0):
         &#34;&#34;&#34;
         Represents a conditional set request to a data store,
         only supports legacy
@@ -596,14 +599,14 @@ and the qkeys[idx].key will match the key passed into each method.</dd>
         typing.Any
         &#34;&#34;&#34;
         data = &#34;&#34;
-        url = endpoint + f&#34;persistence/increment?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;value={str(delta)}&#34; if self.legacyNamingScheme else endpoint + f&#34;persistence/increment?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;value={str(delta)}&#34;
+        url = endpoint + f&#34;persistence/increment?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;value={str(delta)}&#34; if self.legacy_naming_scheme else endpoint + f&#34;persistence/increment?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;value={str(delta)}&#34;
 
         r = await self.requests.post(
-            url=url, 
+            url=url,
             headers={
-                &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
                 &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-        }, data=data)
+            }, data=data)
         try:
             if r.json()[&#39;data&#39;] != 0:
                 return r.json()[&#39;data&#39;]
@@ -612,7 +615,7 @@ and the qkeys[idx].key will match the key passed into each method.</dd>
             reason = cap.group(0).replace(&#34;(&#34;, &#34;&#34;).replace(&#34;)&#34;, &#34;&#34;)
             if reason == &#34;ExistingValueNotNumeric&#34;:
                 return &#34;The requested key you tried to increment had a different value other than byte, short, int, long, long long, float, double or long double&#34;
-    
+
     async def remove(self, key):
         &#34;&#34;&#34;
         Represents a get request to a data store,
@@ -629,30 +632,30 @@ and the qkeys[idx].key will match the key passed into each method.</dd>
         -------
         typing.Any
         &#34;&#34;&#34;
-        if self.legacy == True:
+        if self.legacy:
             data = &#34;&#34;
-            url = endpoint + f&#34;persistence/remove?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme else endpoint + f&#34;persistence/remove?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            url = endpoint + f&#34;persistence/remove?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme else endpoint + f&#34;persistence/remove?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
             r = await self.requests.post(
-                url=url, 
+                url=url,
                 headers={
-                    &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
                     &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-            }, data=data)
-            if r.json()[&#39;data&#39;] == None:
+                }, data=data)
+            if r.json()[&#39;data&#39;] is None:
                 return None
             else:
                 return r.json()[&#39;data&#39;]
         else:
-            url = endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            url = endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
             r = await self.requests.post(
                 url=url,
                 headers={
-                    &#39;Roblox-Place-Id&#39;: str(self.placeId)
-            })
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id)
+                })
             if r.status_code == 204:
                 return None
             else:
-                return r.text;</code></pre>
+                return r.text</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -694,29 +697,29 @@ as in the Second Parameter of
     -------
     typing.Any
     &#34;&#34;&#34;
-    if self.legacy == True:
-        data = f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target=&amp;qkeys[0].key={quote(key)}&#34; if self.legacyNamingScheme == True else f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target={quote(key)}&amp;qkeys[0].key={quote(self.name)}&#34;
+    if self.legacy:
+        data = f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target=&amp;qkeys[0].key={quote(key)}&#34; if self.legacy_naming_scheme == True else f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target={quote(key)}&amp;qkeys[0].key={quote(self.name)}&#34;
         r = await self.requests.post(
-            url=endpoint + f&#34;persistence/getV2?placeId={str(self.placeId)}&amp;type=standard&amp;scope={quote(self.scope)}&#34;, 
+            url=endpoint + f&#34;persistence/getV2?placeId={str(self.place_id)}&amp;type=standard&amp;scope={quote(self.scope)}&#34;,
             headers={
-                &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
                 &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-        }, data=data)
+            }, data=data)
         if len(r.json()[&#39;data&#39;]) == 0:
             return None
         else:
             return r.json()[&#39;data&#39;][0][&#39;Value&#39;]
     else:
-        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
         r = await self.requests.get(
             url=url,
             headers={
-                &#39;Roblox-Place-Id&#39;: str(self.placeId)
-        })
+                &#39;Roblox-Place-Id&#39;: str(self.place_id)
+            })
         if r.status_code == 204:
             return None
         else:
-            return r.text;</code></pre>
+            return r.text</code></pre>
 </details>
 </dd>
 <dt id="ro_py.gamepersistence.DataStore.increment"><code class="name flex">
@@ -745,7 +748,7 @@ as in the 3rd parameter of
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def increment(self, key, delta = 0):
+<pre><code class="python">async def increment(self, key, delta=0):
     &#34;&#34;&#34;
     Represents a conditional set request to a data store,
     only supports legacy
@@ -766,14 +769,14 @@ as in the 3rd parameter of
     typing.Any
     &#34;&#34;&#34;
     data = &#34;&#34;
-    url = endpoint + f&#34;persistence/increment?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;value={str(delta)}&#34; if self.legacyNamingScheme else endpoint + f&#34;persistence/increment?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;value={str(delta)}&#34;
+    url = endpoint + f&#34;persistence/increment?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;value={str(delta)}&#34; if self.legacy_naming_scheme else endpoint + f&#34;persistence/increment?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;value={str(delta)}&#34;
 
     r = await self.requests.post(
-        url=url, 
+        url=url,
         headers={
-            &#39;Roblox-Place-Id&#39;: str(self.placeId),
+            &#39;Roblox-Place-Id&#39;: str(self.place_id),
             &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-    }, data=data)
+        }, data=data)
     try:
         if r.json()[&#39;data&#39;] != 0:
             return r.json()[&#39;data&#39;]
@@ -822,30 +825,30 @@ as in the Second Parameter of
     -------
     typing.Any
     &#34;&#34;&#34;
-    if self.legacy == True:
+    if self.legacy:
         data = &#34;&#34;
-        url = endpoint + f&#34;persistence/remove?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme else endpoint + f&#34;persistence/remove?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+        url = endpoint + f&#34;persistence/remove?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme else endpoint + f&#34;persistence/remove?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
         r = await self.requests.post(
-            url=url, 
+            url=url,
             headers={
-                &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
                 &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-        }, data=data)
-        if r.json()[&#39;data&#39;] == None:
+            }, data=data)
+        if r.json()[&#39;data&#39;] is None:
             return None
         else:
             return r.json()[&#39;data&#39;]
     else:
-        url = endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+        url = endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
         r = await self.requests.post(
             url=url,
             headers={
-                &#39;Roblox-Place-Id&#39;: str(self.placeId)
-        })
+                &#39;Roblox-Place-Id&#39;: str(self.place_id)
+            })
         if r.status_code == 204:
             return None
         else:
-            return r.text;</code></pre>
+            return r.text</code></pre>
 </details>
 </dd>
 <dt id="ro_py.gamepersistence.DataStore.set"><code class="name flex">
@@ -894,34 +897,34 @@ as in the 3rd parameter of
     -------
     typing.Any
     &#34;&#34;&#34;
-    if self.legacy == True:
+    if self.legacy:
         data = f&#34;value={quote(str(value))}&#34;
-        url = endpoint + f&#34;persistence/set?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&#34; if self.legacyNamingScheme == True else endpoint + f&#34;persistence/set?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&#34;
+        url = endpoint + f&#34;persistence/set?placeId={self.place_id}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&#34;
         r = await self.requests.post(
-            url=url, 
+            url=url,
             headers={
-                &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
                 &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-        }, data=data)
+            }, data=data)
         if len(r.json()[&#39;data&#39;]) == 0:
             return None
         else:
             return r.json()[&#39;data&#39;]
     else:
-        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
         r = await self.requests.post(
             url=url,
             headers={
-                &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
                 &#39;Content-Type&#39;: &#39;*/*&#39;,
                 &#39;Content-Length&#39;: str(len(str(value)))
-        }, data=quote(str(value)))
+            }, data=quote(str(value)))
         if r.status_code == 200:
-            return value;</code></pre>
+            return value</code></pre>
 </details>
 </dd>
-<dt id="ro_py.gamepersistence.DataStore.setIfIdx"><code class="name flex">
-<span>async def <span class="ident">setIfIdx</span></span>(<span>self, key, value, idx)</span>
+<dt id="ro_py.gamepersistence.DataStore.set_if_idx"><code class="name flex">
+<span>async def <span class="ident">set_if_idx</span></span>(<span>self, key, value, idx)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a conditional set request to a data store,
@@ -948,7 +951,7 @@ as in the 3rd parameter of
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def setIfIdx(self, key, value, idx):
+<pre><code class="python">async def set_if_idx(self, key, value, idx):
     &#34;&#34;&#34;
     Represents a conditional set request to a data store,
     only supports new endpoints,
@@ -970,35 +973,35 @@ as in the 3rd parameter of
     -------
     typing.Any
     &#34;&#34;&#34;
-    url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn=0.0&#34;
+    url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn=0.0&#34;
     r = await self.requests.post(
         url=url,
         headers={
-            &#39;Roblox-Place-Id&#39;: str(self.placeId),
+            &#39;Roblox-Place-Id&#39;: str(self.place_id),
             &#39;Content-Type&#39;: &#39;*/*&#39;,
             &#39;Content-Length&#39;: str(len(str(value)))
-    }, data=quote(str(value)))
+        }, data=quote(str(value)))
     if r.status_code == 409:
         usn = r.headers[&#39;roblox-usn&#39;]
         split = usn.split(&#39;.&#39;)
         msn_hash = split[0]
         current_value = split[1]
-        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacyNamingScheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn={msn_hash}.{hex(idx).split(&#39;x&#39;)[1]}&#34;
+        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn={msn_hash}.{hex(idx).split(&#39;x&#39;)[1]}&#34;
         r2 = await self.requests.post(
             url=url,
             headers={
-                &#39;Roblox-Place-Id&#39;: str(self.placeId),
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
                 &#39;Content-Type&#39;: &#39;*/*&#39;,
                 &#39;Content-Length&#39;: str(len(str(value)))
-        }, data=quote(str(value)))
+            }, data=quote(str(value)))
         if r2.status_code == 409:
             return &#34;Expected idx did not match current idx, current idx is &#34; + str(floor(int(current_value, 16)))
         else:
             return value</code></pre>
 </details>
 </dd>
-<dt id="ro_py.gamepersistence.DataStore.setIfValue"><code class="name flex">
-<span>async def <span class="ident">setIfValue</span></span>(<span>self, key, value, expectedValue)</span>
+<dt id="ro_py.gamepersistence.DataStore.set_if_value"><code class="name flex">
+<span>async def <span class="ident">set_if_value</span></span>(<span>self, key, value, expected_value)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a conditional set request to a data store,
@@ -1013,8 +1016,8 @@ as in the Second Parameter of
 <dd>The value to set for the key,
 as in the 3rd parameter of
 <code>void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)</code></dd>
-<dt><strong><code>expectedValue</code></strong></dt>
-<dd>The expectedValue for that key, if you know the key doesn't exist, then set this as None</dd>
+<dt><strong><code>expected_value</code></strong></dt>
+<dd>The expected_value for that key, if you know the key doesn't exist, then set this as None</dd>
 </dl>
 <h2 id="returns">Returns</h2>
 <dl>
@@ -1025,7 +1028,7 @@ as in the 3rd parameter of
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def setIfValue(self, key, value, expectedValue):
+<pre><code class="python">async def set_if_value(self, key, value, expected_value):
     &#34;&#34;&#34;
     Represents a conditional set request to a data store,
     only supports legacy
@@ -1040,21 +1043,21 @@ as in the 3rd parameter of
         The value to set for the key,
         as in the 3rd parameter of
         `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
-    expectedValue
-        The expectedValue for that key, if you know the key doesn&#39;t exist, then set this as None
+    expected_value
+        The expected_value for that key, if you know the key doesn&#39;t exist, then set this as None
 
     Returns
     -------
     typing.Any
     &#34;&#34;&#34;
-    data = f&#34;value={quote(str(value))}&amp;expectedValue={quote(str(expectedValue)) if expectedValue != None else &#39;&#39;}&#34;
-    url = endpoint + f&#34;persistence/set?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expectedValue))) if expectedValue != None else str(0)}&#34; if self.legacyNamingScheme == True else endpoint + f&#34;persistence/set?placeId={str(self.placeId)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expectedValue))) if expectedValue != None else str(0)}&#34;
+    data = f&#34;value={quote(str(value))}&amp;expectedValue={quote(str(expected_value)) if expected_value is not None else &#39;&#39;}&#34;
+    url = endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expected_value))) if expected_value is not None else str(0)}&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expected_value))) if expected_value is not None else str(0)}&#34;
     r = await self.requests.post(
-        url=url, 
+        url=url,
         headers={
-            &#39;Roblox-Place-Id&#39;: str(self.placeId),
+            &#39;Roblox-Place-Id&#39;: str(self.place_id),
             &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
-    }, data=data)
+        }, data=data)
     try:
         if r.json()[&#39;data&#39;] != 0:
             return r.json()[&#39;data&#39;]
@@ -1087,8 +1090,8 @@ as in the 3rd parameter of
 <li><code><a title="ro_py.gamepersistence.DataStore.increment" href="#ro_py.gamepersistence.DataStore.increment">increment</a></code></li>
 <li><code><a title="ro_py.gamepersistence.DataStore.remove" href="#ro_py.gamepersistence.DataStore.remove">remove</a></code></li>
 <li><code><a title="ro_py.gamepersistence.DataStore.set" href="#ro_py.gamepersistence.DataStore.set">set</a></code></li>
-<li><code><a title="ro_py.gamepersistence.DataStore.setIfIdx" href="#ro_py.gamepersistence.DataStore.setIfIdx">setIfIdx</a></code></li>
-<li><code><a title="ro_py.gamepersistence.DataStore.setIfValue" href="#ro_py.gamepersistence.DataStore.setIfValue">setIfValue</a></code></li>
+<li><code><a title="ro_py.gamepersistence.DataStore.set_if_idx" href="#ro_py.gamepersistence.DataStore.set_if_idx">set_if_idx</a></code></li>
+<li><code><a title="ro_py.gamepersistence.DataStore.set_if_value" href="#ro_py.gamepersistence.DataStore.set_if_value">set_if_value</a></code></li>
 </ul>
 </li>
 </ul>

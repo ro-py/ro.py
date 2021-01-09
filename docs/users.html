@@ -43,10 +43,19 @@ class User:
     &#34;&#34;&#34;
     Represents a Roblox user and their profile.
     Can be initialized with either a user ID or a username.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+            Requests object to use for API requests.
+    roblox_id : int
+            The id of a user.
+    name : str
+            The name of the user.
     &#34;&#34;&#34;
-    def __init__(self, requests, id, name=None):
+    def __init__(self, requests, roblox_id, name=None):
         self.requests = requests
-        self.id = id
+        self.id = roblox_id
         self.description = None
         self.created = None
         self.is_banned = None
@@ -67,6 +76,7 @@ class User:
         self.display_name = user_info[&#34;displayName&#34;]
         # has_premium_req = requests.get(f&#34;https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership&#34;)
         # self.has_premium = has_premium_req
+        return self
 
     async def get_status(self):
         &#34;&#34;&#34;
@@ -126,7 +136,14 @@ class User:
             friends_list.append(
                 User(self.requests, friend_raw[&#34;id&#34;])
             )
-        return friends_list</code></pre>
+        return friends_list
+
+
+class PartialUser(User):
+    &#34;&#34;&#34;
+    Represents a user with less information then the normal User class.
+    &#34;&#34;&#34;
+    pass</code></pre>
 </details>
 </section>
 <section>
@@ -138,13 +155,57 @@ class User:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="ro_py.users.PartialUser"><code class="flex name class">
+<span>class <span class="ident">PartialUser</span></span>
+<span>(</span><span>requests, roblox_id, name=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a user with less information then the normal User class.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PartialUser(User):
+    &#34;&#34;&#34;
+    Represents a user with less information then the normal User class.
+    &#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.users.User" href="#ro_py.users.User">User</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="ro_py.users.User" href="#ro_py.users.User">User</a></b></code>:
+<ul class="hlist">
+<li><code><a title="ro_py.users.User.get_followers_count" href="#ro_py.users.User.get_followers_count">get_followers_count</a></code></li>
+<li><code><a title="ro_py.users.User.get_followings_count" href="#ro_py.users.User.get_followings_count">get_followings_count</a></code></li>
+<li><code><a title="ro_py.users.User.get_friends" href="#ro_py.users.User.get_friends">get_friends</a></code></li>
+<li><code><a title="ro_py.users.User.get_friends_count" href="#ro_py.users.User.get_friends_count">get_friends_count</a></code></li>
+<li><code><a title="ro_py.users.User.get_roblox_badges" href="#ro_py.users.User.get_roblox_badges">get_roblox_badges</a></code></li>
+<li><code><a title="ro_py.users.User.get_status" href="#ro_py.users.User.get_status">get_status</a></code></li>
+<li><code><a title="ro_py.users.User.update" href="#ro_py.users.User.update">update</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
 <dt id="ro_py.users.User"><code class="flex name class">
 <span>class <span class="ident">User</span></span>
-<span>(</span><span>requests, id, name=None)</span>
+<span>(</span><span>requests, roblox_id, name=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a Roblox user and their profile.
-Can be initialized with either a user ID or a username.</p></div>
+Can be initialized with either a user ID or a username.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>requests</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
+<dd>Requests object to use for API requests.</dd>
+<dt><strong><code>roblox_id</code></strong> :&ensp;<code>int</code></dt>
+<dd>The id of a user.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the user.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -153,10 +214,19 @@ Can be initialized with either a user ID or a username.</p></div>
     &#34;&#34;&#34;
     Represents a Roblox user and their profile.
     Can be initialized with either a user ID or a username.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+            Requests object to use for API requests.
+    roblox_id : int
+            The id of a user.
+    name : str
+            The name of the user.
     &#34;&#34;&#34;
-    def __init__(self, requests, id, name=None):
+    def __init__(self, requests, roblox_id, name=None):
         self.requests = requests
-        self.id = id
+        self.id = roblox_id
         self.description = None
         self.created = None
         self.is_banned = None
@@ -177,6 +247,7 @@ Can be initialized with either a user ID or a username.</p></div>
         self.display_name = user_info[&#34;displayName&#34;]
         # has_premium_req = requests.get(f&#34;https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership&#34;)
         # self.has_premium = has_premium_req
+        return self
 
     async def get_status(self):
         &#34;&#34;&#34;
@@ -238,6 +309,11 @@ Can be initialized with either a user ID or a username.</p></div>
             )
         return friends_list</code></pre>
 </details>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="ro_py.groups.Member" href="groups.html#ro_py.groups.Member">Member</a></li>
+<li><a title="ro_py.users.PartialUser" href="#ro_py.users.PartialUser">PartialUser</a></li>
+</ul>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.users.User.get_followers_count"><code class="name flex">
@@ -387,7 +463,10 @@ Can be initialized with either a user ID or a username.</p></div>
     self.created = iso8601.parse_date(user_info[&#34;created&#34;])
     self.is_banned = user_info[&#34;isBanned&#34;]
     self.name = user_info[&#34;name&#34;]
-    self.display_name = user_info[&#34;displayName&#34;]</code></pre>
+    self.display_name = user_info[&#34;displayName&#34;]
+    # has_premium_req = requests.get(f&#34;https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership&#34;)
+    # self.has_premium = has_premium_req
+    return self</code></pre>
 </details>
 </dd>
 </dl>
@@ -408,6 +487,9 @@ Can be initialized with either a user ID or a username.</p></div>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="ro_py.users.PartialUser" href="#ro_py.users.PartialUser">PartialUser</a></code></h4>
+</li>
 <li>
 <h4><code><a title="ro_py.users.User" href="#ro_py.users.User">User</a></code></h4>
 <ul class="">

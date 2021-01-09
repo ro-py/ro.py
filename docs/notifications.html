@@ -48,10 +48,11 @@ notification menu on the Roblox web client.
 
 from ro_py.utilities.caseconvert import to_snake_case
 
-from signalrcore.hub_connection_builder import HubConnectionBuilder
+from signalrcore_async.hub_connection_builder import HubConnectionBuilder
 from urllib.parse import quote
 import json
-import logging
+import time
+import asyncio
 
 
 class Notification:
@@ -105,7 +106,13 @@ class NotificationReceiver:
         self.on_notification = on_notification
 
         self.roblosecurity = self.requests.session.cookies[&#34;.ROBLOSECURITY&#34;]
-        self.negotiate_request = self.requests.get(
+        self.connection = None
+
+        self.negotiate_request = None
+        self.wss_url = None
+
+    async def initialize(self):
+        self.negotiate_request = await self.requests.get(
             url=&#34;https://realtime.roblox.com/notifications/negotiate&#34;
                 &#34;?clientProtocol=1.5&#34;
                 &#34;&amp;connectionData=%5B%7B%22name%22%3A%22usernotificationhub%22%7D%5D&#34;,
@@ -127,7 +134,7 @@ class NotificationReceiver:
             }
         )
 
-        def on_message(_self, raw_notification):
+        async def on_message(_self, raw_notification):
             &#34;&#34;&#34;
             Internal callback when a message is received.
             &#34;&#34;&#34;
@@ -137,16 +144,27 @@ class NotificationReceiver:
                 return
             if len(notification_json) &gt; 0:
                 notification = Notification(notification_json)
-                self.on_notification(notification)
-                logging.debug(
-                    f&#34;&#34;&#34;Notification:
-Type: {notification.type}
-Data: {notification.data}&#34;&#34;&#34;
-                )
+                await self.on_notification(notification)
             else:
                 return
 
-        self.connection.with_automatic_reconnect({
+        def _internal_send(_self, message, protocol=None):
+
+            _self.logger.debug(&#34;Sending message {0}&#34;.format(message))
+
+            try:
+                protocol = _self.protocol if protocol is None else protocol
+
+                _self._ws.send(protocol.encode(message))
+                _self.connection_checker.last_message = time.time()
+
+                if _self.reconnection_handler is not None:
+                    _self.reconnection_handler.reset()
+
+            except Exception as ex:
+                raise ex
+
+        self.connection = self.connection.with_automatic_reconnect({
             &#34;type&#34;: &#34;raw&#34;,
             &#34;keep_alive_interval&#34;: 10,
             &#34;reconnect_interval&#34;: 5,
@@ -159,11 +177,12 @@ Data: {notification.data}&#34;&#34;&#34;
             self.connection.on_close(self.on_close)
         if self.on_error:
             self.connection.on_error(self.on_error)
-        self.connection.hub.on_message = on_message
+        self.connection.on_message = on_message
+        self.connection._internal_send = _internal_send
 
-        self.connection.start()
+        await self.connection.start()
 
-    def close(self):
+    async def close(self):
         &#34;&#34;&#34;
         Closes the connection and stops receiving notifications.
         &#34;&#34;&#34;
@@ -251,7 +270,13 @@ This should only be generated once per client as to not duplicate notifications.
         self.on_notification = on_notification
 
         self.roblosecurity = self.requests.session.cookies[&#34;.ROBLOSECURITY&#34;]
-        self.negotiate_request = self.requests.get(
+        self.connection = None
+
+        self.negotiate_request = None
+        self.wss_url = None
+
+    async def initialize(self):
+        self.negotiate_request = await self.requests.get(
             url=&#34;https://realtime.roblox.com/notifications/negotiate&#34;
                 &#34;?clientProtocol=1.5&#34;
                 &#34;&amp;connectionData=%5B%7B%22name%22%3A%22usernotificationhub%22%7D%5D&#34;,
@@ -273,7 +298,7 @@ This should only be generated once per client as to not duplicate notifications.
             }
         )
 
-        def on_message(_self, raw_notification):
+        async def on_message(_self, raw_notification):
             &#34;&#34;&#34;
             Internal callback when a message is received.
             &#34;&#34;&#34;
@@ -283,16 +308,27 @@ This should only be generated once per client as to not duplicate notifications.
                 return
             if len(notification_json) &gt; 0:
                 notification = Notification(notification_json)
-                self.on_notification(notification)
-                logging.debug(
-                    f&#34;&#34;&#34;Notification:
-Type: {notification.type}
-Data: {notification.data}&#34;&#34;&#34;
-                )
+                await self.on_notification(notification)
             else:
                 return
 
-        self.connection.with_automatic_reconnect({
+        def _internal_send(_self, message, protocol=None):
+
+            _self.logger.debug(&#34;Sending message {0}&#34;.format(message))
+
+            try:
+                protocol = _self.protocol if protocol is None else protocol
+
+                _self._ws.send(protocol.encode(message))
+                _self.connection_checker.last_message = time.time()
+
+                if _self.reconnection_handler is not None:
+                    _self.reconnection_handler.reset()
+
+            except Exception as ex:
+                raise ex
+
+        self.connection = self.connection.with_automatic_reconnect({
             &#34;type&#34;: &#34;raw&#34;,
             &#34;keep_alive_interval&#34;: 10,
             &#34;reconnect_interval&#34;: 5,
@@ -305,11 +341,12 @@ Data: {notification.data}&#34;&#34;&#34;
             self.connection.on_close(self.on_close)
         if self.on_error:
             self.connection.on_error(self.on_error)
-        self.connection.hub.on_message = on_message
+        self.connection.on_message = on_message
+        self.connection._internal_send = _internal_send
 
-        self.connection.start()
+        await self.connection.start()
 
-    def close(self):
+    async def close(self):
         &#34;&#34;&#34;
         Closes the connection and stops receiving notifications.
         &#34;&#34;&#34;
@@ -318,7 +355,7 @@ Data: {notification.data}&#34;&#34;&#34;
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.notifications.NotificationReceiver.close"><code class="name flex">
-<span>def <span class="ident">close</span></span>(<span>self)</span>
+<span>async def <span class="ident">close</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Closes the connection and stops receiving notifications.</p></div>
@@ -326,11 +363,92 @@ Data: {notification.data}&#34;&#34;&#34;
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def close(self):
+<pre><code class="python">async def close(self):
     &#34;&#34;&#34;
     Closes the connection and stops receiving notifications.
     &#34;&#34;&#34;
     self.connection.stop()</code></pre>
+</details>
+</dd>
+<dt id="ro_py.notifications.NotificationReceiver.initialize"><code class="name flex">
+<span>async def <span class="ident">initialize</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def initialize(self):
+    self.negotiate_request = await self.requests.get(
+        url=&#34;https://realtime.roblox.com/notifications/negotiate&#34;
+            &#34;?clientProtocol=1.5&#34;
+            &#34;&amp;connectionData=%5B%7B%22name%22%3A%22usernotificationhub%22%7D%5D&#34;,
+        cookies={
+            &#34;.ROBLOSECURITY&#34;: self.roblosecurity
+        }
+    )
+    self.wss_url = f&#34;wss://realtime.roblox.com/notifications?transport=websockets&#34; \
+                   f&#34;&amp;connectionToken={quote(self.negotiate_request.json()[&#39;ConnectionToken&#39;])}&#34; \
+                   f&#34;&amp;clientProtocol=1.5&amp;connectionData=%5B%7B%22name%22%3A%22usernotificationhub%22%7D%5D&#34;
+    self.connection = HubConnectionBuilder()
+    self.connection.with_url(
+        self.wss_url,
+        options={
+            &#34;headers&#34;: {
+                &#34;Cookie&#34;: f&#34;.ROBLOSECURITY={self.roblosecurity};&#34;
+            },
+            &#34;skip_negotiation&#34;: False
+        }
+    )
+
+    async def on_message(_self, raw_notification):
+        &#34;&#34;&#34;
+        Internal callback when a message is received.
+        &#34;&#34;&#34;
+        try:
+            notification_json = json.loads(raw_notification)
+        except json.decoder.JSONDecodeError:
+            return
+        if len(notification_json) &gt; 0:
+            notification = Notification(notification_json)
+            await self.on_notification(notification)
+        else:
+            return
+
+    def _internal_send(_self, message, protocol=None):
+
+        _self.logger.debug(&#34;Sending message {0}&#34;.format(message))
+
+        try:
+            protocol = _self.protocol if protocol is None else protocol
+
+            _self._ws.send(protocol.encode(message))
+            _self.connection_checker.last_message = time.time()
+
+            if _self.reconnection_handler is not None:
+                _self.reconnection_handler.reset()
+
+        except Exception as ex:
+            raise ex
+
+    self.connection = self.connection.with_automatic_reconnect({
+        &#34;type&#34;: &#34;raw&#34;,
+        &#34;keep_alive_interval&#34;: 10,
+        &#34;reconnect_interval&#34;: 5,
+        &#34;max_attempts&#34;: 5
+    }).build()
+
+    if self.on_open:
+        self.connection.on_open(self.on_open)
+    if self.on_close:
+        self.connection.on_close(self.on_close)
+    if self.on_error:
+        self.connection.on_error(self.on_error)
+    self.connection.on_message = on_message
+    self.connection._internal_send = _internal_send
+
+    await self.connection.start()</code></pre>
 </details>
 </dd>
 </dl>
@@ -358,6 +476,7 @@ Data: {notification.data}&#34;&#34;&#34;
 <h4><code><a title="ro_py.notifications.NotificationReceiver" href="#ro_py.notifications.NotificationReceiver">NotificationReceiver</a></code></h4>
 <ul class="">
 <li><code><a title="ro_py.notifications.NotificationReceiver.close" href="#ro_py.notifications.NotificationReceiver.close">close</a></code></li>
+<li><code><a title="ro_py.notifications.NotificationReceiver.initialize" href="#ro_py.notifications.NotificationReceiver.initialize">initialize</a></code></li>
 </ul>
 </li>
 </ul>
