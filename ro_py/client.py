@@ -11,12 +11,12 @@ from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
 from ro_py.trades import TradesWrapper
-from ro_py.captcha import UnsolvedCaptcha
 from ro_py.utilities.cache import CacheType
 from ro_py.utilities.requests import Requests
 from ro_py.accountsettings import AccountSettings
 from ro_py.accountinformation import AccountInformation
-from ro_py.utilities.errors import UserDoesNotExistError, ApiError
+from ro_py.utilities.errors import UserDoesNotExistError
+from ro_py.captcha import UnsolvedCaptcha
 
 import logging
 

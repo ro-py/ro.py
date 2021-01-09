@@ -1,5 +1,6 @@
 from ro_py.utilities.errors import ApiError
 from ro_py.utilities.cache import Cache
+from ro_py.captcha import CaptchaMetadata
 from json.decoder import JSONDecodeError
 from cachecontrol import CacheControl
 import requests_async
@@ -152,3 +153,10 @@ class Requests:
             return delete_request
 
         raise ApiError(f"[{str(delete_request.status_code)}] {delete_request_error[0]['message']}")
+
+    async def get_captcha_metadata(self):
+        captcha_meta_req = await self.get(
+            url="https://apis.roblox.com/captcha/v1/metadata"
+        )
+        captcha_meta_raw = captcha_meta_req.json()
+        return CaptchaMetadata(captcha_meta_raw)
