@@ -65,7 +65,6 @@ def get_rp_names(rp):
 class Role:
     """
     Represents a role
-    This is only available for authenticated clients as it cannot be accessed otherwise.
 
     Parameters
     ----------

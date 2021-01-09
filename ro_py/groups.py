@@ -155,6 +155,10 @@ class Group:
         return await member.update()
 
 
+class PartialGroup(Group):
+    pass
+
+
 class Member(User):
     """
     Represents a user in a group.
@@ -177,11 +181,106 @@ class Member(User):
         self.role = role
         self.group = group
 
+    async def update_role(self):
+        """
+        Updates the role information of the user.
+
+        Returns
+        -------
+        ro_py.roles.Role
+        """
+        member_req = await self.requests.get(
+            url=endpoint + f"/v2/users/{roblox_id}/groups/roles"
+        )
+        data = member_req.json()
+        for role in data['data']:
+            if role['group']['id'] == self.group.id:
+                self.role = Role(self.group, role['role'])
+                break
+        return self.role
+
+    async def change_rank(self, num):
+        """
+        Changes the users rank specified by a number.
+        If num is 1 the users role will go up by 1.
+        If num is -1 the users role will go down by 1.
+
+        Parameters
+        ----------
+        num : int
+                How much to change the rank by.
+        """
+        await self.update_role()
+        roles = await self.group.get_roles()
+        role_counter = -1
+        for group_role in roles:
+            role_counter += 1
+            if group_role.id == self.role.id:
+                break
+        if not role:
+            raise NotFound(f"User {self.id} is not in group {self.group.id}")
+        return await self.setrank(roles[role_counter + num].id)
+
     async def promote(self):
-        pass
+        """
+        Promotes the user.
+
+        Returns
+        -------
+        int
+        """
+        return await self.change_rank(1)
 
     async def demote(self):
-        pass
+        """
+        Demotes the user.
 
-    async def setrank(self):
-        pass
+        Returns
+        -------
+        int
+        """
+        return await self.change_rank(-1)
+
+    async def setrank(self, rank):
+        """
+        Sets the users role to specified role using rank id.
+
+        Parameters
+        ----------
+        rank : int
+                Rank id
+
+        Returns
+        -------
+        bool
+        """
+        rank_request = await self.requests.patch(
+            url=endpoint + f"/v1/groups/{self.id}/users/{self.group.id}",
+            data={
+                "roleId": rank
+            }
+        )
+        return rank_request.status == 200
+
+    async def setrole(self, role_num):
+        """
+         Sets the users role to specified role using role number (1-255).
+
+         Parameters
+         ----------
+         role_num : int
+                Role number (1-255)
+
+         Returns
+         -------
+         bool
+         """
+        roles = await self.group.get_roles()
+        rank_role = None
+        for role in roles:
+            if role.role == role_num:
+                rank_role = role
+                break
+        if not rank_role:
+            raise NotFound(f"Role {role_num} not found")
+        return await self.setrank(rank_role.id)
