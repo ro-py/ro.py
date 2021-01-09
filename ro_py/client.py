@@ -44,8 +44,6 @@ class Client:
         """AccountInformation object. Only available for authenticated clients."""
         self.accountsettings = None
         """AccountSettings object. Only available for authenticated clients."""
-        # self.user = None
-        # """User object. Only available for authenticated clients."""
         self.chat = None
         """ChatWrapper object. Only available for authenticated clients."""
         self.trade = None
@@ -57,18 +55,39 @@ class Client:
             self.accountinformation = AccountInformation(self.requests)
             self.accountsettings = AccountSettings(self.requests)
             logging.debug("Initialized AccountInformation and AccountSettings.")
-            # auth_user_req = self.requests.get("https://users.roblox.com/v1/users/authenticated")
-            # self.user = User(self.requests, auth_user_req.json()["id"])
-            # logging.debug("Initialized authenticated user.")
             self.chat = ChatWrapper(self.requests)
             logging.debug("Initialized chat wrapper.")
             self.trade = TradesWrapper(self.requests)
             logging.debug("Initialized trade wrapper.")
 
     def token_login(self, token):
+        """
+        Authenticates the client with a ROBLOSECURITY token.
+
+        Parameters
+        ----------
+        token : str
+            .ROBLOSECURITY token to authenticate with.
+        """
         self.requests.session.cookies[".ROBLOSECURITY"] = token
 
     async def user_login(self, username, password, token=None):
+        """
+        Authenticates the client with a username and password.
+
+        Parameters
+        ----------
+        username : str
+            Username to log in with.
+        password : str
+            Password to log in with.
+        token : str, optional
+            If you have already solved the captcha, pass it here.
+
+        Returns
+        -------
+        ro_py.captcha.UnsolvedCaptcha or request
+        """
         if token:
             login_req = self.requests.back_post(
                 url="https://auth.roblox.com/v2/login",
