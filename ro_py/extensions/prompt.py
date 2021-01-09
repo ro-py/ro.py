@@ -151,17 +151,69 @@ class RbxLogin(wx.Frame):
             self.Close()
 
 
+class RbxCaptcha(wx.Frame):
+    """
+    wx.Frame wrapper for Roblox authentication.
+    """
+    def __init__(self, *args, **kwds):
+        kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
+        wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((512, 600))
+        self.SetTitle("Roblox Captcha (ro.py)")
+        self.SetBackgroundColour(wx.Colour(255, 255, 255))
+        self.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "appicon.png")))
+
+        self.status = False
+        self.token = None
+
+        root_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.web_view = wx.html2.WebView.New(self, wx.ID_ANY)
+        self.web_view.SetSize((512, 600))
+        self.web_view.Show()
+        self.web_view.EnableAccessToDevTools(False)
+        self.web_view.EnableContextMenu(False)
+
+        root_sizer.Add(self.web_view, 1, wx.EXPAND, 0)
+
+        self.SetSizer(root_sizer)
+
+        self.Layout()
+
+        self.Bind(wx.html2.EVT_WEBVIEW_NAVIGATED, self.login_load, self.web_view)
+
+    def login_load(self, event):
+        _, token = self.web_view.RunScript("try{document.getElementsByTagName('input')[0].value}catch(e){}")
+        if token == "undefined":
+            token = False
+        if token:
+            self.web_view.Hide()
+            self.status = True
+            self.token = token
+            self.Close()
+
+
 class AuthApp(wx.App):
     """
     wx.App wrapper for Roblox authentication.
     """
-    def __init__(self):
-        """"""
 
     def OnInit(self):
         self.rbx_login = RbxLogin(None, wx.ID_ANY, "")
         self.SetTopWindow(self.rbx_login)
         self.rbx_login.Show()
+        return True
+
+
+class CaptchaApp(wx.App):
+    """
+    wx.App wrapper for Roblox captcha.
+    """
+
+    def OnInit(self):
+        self.rbx_captcha = RbxCaptcha(None, wx.ID_ANY, "")
+        self.SetTopWindow(self.rbx_captcha)
+        self.rbx_captcha.Show()
         return True
 
 
@@ -183,3 +235,25 @@ def authenticate_prompt(client):
     app.rbx_login.client = client
     app.MainLoop()
     return app.rbx_login.status
+
+
+def captcha_prompt(client, unsolved_captcha):
+    """
+    Prompts a captcha solve screen.
+    First item in tuple is True if the solve was sucessful, and the second item is the token.
+
+    Parameters
+    ----------
+    client : ro_py.client.Client
+        Client object.
+    unsolved_captcha : ro_py.captcha.UnsolvedCaptcha
+        Captcha to solve.
+
+    Returns
+    ------
+    tuple of bool and str
+    """
+    app = CaptchaApp(0)
+    app.rbx_captcha.web_view.LoadURL(unsolved_captcha.url)
+    app.MainLoop()
+    return app.rbx_captcha.status, app.rbx_captcha.token

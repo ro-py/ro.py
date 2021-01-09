@@ -16,7 +16,7 @@ from ro_py.utilities.requests import Requests
 from ro_py.accountsettings import AccountSettings
 from ro_py.accountinformation import AccountInformation
 from ro_py.utilities.errors import UserDoesNotExistError
-from ro_py.captcha import UnsolvedCaptcha
+from ro_py.captcha import UnsolvedLoginCaptcha
 
 import logging
 
@@ -124,7 +124,7 @@ class Client:
                     data=f"public_key=476068BF-9607-4799-B53D-966BE98E2B81&data[blob]={field_data}"
                 )
                 captcha_json = captcha_req.json()
-                return UnsolvedCaptcha(captcha_json, "476068BF-9607-4799-B53D-966BE98E2B81")
+                return UnsolvedLoginCaptcha(captcha_json, "476068BF-9607-4799-B53D-966BE98E2B81")
 
     async def get_user(self, user_id):
         """
