@@ -21,8 +21,8 @@ class ConversationTyping:
         self.requests = requests
         self.id = conversation_id
 
-    def __enter__(self):
-        self.requests.post(
+    async def __aenter__(self):
+        await self.requests.post(
             url=endpoint + "v2/update-user-typing-status",
             data={
                 "conversationId": self.id,
@@ -30,8 +30,8 @@ class ConversationTyping:
             }
         )
 
-    def __exit__(self, *args, **kwargs):
-        self.requests.post(
+    async def __aexit__(self, *args, **kwargs):
+        await self.requests.post(
             url=endpoint + "v2/update-user-typing-status",
             data={
                 "conversationId": self.id,
@@ -43,24 +43,33 @@ class ConversationTyping:
 class Conversation:
     def __init__(self, requests, conversation_id=None, raw=False, raw_data=None):
         self.requests = requests
+        self.raw = raw
+        self.id = None
+        self.title = None
+        self.initiator = None
+        self.type = None
+        self.typing = ConversationTyping(self.requests, conversation_id)
 
-        if raw:
+        if self.raw:
             data = raw_data
             self.id = data["id"]
-        else:
-            self.id = conversation_id
-            conversation_req = requests.get(
-                url="https://chat.roblox.com/v2/get-conversations",
-                params={
-                    "conversationIds": self.id
-                }
-            )
-            data = conversation_req.json()[0]
+            self.title = data["title"]
+            self.initiator = User(self.requests, data["initiator"]["targetId"])
+            self.type = data["conversationType"]
+            self.typing = ConversationTyping(self.requests, conversation_id)
 
+    async def update(self):
+        conversation_req = await self.requests.get(
+            url="https://chat.roblox.com/v2/get-conversations",
+            params={
+                "conversationIds": self.id
+            }
+        )
+        data = conversation_req.json()[0]
+        self.id = data["id"]
         self.title = data["title"]
         self.initiator = User(self.requests, data["initiator"]["targetId"])
         self.type = data["conversationType"]
-
         self.typing = ConversationTyping(self.requests, conversation_id)
 
     async def get_message(self, message_id):

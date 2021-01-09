@@ -6,12 +6,12 @@ with open("README.md", "r") as fh:
 setuptools.setup(
     name="ro-py",
     version="1.0.3",
-    author="jmkdev",
+    author="jmkdev and iranathan",
     author_email="jmk@jmksite.dev",
     description="ro.py is a Python wrapper for the Roblox web API.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/jmk-developer/ro.py",
+    url="https://github.com/rbx-libdev/ro.py",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
@@ -23,6 +23,8 @@ setuptools.setup(
         "iso8601",
         "signalrcore",
         "cachecontrol",
-        "requests-async"
+        "requests-async",
+        "trio",
+        "greenback"
     ]
 )

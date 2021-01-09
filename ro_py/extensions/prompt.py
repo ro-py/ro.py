@@ -10,6 +10,12 @@ from wx import html2
 import os
 import asyncio
 import pytweening
+import trio
+import greenback
+
+
+async def initialize():
+    await greenback.ensure_portal()
 
 
 async def user_login(client, username, password, key=None):
@@ -87,7 +93,7 @@ class RbxLogin(wx.Frame):
             token = False
         if token:
             self.web_view.Hide()
-            lr = asyncio.get_event_loop().run_until_complete(user_login(
+            lr = greenback.await_(user_login(
                 self.client,
                 self.username,
                 self.password,
@@ -140,7 +146,7 @@ class RbxLogin(wx.Frame):
             self.SetSize((512, int(512 + pytweening.easeOutQuad(i / 88) * 88)))
 
         # Runs the user_login function.
-        fd = asyncio.get_event_loop().run_until_complete(user_login(self.client, self.username, self.password))
+        fd = greenback.await_(user_login(self.client, self.username, self.password))
 
         # Load the captcha URL.
         if fd:
@@ -254,4 +260,7 @@ def captcha_prompt(unsolved_captcha):
     app = CaptchaApp(0)
     app.rbx_captcha.web_view.LoadURL(unsolved_captcha.url)
     app.MainLoop()
-    return app.rbx_captcha.status, app.rbx_captcha.token
+    return app.rbx_captcha.status, app.rbx_captcha.toke
+
+
+trio.run(initialize)
