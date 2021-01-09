@@ -237,15 +237,13 @@ def authenticate_prompt(client):
     return app.rbx_login.status
 
 
-def captcha_prompt(client, unsolved_captcha):
+def captcha_prompt(unsolved_captcha):
     """
     Prompts a captcha solve screen.
     First item in tuple is True if the solve was sucessful, and the second item is the token.
 
     Parameters
     ----------
-    client : ro_py.client.Client
-        Client object.
     unsolved_captcha : ro_py.captcha.UnsolvedCaptcha
         Captcha to solve.
 
