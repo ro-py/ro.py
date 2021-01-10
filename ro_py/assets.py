@@ -4,8 +4,8 @@ This file houses functions and classes that pertain to Roblox assets.
 
 """
 
-# from ro_py.users import User
-# from ro_py.groups import Group
+from ro_py.users import User
+from ro_py.groups import Group
 from ro_py.utilities.errors import NotLimitedError
 from ro_py.economy import LimitedResaleData
 from ro_py.utilities.asset_type import asset_types
@@ -25,7 +25,6 @@ class Asset:
     asset_id
         ID of the asset.
     """
-
     def __init__(self, requests, asset_id):
         self.id = asset_id
         self.requests = requests
@@ -68,10 +67,10 @@ class Asset:
         self.description = asset_info["Description"]
         self.asset_type_id = asset_info["AssetTypeId"]
         self.asset_type_name = asset_types[self.asset_type_id]
-        # if asset_info["Creator"]["CreatorType"] == "User":
-        #     self.creator = User(self.requests, asset_info["Creator"]["Id"])
-        # elif asset_info["Creator"]["CreatorType"] == "Group":
-        #     self.creator = Group(self.requests, asset_info["Creator"]["CreatorTargetId"])
+        if asset_info["Creator"]["CreatorType"] == "User":
+            self.creator = User(self.requests, asset_info["Creator"]["Id"])
+        elif asset_info["Creator"]["CreatorType"] == "Group":
+            self.creator = Group(self.requests, asset_info["Creator"]["CreatorTargetId"])
         self.created = iso8601.parse_date(asset_info["Created"])
         self.updated = iso8601.parse_date(asset_info["Updated"])
         self.price = asset_info["PriceInRobux"]
@@ -109,8 +108,7 @@ class Asset:
         LimitedResaleData
         """
         if self.is_limited:
-            resale_data_req = await self.requests.get(
-                f"https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data")
+            resale_data_req = await self.requests.get(f"https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data")
             return LimitedResaleData(resale_data_req.json())
         else:
             raise NotLimitedError("You can only read this information on limited items.")
