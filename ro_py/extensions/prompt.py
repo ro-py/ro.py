@@ -247,6 +247,8 @@ async def captcha_prompt(unsolved_captcha):
     Prompts a captcha solve screen.
     First item in tuple is True if the solve was sucessful, and the second item is the token.
 
+    Image will be placed here soon.
+
     Parameters
     ----------
     unsolved_captcha : ro_py.captcha.UnsolvedCaptcha
