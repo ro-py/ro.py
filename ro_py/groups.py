@@ -19,7 +19,7 @@ class Shout:
     """
     def __init__(self, requests, shout_data):
         self.body = shout_data["body"]
-        self.poster = None  # User(requests, shout_data["poster"]["userId"])
+        self.poster = User(requests, shout_data["poster"]["userId"])
 
 
 class WallPost:
@@ -151,12 +151,16 @@ class Group:
 
         # Create data to return.
         role = Role(self.requests, self, group_data['role'])
-        member = Member(self.requests, roblox_id, None, self, role)
+        member = Member(self.requests, roblox_id, "", self, role)
         return await member.update()
 
 
 class PartialGroup(Group):
-    pass
+    """
+    Represents a group with less information
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
 class Member(User):
@@ -176,12 +180,12 @@ class Member(User):
     role : ro_py.roles.Role
             The role the user has is the group.
     """
-    def __init__(self, requests, roblox_id, name=None, group=None, role=None):
+    def __init__(self, requests, roblox_id, name, group, role):
         super().__init__(requests, roblox_id, name)
         self.role = role
         self.group = group
 
-    async def update_role(self, user):
+    async def update_role(self):
         """
         Updates the role information of the user.
 
@@ -190,7 +194,7 @@ class Member(User):
         ro_py.roles.Role
         """
         member_req = await self.requests.get(
-            url=endpoint + f"/v2/users/{user.id}/groups/roles"
+            url=endpoint + f"/v2/users/{self.id}/groups/roles"
         )
         data = member_req.json()
         for role in data['data']:
@@ -255,7 +259,7 @@ class Member(User):
         bool
         """
         rank_request = await self.requests.patch(
-            url=endpoint + f"/v1/groups/{self.id}/users/{self.group.id}",
+            url=endpoint + f"/v1/groups/{self.group.id}/users/{self.id}",
             data={
                 "roleId": rank
             }
@@ -284,3 +288,9 @@ class Member(User):
         if not rank_role:
             raise NotFound(f"Role {role_num} not found")
         return await self.setrank(rank_role.id)
+
+    async def exile(self):
+        exile_req = await self.requests.delete(
+            url=endpoint + f"/v1/groups/{self.group.id}/users/{self.id}"
+        )
+        return exile_req.status == 200

@@ -126,4 +126,5 @@ class PartialUser(User):
     """
     Represents a user with less information then the normal User class.
     """
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
