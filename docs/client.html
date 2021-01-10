@@ -40,12 +40,12 @@ from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
 from ro_py.trades import TradesWrapper
-from ro_py.captcha import UnsolvedCaptcha
 from ro_py.utilities.cache import CacheType
 from ro_py.utilities.requests import Requests
 from ro_py.accountsettings import AccountSettings
 from ro_py.accountinformation import AccountInformation
-from ro_py.utilities.errors import UserDoesNotExistError, ApiError
+from ro_py.utilities.errors import UserDoesNotExistError
+from ro_py.captcha import UnsolvedLoginCaptcha
 
 import logging
 
@@ -73,8 +73,6 @@ class Client:
         &#34;&#34;&#34;AccountInformation object. Only available for authenticated clients.&#34;&#34;&#34;
         self.accountsettings = None
         &#34;&#34;&#34;AccountSettings object. Only available for authenticated clients.&#34;&#34;&#34;
-        # self.user = None
-        # &#34;&#34;&#34;User object. Only available for authenticated clients.&#34;&#34;&#34;
         self.chat = None
         &#34;&#34;&#34;ChatWrapper object. Only available for authenticated clients.&#34;&#34;&#34;
         self.trade = None
@@ -86,18 +84,39 @@ class Client:
             self.accountinformation = AccountInformation(self.requests)
             self.accountsettings = AccountSettings(self.requests)
             logging.debug(&#34;Initialized AccountInformation and AccountSettings.&#34;)
-            # auth_user_req = self.requests.get(&#34;https://users.roblox.com/v1/users/authenticated&#34;)
-            # self.user = User(self.requests, auth_user_req.json()[&#34;id&#34;])
-            # logging.debug(&#34;Initialized authenticated user.&#34;)
             self.chat = ChatWrapper(self.requests)
             logging.debug(&#34;Initialized chat wrapper.&#34;)
             self.trade = TradesWrapper(self.requests)
             logging.debug(&#34;Initialized trade wrapper.&#34;)
 
     def token_login(self, token):
+        &#34;&#34;&#34;
+        Authenticates the client with a ROBLOSECURITY token.
+
+        Parameters
+        ----------
+        token : str
+            .ROBLOSECURITY token to authenticate with.
+        &#34;&#34;&#34;
         self.requests.session.cookies[&#34;.ROBLOSECURITY&#34;] = token
 
     async def user_login(self, username, password, token=None):
+        &#34;&#34;&#34;
+        Authenticates the client with a username and password.
+
+        Parameters
+        ----------
+        username : str
+            Username to log in with.
+        password : str
+            Password to log in with.
+        token : str, optional
+            If you have already solved the captcha, pass it here.
+
+        Returns
+        -------
+        ro_py.captcha.UnsolvedCaptcha or request
+        &#34;&#34;&#34;
         if token:
             login_req = self.requests.back_post(
                 url=&#34;https://auth.roblox.com/v2/login&#34;,
@@ -134,7 +153,7 @@ class Client:
                     data=f&#34;public_key=476068BF-9607-4799-B53D-966BE98E2B81&amp;data[blob]={field_data}&#34;
                 )
                 captcha_json = captcha_req.json()
-                return UnsolvedCaptcha(captcha_json, &#34;476068BF-9607-4799-B53D-966BE98E2B81&#34;)
+                return UnsolvedLoginCaptcha(captcha_json, &#34;476068BF-9607-4799-B53D-966BE98E2B81&#34;)
 
     async def get_user(self, user_id):
         &#34;&#34;&#34;
@@ -298,8 +317,6 @@ class Client:
         &#34;&#34;&#34;AccountInformation object. Only available for authenticated clients.&#34;&#34;&#34;
         self.accountsettings = None
         &#34;&#34;&#34;AccountSettings object. Only available for authenticated clients.&#34;&#34;&#34;
-        # self.user = None
-        # &#34;&#34;&#34;User object. Only available for authenticated clients.&#34;&#34;&#34;
         self.chat = None
         &#34;&#34;&#34;ChatWrapper object. Only available for authenticated clients.&#34;&#34;&#34;
         self.trade = None
@@ -311,18 +328,39 @@ class Client:
             self.accountinformation = AccountInformation(self.requests)
             self.accountsettings = AccountSettings(self.requests)
             logging.debug(&#34;Initialized AccountInformation and AccountSettings.&#34;)
-            # auth_user_req = self.requests.get(&#34;https://users.roblox.com/v1/users/authenticated&#34;)
-            # self.user = User(self.requests, auth_user_req.json()[&#34;id&#34;])
-            # logging.debug(&#34;Initialized authenticated user.&#34;)
             self.chat = ChatWrapper(self.requests)
             logging.debug(&#34;Initialized chat wrapper.&#34;)
             self.trade = TradesWrapper(self.requests)
             logging.debug(&#34;Initialized trade wrapper.&#34;)
 
     def token_login(self, token):
+        &#34;&#34;&#34;
+        Authenticates the client with a ROBLOSECURITY token.
+
+        Parameters
+        ----------
+        token : str
+            .ROBLOSECURITY token to authenticate with.
+        &#34;&#34;&#34;
         self.requests.session.cookies[&#34;.ROBLOSECURITY&#34;] = token
 
     async def user_login(self, username, password, token=None):
+        &#34;&#34;&#34;
+        Authenticates the client with a username and password.
+
+        Parameters
+        ----------
+        username : str
+            Username to log in with.
+        password : str
+            Password to log in with.
+        token : str, optional
+            If you have already solved the captcha, pass it here.
+
+        Returns
+        -------
+        ro_py.captcha.UnsolvedCaptcha or request
+        &#34;&#34;&#34;
         if token:
             login_req = self.requests.back_post(
                 url=&#34;https://auth.roblox.com/v2/login&#34;,
@@ -359,7 +397,7 @@ class Client:
                     data=f&#34;public_key=476068BF-9607-4799-B53D-966BE98E2B81&amp;data[blob]={field_data}&#34;
                 )
                 captcha_json = captcha_req.json()
-                return UnsolvedCaptcha(captcha_json, &#34;476068BF-9607-4799-B53D-966BE98E2B81&#34;)
+                return UnsolvedLoginCaptcha(captcha_json, &#34;476068BF-9607-4799-B53D-966BE98E2B81&#34;)
 
     async def get_user(self, user_id):
         &#34;&#34;&#34;
@@ -706,12 +744,25 @@ class Client:
 <span>def <span class="ident">token_login</span></span>(<span>self, token)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Authenticates the client with a ROBLOSECURITY token.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>token</code></strong> :&ensp;<code>str</code></dt>
+<dd>.ROBLOSECURITY token to authenticate with.</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def token_login(self, token):
+    &#34;&#34;&#34;
+    Authenticates the client with a ROBLOSECURITY token.
+
+    Parameters
+    ----------
+    token : str
+        .ROBLOSECURITY token to authenticate with.
+    &#34;&#34;&#34;
     self.requests.session.cookies[&#34;.ROBLOSECURITY&#34;] = token</code></pre>
 </details>
 </dd>
@@ -719,12 +770,42 @@ class Client:
 <span>async def <span class="ident">user_login</span></span>(<span>self, username, password, token=None)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Authenticates the client with a username and password.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>username</code></strong> :&ensp;<code>str</code></dt>
+<dd>Username to log in with.</dd>
+<dt><strong><code>password</code></strong> :&ensp;<code>str</code></dt>
+<dd>Password to log in with.</dd>
+<dt><strong><code>token</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>If you have already solved the captcha, pass it here.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="ro_py.captcha.UnsolvedCaptcha" href="captcha.html#ro_py.captcha.UnsolvedCaptcha">UnsolvedCaptcha</a></code> or <code>request</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def user_login(self, username, password, token=None):
+    &#34;&#34;&#34;
+    Authenticates the client with a username and password.
+
+    Parameters
+    ----------
+    username : str
+        Username to log in with.
+    password : str
+        Password to log in with.
+    token : str, optional
+        If you have already solved the captcha, pass it here.
+
+    Returns
+    -------
+    ro_py.captcha.UnsolvedCaptcha or request
+    &#34;&#34;&#34;
     if token:
         login_req = self.requests.back_post(
             url=&#34;https://auth.roblox.com/v2/login&#34;,
@@ -761,7 +842,7 @@ class Client:
                 data=f&#34;public_key=476068BF-9607-4799-B53D-966BE98E2B81&amp;data[blob]={field_data}&#34;
             )
             captcha_json = captcha_req.json()
-            return UnsolvedCaptcha(captcha_json, &#34;476068BF-9607-4799-B53D-966BE98E2B81&#34;)</code></pre>
+            return UnsolvedLoginCaptcha(captcha_json, &#34;476068BF-9607-4799-B53D-966BE98E2B81&#34;)</code></pre>
 </details>
 </dd>
 </dl>

@@ -34,13 +34,28 @@ This file houses functions and classes that pertain to the Roblox captcha.
 &#34;&#34;&#34;
 
 
-class UnsolvedCaptcha:
+class UnsolvedLoginCaptcha:
     def __init__(self, data, pkey):
         self.token = data[&#34;token&#34;]
-        self.url = f&#34;https://roblox-api.arkoselabs.com/fc/api/nojs/?pkey={pkey}&amp;session={self.token.split(&#39;|&#39;)[0]}&amp;lang=en-gb&#34;
+        self.url = f&#34;https://roblox-api.arkoselabs.com/fc/api/nojs/&#34; \
+                   f&#34;?pkey={pkey}&#34; \
+                   f&#34;&amp;session={self.token.split(&#39;|&#39;)[0]}&#34; \
+                   f&#34;&amp;lang=en&#34;
         self.challenge_url = data[&#34;challenge_url&#34;]
         self.challenge_url_cdn = data[&#34;challenge_url_cdn&#34;]
-        self.noscript = data[&#34;noscript&#34;]</code></pre>
+        self.noscript = data[&#34;noscript&#34;]
+
+
+class UnsolvedCaptcha:
+    def __init__(self, pkey):
+        self.url = f&#34;https://roblox-api.arkoselabs.com/fc/api/nojs/&#34; \
+                   f&#34;?pkey={pkey}&#34; \
+                   f&#34;&amp;lang=en&#34;
+
+
+class CaptchaMetadata:
+    def __init__(self, data):
+        self.fun_captcha_public_keys = data[&#34;funCaptchaPublicKeys&#34;]</code></pre>
 </details>
 </section>
 <section>
@@ -52,9 +67,24 @@ class UnsolvedCaptcha:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="ro_py.captcha.CaptchaMetadata"><code class="flex name class">
+<span>class <span class="ident">CaptchaMetadata</span></span>
+<span>(</span><span>data)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CaptchaMetadata:
+    def __init__(self, data):
+        self.fun_captcha_public_keys = data[&#34;funCaptchaPublicKeys&#34;]</code></pre>
+</details>
+</dd>
 <dt id="ro_py.captcha.UnsolvedCaptcha"><code class="flex name class">
 <span>class <span class="ident">UnsolvedCaptcha</span></span>
-<span>(</span><span>data, pkey)</span>
+<span>(</span><span>pkey)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -63,9 +93,29 @@ class UnsolvedCaptcha:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class UnsolvedCaptcha:
+    def __init__(self, pkey):
+        self.url = f&#34;https://roblox-api.arkoselabs.com/fc/api/nojs/&#34; \
+                   f&#34;?pkey={pkey}&#34; \
+                   f&#34;&amp;lang=en&#34;</code></pre>
+</details>
+</dd>
+<dt id="ro_py.captcha.UnsolvedLoginCaptcha"><code class="flex name class">
+<span>class <span class="ident">UnsolvedLoginCaptcha</span></span>
+<span>(</span><span>data, pkey)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UnsolvedLoginCaptcha:
     def __init__(self, data, pkey):
         self.token = data[&#34;token&#34;]
-        self.url = f&#34;https://roblox-api.arkoselabs.com/fc/api/nojs/?pkey={pkey}&amp;session={self.token.split(&#39;|&#39;)[0]}&amp;lang=en-gb&#34;
+        self.url = f&#34;https://roblox-api.arkoselabs.com/fc/api/nojs/&#34; \
+                   f&#34;?pkey={pkey}&#34; \
+                   f&#34;&amp;session={self.token.split(&#39;|&#39;)[0]}&#34; \
+                   f&#34;&amp;lang=en&#34;
         self.challenge_url = data[&#34;challenge_url&#34;]
         self.challenge_url_cdn = data[&#34;challenge_url_cdn&#34;]
         self.noscript = data[&#34;noscript&#34;]</code></pre>
@@ -88,7 +138,13 @@ class UnsolvedCaptcha:
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
+<h4><code><a title="ro_py.captcha.CaptchaMetadata" href="#ro_py.captcha.CaptchaMetadata">CaptchaMetadata</a></code></h4>
+</li>
+<li>
 <h4><code><a title="ro_py.captcha.UnsolvedCaptcha" href="#ro_py.captcha.UnsolvedCaptcha">UnsolvedCaptcha</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.captcha.UnsolvedLoginCaptcha" href="#ro_py.captcha.UnsolvedLoginCaptcha">UnsolvedLoginCaptcha</a></code></h4>
 </li>
 </ul>
 </li>

@@ -35,9 +35,9 @@ This extension houses functions that allow human verification prompts for intera
 
 
 import wx
+import wxasync
 from wx import html2
 import os
-import asyncio
 import pytweening
 
 
@@ -107,21 +107,21 @@ class RbxLogin(wx.Frame):
 
         self.Layout()
 
-        self.Bind(wx.EVT_BUTTON, self.login_click, self.log_in_button)
-        self.Bind(wx.html2.EVT_WEBVIEW_NAVIGATED, self.login_load, self.web_view)
+        wxasync.AsyncBind(wx.EVT_BUTTON, self.login_click, self.log_in_button)
+        wxasync.AsyncBind(wx.html2.EVT_WEBVIEW_NAVIGATED, self.login_load, self.web_view)
 
-    def login_load(self, event):
+    async def login_load(self, event):
         _, token = self.web_view.RunScript(&#34;try{document.getElementsByTagName(&#39;input&#39;)[0].value}catch(e){}&#34;)
         if token == &#34;undefined&#34;:
             token = False
         if token:
             self.web_view.Hide()
-            lr = asyncio.get_event_loop().run_until_complete(user_login(
+            lr = await user_login(
                 self.client,
                 self.username,
                 self.password,
                 token
-            ))
+            )
             if &#34;.ROBLOSECURITY&#34; in self.client.requests.session.cookies:
                 self.status = True
                 self.Close()
@@ -132,7 +132,7 @@ class RbxLogin(wx.Frame):
                               &#34;Error&#34;, wx.OK | wx.ICON_ERROR)
                 self.Close()
 
-    def login_click(self, event):
+    async def login_click(self, event):
         self.username = self.username_entry.GetValue()
         self.password = self.password_entry.GetValue()
         self.username.strip(&#34;\n&#34;)
@@ -169,7 +169,7 @@ class RbxLogin(wx.Frame):
             self.SetSize((512, int(512 + pytweening.easeOutQuad(i / 88) * 88)))
 
         # Runs the user_login function.
-        fd = asyncio.get_event_loop().run_until_complete(user_login(self.client, self.username, self.password))
+        fd = await user_login(self.client, self.username, self.password)
 
         # Load the captcha URL.
         if fd:
@@ -180,12 +180,52 @@ class RbxLogin(wx.Frame):
             self.Close()
 
 
-class AuthApp(wx.App):
+class RbxCaptcha(wx.Frame):
+    &#34;&#34;&#34;
+    wx.Frame wrapper for Roblox authentication.
+    &#34;&#34;&#34;
+    def __init__(self, *args, **kwds):
+        kwds[&#34;style&#34;] = kwds.get(&#34;style&#34;, 0) | wx.DEFAULT_FRAME_STYLE
+        wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((512, 600))
+        self.SetTitle(&#34;Roblox Captcha (ro.py)&#34;)
+        self.SetBackgroundColour(wx.Colour(255, 255, 255))
+        self.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(__file__)), &#34;appicon.png&#34;)))
+
+        self.status = False
+        self.token = None
+
+        root_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.web_view = wx.html2.WebView.New(self, wx.ID_ANY)
+        self.web_view.SetSize((512, 600))
+        self.web_view.Show()
+        self.web_view.EnableAccessToDevTools(False)
+        self.web_view.EnableContextMenu(False)
+
+        root_sizer.Add(self.web_view, 1, wx.EXPAND, 0)
+
+        self.SetSizer(root_sizer)
+
+        self.Layout()
+
+        self.Bind(wx.html2.EVT_WEBVIEW_NAVIGATED, self.login_load, self.web_view)
+
+    def login_load(self, event):
+        _, token = self.web_view.RunScript(&#34;try{document.getElementsByTagName(&#39;input&#39;)[0].value}catch(e){}&#34;)
+        if token == &#34;undefined&#34;:
+            token = False
+        if token:
+            self.web_view.Hide()
+            self.status = True
+            self.token = token
+            self.Close()
+
+
+class AuthApp(wxasync.WxAsyncApp):
     &#34;&#34;&#34;
     wx.App wrapper for Roblox authentication.
     &#34;&#34;&#34;
-    def __init__(self):
-        &#34;&#34;&#34;&#34;&#34;&#34;
 
     def OnInit(self):
         self.rbx_login = RbxLogin(None, wx.ID_ANY, &#34;&#34;)
@@ -194,10 +234,27 @@ class AuthApp(wx.App):
         return True
 
 
-def authenticate_prompt(client):
+class CaptchaApp(wxasync.WxAsyncApp):
+    &#34;&#34;&#34;
+    wx.App wrapper for Roblox captcha.
+    &#34;&#34;&#34;
+
+    def OnInit(self):
+        self.rbx_captcha = RbxCaptcha(None, wx.ID_ANY, &#34;&#34;)
+        self.SetTopWindow(self.rbx_captcha)
+        self.rbx_captcha.Show()
+        return True
+
+
+async def authenticate_prompt(client):
     &#34;&#34;&#34;
     Prompts a login screen.
     Returns True if the user has sucessfully been authenticated and False if they have not.
+
+    Login prompts look like this:
+    .. image:: https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/login_prompt.png
+    They also display a captcha, which looks very similar to captcha_prompt():
+    .. image:: https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/login_captcha_prompt.png
 
     Parameters
     ----------
@@ -210,8 +267,30 @@ def authenticate_prompt(client):
     &#34;&#34;&#34;
     app = AuthApp(0)
     app.rbx_login.client = client
-    app.MainLoop()
-    return app.rbx_login.status</code></pre>
+    await app.MainLoop()
+    return app.rbx_login.status
+
+
+async def captcha_prompt(unsolved_captcha):
+    &#34;&#34;&#34;
+    Prompts a captcha solve screen.
+    First item in tuple is True if the solve was sucessful, and the second item is the token.
+
+    Image will be placed here soon.
+
+    Parameters
+    ----------
+    unsolved_captcha : ro_py.captcha.UnsolvedCaptcha
+        Captcha to solve.
+
+    Returns
+    ------
+    tuple of bool and str
+    &#34;&#34;&#34;
+    app = CaptchaApp(0)
+    app.rbx_captcha.web_view.LoadURL(unsolved_captcha.url)
+    await app.MainLoop()
+    return app.rbx_captcha.status, app.rbx_captcha.token</code></pre>
 </details>
 </section>
 <section>
@@ -222,11 +301,15 @@ def authenticate_prompt(client):
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="ro_py.extensions.prompt.authenticate_prompt"><code class="name flex">
-<span>def <span class="ident">authenticate_prompt</span></span>(<span>client)</span>
+<span>async def <span class="ident">authenticate_prompt</span></span>(<span>client)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Prompts a login screen.
 Returns True if the user has sucessfully been authenticated and False if they have not.</p>
+<p>Login prompts look like this:
+<img alt="" src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/login_prompt.png"></p>
+<p>They also display a captcha, which looks very similar to captcha_prompt():
+<img alt="" src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/login_captcha_prompt.png"></p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>client</code></strong> :&ensp;<code><a title="ro_py.client.Client" href="../client.html#ro_py.client.Client">Client</a></code></dt>
@@ -241,10 +324,15 @@ Returns True if the user has sucessfully been authenticated and False if they ha
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def authenticate_prompt(client):
+<pre><code class="python">async def authenticate_prompt(client):
     &#34;&#34;&#34;
     Prompts a login screen.
     Returns True if the user has sucessfully been authenticated and False if they have not.
+
+    Login prompts look like this:
+    .. image:: https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/login_prompt.png
+    They also display a captcha, which looks very similar to captcha_prompt():
+    .. image:: https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/login_captcha_prompt.png
 
     Parameters
     ----------
@@ -257,8 +345,51 @@ Returns True if the user has sucessfully been authenticated and False if they ha
     &#34;&#34;&#34;
     app = AuthApp(0)
     app.rbx_login.client = client
-    app.MainLoop()
+    await app.MainLoop()
     return app.rbx_login.status</code></pre>
+</details>
+</dd>
+<dt id="ro_py.extensions.prompt.captcha_prompt"><code class="name flex">
+<span>async def <span class="ident">captcha_prompt</span></span>(<span>unsolved_captcha)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Prompts a captcha solve screen.
+First item in tuple is True if the solve was sucessful, and the second item is the token.</p>
+<p>Image will be placed here soon.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>unsolved_captcha</code></strong> :&ensp;<code><a title="ro_py.captcha.UnsolvedCaptcha" href="../captcha.html#ro_py.captcha.UnsolvedCaptcha">UnsolvedCaptcha</a></code></dt>
+<dd>Captcha to solve.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple</code> of <code>bool and str</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def captcha_prompt(unsolved_captcha):
+    &#34;&#34;&#34;
+    Prompts a captcha solve screen.
+    First item in tuple is True if the solve was sucessful, and the second item is the token.
+
+    Image will be placed here soon.
+
+    Parameters
+    ----------
+    unsolved_captcha : ro_py.captcha.UnsolvedCaptcha
+        Captcha to solve.
+
+    Returns
+    ------
+    tuple of bool and str
+    &#34;&#34;&#34;
+    app = CaptchaApp(0)
+    app.rbx_captcha.web_view.LoadURL(unsolved_captcha.url)
+    await app.MainLoop()
+    return app.rbx_captcha.status, app.rbx_captcha.token</code></pre>
 </details>
 </dd>
 <dt id="ro_py.extensions.prompt.user_login"><code class="name flex">
@@ -284,19 +415,43 @@ Returns True if the user has sucessfully been authenticated and False if they ha
 <dl>
 <dt id="ro_py.extensions.prompt.AuthApp"><code class="flex name class">
 <span>class <span class="ident">AuthApp</span></span>
+<span>(</span><span>warn_on_cancel_callback=False, loop=None)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>wx.App wrapper for Roblox authentication.</p></div>
+<div class="desc"><p>wx.App wrapper for Roblox authentication.</p>
+<p>Construct a <code>wx.App</code> object.</p>
+<p>:param redirect: Should <code>sys.stdout</code> and <code>sys.stderr</code> be
+redirected?
+Defaults to False. If <code>filename</code> is None
+then output will be redirected to a window that pops up
+as needed.
+(You can control what kind of window is created
+for the output by resetting the class variable
+<code>outputWindowClass</code> to a class of your choosing.)</p>
+<p>:param filename: The name of a file to redirect output to, if
+redirect is True.</p>
+<p>:param useBestVisual: Should the app try to use the best
+available visual provided by the system (only relevant on
+systems that have more than one visual.)
+This parameter
+must be used instead of calling <code>SetUseBestVisual</code> later
+on because it must be set before the underlying GUI
+toolkit is initialized.</p>
+<p>:param clearSigInt: Should SIGINT be cleared?
+This allows the
+app to terminate upon a Ctrl-C in the console like other
+GUI apps will.</p>
+<p>:note: You should override OnInit to do application
+initialization to ensure that the system, toolkit and
+wxWidgets are fully initialized.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class AuthApp(wx.App):
+<pre><code class="python">class AuthApp(wxasync.WxAsyncApp):
     &#34;&#34;&#34;
     wx.App wrapper for Roblox authentication.
     &#34;&#34;&#34;
-    def __init__(self):
-        &#34;&#34;&#34;&#34;&#34;&#34;
 
     def OnInit(self):
         self.rbx_login = RbxLogin(None, wx.ID_ANY, &#34;&#34;)
@@ -306,6 +461,7 @@ Returns True if the user has sucessfully been authenticated and False if they ha
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li>wxasync.WxAsyncApp</li>
 <li>wx.core.App</li>
 <li>wx._core.PyApp</li>
 <li>wx._core.AppConsole</li>
@@ -332,6 +488,173 @@ Returns True if the user has sucessfully been authenticated and False if they ha
     self.SetTopWindow(self.rbx_login)
     self.rbx_login.Show()
     return True</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="ro_py.extensions.prompt.CaptchaApp"><code class="flex name class">
+<span>class <span class="ident">CaptchaApp</span></span>
+<span>(</span><span>warn_on_cancel_callback=False, loop=None)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>wx.App wrapper for Roblox captcha.</p>
+<p>Construct a <code>wx.App</code> object.</p>
+<p>:param redirect: Should <code>sys.stdout</code> and <code>sys.stderr</code> be
+redirected?
+Defaults to False. If <code>filename</code> is None
+then output will be redirected to a window that pops up
+as needed.
+(You can control what kind of window is created
+for the output by resetting the class variable
+<code>outputWindowClass</code> to a class of your choosing.)</p>
+<p>:param filename: The name of a file to redirect output to, if
+redirect is True.</p>
+<p>:param useBestVisual: Should the app try to use the best
+available visual provided by the system (only relevant on
+systems that have more than one visual.)
+This parameter
+must be used instead of calling <code>SetUseBestVisual</code> later
+on because it must be set before the underlying GUI
+toolkit is initialized.</p>
+<p>:param clearSigInt: Should SIGINT be cleared?
+This allows the
+app to terminate upon a Ctrl-C in the console like other
+GUI apps will.</p>
+<p>:note: You should override OnInit to do application
+initialization to ensure that the system, toolkit and
+wxWidgets are fully initialized.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CaptchaApp(wxasync.WxAsyncApp):
+    &#34;&#34;&#34;
+    wx.App wrapper for Roblox captcha.
+    &#34;&#34;&#34;
+
+    def OnInit(self):
+        self.rbx_captcha = RbxCaptcha(None, wx.ID_ANY, &#34;&#34;)
+        self.SetTopWindow(self.rbx_captcha)
+        self.rbx_captcha.Show()
+        return True</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>wxasync.WxAsyncApp</li>
+<li>wx.core.App</li>
+<li>wx._core.PyApp</li>
+<li>wx._core.AppConsole</li>
+<li>wx._core.EvtHandler</li>
+<li>wx._core.Object</li>
+<li>wx._core.Trackable</li>
+<li>wx._core.EventFilter</li>
+<li>sip.wrapper</li>
+<li>sip.simplewrapper</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.extensions.prompt.CaptchaApp.OnInit"><code class="name flex">
+<span>def <span class="ident">OnInit</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>OnInit(self) -&gt; bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def OnInit(self):
+    self.rbx_captcha = RbxCaptcha(None, wx.ID_ANY, &#34;&#34;)
+    self.SetTopWindow(self.rbx_captcha)
+    self.rbx_captcha.Show()
+    return True</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="ro_py.extensions.prompt.RbxCaptcha"><code class="flex name class">
+<span>class <span class="ident">RbxCaptcha</span></span>
+<span>(</span><span>*args, **kwds)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>wx.Frame wrapper for Roblox authentication.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RbxCaptcha(wx.Frame):
+    &#34;&#34;&#34;
+    wx.Frame wrapper for Roblox authentication.
+    &#34;&#34;&#34;
+    def __init__(self, *args, **kwds):
+        kwds[&#34;style&#34;] = kwds.get(&#34;style&#34;, 0) | wx.DEFAULT_FRAME_STYLE
+        wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((512, 600))
+        self.SetTitle(&#34;Roblox Captcha (ro.py)&#34;)
+        self.SetBackgroundColour(wx.Colour(255, 255, 255))
+        self.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(__file__)), &#34;appicon.png&#34;)))
+
+        self.status = False
+        self.token = None
+
+        root_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.web_view = wx.html2.WebView.New(self, wx.ID_ANY)
+        self.web_view.SetSize((512, 600))
+        self.web_view.Show()
+        self.web_view.EnableAccessToDevTools(False)
+        self.web_view.EnableContextMenu(False)
+
+        root_sizer.Add(self.web_view, 1, wx.EXPAND, 0)
+
+        self.SetSizer(root_sizer)
+
+        self.Layout()
+
+        self.Bind(wx.html2.EVT_WEBVIEW_NAVIGATED, self.login_load, self.web_view)
+
+    def login_load(self, event):
+        _, token = self.web_view.RunScript(&#34;try{document.getElementsByTagName(&#39;input&#39;)[0].value}catch(e){}&#34;)
+        if token == &#34;undefined&#34;:
+            token = False
+        if token:
+            self.web_view.Hide()
+            self.status = True
+            self.token = token
+            self.Close()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>wx._core.Frame</li>
+<li>wx._core.TopLevelWindow</li>
+<li>wx._core.NonOwnedWindow</li>
+<li>wx._core.Window</li>
+<li>wx._core.WindowBase</li>
+<li>wx._core.EvtHandler</li>
+<li>wx._core.Object</li>
+<li>wx._core.Trackable</li>
+<li>sip.wrapper</li>
+<li>sip.simplewrapper</li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.extensions.prompt.RbxCaptcha.login_load"><code class="name flex">
+<span>def <span class="ident">login_load</span></span>(<span>self, event)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def login_load(self, event):
+    _, token = self.web_view.RunScript(&#34;try{document.getElementsByTagName(&#39;input&#39;)[0].value}catch(e){}&#34;)
+    if token == &#34;undefined&#34;:
+        token = False
+    if token:
+        self.web_view.Hide()
+        self.status = True
+        self.token = token
+        self.Close()</code></pre>
 </details>
 </dd>
 </dl>
@@ -405,21 +728,21 @@ Returns True if the user has sucessfully been authenticated and False if they ha
 
         self.Layout()
 
-        self.Bind(wx.EVT_BUTTON, self.login_click, self.log_in_button)
-        self.Bind(wx.html2.EVT_WEBVIEW_NAVIGATED, self.login_load, self.web_view)
+        wxasync.AsyncBind(wx.EVT_BUTTON, self.login_click, self.log_in_button)
+        wxasync.AsyncBind(wx.html2.EVT_WEBVIEW_NAVIGATED, self.login_load, self.web_view)
 
-    def login_load(self, event):
+    async def login_load(self, event):
         _, token = self.web_view.RunScript(&#34;try{document.getElementsByTagName(&#39;input&#39;)[0].value}catch(e){}&#34;)
         if token == &#34;undefined&#34;:
             token = False
         if token:
             self.web_view.Hide()
-            lr = asyncio.get_event_loop().run_until_complete(user_login(
+            lr = await user_login(
                 self.client,
                 self.username,
                 self.password,
                 token
-            ))
+            )
             if &#34;.ROBLOSECURITY&#34; in self.client.requests.session.cookies:
                 self.status = True
                 self.Close()
@@ -430,7 +753,7 @@ Returns True if the user has sucessfully been authenticated and False if they ha
                               &#34;Error&#34;, wx.OK | wx.ICON_ERROR)
                 self.Close()
 
-    def login_click(self, event):
+    async def login_click(self, event):
         self.username = self.username_entry.GetValue()
         self.password = self.password_entry.GetValue()
         self.username.strip(&#34;\n&#34;)
@@ -467,7 +790,7 @@ Returns True if the user has sucessfully been authenticated and False if they ha
             self.SetSize((512, int(512 + pytweening.easeOutQuad(i / 88) * 88)))
 
         # Runs the user_login function.
-        fd = asyncio.get_event_loop().run_until_complete(user_login(self.client, self.username, self.password))
+        fd = await user_login(self.client, self.username, self.password)
 
         # Load the captcha URL.
         if fd:
@@ -493,7 +816,7 @@ Returns True if the user has sucessfully been authenticated and False if they ha
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.extensions.prompt.RbxLogin.login_click"><code class="name flex">
-<span>def <span class="ident">login_click</span></span>(<span>self, event)</span>
+<span>async def <span class="ident">login_click</span></span>(<span>self, event)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -501,7 +824,7 @@ Returns True if the user has sucessfully been authenticated and False if they ha
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def login_click(self, event):
+<pre><code class="python">async def login_click(self, event):
     self.username = self.username_entry.GetValue()
     self.password = self.password_entry.GetValue()
     self.username.strip(&#34;\n&#34;)
@@ -538,7 +861,7 @@ Returns True if the user has sucessfully been authenticated and False if they ha
         self.SetSize((512, int(512 + pytweening.easeOutQuad(i / 88) * 88)))
 
     # Runs the user_login function.
-    fd = asyncio.get_event_loop().run_until_complete(user_login(self.client, self.username, self.password))
+    fd = await user_login(self.client, self.username, self.password)
 
     # Load the captcha URL.
     if fd:
@@ -550,7 +873,7 @@ Returns True if the user has sucessfully been authenticated and False if they ha
 </details>
 </dd>
 <dt id="ro_py.extensions.prompt.RbxLogin.login_load"><code class="name flex">
-<span>def <span class="ident">login_load</span></span>(<span>self, event)</span>
+<span>async def <span class="ident">login_load</span></span>(<span>self, event)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -558,18 +881,18 @@ Returns True if the user has sucessfully been authenticated and False if they ha
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def login_load(self, event):
+<pre><code class="python">async def login_load(self, event):
     _, token = self.web_view.RunScript(&#34;try{document.getElementsByTagName(&#39;input&#39;)[0].value}catch(e){}&#34;)
     if token == &#34;undefined&#34;:
         token = False
     if token:
         self.web_view.Hide()
-        lr = asyncio.get_event_loop().run_until_complete(user_login(
+        lr = await user_login(
             self.client,
             self.username,
             self.password,
             token
-        ))
+        )
         if &#34;.ROBLOSECURITY&#34; in self.client.requests.session.cookies:
             self.status = True
             self.Close()
@@ -600,6 +923,7 @@ Returns True if the user has sucessfully been authenticated and False if they ha
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="ro_py.extensions.prompt.authenticate_prompt" href="#ro_py.extensions.prompt.authenticate_prompt">authenticate_prompt</a></code></li>
+<li><code><a title="ro_py.extensions.prompt.captcha_prompt" href="#ro_py.extensions.prompt.captcha_prompt">captcha_prompt</a></code></li>
 <li><code><a title="ro_py.extensions.prompt.user_login" href="#ro_py.extensions.prompt.user_login">user_login</a></code></li>
 </ul>
 </li>
@@ -609,6 +933,18 @@ Returns True if the user has sucessfully been authenticated and False if they ha
 <h4><code><a title="ro_py.extensions.prompt.AuthApp" href="#ro_py.extensions.prompt.AuthApp">AuthApp</a></code></h4>
 <ul class="">
 <li><code><a title="ro_py.extensions.prompt.AuthApp.OnInit" href="#ro_py.extensions.prompt.AuthApp.OnInit">OnInit</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.extensions.prompt.CaptchaApp" href="#ro_py.extensions.prompt.CaptchaApp">CaptchaApp</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.extensions.prompt.CaptchaApp.OnInit" href="#ro_py.extensions.prompt.CaptchaApp.OnInit">OnInit</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.extensions.prompt.RbxCaptcha" href="#ro_py.extensions.prompt.RbxCaptcha">RbxCaptcha</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.extensions.prompt.RbxCaptcha.login_load" href="#ro_py.extensions.prompt.RbxCaptcha.login_load">login_load</a></code></li>
 </ul>
 </li>
 <li>

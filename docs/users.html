@@ -34,6 +34,7 @@ This file houses functions and classes that pertain to Roblox users and profiles
 &#34;&#34;&#34;
 
 from ro_py.robloxbadges import RobloxBadge
+# from ro_py.groups import PartialGroup
 import iso8601
 
 endpoint = &#34;https://users.roblox.com/&#34;
@@ -137,6 +138,19 @@ class User:
                 User(self.requests, friend_raw[&#34;id&#34;])
             )
         return friends_list
+
+    &#34;&#34;&#34;
+    async def get_groups(self):
+        member_req = await self.requests.get(
+            url=f&#34;https://groups.roblox.com/v2/users/{self.id}/groups/roles&#34;
+        )
+        data = member_req.json()
+        groups = []
+        for group in data[&#39;data&#39;]:
+            group = group[&#39;group&#39;]
+            groups.append(PartialGroup(self.requests, group[&#39;id&#39;], group[&#39;name&#39;], group[&#39;memberCount&#39;]))
+        return groups
+    &#34;&#34;&#34;
 
 
 class PartialUser(User):
@@ -307,7 +321,20 @@ Can be initialized with either a user ID or a username.</p>
             friends_list.append(
                 User(self.requests, friend_raw[&#34;id&#34;])
             )
-        return friends_list</code></pre>
+        return friends_list
+
+    &#34;&#34;&#34;
+    async def get_groups(self):
+        member_req = await self.requests.get(
+            url=f&#34;https://groups.roblox.com/v2/users/{self.id}/groups/roles&#34;
+        )
+        data = member_req.json()
+        groups = []
+        for group in data[&#39;data&#39;]:
+            group = group[&#39;group&#39;]
+            groups.append(PartialGroup(self.requests, group[&#39;id&#39;], group[&#39;name&#39;], group[&#39;memberCount&#39;]))
+        return groups
+    &#34;&#34;&#34;</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">

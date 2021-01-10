@@ -19,7 +19,7 @@ class Shout:
     """
     def __init__(self, requests, shout_data):
         self.body = shout_data["body"]
-        self.poster = User(requests, shout_data["poster"]["userId"])
+        self.poster = None  # User(requests, shout_data["poster"]["userId"])
 
 
 class WallPost:
@@ -181,7 +181,7 @@ class Member(User):
         self.role = role
         self.group = group
 
-    async def update_role(self):
+    async def update_role(self, user):
         """
         Updates the role information of the user.
 
@@ -190,12 +190,12 @@ class Member(User):
         ro_py.roles.Role
         """
         member_req = await self.requests.get(
-            url=endpoint + f"/v2/users/{roblox_id}/groups/roles"
+            url=endpoint + f"/v2/users/{user.id}/groups/roles"
         )
         data = member_req.json()
         for role in data['data']:
             if role['group']['id'] == self.group.id:
-                self.role = Role(self.group, role['role'])
+                self.role = Role(self.requests, self.group, role['role'])
                 break
         return self.role
 
@@ -217,7 +217,7 @@ class Member(User):
             role_counter += 1
             if group_role.id == self.role.id:
                 break
-        if not role:
+        if not roles:
             raise NotFound(f"User {self.id} is not in group {self.group.id}")
         return await self.setrank(roles[role_counter + num].id)
 

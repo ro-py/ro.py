@@ -50,8 +50,8 @@ class ConversationTyping:
         self.requests = requests
         self.id = conversation_id
 
-    def __enter__(self):
-        self.requests.post(
+    async def __aenter__(self):
+        await self.requests.post(
             url=endpoint + &#34;v2/update-user-typing-status&#34;,
             data={
                 &#34;conversationId&#34;: self.id,
@@ -59,8 +59,8 @@ class ConversationTyping:
             }
         )
 
-    def __exit__(self, *args, **kwargs):
-        self.requests.post(
+    async def __aexit__(self, *args, **kwargs):
+        await self.requests.post(
             url=endpoint + &#34;v2/update-user-typing-status&#34;,
             data={
                 &#34;conversationId&#34;: self.id,
@@ -72,24 +72,33 @@ class ConversationTyping:
 class Conversation:
     def __init__(self, requests, conversation_id=None, raw=False, raw_data=None):
         self.requests = requests
+        self.raw = raw
+        self.id = None
+        self.title = None
+        self.initiator = None
+        self.type = None
+        self.typing = ConversationTyping(self.requests, conversation_id)
 
-        if raw:
+        if self.raw:
             data = raw_data
             self.id = data[&#34;id&#34;]
-        else:
-            self.id = conversation_id
-            conversation_req = requests.get(
-                url=&#34;https://chat.roblox.com/v2/get-conversations&#34;,
-                params={
-                    &#34;conversationIds&#34;: self.id
-                }
-            )
-            data = conversation_req.json()[0]
+            self.title = data[&#34;title&#34;]
+            self.initiator = User(self.requests, data[&#34;initiator&#34;][&#34;targetId&#34;])
+            self.type = data[&#34;conversationType&#34;]
+            self.typing = ConversationTyping(self.requests, conversation_id)
 
+    async def update(self):
+        conversation_req = await self.requests.get(
+            url=&#34;https://chat.roblox.com/v2/get-conversations&#34;,
+            params={
+                &#34;conversationIds&#34;: self.id
+            }
+        )
+        data = conversation_req.json()[0]
+        self.id = data[&#34;id&#34;]
         self.title = data[&#34;title&#34;]
         self.initiator = User(self.requests, data[&#34;initiator&#34;][&#34;targetId&#34;])
         self.type = data[&#34;conversationType&#34;]
-
         self.typing = ConversationTyping(self.requests, conversation_id)
 
     async def get_message(self, message_id):
@@ -345,24 +354,33 @@ of the Roblox web client.</p></div>
 <pre><code class="python">class Conversation:
     def __init__(self, requests, conversation_id=None, raw=False, raw_data=None):
         self.requests = requests
+        self.raw = raw
+        self.id = None
+        self.title = None
+        self.initiator = None
+        self.type = None
+        self.typing = ConversationTyping(self.requests, conversation_id)
 
-        if raw:
+        if self.raw:
             data = raw_data
             self.id = data[&#34;id&#34;]
-        else:
-            self.id = conversation_id
-            conversation_req = requests.get(
-                url=&#34;https://chat.roblox.com/v2/get-conversations&#34;,
-                params={
-                    &#34;conversationIds&#34;: self.id
-                }
-            )
-            data = conversation_req.json()[0]
+            self.title = data[&#34;title&#34;]
+            self.initiator = User(self.requests, data[&#34;initiator&#34;][&#34;targetId&#34;])
+            self.type = data[&#34;conversationType&#34;]
+            self.typing = ConversationTyping(self.requests, conversation_id)
 
+    async def update(self):
+        conversation_req = await self.requests.get(
+            url=&#34;https://chat.roblox.com/v2/get-conversations&#34;,
+            params={
+                &#34;conversationIds&#34;: self.id
+            }
+        )
+        data = conversation_req.json()[0]
+        self.id = data[&#34;id&#34;]
         self.title = data[&#34;title&#34;]
         self.initiator = User(self.requests, data[&#34;initiator&#34;][&#34;targetId&#34;])
         self.type = data[&#34;conversationType&#34;]
-
         self.typing = ConversationTyping(self.requests, conversation_id)
 
     async def get_message(self, message_id):
@@ -421,6 +439,30 @@ of the Roblox web client.</p></div>
         raise ChatError(send_message_json[&#34;statusMessage&#34;])</code></pre>
 </details>
 </dd>
+<dt id="ro_py.chat.Conversation.update"><code class="name flex">
+<span>async def <span class="ident">update</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def update(self):
+    conversation_req = await self.requests.get(
+        url=&#34;https://chat.roblox.com/v2/get-conversations&#34;,
+        params={
+            &#34;conversationIds&#34;: self.id
+        }
+    )
+    data = conversation_req.json()[0]
+    self.id = data[&#34;id&#34;]
+    self.title = data[&#34;title&#34;]
+    self.initiator = User(self.requests, data[&#34;initiator&#34;][&#34;targetId&#34;])
+    self.type = data[&#34;conversationType&#34;]
+    self.typing = ConversationTyping(self.requests, conversation_id)</code></pre>
+</details>
+</dd>
 </dl>
 </dd>
 <dt id="ro_py.chat.ConversationTyping"><code class="flex name class">
@@ -438,8 +480,8 @@ of the Roblox web client.</p></div>
         self.requests = requests
         self.id = conversation_id
 
-    def __enter__(self):
-        self.requests.post(
+    async def __aenter__(self):
+        await self.requests.post(
             url=endpoint + &#34;v2/update-user-typing-status&#34;,
             data={
                 &#34;conversationId&#34;: self.id,
@@ -447,8 +489,8 @@ of the Roblox web client.</p></div>
             }
         )
 
-    def __exit__(self, *args, **kwargs):
-        self.requests.post(
+    async def __aexit__(self, *args, **kwargs):
+        await self.requests.post(
             url=endpoint + &#34;v2/update-user-typing-status&#34;,
             data={
                 &#34;conversationId&#34;: self.id,
@@ -579,6 +621,7 @@ of the Roblox web client.</p></div>
 <ul class="">
 <li><code><a title="ro_py.chat.Conversation.get_message" href="#ro_py.chat.Conversation.get_message">get_message</a></code></li>
 <li><code><a title="ro_py.chat.Conversation.send_message" href="#ro_py.chat.Conversation.send_message">send_message</a></code></li>
+<li><code><a title="ro_py.chat.Conversation.update" href="#ro_py.chat.Conversation.update">update</a></code></li>
 </ul>
 </li>
 <li>
