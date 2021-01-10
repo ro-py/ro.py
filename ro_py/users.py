@@ -5,7 +5,6 @@ This file houses functions and classes that pertain to Roblox users and profiles
 """
 
 from ro_py.robloxbadges import RobloxBadge
-# from ro_py.groups import PartialGroup
 import iso8601
 
 endpoint = "https://users.roblox.com/"
@@ -110,8 +109,8 @@ class User:
             )
         return friends_list
 
-    """
     async def get_groups(self):
+        from ro_py.groups import PartialGroup
         member_req = await self.requests.get(
             url=f"https://groups.roblox.com/v2/users/{self.id}/groups/roles"
         )
@@ -121,7 +120,6 @@ class User:
             group = group['group']
             groups.append(PartialGroup(self.requests, group['id'], group['name'], group['memberCount']))
         return groups
-    """
 
 
 class PartialUser(User):
