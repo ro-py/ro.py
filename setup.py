@@ -23,6 +23,8 @@ setuptools.setup(
         "iso8601",
         "signalrcore",
         "cachecontrol",
-        "requests-async"
+        "requests-async",
+        "wxPython",
+        "wxasync"
     ]
 )

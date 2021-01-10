@@ -6,6 +6,7 @@ This extension houses functions that allow human verification prompts for intera
 
 
 import wx
+import wxasync
 from wx import html2
 import os
 import asyncio
@@ -78,21 +79,21 @@ class RbxLogin(wx.Frame):
 
         self.Layout()
 
-        self.Bind(wx.EVT_BUTTON, self.login_click, self.log_in_button)
-        self.Bind(wx.html2.EVT_WEBVIEW_NAVIGATED, self.login_load, self.web_view)
+        wxasync.AsyncBind(wx.EVT_BUTTON, self.login_click, self.log_in_button)
+        wxasync.AsyncBind(wx.html2.EVT_WEBVIEW_NAVIGATED, self.login_load, self.web_view)
 
-    def login_load(self, event):
+    async def login_load(self, event):
         _, token = self.web_view.RunScript("try{document.getElementsByTagName('input')[0].value}catch(e){}")
         if token == "undefined":
             token = False
         if token:
             self.web_view.Hide()
-            lr = asyncio.get_event_loop().run_until_complete(user_login(
+            lr = await user_login(
                 self.client,
                 self.username,
                 self.password,
                 token
-            ))
+            )
             if ".ROBLOSECURITY" in self.client.requests.session.cookies:
                 self.status = True
                 self.Close()
@@ -103,7 +104,7 @@ class RbxLogin(wx.Frame):
                               "Error", wx.OK | wx.ICON_ERROR)
                 self.Close()
 
-    def login_click(self, event):
+    async def login_click(self, event):
         self.username = self.username_entry.GetValue()
         self.password = self.password_entry.GetValue()
         self.username.strip("\n")
@@ -140,7 +141,7 @@ class RbxLogin(wx.Frame):
             self.SetSize((512, int(512 + pytweening.easeOutQuad(i / 88) * 88)))
 
         # Runs the user_login function.
-        fd = asyncio.get_event_loop().run_until_complete(user_login(self.client, self.username, self.password))
+        fd = await user_login(self.client, self.username, self.password)
 
         # Load the captcha URL.
         if fd:
@@ -193,7 +194,7 @@ class RbxCaptcha(wx.Frame):
             self.Close()
 
 
-class AuthApp(wx.App):
+class AuthApp(wxasync.WxAsyncApp):
     """
     wx.App wrapper for Roblox authentication.
     """
@@ -205,7 +206,7 @@ class AuthApp(wx.App):
         return True
 
 
-class CaptchaApp(wx.App):
+class CaptchaApp(wxasync.WxAsyncApp):
     """
     wx.App wrapper for Roblox captcha.
     """
@@ -217,7 +218,7 @@ class CaptchaApp(wx.App):
         return True
 
 
-def authenticate_prompt(client):
+async def authenticate_prompt(client):
     """
     Prompts a login screen.
     Returns True if the user has sucessfully been authenticated and False if they have not.
@@ -233,11 +234,11 @@ def authenticate_prompt(client):
     """
     app = AuthApp(0)
     app.rbx_login.client = client
-    app.MainLoop()
+    await app.MainLoop()
     return app.rbx_login.status
 
 
-def captcha_prompt(unsolved_captcha):
+async def captcha_prompt(unsolved_captcha):
     """
     Prompts a captcha solve screen.
     First item in tuple is True if the solve was sucessful, and the second item is the token.
@@ -253,5 +254,5 @@ def captcha_prompt(unsolved_captcha):
     """
     app = CaptchaApp(0)
     app.rbx_captcha.web_view.LoadURL(unsolved_captcha.url)
-    app.MainLoop()
+    await app.MainLoop()
     return app.rbx_captcha.status, app.rbx_captcha.token
