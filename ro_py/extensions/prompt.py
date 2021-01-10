@@ -9,7 +9,6 @@ import wx
 import wxasync
 from wx import html2
 import os
-import asyncio
 import pytweening
 
 
@@ -222,6 +221,11 @@ async def authenticate_prompt(client):
     """
     Prompts a login screen.
     Returns True if the user has sucessfully been authenticated and False if they have not.
+
+    Login prompts look like this:
+    .. image:: https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/login_prompt.png
+    They also display a captcha, which looks very similar to captcha_prompt():
+    .. image:: https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/login_captcha_prompt.png
 
     Parameters
     ----------
