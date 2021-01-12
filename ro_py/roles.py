@@ -10,7 +10,7 @@ import enum
 endpoint = "https://groups.roblox.com"
 
 
-class RolePermissions(enum.Enum):
+class RolePermissions:
     """
     Represents role permissions.
     """

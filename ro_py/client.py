@@ -57,7 +57,7 @@ class Client:
             logging.debug("Initialized AccountInformation and AccountSettings.")
             self.chat = ChatWrapper(self.requests)
             logging.debug("Initialized chat wrapper.")
-            self.trade = TradesWrapper(self.requests)
+            self.trade = TradesWrapper(self.requests, self.get_self)
             logging.debug("Initialized trade wrapper.")
 
     def token_login(self, token):
@@ -125,6 +125,13 @@ class Client:
                 )
                 captcha_json = captcha_req.json()
                 return UnsolvedLoginCaptcha(captcha_json, "476068BF-9607-4799-B53D-966BE98E2B81")
+
+    async def get_self(self):
+        self_req = await self.requests.get(
+            url="https://roblox.com/my/profile"
+        )
+        data = self_req.json()
+        return User(self.requests, data['Username'], data['UserId'])
 
     async def get_user(self, user_id):
         """
