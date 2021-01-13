@@ -54,10 +54,11 @@ class Pages:
         """URL containing the paginated data, accessible with a GET request."""
         self.page = 0
         """Current page number."""
+        self.handler_args = handler_args
 
-        self.data = self._get_page()
+        # self.data = self._get_page()
 
-    async def _get_page(self, cursor=None):
+    async def get_page(self, cursor=None):
         """
         Gets a page at the specified cursor position.
         """
@@ -73,7 +74,7 @@ class Pages:
             requests=self.requests,
             data=page_req.json(),
             handler=self.handler,
-            handler_args=handler_args
+            handler_args=self.handler_args
         )
 
     async def previous(self):

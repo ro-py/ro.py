@@ -6,9 +6,18 @@ This file houses functions and classes that pertain to Roblox users and profiles
 
 from ro_py.robloxbadges import RobloxBadge
 from ro_py.thumbnails import UserThumbnailGenerator
+from ro_py.utilities.pages import Pages
+from ro_py.assets import UserAsset
 import iso8601
 
 endpoint = "https://users.roblox.com/"
+
+
+def limited_handler(requests, data, args):
+    assets = []
+    for asset in data:
+        assets.append(UserAsset(requests, asset["assetId"], asset['userAssetId']))
+    return assets
 
 
 class User:
@@ -122,6 +131,20 @@ class User:
             group = group['group']
             groups.append(PartialGroup(self.requests, group['id'], group['name'], group['memberCount']))
         return groups
+
+    async def get_limiteds(self):
+        """
+        Gets all limiteds the user owns.
+
+        Returns
+        -------
+        list
+        """
+        return Pages(
+            requests=self.requests,
+            url=f"https://inventory.roblox.com/v1/users/{self.id}/assets/collectibles?cursor=&limit=100&sortOrder=Desc",
+            handler=limited_handler
+        )
 
 
 class PartialUser(User):
