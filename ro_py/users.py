@@ -5,6 +5,7 @@ This file houses functions and classes that pertain to Roblox users and profiles
 """
 
 from ro_py.robloxbadges import RobloxBadge
+from ro_py.thumbnails import UserThumbnailGenerator
 import iso8601
 
 endpoint = "https://users.roblox.com/"
@@ -32,6 +33,7 @@ class User:
         self.is_banned = None
         self.name = name
         self.display_name = None
+        self.thumbnails = UserThumbnailGenerator(self.requests, self.id)
 
     async def update(self):
         """
