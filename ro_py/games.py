@@ -160,7 +160,7 @@ class Place:
             launch_url,
             "-b",
             browser_tracker_id,
-            "--launchtime=" + launchtime,
+            "--launchtime=" + str(launchtime),
             "--rloc",
             rloc,
             "--gloc",
