@@ -141,7 +141,7 @@ class Place:
         if not roblox_launcher:
             raise GameJoinError("Couldn't find RobloxPlayerBeta.exe.")
 
-        ticket_req = await self.requests.post(url="https://auth.roblox.com/v1/authentication-ticket/")
+        ticket_req = self.requests.back_post(url="https://auth.roblox.com/v1/authentication-ticket/")
         auth_ticket = ticket_req.headers["rbx-authentication-ticket"]
 
         launch_url = "https://assetgame.roblox.com/game/PlaceLauncher.ashx" \
@@ -168,7 +168,8 @@ class Place:
         ]
         join_process = subprocess.run(
             args=join_parameters,
-            stdout=subprocess.PIPE
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
         )
-        return join_process.stdout
+        return join_process.stdout, join_process.stderr
 
