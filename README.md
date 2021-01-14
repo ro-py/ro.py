@@ -1,3 +1,8 @@
+<h1 align="center">
+    <img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py" width="250" />
+    <br>
+</h1>
+
 # Welcome to ro.py
 ro.py is a Python wrapper for the Roblox web API.
 
@@ -9,7 +14,7 @@ If you use this library in a way that violates the [Roblox Terms of Use](https:/
 You can view documentation for ro.py at [ro.py.jmksite.dev](https://ro.py.jmksite.dev/)
 
 ## Installation
-You can install ro.py from pip:  
+You can install ro.py from pip:
 ```
 pip install ro-py
 ```
@@ -17,6 +22,9 @@ If you want the latest bleeding-edge version, clone from git:
 ```
 pip install git+git://github.com/rbx-libdev/ro.py.git
 ```
+
+## Requirements
+
 
 ## Examples
 (Update: I'm writing new examples. For now, look in the examples folder.)
