@@ -2,7 +2,6 @@ from ro_py.utilities.errors import ApiError
 from ro_py.utilities.cache import Cache
 from ro_py.captcha import CaptchaMetadata
 from json.decoder import JSONDecodeError
-from cachecontrol import CacheControl
 import requests_async
 import requests
 
@@ -10,21 +9,12 @@ import requests
 class Requests:
     """
     This wrapper functions similarly to requests_async.Session, but made specifically for Roblox.
-
-    Parameters
-    ----------
-    request_cache: bool
-        Enable this to wrap the session in a CacheControl object. Untested.
-    jmk_endpoint: str
-        Not currently in use.
     """
-    def __init__(self, request_cache: bool = True, jmk_endpoint="https://roblox.jmksite.dev/"):
+    def __init__(self):
         self.session = requests_async.Session()
         """Session to use for requests."""
         self.cache = Cache()
         """Cache object to use for object storage."""
-        if request_cache:
-            self.session = CacheControl(self.session)
 
         """
         Thank you @nsg for letting me know about this!

@@ -22,7 +22,6 @@ setuptools.setup(
     install_requires=[
         "iso8601",
         "signalrcore",
-        "cachecontrol",
         "requests-async",
         "wxPython",
         "wxasync"

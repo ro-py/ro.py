@@ -29,14 +29,10 @@ class Client:
     ----------
     token : str
         Authentication token. You can take this from the .ROBLOSECURITY cookie in your browser.
-    requests_cache : bool
-        Toggle for cached requests using CacheControl.
     """
 
-    def __init__(self, token: str = None, requests_cache: bool = False):
-        self.requests = Requests(
-            request_cache=requests_cache
-        )
+    def __init__(self, token: str = None):
+        self.requests = Requests()
 
         logging.debug("Initialized requests.")
 
