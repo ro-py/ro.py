@@ -1,10 +1,13 @@
 <h1 align="center">
-    <img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py" width="250" />
+    <img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py" width="400" />
     <br>
 </h1>
+<h4 align="center">ro.py is a powerful Python 3 wrapper for the Roblox Web API.</h4>
 
-# Welcome to ro.py
-ro.py is a Python wrapper for the Roblox web API.
+## Information
+Welcome, and thank you for using ro.py!  
+ro.py is an object oriented, asynchrnous wrapper for the Roblox Web API (and other Roblox-related APIs) with many new and interesting features.  
+ro.py allows you to automate much of what you would do on the Roblox website and on other Roblox-related websites.
 
 ## Disclaimer
 We are not responsible for any malicious use of this library.  
