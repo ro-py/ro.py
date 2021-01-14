@@ -7,6 +7,10 @@ This file houses functions and classes that pertain to Roblox universes and plac
 from ro_py.users import User
 from ro_py.groups import Group
 from ro_py.badges import Badge
+from ro_py.utilities.errors import GameJoinError
+import subprocess
+import json
+import os
 
 endpoint = "https://games.roblox.com/"
 
@@ -97,28 +101,74 @@ class Game:
         return badges
 
 
-"""
-def place_id_to_universe_id(place_id):
-    \"""
-    Returns the containing universe ID of a place ID.
-    :param place_id: Place ID
-    :return: Universe ID
-    \"""
-    universe_id_req = self.requests.get(
-        url="https://api.roblox.com/universes/get-universe-containing-place",
-        params={
-            "placeId": place_id
-        }
-    )
-    universe_id = universe_id_req.json()["UniverseId"]
-    return universe_id
+class Place:
+    """DO NOT USE. NOT READY YET."""
+    def __init__(self, requests, id):
+        self.requests = requests
+        self.id = id
+        pass
 
+    async def join(self, launchtime=1609186776825, rloc="en_us", gloc="en_us",
+                   negotiate_url="https://www.roblox.com/Login/Negotiate.ashx"):
+        """
+        Joins the place.
+        This currently only works on Windows since it looks in AppData for the executable.
 
-def game_from_place_id(place_id):
-    \"""
-    Generates an instance of Game with a place ID instead of a game ID.
-    :param place_id: Place ID
-    :return: Instace of Game
-    \"""
-    return Game(self.requests, place_id_to_universe_id(place_id))
-"""
+        .. warning::
+            Please *do not* use this part of ro.py maliciously. We've spent lots of time
+            working on ro.py as a resource for building interactive Roblox programs, and
+            we would hate to see it be used as a malicious tool.
+            We do not condone any use of ro.py as an exploit and we are not responsible
+            if you are banned from Roblox due to malicious use of our library.
+        """
+        local_app_data = os.getenv('LocalAppData')
+        roblox_appdata_path = local_app_data + "\\Roblox"
+        roblox_launcher = None
+
+        app_storage = roblox_appdata_path + "\\LocalStorage"
+        app_versions = roblox_appdata_path + "\\Versions"
+
+        with open(app_storage + "\\appStorage.json") as app_storage_file:
+            app_storage_data = json.load(app_storage_file)
+        browser_tracker_id = app_storage_data["BrowserTrackerId"]
+
+        for directory in os.listdir(app_versions):
+            dir_path = app_versions + "\\" + directory
+            if os.path.isdir(dir_path):
+                if os.path.isfile(dir_path + "\\" + "RobloxPlayerBeta.exe"):
+                    roblox_launcher = dir_path + "\\" + "RobloxPlayerBeta.exe"
+
+        if not roblox_launcher:
+            raise GameJoinError("Couldn't find RobloxPlayerBeta.exe.")
+
+        ticket_req = await self.requests.post(url="https://auth.roblox.com/v1/authentication-ticket/")
+        auth_ticket = ticket_req.headers["rbx-authentication-ticket"]
+
+        launch_url = "https://assetgame.roblox.com/game/PlaceLauncher.ashx" \
+                     "?request=RequestGame" \
+                     f"&browserTrackerId={browser_tracker_id}" \
+                     f"&placeId={self.id}" \
+                     "&isPlayTogetherGame=false"
+        join_parameters = [
+            roblox_launcher,
+            "--play",
+            "-a",
+            negotiate_url,
+            "-t",
+            auth_ticket,
+            "-j",
+            launch_url,
+            "-b",
+            browser_tracker_id,
+            "--launchtime=" + launchtime,
+            "--rloc",
+            rloc,
+            "--gloc",
+            gloc
+        ]
+        join_process = subprocess.run(
+            args=join_parameters,
+            stdout=subprocess.PIPE
+        )
+        return join_process.stdout
+

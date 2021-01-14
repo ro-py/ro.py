@@ -42,3 +42,6 @@ class NotFound(Exception):
 class UserDoesNotExistError(Exception):
     """Called when a user does not exist."""
 
+
+class GameJoinError(Exception):
+    """Called when an error occurs when joining a game."""

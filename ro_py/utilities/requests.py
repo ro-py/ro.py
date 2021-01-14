@@ -25,12 +25,14 @@ class Requests:
         """Cache object to use for object storage."""
         if request_cache:
             self.session = CacheControl(self.session)
+
         """
         Thank you @nsg for letting me know about this!
         This allows us to access some extra content.
         ▼▼▼
         """
         self.session.headers["User-Agent"] = "Roblox/WinInet"
+        self.session.headers["Referer"] = "www.roblox.com"  # Possibly useful for some things
 
     async def get(self, *args, **kwargs):
         """
