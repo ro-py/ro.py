@@ -23,163 +23,6 @@
 </header>
 <section id="section-intro">
 <p>This file houses functions and classes that pertain to Roblox trades and trading.</p>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">&#34;&#34;&#34;
-
-This file houses functions and classes that pertain to Roblox trades and trading.
-
-&#34;&#34;&#34;
-
-from ro_py.utilities.pages import Pages, SortOrder
-from ro_py.assets import Asset
-from ro_py.users import User, PartialUser
-import iso8601
-import enum
-
-endpoint = &#34;https://trades.roblox.com&#34;
-
-
-def trade_page_handler(requests, this_page) -&gt; list:
-    trades_out = []
-    for raw_trade in this_page:
-        trades_out.append(PartialTrade(requests, raw_trade[&#34;id&#34;], PartialUser(requests, raw_trade[&#34;user&#34;][&#39;id&#39;], raw_trade[&#39;user&#39;][&#39;name&#39;]), raw_trade[&#39;created&#39;], raw_trade[&#39;expiration&#39;], raw_trade[&#39;status&#39;]))
-    return trades_out
-
-
-class Trade:
-    def __init__(self, requests, trade_id: int, sender: PartialUser, recieve_items, send_items, created, expiration, status: bool):
-        self.trade_id = trade_id
-        self.requests = requests
-        self.sender = sender
-        self.recieve_items = recieve_items
-        self.send_items = send_items
-        self.created = iso8601.parse(created)
-        self.experation = iso8601.parse(expiration)
-        self.status = status
-
-    async def accept(self) -&gt; bool:
-        &#34;&#34;&#34;
-        accepts a trade requests
-        :returns: true/false
-        &#34;&#34;&#34;
-        accept_req = await self.requests.post(
-            url=endpoint + f&#34;/v1/trades/{self.trade_id}/accept&#34;
-        )
-        return accept_req.status_code == 200
-
-    async def decline(self) -&gt; bool:
-        &#34;&#34;&#34;
-        decline a trade requests
-        :returns: true/false
-        &#34;&#34;&#34;
-        decline_req = await self.requests.post(
-            url=endpoint + f&#34;/v1/trades/{self.trade_id}/decline&#34;
-        )
-        return decline_req.status_code == 200
-
-
-class PartialTrade:
-    def __init__(self, requests, trade_id: int, user: PartialUser, created, expiration, status: bool):
-        self.requests = requests
-        self.trade_id = trade_id
-        self.user = user
-        self.created = iso8601.parse(created)
-        self.expiration = iso8601.parse(expiration)
-        self.status = status
-
-    async def accept(self) -&gt; bool:
-        &#34;&#34;&#34;
-        accepts a trade requests
-        :returns: true/false
-        &#34;&#34;&#34;
-        accept_req = await self.requests.post(
-            url=endpoint + f&#34;/v1/trades/{self.trade_id}/accept&#34;
-        )
-        return accept_req.status_code == 200
-
-    async def decline(self) -&gt; bool:
-        &#34;&#34;&#34;
-        decline a trade requests
-        :returns: true/false
-        &#34;&#34;&#34;
-        decline_req = await self.requests.post(
-            url=endpoint + f&#34;/v1/trades/{self.trade_id}/decline&#34;
-        )
-        return decline_req.status_code == 200
-
-    async def expand(self) -&gt; Trade:
-        &#34;&#34;&#34;
-        gets a more detailed trade request
-        :return: Trade class
-        &#34;&#34;&#34;
-        expend_req = await self.requests.get(
-            url=endpoint + f&#34;/v1/trades/{self.trade_id}&#34;
-        )
-        data = expend_req.json()
-
-        # generate a user class and update it
-        sender = User(self.requests, data[&#39;user&#39;][&#39;id&#39;])
-        await sender.update()
-
-        # load items that will be/have been sent and items that you will/have recieve(d)
-        recieve_items, send_items = [], []
-        for items_0 in data[&#39;offers&#39;][0][&#39;userAssets&#39;]:
-            item_0 = Asset(self.requests, items_0[&#39;assetId&#39;])
-            await item_0.update()
-            recieve_items.append(item_0)
-
-        for items_1 in data[&#39;offers&#39;][1][&#39;userAssets&#39;]:
-            item_1 = Asset(self.requests, items_1[&#39;assetId&#39;])
-            await item_1.update()
-            send_items.append(item_1)
-
-        return Trade(self.requests, self.trade_id, sender, recieve_items, send_items, data[&#39;created&#39;], data[&#39;expiration&#39;], data[&#39;status&#39;])
-
-
-class TradeStatusType(enum.Enum):
-    &#34;&#34;&#34;
-    Represents a trade status type.
-    &#34;&#34;&#34;
-    Inbound = &#34;Inbound&#34;
-    Outbound = &#34;Outbound&#34;
-    Completed = &#34;Completed&#34;
-    Inactive = &#34;Inactive&#34;
-
-
-class TradesMetadata:
-    &#34;&#34;&#34;
-    Represents trade system metadata at /v1/trades/metadata
-    &#34;&#34;&#34;
-    def __init__(self, trades_metadata_data):
-        self.max_items_per_side = trades_metadata_data[&#34;maxItemsPerSide&#34;]
-        self.min_value_ratio = trades_metadata_data[&#34;minValueRatio&#34;]
-        self.trade_system_max_robux_percent = trades_metadata_data[&#34;tradeSystemMaxRobuxPercent&#34;]
-        self.trade_system_robux_fee = trades_metadata_data[&#34;tradeSystemRobuxFee&#34;]
-
-
-class TradesWrapper:
-    &#34;&#34;&#34;
-    Represents the Roblox trades page.
-    &#34;&#34;&#34;
-    def __init__(self, requests):
-        self.requests = requests
-
-    async def get_trades(self, trade_status_type: TradeStatusType.Inbound, sort_order=SortOrder.Ascending, limit=10) -&gt; Pages:
-        trades = await Pages(
-            requests=self.requests,
-            url=endpoint + f&#34;/v1/trades/{trade_status_type}&#34;,
-            sort_order=sort_order,
-            limit=limit,
-            handler=trade_page_handler
-        )
-        return trades
-
-    async def send_trade(self):
-        pass</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -193,16 +36,6 @@ class TradesWrapper:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def trade_page_handler(requests, this_page) -&gt; list:
-    trades_out = []
-    for raw_trade in this_page:
-        trades_out.append(PartialTrade(requests, raw_trade[&#34;id&#34;], PartialUser(requests, raw_trade[&#34;user&#34;][&#39;id&#39;], raw_trade[&#39;user&#39;][&#39;name&#39;]), raw_trade[&#39;created&#39;], raw_trade[&#39;expiration&#39;], raw_trade[&#39;status&#39;]))
-    return trades_out</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -215,67 +48,6 @@ class TradesWrapper:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class PartialTrade:
-    def __init__(self, requests, trade_id: int, user: PartialUser, created, expiration, status: bool):
-        self.requests = requests
-        self.trade_id = trade_id
-        self.user = user
-        self.created = iso8601.parse(created)
-        self.expiration = iso8601.parse(expiration)
-        self.status = status
-
-    async def accept(self) -&gt; bool:
-        &#34;&#34;&#34;
-        accepts a trade requests
-        :returns: true/false
-        &#34;&#34;&#34;
-        accept_req = await self.requests.post(
-            url=endpoint + f&#34;/v1/trades/{self.trade_id}/accept&#34;
-        )
-        return accept_req.status_code == 200
-
-    async def decline(self) -&gt; bool:
-        &#34;&#34;&#34;
-        decline a trade requests
-        :returns: true/false
-        &#34;&#34;&#34;
-        decline_req = await self.requests.post(
-            url=endpoint + f&#34;/v1/trades/{self.trade_id}/decline&#34;
-        )
-        return decline_req.status_code == 200
-
-    async def expand(self) -&gt; Trade:
-        &#34;&#34;&#34;
-        gets a more detailed trade request
-        :return: Trade class
-        &#34;&#34;&#34;
-        expend_req = await self.requests.get(
-            url=endpoint + f&#34;/v1/trades/{self.trade_id}&#34;
-        )
-        data = expend_req.json()
-
-        # generate a user class and update it
-        sender = User(self.requests, data[&#39;user&#39;][&#39;id&#39;])
-        await sender.update()
-
-        # load items that will be/have been sent and items that you will/have recieve(d)
-        recieve_items, send_items = [], []
-        for items_0 in data[&#39;offers&#39;][0][&#39;userAssets&#39;]:
-            item_0 = Asset(self.requests, items_0[&#39;assetId&#39;])
-            await item_0.update()
-            recieve_items.append(item_0)
-
-        for items_1 in data[&#39;offers&#39;][1][&#39;userAssets&#39;]:
-            item_1 = Asset(self.requests, items_1[&#39;assetId&#39;])
-            await item_1.update()
-            send_items.append(item_1)
-
-        return Trade(self.requests, self.trade_id, sender, recieve_items, send_items, data[&#39;created&#39;], data[&#39;expiration&#39;], data[&#39;status&#39;])</code></pre>
-</details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.trades.PartialTrade.accept"><code class="name flex">
@@ -284,20 +56,6 @@ class TradesWrapper:
 <dd>
 <div class="desc"><p>accepts a trade requests
 :returns: true/false</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def accept(self) -&gt; bool:
-    &#34;&#34;&#34;
-    accepts a trade requests
-    :returns: true/false
-    &#34;&#34;&#34;
-    accept_req = await self.requests.post(
-        url=endpoint + f&#34;/v1/trades/{self.trade_id}/accept&#34;
-    )
-    return accept_req.status_code == 200</code></pre>
-</details>
 </dd>
 <dt id="ro_py.trades.PartialTrade.decline"><code class="name flex">
 <span>async def <span class="ident">decline</span></span>(<span>self) ‑> bool</span>
@@ -305,20 +63,6 @@ class TradesWrapper:
 <dd>
 <div class="desc"><p>decline a trade requests
 :returns: true/false</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def decline(self) -&gt; bool:
-    &#34;&#34;&#34;
-    decline a trade requests
-    :returns: true/false
-    &#34;&#34;&#34;
-    decline_req = await self.requests.post(
-        url=endpoint + f&#34;/v1/trades/{self.trade_id}/decline&#34;
-    )
-    return decline_req.status_code == 200</code></pre>
-</details>
 </dd>
 <dt id="ro_py.trades.PartialTrade.expand"><code class="name flex">
 <span>async def <span class="ident">expand</span></span>(<span>self) ‑> <a title="ro_py.trades.Trade" href="#ro_py.trades.Trade">Trade</a></span>
@@ -326,38 +70,6 @@ class TradesWrapper:
 <dd>
 <div class="desc"><p>gets a more detailed trade request
 :return: Trade class</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def expand(self) -&gt; Trade:
-    &#34;&#34;&#34;
-    gets a more detailed trade request
-    :return: Trade class
-    &#34;&#34;&#34;
-    expend_req = await self.requests.get(
-        url=endpoint + f&#34;/v1/trades/{self.trade_id}&#34;
-    )
-    data = expend_req.json()
-
-    # generate a user class and update it
-    sender = User(self.requests, data[&#39;user&#39;][&#39;id&#39;])
-    await sender.update()
-
-    # load items that will be/have been sent and items that you will/have recieve(d)
-    recieve_items, send_items = [], []
-    for items_0 in data[&#39;offers&#39;][0][&#39;userAssets&#39;]:
-        item_0 = Asset(self.requests, items_0[&#39;assetId&#39;])
-        await item_0.update()
-        recieve_items.append(item_0)
-
-    for items_1 in data[&#39;offers&#39;][1][&#39;userAssets&#39;]:
-        item_1 = Asset(self.requests, items_1[&#39;assetId&#39;])
-        await item_1.update()
-        send_items.append(item_1)
-
-    return Trade(self.requests, self.trade_id, sender, recieve_items, send_items, data[&#39;created&#39;], data[&#39;expiration&#39;], data[&#39;status&#39;])</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -367,41 +79,6 @@ class TradesWrapper:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Trade:
-    def __init__(self, requests, trade_id: int, sender: PartialUser, recieve_items, send_items, created, expiration, status: bool):
-        self.trade_id = trade_id
-        self.requests = requests
-        self.sender = sender
-        self.recieve_items = recieve_items
-        self.send_items = send_items
-        self.created = iso8601.parse(created)
-        self.experation = iso8601.parse(expiration)
-        self.status = status
-
-    async def accept(self) -&gt; bool:
-        &#34;&#34;&#34;
-        accepts a trade requests
-        :returns: true/false
-        &#34;&#34;&#34;
-        accept_req = await self.requests.post(
-            url=endpoint + f&#34;/v1/trades/{self.trade_id}/accept&#34;
-        )
-        return accept_req.status_code == 200
-
-    async def decline(self) -&gt; bool:
-        &#34;&#34;&#34;
-        decline a trade requests
-        :returns: true/false
-        &#34;&#34;&#34;
-        decline_req = await self.requests.post(
-            url=endpoint + f&#34;/v1/trades/{self.trade_id}/decline&#34;
-        )
-        return decline_req.status_code == 200</code></pre>
-</details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.trades.Trade.accept"><code class="name flex">
@@ -410,20 +87,6 @@ class TradesWrapper:
 <dd>
 <div class="desc"><p>accepts a trade requests
 :returns: true/false</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def accept(self) -&gt; bool:
-    &#34;&#34;&#34;
-    accepts a trade requests
-    :returns: true/false
-    &#34;&#34;&#34;
-    accept_req = await self.requests.post(
-        url=endpoint + f&#34;/v1/trades/{self.trade_id}/accept&#34;
-    )
-    return accept_req.status_code == 200</code></pre>
-</details>
 </dd>
 <dt id="ro_py.trades.Trade.decline"><code class="name flex">
 <span>async def <span class="ident">decline</span></span>(<span>self) ‑> bool</span>
@@ -431,20 +94,67 @@ class TradesWrapper:
 <dd>
 <div class="desc"><p>decline a trade requests
 :returns: true/false</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def decline(self) -&gt; bool:
-    &#34;&#34;&#34;
-    decline a trade requests
-    :returns: true/false
-    &#34;&#34;&#34;
-    decline_req = await self.requests.post(
-        url=endpoint + f&#34;/v1/trades/{self.trade_id}/decline&#34;
-    )
-    return decline_req.status_code == 200</code></pre>
-</details>
+</dd>
+</dl>
+</dd>
+<dt id="ro_py.trades.TradeRequest"><code class="flex name class">
+<span>class <span class="ident">TradeRequest</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<h3>Instance variables</h3>
+<dl>
+<dt id="ro_py.trades.TradeRequest.recieve_asset"><code class="name">var <span class="ident">recieve_asset</span></code></dt>
+<dd>
+<div class="desc"><p>Limiteds that will be recieved when the trade is accepted.</p></div>
+</dd>
+<dt id="ro_py.trades.TradeRequest.recieve_robux"><code class="name">var <span class="ident">recieve_robux</span></code></dt>
+<dd>
+<div class="desc"><p>Robux that will be recieved when the trade is accepted.</p></div>
+</dd>
+<dt id="ro_py.trades.TradeRequest.send_asset"><code class="name">var <span class="ident">send_asset</span></code></dt>
+<dd>
+<div class="desc"><p>Limiteds that will be sent when the trade is accepted.</p></div>
+</dd>
+<dt id="ro_py.trades.TradeRequest.send_robux"><code class="name">var <span class="ident">send_robux</span></code></dt>
+<dd>
+<div class="desc"><p>Robux that will be sent when the trade is accepted.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.trades.TradeRequest.request_item"><code class="name flex">
+<span>def <span class="ident">request_item</span></span>(<span>self, asset: <a title="ro_py.assets.UserAsset" href="assets.html#ro_py.assets.UserAsset">UserAsset</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Appends asset to self.recieve_asset.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>asset</code></strong> :&ensp;<code><a title="ro_py.assets.UserAsset" href="assets.html#ro_py.assets.UserAsset">UserAsset</a></code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+</dd>
+<dt id="ro_py.trades.TradeRequest.request_robux"><code class="name flex">
+<span>def <span class="ident">request_robux</span></span>(<span>self, robux: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sets self.request_robux to robux</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>robux</code></strong> :&ensp;<code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+</dd>
+<dt id="ro_py.trades.TradeRequest.send_item"><code class="name flex">
+<span>def <span class="ident">send_item</span></span>(<span>self, asset: <a title="ro_py.assets.UserAsset" href="assets.html#ro_py.assets.UserAsset">UserAsset</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Appends asset to self.send_asset.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>asset</code></strong> :&ensp;<code><a title="ro_py.assets.UserAsset" href="assets.html#ro_py.assets.UserAsset">UserAsset</a></code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 </dd>
 </dl>
 </dd>
@@ -454,19 +164,6 @@ class TradesWrapper:
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a trade status type.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class TradeStatusType(enum.Enum):
-    &#34;&#34;&#34;
-    Represents a trade status type.
-    &#34;&#34;&#34;
-    Inbound = &#34;Inbound&#34;
-    Outbound = &#34;Outbound&#34;
-    Completed = &#34;Completed&#34;
-    Inactive = &#34;Inactive&#34;</code></pre>
-</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>enum.Enum</li>
@@ -497,51 +194,13 @@ class TradesWrapper:
 </code></dt>
 <dd>
 <div class="desc"><p>Represents trade system metadata at /v1/trades/metadata</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class TradesMetadata:
-    &#34;&#34;&#34;
-    Represents trade system metadata at /v1/trades/metadata
-    &#34;&#34;&#34;
-    def __init__(self, trades_metadata_data):
-        self.max_items_per_side = trades_metadata_data[&#34;maxItemsPerSide&#34;]
-        self.min_value_ratio = trades_metadata_data[&#34;minValueRatio&#34;]
-        self.trade_system_max_robux_percent = trades_metadata_data[&#34;tradeSystemMaxRobuxPercent&#34;]
-        self.trade_system_robux_fee = trades_metadata_data[&#34;tradeSystemRobuxFee&#34;]</code></pre>
-</details>
 </dd>
 <dt id="ro_py.trades.TradesWrapper"><code class="flex name class">
 <span>class <span class="ident">TradesWrapper</span></span>
-<span>(</span><span>requests)</span>
+<span>(</span><span>requests, get_self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents the Roblox trades page.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class TradesWrapper:
-    &#34;&#34;&#34;
-    Represents the Roblox trades page.
-    &#34;&#34;&#34;
-    def __init__(self, requests):
-        self.requests = requests
-
-    async def get_trades(self, trade_status_type: TradeStatusType.Inbound, sort_order=SortOrder.Ascending, limit=10) -&gt; Pages:
-        trades = await Pages(
-            requests=self.requests,
-            url=endpoint + f&#34;/v1/trades/{trade_status_type}&#34;,
-            sort_order=sort_order,
-            limit=limit,
-            handler=trade_page_handler
-        )
-        return trades
-
-    async def send_trade(self):
-        pass</code></pre>
-</details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.trades.TradesWrapper.get_trades"><code class="name flex">
@@ -549,33 +208,24 @@ class TradesWrapper:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def get_trades(self, trade_status_type: TradeStatusType.Inbound, sort_order=SortOrder.Ascending, limit=10) -&gt; Pages:
-    trades = await Pages(
-        requests=self.requests,
-        url=endpoint + f&#34;/v1/trades/{trade_status_type}&#34;,
-        sort_order=sort_order,
-        limit=limit,
-        handler=trade_page_handler
-    )
-    return trades</code></pre>
-</details>
 </dd>
 <dt id="ro_py.trades.TradesWrapper.send_trade"><code class="name flex">
-<span>async def <span class="ident">send_trade</span></span>(<span>self)</span>
+<span>async def <span class="ident">send_trade</span></span>(<span>self, roblox_id, trade)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def send_trade(self):
-    pass</code></pre>
-</details>
+<div class="desc"><p>Sends a trade request.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>roblox_id</code></strong> :&ensp;<code>int</code></dt>
+<dd>User who will recieve the trade.</dd>
+<dt><strong><code>trade</code></strong> :&ensp;<code><a title="ro_py.trades.TradeRequest" href="#ro_py.trades.TradeRequest">TradeRequest</a></code></dt>
+<dd>Trade that will be sent to the user.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 </dd>
 </dl>
 </dd>
@@ -613,6 +263,18 @@ class TradesWrapper:
 <ul class="">
 <li><code><a title="ro_py.trades.Trade.accept" href="#ro_py.trades.Trade.accept">accept</a></code></li>
 <li><code><a title="ro_py.trades.Trade.decline" href="#ro_py.trades.Trade.decline">decline</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.trades.TradeRequest" href="#ro_py.trades.TradeRequest">TradeRequest</a></code></h4>
+<ul class="two-column">
+<li><code><a title="ro_py.trades.TradeRequest.recieve_asset" href="#ro_py.trades.TradeRequest.recieve_asset">recieve_asset</a></code></li>
+<li><code><a title="ro_py.trades.TradeRequest.recieve_robux" href="#ro_py.trades.TradeRequest.recieve_robux">recieve_robux</a></code></li>
+<li><code><a title="ro_py.trades.TradeRequest.request_item" href="#ro_py.trades.TradeRequest.request_item">request_item</a></code></li>
+<li><code><a title="ro_py.trades.TradeRequest.request_robux" href="#ro_py.trades.TradeRequest.request_robux">request_robux</a></code></li>
+<li><code><a title="ro_py.trades.TradeRequest.send_asset" href="#ro_py.trades.TradeRequest.send_asset">send_asset</a></code></li>
+<li><code><a title="ro_py.trades.TradeRequest.send_item" href="#ro_py.trades.TradeRequest.send_item">send_item</a></code></li>
+<li><code><a title="ro_py.trades.TradeRequest.send_robux" href="#ro_py.trades.TradeRequest.send_robux">send_robux</a></code></li>
 </ul>
 </li>
 <li>

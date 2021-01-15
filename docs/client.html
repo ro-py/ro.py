@@ -23,250 +23,6 @@
 </header>
 <section id="section-intro">
 <p>This file houses functions and classes that represent the core Roblox web client.</p>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">&#34;&#34;&#34;
-
-This file houses functions and classes that represent the core Roblox web client.
-
-&#34;&#34;&#34;
-
-from ro_py.users import User
-from ro_py.games import Game
-from ro_py.groups import Group
-from ro_py.assets import Asset
-from ro_py.badges import Badge
-from ro_py.chat import ChatWrapper
-from ro_py.trades import TradesWrapper
-from ro_py.utilities.cache import CacheType
-from ro_py.utilities.requests import Requests
-from ro_py.accountsettings import AccountSettings
-from ro_py.accountinformation import AccountInformation
-from ro_py.utilities.errors import UserDoesNotExistError
-from ro_py.captcha import UnsolvedLoginCaptcha
-
-import logging
-
-
-class Client:
-    &#34;&#34;&#34;
-    Represents an authenticated Roblox client.
-
-    Parameters
-    ----------
-    token : str
-        Authentication token. You can take this from the .ROBLOSECURITY cookie in your browser.
-    requests_cache : bool
-        Toggle for cached requests using CacheControl.
-    &#34;&#34;&#34;
-
-    def __init__(self, token: str = None, requests_cache: bool = False):
-        self.requests = Requests(
-            request_cache=requests_cache
-        )
-
-        logging.debug(&#34;Initialized requests.&#34;)
-
-        self.accountinformation = None
-        &#34;&#34;&#34;AccountInformation object. Only available for authenticated clients.&#34;&#34;&#34;
-        self.accountsettings = None
-        &#34;&#34;&#34;AccountSettings object. Only available for authenticated clients.&#34;&#34;&#34;
-        self.chat = None
-        &#34;&#34;&#34;ChatWrapper object. Only available for authenticated clients.&#34;&#34;&#34;
-        self.trade = None
-        &#34;&#34;&#34;TradesWrapper object. Only available for authenticated clients.&#34;&#34;&#34;
-
-        if token:
-            self.token_login(token)
-            logging.debug(&#34;Initialized token.&#34;)
-            self.accountinformation = AccountInformation(self.requests)
-            self.accountsettings = AccountSettings(self.requests)
-            logging.debug(&#34;Initialized AccountInformation and AccountSettings.&#34;)
-            self.chat = ChatWrapper(self.requests)
-            logging.debug(&#34;Initialized chat wrapper.&#34;)
-            self.trade = TradesWrapper(self.requests)
-            logging.debug(&#34;Initialized trade wrapper.&#34;)
-
-    def token_login(self, token):
-        &#34;&#34;&#34;
-        Authenticates the client with a ROBLOSECURITY token.
-
-        Parameters
-        ----------
-        token : str
-            .ROBLOSECURITY token to authenticate with.
-        &#34;&#34;&#34;
-        self.requests.session.cookies[&#34;.ROBLOSECURITY&#34;] = token
-
-    async def user_login(self, username, password, token=None):
-        &#34;&#34;&#34;
-        Authenticates the client with a username and password.
-
-        Parameters
-        ----------
-        username : str
-            Username to log in with.
-        password : str
-            Password to log in with.
-        token : str, optional
-            If you have already solved the captcha, pass it here.
-
-        Returns
-        -------
-        ro_py.captcha.UnsolvedCaptcha or request
-        &#34;&#34;&#34;
-        if token:
-            login_req = self.requests.back_post(
-                url=&#34;https://auth.roblox.com/v2/login&#34;,
-                json={
-                    &#34;ctype&#34;: &#34;Username&#34;,
-                    &#34;cvalue&#34;: username,
-                    &#34;password&#34;: password,
-                    &#34;captchaToken&#34;: token,
-                    &#34;captchaProvider&#34;: &#34;PROVIDER_ARKOSE_LABS&#34;
-                }
-            )
-            return login_req
-        else:
-            login_req = await self.requests.post(
-                url=&#34;https://auth.roblox.com/v2/login&#34;,
-                json={
-                    &#34;ctype&#34;: &#34;Username&#34;,
-                    &#34;cvalue&#34;: username,
-                    &#34;password&#34;: password
-                },
-                quickreturn=True
-            )
-            if login_req.status_code == 200:
-                # If we&#39;re here, no captcha is required and we&#39;re already logged in, so we can return.
-                return
-            elif login_req.status_code == 403:
-                # A captcha is required, so we need to return the captcha to solve.
-                field_data = login_req.json()[&#34;errors&#34;][0][&#34;fieldData&#34;]
-                captcha_req = await self.requests.post(
-                    url=&#34;https://roblox-api.arkoselabs.com/fc/gt2/public_key/476068BF-9607-4799-B53D-966BE98E2B81&#34;,
-                    headers={
-                        &#34;content-type&#34;: &#34;application/x-www-form-urlencoded; charset=UTF-8&#34;
-                    },
-                    data=f&#34;public_key=476068BF-9607-4799-B53D-966BE98E2B81&amp;data[blob]={field_data}&#34;
-                )
-                captcha_json = captcha_req.json()
-                return UnsolvedLoginCaptcha(captcha_json, &#34;476068BF-9607-4799-B53D-966BE98E2B81&#34;)
-
-    async def get_user(self, user_id):
-        &#34;&#34;&#34;
-        Gets a Roblox user.
-
-        Parameters
-        ----------
-        user_id
-            ID of the user to generate the object from.
-        &#34;&#34;&#34;
-        user = self.requests.cache.get(CacheType.Users, user_id)
-        if not user:
-            user = User(self.requests, user_id)
-            self.requests.cache.set(CacheType.Users, user_id, user)
-            await user.update()
-        return user
-
-    async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False):
-        &#34;&#34;&#34;
-        Gets a Roblox user by their username..
-
-        Parameters
-        ----------
-        user_name : str
-            Name of the user to generate the object from.
-        exclude_banned_users : bool
-            Whether to exclude banned users in the request.
-        &#34;&#34;&#34;
-        username_req = await self.requests.post(
-            url=&#34;https://users.roblox.com/v1/usernames/users&#34;,
-            data={
-                &#34;usernames&#34;: [
-                    user_name
-                ],
-                &#34;excludeBannedUsers&#34;: exclude_banned_users
-            }
-        )
-        username_data = username_req.json()
-        if len(username_data[&#34;data&#34;]) &gt; 0:
-            user_id = username_req.json()[&#34;data&#34;][0][&#34;id&#34;]  # TODO: make this a partialuser
-            user = self.requests.cache.get(CacheType.Users, user_id)
-            if not user:
-                user = User(self.requests, user_id)
-                self.requests.cache.set(CacheType.Users, user_id, user)
-                await user.update()
-            return user
-        else:
-            raise UserDoesNotExistError
-
-    async def get_group(self, group_id):
-        &#34;&#34;&#34;
-        Gets a Roblox group.
-
-        Parameters
-        ----------
-        group_id
-            ID of the group to generate the object from.
-        &#34;&#34;&#34;
-        group = self.requests.cache.get(CacheType.Groups, group_id)
-        if not group:
-            group = Group(self.requests, group_id)
-            self.requests.cache.set(CacheType.Groups, group_id, group)
-            await group.update()
-        return group
-
-    async def get_game(self, game_id):
-        &#34;&#34;&#34;
-        Gets a Roblox game.
-
-        Parameters
-        ----------
-        game_id
-            ID of the game to generate the object from.
-        &#34;&#34;&#34;
-        game = self.requests.cache.get(CacheType.Games, game_id)
-        if not game:
-            game = Game(self.requests, game_id)
-            self.requests.cache.set(CacheType.Games, game_id, game)
-            await game.update()
-        return game
-
-    async def get_asset(self, asset_id):
-        &#34;&#34;&#34;
-        Gets a Roblox asset.
-
-        Parameters
-        ----------
-        asset_id
-            ID of the asset to generate the object from.
-        &#34;&#34;&#34;
-        asset = self.requests.cache.get(CacheType.Assets, asset_id)
-        if not asset:
-            asset = Asset(self.requests, asset_id)
-            self.requests.cache.set(CacheType.Assets, asset_id, asset)
-            await asset.update()
-        return asset
-
-    async def get_badge(self, badge_id):
-        &#34;&#34;&#34;
-        Gets a Roblox badge.
-
-        Parameters
-        ----------
-        badge_id
-            ID of the badge to generate the object from.
-        &#34;&#34;&#34;
-        badge = self.requests.cache.get(CacheType.Assets, badge_id)
-        if not badge:
-            badge = Badge(self.requests, badge_id)
-            self.requests.cache.set(CacheType.Assets, badge_id, badge)
-            await badge.update()
-        return badge</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -279,7 +35,7 @@ class Client:
 <dl>
 <dt id="ro_py.client.Client"><code class="flex name class">
 <span>class <span class="ident">Client</span></span>
-<span>(</span><span>token: str = None, requests_cache: bool = False)</span>
+<span>(</span><span>token: str = None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents an authenticated Roblox client.</p>
@@ -287,230 +43,7 @@ class Client:
 <dl>
 <dt><strong><code>token</code></strong> :&ensp;<code>str</code></dt>
 <dd>Authentication token. You can take this from the .ROBLOSECURITY cookie in your browser.</dd>
-<dt><strong><code>requests_cache</code></strong> :&ensp;<code>bool</code></dt>
-<dd>Toggle for cached requests using CacheControl.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Client:
-    &#34;&#34;&#34;
-    Represents an authenticated Roblox client.
-
-    Parameters
-    ----------
-    token : str
-        Authentication token. You can take this from the .ROBLOSECURITY cookie in your browser.
-    requests_cache : bool
-        Toggle for cached requests using CacheControl.
-    &#34;&#34;&#34;
-
-    def __init__(self, token: str = None, requests_cache: bool = False):
-        self.requests = Requests(
-            request_cache=requests_cache
-        )
-
-        logging.debug(&#34;Initialized requests.&#34;)
-
-        self.accountinformation = None
-        &#34;&#34;&#34;AccountInformation object. Only available for authenticated clients.&#34;&#34;&#34;
-        self.accountsettings = None
-        &#34;&#34;&#34;AccountSettings object. Only available for authenticated clients.&#34;&#34;&#34;
-        self.chat = None
-        &#34;&#34;&#34;ChatWrapper object. Only available for authenticated clients.&#34;&#34;&#34;
-        self.trade = None
-        &#34;&#34;&#34;TradesWrapper object. Only available for authenticated clients.&#34;&#34;&#34;
-
-        if token:
-            self.token_login(token)
-            logging.debug(&#34;Initialized token.&#34;)
-            self.accountinformation = AccountInformation(self.requests)
-            self.accountsettings = AccountSettings(self.requests)
-            logging.debug(&#34;Initialized AccountInformation and AccountSettings.&#34;)
-            self.chat = ChatWrapper(self.requests)
-            logging.debug(&#34;Initialized chat wrapper.&#34;)
-            self.trade = TradesWrapper(self.requests)
-            logging.debug(&#34;Initialized trade wrapper.&#34;)
-
-    def token_login(self, token):
-        &#34;&#34;&#34;
-        Authenticates the client with a ROBLOSECURITY token.
-
-        Parameters
-        ----------
-        token : str
-            .ROBLOSECURITY token to authenticate with.
-        &#34;&#34;&#34;
-        self.requests.session.cookies[&#34;.ROBLOSECURITY&#34;] = token
-
-    async def user_login(self, username, password, token=None):
-        &#34;&#34;&#34;
-        Authenticates the client with a username and password.
-
-        Parameters
-        ----------
-        username : str
-            Username to log in with.
-        password : str
-            Password to log in with.
-        token : str, optional
-            If you have already solved the captcha, pass it here.
-
-        Returns
-        -------
-        ro_py.captcha.UnsolvedCaptcha or request
-        &#34;&#34;&#34;
-        if token:
-            login_req = self.requests.back_post(
-                url=&#34;https://auth.roblox.com/v2/login&#34;,
-                json={
-                    &#34;ctype&#34;: &#34;Username&#34;,
-                    &#34;cvalue&#34;: username,
-                    &#34;password&#34;: password,
-                    &#34;captchaToken&#34;: token,
-                    &#34;captchaProvider&#34;: &#34;PROVIDER_ARKOSE_LABS&#34;
-                }
-            )
-            return login_req
-        else:
-            login_req = await self.requests.post(
-                url=&#34;https://auth.roblox.com/v2/login&#34;,
-                json={
-                    &#34;ctype&#34;: &#34;Username&#34;,
-                    &#34;cvalue&#34;: username,
-                    &#34;password&#34;: password
-                },
-                quickreturn=True
-            )
-            if login_req.status_code == 200:
-                # If we&#39;re here, no captcha is required and we&#39;re already logged in, so we can return.
-                return
-            elif login_req.status_code == 403:
-                # A captcha is required, so we need to return the captcha to solve.
-                field_data = login_req.json()[&#34;errors&#34;][0][&#34;fieldData&#34;]
-                captcha_req = await self.requests.post(
-                    url=&#34;https://roblox-api.arkoselabs.com/fc/gt2/public_key/476068BF-9607-4799-B53D-966BE98E2B81&#34;,
-                    headers={
-                        &#34;content-type&#34;: &#34;application/x-www-form-urlencoded; charset=UTF-8&#34;
-                    },
-                    data=f&#34;public_key=476068BF-9607-4799-B53D-966BE98E2B81&amp;data[blob]={field_data}&#34;
-                )
-                captcha_json = captcha_req.json()
-                return UnsolvedLoginCaptcha(captcha_json, &#34;476068BF-9607-4799-B53D-966BE98E2B81&#34;)
-
-    async def get_user(self, user_id):
-        &#34;&#34;&#34;
-        Gets a Roblox user.
-
-        Parameters
-        ----------
-        user_id
-            ID of the user to generate the object from.
-        &#34;&#34;&#34;
-        user = self.requests.cache.get(CacheType.Users, user_id)
-        if not user:
-            user = User(self.requests, user_id)
-            self.requests.cache.set(CacheType.Users, user_id, user)
-            await user.update()
-        return user
-
-    async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False):
-        &#34;&#34;&#34;
-        Gets a Roblox user by their username..
-
-        Parameters
-        ----------
-        user_name : str
-            Name of the user to generate the object from.
-        exclude_banned_users : bool
-            Whether to exclude banned users in the request.
-        &#34;&#34;&#34;
-        username_req = await self.requests.post(
-            url=&#34;https://users.roblox.com/v1/usernames/users&#34;,
-            data={
-                &#34;usernames&#34;: [
-                    user_name
-                ],
-                &#34;excludeBannedUsers&#34;: exclude_banned_users
-            }
-        )
-        username_data = username_req.json()
-        if len(username_data[&#34;data&#34;]) &gt; 0:
-            user_id = username_req.json()[&#34;data&#34;][0][&#34;id&#34;]  # TODO: make this a partialuser
-            user = self.requests.cache.get(CacheType.Users, user_id)
-            if not user:
-                user = User(self.requests, user_id)
-                self.requests.cache.set(CacheType.Users, user_id, user)
-                await user.update()
-            return user
-        else:
-            raise UserDoesNotExistError
-
-    async def get_group(self, group_id):
-        &#34;&#34;&#34;
-        Gets a Roblox group.
-
-        Parameters
-        ----------
-        group_id
-            ID of the group to generate the object from.
-        &#34;&#34;&#34;
-        group = self.requests.cache.get(CacheType.Groups, group_id)
-        if not group:
-            group = Group(self.requests, group_id)
-            self.requests.cache.set(CacheType.Groups, group_id, group)
-            await group.update()
-        return group
-
-    async def get_game(self, game_id):
-        &#34;&#34;&#34;
-        Gets a Roblox game.
-
-        Parameters
-        ----------
-        game_id
-            ID of the game to generate the object from.
-        &#34;&#34;&#34;
-        game = self.requests.cache.get(CacheType.Games, game_id)
-        if not game:
-            game = Game(self.requests, game_id)
-            self.requests.cache.set(CacheType.Games, game_id, game)
-            await game.update()
-        return game
-
-    async def get_asset(self, asset_id):
-        &#34;&#34;&#34;
-        Gets a Roblox asset.
-
-        Parameters
-        ----------
-        asset_id
-            ID of the asset to generate the object from.
-        &#34;&#34;&#34;
-        asset = self.requests.cache.get(CacheType.Assets, asset_id)
-        if not asset:
-            asset = Asset(self.requests, asset_id)
-            self.requests.cache.set(CacheType.Assets, asset_id, asset)
-            await asset.update()
-        return asset
-
-    async def get_badge(self, badge_id):
-        &#34;&#34;&#34;
-        Gets a Roblox badge.
-
-        Parameters
-        ----------
-        badge_id
-            ID of the badge to generate the object from.
-        &#34;&#34;&#34;
-        badge = self.requests.cache.get(CacheType.Assets, badge_id)
-        if not badge:
-            badge = Badge(self.requests, badge_id)
-            self.requests.cache.set(CacheType.Assets, badge_id, badge)
-            await badge.update()
-        return badge</code></pre>
-</details>
 <h3>Subclasses</h3>
 <ul class="hlist">
 <li><a title="ro_py.extensions.bots.Bot" href="extensions/bots.html#ro_py.extensions.bots.Bot">Bot</a></li>
@@ -546,26 +79,6 @@ class Client:
 <dt><strong><code>asset_id</code></strong></dt>
 <dd>ID of the asset to generate the object from.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def get_asset(self, asset_id):
-    &#34;&#34;&#34;
-    Gets a Roblox asset.
-
-    Parameters
-    ----------
-    asset_id
-        ID of the asset to generate the object from.
-    &#34;&#34;&#34;
-    asset = self.requests.cache.get(CacheType.Assets, asset_id)
-    if not asset:
-        asset = Asset(self.requests, asset_id)
-        self.requests.cache.set(CacheType.Assets, asset_id, asset)
-        await asset.update()
-    return asset</code></pre>
-</details>
 </dd>
 <dt id="ro_py.client.Client.get_badge"><code class="name flex">
 <span>async def <span class="ident">get_badge</span></span>(<span>self, badge_id)</span>
@@ -577,26 +90,6 @@ class Client:
 <dt><strong><code>badge_id</code></strong></dt>
 <dd>ID of the badge to generate the object from.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def get_badge(self, badge_id):
-    &#34;&#34;&#34;
-    Gets a Roblox badge.
-
-    Parameters
-    ----------
-    badge_id
-        ID of the badge to generate the object from.
-    &#34;&#34;&#34;
-    badge = self.requests.cache.get(CacheType.Assets, badge_id)
-    if not badge:
-        badge = Badge(self.requests, badge_id)
-        self.requests.cache.set(CacheType.Assets, badge_id, badge)
-        await badge.update()
-    return badge</code></pre>
-</details>
 </dd>
 <dt id="ro_py.client.Client.get_game"><code class="name flex">
 <span>async def <span class="ident">get_game</span></span>(<span>self, game_id)</span>
@@ -608,26 +101,6 @@ class Client:
 <dt><strong><code>game_id</code></strong></dt>
 <dd>ID of the game to generate the object from.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def get_game(self, game_id):
-    &#34;&#34;&#34;
-    Gets a Roblox game.
-
-    Parameters
-    ----------
-    game_id
-        ID of the game to generate the object from.
-    &#34;&#34;&#34;
-    game = self.requests.cache.get(CacheType.Games, game_id)
-    if not game:
-        game = Game(self.requests, game_id)
-        self.requests.cache.set(CacheType.Games, game_id, game)
-        await game.update()
-    return game</code></pre>
-</details>
 </dd>
 <dt id="ro_py.client.Client.get_group"><code class="name flex">
 <span>async def <span class="ident">get_group</span></span>(<span>self, group_id)</span>
@@ -639,26 +112,12 @@ class Client:
 <dt><strong><code>group_id</code></strong></dt>
 <dd>ID of the group to generate the object from.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def get_group(self, group_id):
-    &#34;&#34;&#34;
-    Gets a Roblox group.
-
-    Parameters
-    ----------
-    group_id
-        ID of the group to generate the object from.
-    &#34;&#34;&#34;
-    group = self.requests.cache.get(CacheType.Groups, group_id)
-    if not group:
-        group = Group(self.requests, group_id)
-        self.requests.cache.set(CacheType.Groups, group_id, group)
-        await group.update()
-    return group</code></pre>
-</details>
+</dd>
+<dt id="ro_py.client.Client.get_self"><code class="name flex">
+<span>async def <span class="ident">get_self</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
 </dd>
 <dt id="ro_py.client.Client.get_user"><code class="name flex">
 <span>async def <span class="ident">get_user</span></span>(<span>self, user_id)</span>
@@ -670,26 +129,6 @@ class Client:
 <dt><strong><code>user_id</code></strong></dt>
 <dd>ID of the user to generate the object from.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def get_user(self, user_id):
-    &#34;&#34;&#34;
-    Gets a Roblox user.
-
-    Parameters
-    ----------
-    user_id
-        ID of the user to generate the object from.
-    &#34;&#34;&#34;
-    user = self.requests.cache.get(CacheType.Users, user_id)
-    if not user:
-        user = User(self.requests, user_id)
-        self.requests.cache.set(CacheType.Users, user_id, user)
-        await user.update()
-    return user</code></pre>
-</details>
 </dd>
 <dt id="ro_py.client.Client.get_user_by_username"><code class="name flex">
 <span>async def <span class="ident">get_user_by_username</span></span>(<span>self, user_name: str, exclude_banned_users: bool = False)</span>
@@ -703,42 +142,6 @@ class Client:
 <dt><strong><code>exclude_banned_users</code></strong> :&ensp;<code>bool</code></dt>
 <dd>Whether to exclude banned users in the request.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False):
-    &#34;&#34;&#34;
-    Gets a Roblox user by their username..
-
-    Parameters
-    ----------
-    user_name : str
-        Name of the user to generate the object from.
-    exclude_banned_users : bool
-        Whether to exclude banned users in the request.
-    &#34;&#34;&#34;
-    username_req = await self.requests.post(
-        url=&#34;https://users.roblox.com/v1/usernames/users&#34;,
-        data={
-            &#34;usernames&#34;: [
-                user_name
-            ],
-            &#34;excludeBannedUsers&#34;: exclude_banned_users
-        }
-    )
-    username_data = username_req.json()
-    if len(username_data[&#34;data&#34;]) &gt; 0:
-        user_id = username_req.json()[&#34;data&#34;][0][&#34;id&#34;]  # TODO: make this a partialuser
-        user = self.requests.cache.get(CacheType.Users, user_id)
-        if not user:
-            user = User(self.requests, user_id)
-            self.requests.cache.set(CacheType.Users, user_id, user)
-            await user.update()
-        return user
-    else:
-        raise UserDoesNotExistError</code></pre>
-</details>
 </dd>
 <dt id="ro_py.client.Client.token_login"><code class="name flex">
 <span>def <span class="ident">token_login</span></span>(<span>self, token)</span>
@@ -750,21 +153,6 @@ class Client:
 <dt><strong><code>token</code></strong> :&ensp;<code>str</code></dt>
 <dd>.ROBLOSECURITY token to authenticate with.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def token_login(self, token):
-    &#34;&#34;&#34;
-    Authenticates the client with a ROBLOSECURITY token.
-
-    Parameters
-    ----------
-    token : str
-        .ROBLOSECURITY token to authenticate with.
-    &#34;&#34;&#34;
-    self.requests.session.cookies[&#34;.ROBLOSECURITY&#34;] = token</code></pre>
-</details>
 </dd>
 <dt id="ro_py.client.Client.user_login"><code class="name flex">
 <span>async def <span class="ident">user_login</span></span>(<span>self, username, password, token=None)</span>
@@ -785,65 +173,6 @@ class Client:
 <dt><code><a title="ro_py.captcha.UnsolvedCaptcha" href="captcha.html#ro_py.captcha.UnsolvedCaptcha">UnsolvedCaptcha</a></code> or <code>request</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def user_login(self, username, password, token=None):
-    &#34;&#34;&#34;
-    Authenticates the client with a username and password.
-
-    Parameters
-    ----------
-    username : str
-        Username to log in with.
-    password : str
-        Password to log in with.
-    token : str, optional
-        If you have already solved the captcha, pass it here.
-
-    Returns
-    -------
-    ro_py.captcha.UnsolvedCaptcha or request
-    &#34;&#34;&#34;
-    if token:
-        login_req = self.requests.back_post(
-            url=&#34;https://auth.roblox.com/v2/login&#34;,
-            json={
-                &#34;ctype&#34;: &#34;Username&#34;,
-                &#34;cvalue&#34;: username,
-                &#34;password&#34;: password,
-                &#34;captchaToken&#34;: token,
-                &#34;captchaProvider&#34;: &#34;PROVIDER_ARKOSE_LABS&#34;
-            }
-        )
-        return login_req
-    else:
-        login_req = await self.requests.post(
-            url=&#34;https://auth.roblox.com/v2/login&#34;,
-            json={
-                &#34;ctype&#34;: &#34;Username&#34;,
-                &#34;cvalue&#34;: username,
-                &#34;password&#34;: password
-            },
-            quickreturn=True
-        )
-        if login_req.status_code == 200:
-            # If we&#39;re here, no captcha is required and we&#39;re already logged in, so we can return.
-            return
-        elif login_req.status_code == 403:
-            # A captcha is required, so we need to return the captcha to solve.
-            field_data = login_req.json()[&#34;errors&#34;][0][&#34;fieldData&#34;]
-            captcha_req = await self.requests.post(
-                url=&#34;https://roblox-api.arkoselabs.com/fc/gt2/public_key/476068BF-9607-4799-B53D-966BE98E2B81&#34;,
-                headers={
-                    &#34;content-type&#34;: &#34;application/x-www-form-urlencoded; charset=UTF-8&#34;
-                },
-                data=f&#34;public_key=476068BF-9607-4799-B53D-966BE98E2B81&amp;data[blob]={field_data}&#34;
-            )
-            captcha_json = captcha_req.json()
-            return UnsolvedLoginCaptcha(captcha_json, &#34;476068BF-9607-4799-B53D-966BE98E2B81&#34;)</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -873,6 +202,7 @@ class Client:
 <li><code><a title="ro_py.client.Client.get_badge" href="#ro_py.client.Client.get_badge">get_badge</a></code></li>
 <li><code><a title="ro_py.client.Client.get_game" href="#ro_py.client.Client.get_game">get_game</a></code></li>
 <li><code><a title="ro_py.client.Client.get_group" href="#ro_py.client.Client.get_group">get_group</a></code></li>
+<li><code><a title="ro_py.client.Client.get_self" href="#ro_py.client.Client.get_self">get_self</a></code></li>
 <li><code><a title="ro_py.client.Client.get_user" href="#ro_py.client.Client.get_user">get_user</a></code></li>
 <li><code><a title="ro_py.client.Client.get_user_by_username" href="#ro_py.client.Client.get_user_by_username">get_user_by_username</a></code></li>
 <li><code><a title="ro_py.client.Client.token_login" href="#ro_py.client.Client.token_login">token_login</a></code></li>

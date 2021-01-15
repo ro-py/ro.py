@@ -23,68 +23,6 @@
 </header>
 <section id="section-intro">
 <p>This file houses functions and classes that pertain to game-awarded badges.</p>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">&#34;&#34;&#34;
-
-This file houses functions and classes that pertain to game-awarded badges.
-
-&#34;&#34;&#34;
-
-endpoint = &#34;https://badges.roblox.com/&#34;
-
-
-class BadgeStatistics:
-    &#34;&#34;&#34;
-    Represents a badge&#39;s statistics.
-    &#34;&#34;&#34;
-    def __init__(self, past_date_awarded_count, awarded_count, win_rate_percentage):
-        self.past_date_awarded_count = past_date_awarded_count
-        self.awarded_count = awarded_count
-        self.win_rate_percentage = win_rate_percentage
-
-
-class Badge:
-    &#34;&#34;&#34;
-    Represents a game-awarded badge.
-
-    Parameters
-    ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
-    badge_id
-        ID of the badge.
-    &#34;&#34;&#34;
-    def __init__(self, requests, badge_id):
-        self.id = badge_id
-        self.requests = requests
-        self.name = None
-        self.description = None
-        self.display_name = None
-        self.display_description = None
-        self.enabled = None
-        self.statistics = None
-
-    async def update(self):
-        &#34;&#34;&#34;
-        Updates the badge&#39;s information.
-        &#34;&#34;&#34;
-        badge_info_req = await self.requests.get(endpoint + f&#34;v1/badges/{self.id}&#34;)
-        badge_info = badge_info_req.json()
-        self.name = badge_info[&#34;name&#34;]
-        self.description = badge_info[&#34;description&#34;]
-        self.display_name = badge_info[&#34;displayName&#34;]
-        self.display_description = badge_info[&#34;displayDescription&#34;]
-        self.enabled = badge_info[&#34;enabled&#34;]
-        statistics_info = badge_info[&#34;statistics&#34;]
-        self.statistics = BadgeStatistics(
-            statistics_info[&#34;pastDayAwardedCount&#34;],
-            statistics_info[&#34;awardedCount&#34;],
-            statistics_info[&#34;winRatePercentage&#34;]
-        )</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -108,49 +46,6 @@ class Badge:
 <dt><strong><code>badge_id</code></strong></dt>
 <dd>ID of the badge.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Badge:
-    &#34;&#34;&#34;
-    Represents a game-awarded badge.
-
-    Parameters
-    ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
-    badge_id
-        ID of the badge.
-    &#34;&#34;&#34;
-    def __init__(self, requests, badge_id):
-        self.id = badge_id
-        self.requests = requests
-        self.name = None
-        self.description = None
-        self.display_name = None
-        self.display_description = None
-        self.enabled = None
-        self.statistics = None
-
-    async def update(self):
-        &#34;&#34;&#34;
-        Updates the badge&#39;s information.
-        &#34;&#34;&#34;
-        badge_info_req = await self.requests.get(endpoint + f&#34;v1/badges/{self.id}&#34;)
-        badge_info = badge_info_req.json()
-        self.name = badge_info[&#34;name&#34;]
-        self.description = badge_info[&#34;description&#34;]
-        self.display_name = badge_info[&#34;displayName&#34;]
-        self.display_description = badge_info[&#34;displayDescription&#34;]
-        self.enabled = badge_info[&#34;enabled&#34;]
-        statistics_info = badge_info[&#34;statistics&#34;]
-        self.statistics = BadgeStatistics(
-            statistics_info[&#34;pastDayAwardedCount&#34;],
-            statistics_info[&#34;awardedCount&#34;],
-            statistics_info[&#34;winRatePercentage&#34;]
-        )</code></pre>
-</details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.badges.Badge.update"><code class="name flex">
@@ -158,28 +53,6 @@ class Badge:
 </code></dt>
 <dd>
 <div class="desc"><p>Updates the badge's information.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def update(self):
-    &#34;&#34;&#34;
-    Updates the badge&#39;s information.
-    &#34;&#34;&#34;
-    badge_info_req = await self.requests.get(endpoint + f&#34;v1/badges/{self.id}&#34;)
-    badge_info = badge_info_req.json()
-    self.name = badge_info[&#34;name&#34;]
-    self.description = badge_info[&#34;description&#34;]
-    self.display_name = badge_info[&#34;displayName&#34;]
-    self.display_description = badge_info[&#34;displayDescription&#34;]
-    self.enabled = badge_info[&#34;enabled&#34;]
-    statistics_info = badge_info[&#34;statistics&#34;]
-    self.statistics = BadgeStatistics(
-        statistics_info[&#34;pastDayAwardedCount&#34;],
-        statistics_info[&#34;awardedCount&#34;],
-        statistics_info[&#34;winRatePercentage&#34;]
-    )</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -189,19 +62,6 @@ class Badge:
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a badge's statistics.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class BadgeStatistics:
-    &#34;&#34;&#34;
-    Represents a badge&#39;s statistics.
-    &#34;&#34;&#34;
-    def __init__(self, past_date_awarded_count, awarded_count, win_rate_percentage):
-        self.past_date_awarded_count = past_date_awarded_count
-        self.awarded_count = awarded_count
-        self.win_rate_percentage = win_rate_percentage</code></pre>
-</details>
 </dd>
 </dl>
 </section>

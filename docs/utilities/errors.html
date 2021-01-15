@@ -24,54 +24,6 @@
 <section id="section-intro">
 <p>ro.py &gt; errors.py</p>
 <p>This file houses custom exceptions unique to this module.</p>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">&#34;&#34;&#34;
-
-ro.py &gt; errors.py
-
-This file houses custom exceptions unique to this module.
-
-&#34;&#34;&#34;
-
-
-class NotLimitedError(Exception):
-    &#34;&#34;&#34;Called when code attempts to read limited-only information.&#34;&#34;&#34;
-    pass
-
-
-class InvalidIconSizeError(Exception):
-    &#34;&#34;&#34;Called when code attempts to pass in an improper size to a thumbnail function.&#34;&#34;&#34;
-    pass
-
-
-class InvalidShotTypeError(Exception):
-    &#34;&#34;&#34;Called when code attempts to pass in an improper avatar image type to a thumbnail function.&#34;&#34;&#34;
-    pass
-
-
-class ApiError(Exception):
-    &#34;&#34;&#34;Called in requests when an API request fails.&#34;&#34;&#34;
-    pass
-
-
-class ChatError(Exception):
-    &#34;&#34;&#34;Called in chat when a chat action fails.&#34;&#34;&#34;
-
-
-class InvalidPageError(Exception):
-    &#34;&#34;&#34;Called when an invalid page is requested.&#34;&#34;&#34;
-
-
-class NotFound(Exception):
-    &#34;&#34;&#34;Called when something is not found.&#34;&#34;&#34;
-
-
-class UserDoesNotExistError(Exception):
-    &#34;&#34;&#34;Called when a user does not exist.&#34;&#34;&#34;</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -88,14 +40,6 @@ class UserDoesNotExistError(Exception):
 </code></dt>
 <dd>
 <div class="desc"><p>Called in requests when an API request fails.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class ApiError(Exception):
-    &#34;&#34;&#34;Called in requests when an API request fails.&#34;&#34;&#34;
-    pass</code></pre>
-</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>builtins.Exception</li>
@@ -108,13 +52,18 @@ class UserDoesNotExistError(Exception):
 </code></dt>
 <dd>
 <div class="desc"><p>Called in chat when a chat action fails.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class ChatError(Exception):
-    &#34;&#34;&#34;Called in chat when a chat action fails.&#34;&#34;&#34;</code></pre>
-</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.GameJoinError"><code class="flex name class">
+<span>class <span class="ident">GameJoinError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called when an error occurs when joining a game.</p></div>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>builtins.Exception</li>
@@ -127,14 +76,6 @@ class UserDoesNotExistError(Exception):
 </code></dt>
 <dd>
 <div class="desc"><p>Called when code attempts to pass in an improper size to a thumbnail function.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class InvalidIconSizeError(Exception):
-    &#34;&#34;&#34;Called when code attempts to pass in an improper size to a thumbnail function.&#34;&#34;&#34;
-    pass</code></pre>
-</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>builtins.Exception</li>
@@ -147,13 +88,6 @@ class UserDoesNotExistError(Exception):
 </code></dt>
 <dd>
 <div class="desc"><p>Called when an invalid page is requested.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class InvalidPageError(Exception):
-    &#34;&#34;&#34;Called when an invalid page is requested.&#34;&#34;&#34;</code></pre>
-</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>builtins.Exception</li>
@@ -166,14 +100,6 @@ class UserDoesNotExistError(Exception):
 </code></dt>
 <dd>
 <div class="desc"><p>Called when code attempts to pass in an improper avatar image type to a thumbnail function.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class InvalidShotTypeError(Exception):
-    &#34;&#34;&#34;Called when code attempts to pass in an improper avatar image type to a thumbnail function.&#34;&#34;&#34;
-    pass</code></pre>
-</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>builtins.Exception</li>
@@ -186,13 +112,6 @@ class UserDoesNotExistError(Exception):
 </code></dt>
 <dd>
 <div class="desc"><p>Called when something is not found.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class NotFound(Exception):
-    &#34;&#34;&#34;Called when something is not found.&#34;&#34;&#34;</code></pre>
-</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>builtins.Exception</li>
@@ -205,14 +124,6 @@ class UserDoesNotExistError(Exception):
 </code></dt>
 <dd>
 <div class="desc"><p>Called when code attempts to read limited-only information.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class NotLimitedError(Exception):
-    &#34;&#34;&#34;Called when code attempts to read limited-only information.&#34;&#34;&#34;
-    pass</code></pre>
-</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>builtins.Exception</li>
@@ -225,13 +136,6 @@ class UserDoesNotExistError(Exception):
 </code></dt>
 <dd>
 <div class="desc"><p>Called when a user does not exist.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class UserDoesNotExistError(Exception):
-    &#34;&#34;&#34;Called when a user does not exist.&#34;&#34;&#34;</code></pre>
-</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>builtins.Exception</li>
@@ -259,6 +163,9 @@ class UserDoesNotExistError(Exception):
 </li>
 <li>
 <h4><code><a title="ro_py.utilities.errors.ChatError" href="#ro_py.utilities.errors.ChatError">ChatError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.utilities.errors.GameJoinError" href="#ro_py.utilities.errors.GameJoinError">GameJoinError</a></code></h4>
 </li>
 <li>
 <h4><code><a title="ro_py.utilities.errors.InvalidIconSizeError" href="#ro_py.utilities.errors.InvalidIconSizeError">InvalidIconSizeError</a></code></h4>

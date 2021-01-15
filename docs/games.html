@@ -23,135 +23,6 @@
 </header>
 <section id="section-intro">
 <p>This file houses functions and classes that pertain to Roblox universes and places.</p>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">&#34;&#34;&#34;
-
-This file houses functions and classes that pertain to Roblox universes and places.
-
-&#34;&#34;&#34;
-
-from ro_py.users import User
-from ro_py.groups import Group
-from ro_py.badges import Badge
-
-endpoint = &#34;https://games.roblox.com/&#34;
-
-
-class Votes:
-    &#34;&#34;&#34;
-    Represents a game&#39;s votes.
-    &#34;&#34;&#34;
-    def __init__(self, votes_data):
-        self.up_votes = votes_data[&#34;upVotes&#34;]
-        self.down_votes = votes_data[&#34;downVotes&#34;]
-
-
-class Game:
-    &#34;&#34;&#34;
-    Represents a Roblox game universe.
-    This class represents multiple game-related endpoints.
-    &#34;&#34;&#34;
-    def __init__(self, requests, universe_id):
-        self.id = universe_id
-        self.requests = requests
-        self.name = None
-        self.description = None
-        self.creator = None
-        self.price = None
-        self.allowed_gear_genres = None
-        self.allowed_gear_categories = None
-        self.max_players = None
-        self.studio_access_to_apis_allowed = None
-        self.create_vip_servers_allowed = None
-
-    async def update(self):
-        &#34;&#34;&#34;
-        Updates the game&#39;s information.
-        &#34;&#34;&#34;
-        game_info_req = await self.requests.get(
-            url=endpoint + &#34;v1/games&#34;,
-            params={
-                &#34;universeIds&#34;: str(self.id)
-            }
-        )
-        game_info = game_info_req.json()
-        game_info = game_info[&#34;data&#34;][0]
-        self.name = game_info[&#34;name&#34;]
-        self.description = game_info[&#34;description&#34;]
-        if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
-            self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
-        elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
-            self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
-        self.price = game_info[&#34;price&#34;]
-        self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
-        self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
-        self.max_players = game_info[&#34;maxPlayers&#34;]
-        self.studio_access_to_apis_allowed = game_info[&#34;studioAccessToApisAllowed&#34;]
-        self.create_vip_servers_allowed = game_info[&#34;createVipServersAllowed&#34;]
-
-    async def get_votes(self):
-        &#34;&#34;&#34;
-        :return: An instance of Votes
-        &#34;&#34;&#34;
-        votes_info_req = await self.requests.get(
-            url=endpoint + &#34;v1/games/votes&#34;,
-            params={
-                &#34;universeIds&#34;: str(self.id)
-            }
-        )
-        votes_info = votes_info_req.json()
-        votes_info = votes_info[&#34;data&#34;][0]
-        votes = Votes(votes_info)
-        return votes
-
-    async def get_badges(self):
-        &#34;&#34;&#34;
-        Gets the game&#39;s badges.
-        This will be updated soon to use the new Page object.
-        &#34;&#34;&#34;
-        badges_req = await self.requests.get(
-            url=f&#34;https://badges.roblox.com/v1/universes/{self.id}/badges&#34;,
-            params={
-                &#34;limit&#34;: 100,
-                &#34;sortOrder&#34;: &#34;Asc&#34;
-            }
-        )
-        badges_data = badges_req.json()[&#34;data&#34;]
-        badges = []
-        for badge in badges_data:
-            badges.append(Badge(self.requests, badge[&#34;id&#34;]))
-        return badges
-
-
-&#34;&#34;&#34;
-def place_id_to_universe_id(place_id):
-    \&#34;&#34;&#34;
-    Returns the containing universe ID of a place ID.
-    :param place_id: Place ID
-    :return: Universe ID
-    \&#34;&#34;&#34;
-    universe_id_req = self.requests.get(
-        url=&#34;https://api.roblox.com/universes/get-universe-containing-place&#34;,
-        params={
-            &#34;placeId&#34;: place_id
-        }
-    )
-    universe_id = universe_id_req.json()[&#34;UniverseId&#34;]
-    return universe_id
-
-
-def game_from_place_id(place_id):
-    \&#34;&#34;&#34;
-    Generates an instance of Game with a place ID instead of a game ID.
-    :param place_id: Place ID
-    :return: Instace of Game
-    \&#34;&#34;&#34;
-    return Game(self.requests, place_id_to_universe_id(place_id))
-&#34;&#34;&#34;</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -169,86 +40,6 @@ def game_from_place_id(place_id):
 <dd>
 <div class="desc"><p>Represents a Roblox game universe.
 This class represents multiple game-related endpoints.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Game:
-    &#34;&#34;&#34;
-    Represents a Roblox game universe.
-    This class represents multiple game-related endpoints.
-    &#34;&#34;&#34;
-    def __init__(self, requests, universe_id):
-        self.id = universe_id
-        self.requests = requests
-        self.name = None
-        self.description = None
-        self.creator = None
-        self.price = None
-        self.allowed_gear_genres = None
-        self.allowed_gear_categories = None
-        self.max_players = None
-        self.studio_access_to_apis_allowed = None
-        self.create_vip_servers_allowed = None
-
-    async def update(self):
-        &#34;&#34;&#34;
-        Updates the game&#39;s information.
-        &#34;&#34;&#34;
-        game_info_req = await self.requests.get(
-            url=endpoint + &#34;v1/games&#34;,
-            params={
-                &#34;universeIds&#34;: str(self.id)
-            }
-        )
-        game_info = game_info_req.json()
-        game_info = game_info[&#34;data&#34;][0]
-        self.name = game_info[&#34;name&#34;]
-        self.description = game_info[&#34;description&#34;]
-        if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
-            self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
-        elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
-            self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
-        self.price = game_info[&#34;price&#34;]
-        self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
-        self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
-        self.max_players = game_info[&#34;maxPlayers&#34;]
-        self.studio_access_to_apis_allowed = game_info[&#34;studioAccessToApisAllowed&#34;]
-        self.create_vip_servers_allowed = game_info[&#34;createVipServersAllowed&#34;]
-
-    async def get_votes(self):
-        &#34;&#34;&#34;
-        :return: An instance of Votes
-        &#34;&#34;&#34;
-        votes_info_req = await self.requests.get(
-            url=endpoint + &#34;v1/games/votes&#34;,
-            params={
-                &#34;universeIds&#34;: str(self.id)
-            }
-        )
-        votes_info = votes_info_req.json()
-        votes_info = votes_info[&#34;data&#34;][0]
-        votes = Votes(votes_info)
-        return votes
-
-    async def get_badges(self):
-        &#34;&#34;&#34;
-        Gets the game&#39;s badges.
-        This will be updated soon to use the new Page object.
-        &#34;&#34;&#34;
-        badges_req = await self.requests.get(
-            url=f&#34;https://badges.roblox.com/v1/universes/{self.id}/badges&#34;,
-            params={
-                &#34;limit&#34;: 100,
-                &#34;sortOrder&#34;: &#34;Asc&#34;
-            }
-        )
-        badges_data = badges_req.json()[&#34;data&#34;]
-        badges = []
-        for badge in badges_data:
-            badges.append(Badge(self.requests, badge[&#34;id&#34;]))
-        return badges</code></pre>
-</details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.games.Game.get_badges"><code class="name flex">
@@ -257,88 +48,43 @@ This class represents multiple game-related endpoints.</p></div>
 <dd>
 <div class="desc"><p>Gets the game's badges.
 This will be updated soon to use the new Page object.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def get_badges(self):
-    &#34;&#34;&#34;
-    Gets the game&#39;s badges.
-    This will be updated soon to use the new Page object.
-    &#34;&#34;&#34;
-    badges_req = await self.requests.get(
-        url=f&#34;https://badges.roblox.com/v1/universes/{self.id}/badges&#34;,
-        params={
-            &#34;limit&#34;: 100,
-            &#34;sortOrder&#34;: &#34;Asc&#34;
-        }
-    )
-    badges_data = badges_req.json()[&#34;data&#34;]
-    badges = []
-    for badge in badges_data:
-        badges.append(Badge(self.requests, badge[&#34;id&#34;]))
-    return badges</code></pre>
-</details>
 </dd>
 <dt id="ro_py.games.Game.get_votes"><code class="name flex">
 <span>async def <span class="ident">get_votes</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>:return: An instance of Votes</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def get_votes(self):
-    &#34;&#34;&#34;
-    :return: An instance of Votes
-    &#34;&#34;&#34;
-    votes_info_req = await self.requests.get(
-        url=endpoint + &#34;v1/games/votes&#34;,
-        params={
-            &#34;universeIds&#34;: str(self.id)
-        }
-    )
-    votes_info = votes_info_req.json()
-    votes_info = votes_info[&#34;data&#34;][0]
-    votes = Votes(votes_info)
-    return votes</code></pre>
-</details>
 </dd>
 <dt id="ro_py.games.Game.update"><code class="name flex">
 <span>async def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Updates the game's information.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def update(self):
-    &#34;&#34;&#34;
-    Updates the game&#39;s information.
-    &#34;&#34;&#34;
-    game_info_req = await self.requests.get(
-        url=endpoint + &#34;v1/games&#34;,
-        params={
-            &#34;universeIds&#34;: str(self.id)
-        }
-    )
-    game_info = game_info_req.json()
-    game_info = game_info[&#34;data&#34;][0]
-    self.name = game_info[&#34;name&#34;]
-    self.description = game_info[&#34;description&#34;]
-    if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
-        self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
-    elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
-        self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
-    self.price = game_info[&#34;price&#34;]
-    self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
-    self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
-    self.max_players = game_info[&#34;maxPlayers&#34;]
-    self.studio_access_to_apis_allowed = game_info[&#34;studioAccessToApisAllowed&#34;]
-    self.create_vip_servers_allowed = game_info[&#34;createVipServersAllowed&#34;]</code></pre>
-</details>
+</dd>
+</dl>
+</dd>
+<dt id="ro_py.games.Place"><code class="flex name class">
+<span>class <span class="ident">Place</span></span>
+<span>(</span><span>requests, id)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>DO NOT USE. NOT READY YET.</p></div>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.games.Place.join"><code class="name flex">
+<span>async def <span class="ident">join</span></span>(<span>self, launchtime=1609186776825, rloc='en_us', gloc='en_us', negotiate_url='https://www.roblox.com/Login/Negotiate.ashx')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Joins the place.
+This currently only works on Windows since it looks in AppData for the executable.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Please <em>do not</em> use this part of ro.py maliciously. We've spent lots of time
+working on ro.py as a resource for building interactive Roblox programs, and
+we would hate to see it be used as a malicious tool.
+We do not condone any use of ro.py as an exploit and we are not responsible
+if you are banned from Roblox due to malicious use of our library.</p>
+</div></div>
 </dd>
 </dl>
 </dd>
@@ -348,18 +94,6 @@ This will be updated soon to use the new Page object.</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a game's votes.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Votes:
-    &#34;&#34;&#34;
-    Represents a game&#39;s votes.
-    &#34;&#34;&#34;
-    def __init__(self, votes_data):
-        self.up_votes = votes_data[&#34;upVotes&#34;]
-        self.down_votes = votes_data[&#34;downVotes&#34;]</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -383,6 +117,12 @@ This will be updated soon to use the new Page object.</p></div>
 <li><code><a title="ro_py.games.Game.get_badges" href="#ro_py.games.Game.get_badges">get_badges</a></code></li>
 <li><code><a title="ro_py.games.Game.get_votes" href="#ro_py.games.Game.get_votes">get_votes</a></code></li>
 <li><code><a title="ro_py.games.Game.update" href="#ro_py.games.Game.update">update</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.games.Place" href="#ro_py.games.Place">Place</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.games.Place.join" href="#ro_py.games.Place.join">join</a></code></li>
 </ul>
 </li>
 <li>

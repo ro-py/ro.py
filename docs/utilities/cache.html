@@ -22,40 +22,6 @@
 <h1 class="title">Module <code>ro_py.utilities.cache</code></h1>
 </header>
 <section id="section-intro">
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">import enum
-
-
-class CacheType(enum.Enum):
-    Users = &#34;users&#34;
-    Groups = &#34;groups&#34;
-    Games = &#34;games&#34;
-    Assets = &#34;assets&#34;
-    Badges = &#34;badges&#34;
-
-
-class Cache:
-    def __init__(self):
-        self.cache = {
-            &#34;users&#34;: {},
-            &#34;groups&#34;: {},
-            &#34;games&#34;: {},
-            &#34;assets&#34;: {},
-            &#34;badges&#34;: {}
-        }
-
-    def get(self, cache_type: CacheType, item_id: str):
-        if item_id in self.cache[cache_type.value]:
-            return self.cache[cache_type.value][item_id]
-        else:
-            return False
-
-    def set(self, cache_type: CacheType, item_id: str, item_obj):
-        self.cache[cache_type.value][item_id] = item_obj</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -71,29 +37,6 @@ class Cache:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Cache:
-    def __init__(self):
-        self.cache = {
-            &#34;users&#34;: {},
-            &#34;groups&#34;: {},
-            &#34;games&#34;: {},
-            &#34;assets&#34;: {},
-            &#34;badges&#34;: {}
-        }
-
-    def get(self, cache_type: CacheType, item_id: str):
-        if item_id in self.cache[cache_type.value]:
-            return self.cache[cache_type.value][item_id]
-        else:
-            return False
-
-    def set(self, cache_type: CacheType, item_id: str, item_obj):
-        self.cache[cache_type.value][item_id] = item_obj</code></pre>
-</details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.utilities.cache.Cache.get"><code class="name flex">
@@ -101,29 +44,12 @@ class Cache:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get(self, cache_type: CacheType, item_id: str):
-    if item_id in self.cache[cache_type.value]:
-        return self.cache[cache_type.value][item_id]
-    else:
-        return False</code></pre>
-</details>
 </dd>
 <dt id="ro_py.utilities.cache.Cache.set"><code class="name flex">
 <span>def <span class="ident">set</span></span>(<span>self, cache_type: <a title="ro_py.utilities.cache.CacheType" href="#ro_py.utilities.cache.CacheType">CacheType</a>, item_id: str, item_obj)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set(self, cache_type: CacheType, item_id: str, item_obj):
-    self.cache[cache_type.value][item_id] = item_obj</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -133,17 +59,6 @@ class Cache:
 </code></dt>
 <dd>
 <div class="desc"><p>An enumeration.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class CacheType(enum.Enum):
-    Users = &#34;users&#34;
-    Groups = &#34;groups&#34;
-    Games = &#34;games&#34;
-    Assets = &#34;assets&#34;
-    Badges = &#34;badges&#34;</code></pre>
-</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>enum.Enum</li>

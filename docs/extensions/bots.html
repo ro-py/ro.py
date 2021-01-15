@@ -23,48 +23,6 @@
 </header>
 <section id="section-intro">
 <p>This extension houses functions that allow generation of Bot objects, which interpret commands.</p>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">&#34;&#34;&#34;
-
-This extension houses functions that allow generation of Bot objects, which interpret commands.
-
-&#34;&#34;&#34;
-
-
-from ro_py.client import Client
-import asyncio
-
-
-class Bot(Client):
-    def __init__(self):
-        super().__init__()
-
-
-class Command:
-    def __init__(self, func, **kwargs):
-        if not asyncio.iscoroutinefunction(func):
-            raise TypeError(&#39;Callback must be a coroutine.&#39;)
-        self._callback = func
-
-    @property
-    def callback(self):
-        return self._callback
-
-    async def __call__(self, *args, **kwargs):
-        return await self.callback(*args, **kwargs)
-
-
-def command(**attrs):
-    def decorator(func):
-        if isinstance(func, Command):
-            raise TypeError(&#39;Callback is already a command.&#39;)
-        return Command(func, **attrs)
-
-    return decorator</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -78,18 +36,6 @@ def command(**attrs):
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def command(**attrs):
-    def decorator(func):
-        if isinstance(func, Command):
-            raise TypeError(&#39;Callback is already a command.&#39;)
-        return Command(func, **attrs)
-
-    return decorator</code></pre>
-</details>
 </dd>
 </dl>
 </section>
@@ -105,17 +51,7 @@ def command(**attrs):
 <dl>
 <dt><strong><code>token</code></strong> :&ensp;<code>str</code></dt>
 <dd>Authentication token. You can take this from the .ROBLOSECURITY cookie in your browser.</dd>
-<dt><strong><code>requests_cache</code></strong> :&ensp;<code>bool</code></dt>
-<dd>Toggle for cached requests using CacheControl.</dd>
 </dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Bot(Client):
-    def __init__(self):
-        super().__init__()</code></pre>
-</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="ro_py.client.Client" href="../client.html#ro_py.client.Client">Client</a></li>
@@ -146,36 +82,11 @@ def command(**attrs):
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Command:
-    def __init__(self, func, **kwargs):
-        if not asyncio.iscoroutinefunction(func):
-            raise TypeError(&#39;Callback must be a coroutine.&#39;)
-        self._callback = func
-
-    @property
-    def callback(self):
-        return self._callback
-
-    async def __call__(self, *args, **kwargs):
-        return await self.callback(*args, **kwargs)</code></pre>
-</details>
 <h3>Instance variables</h3>
 <dl>
 <dt id="ro_py.extensions.bots.Command.callback"><code class="name">var <span class="ident">callback</span></code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">@property
-def callback(self):
-    return self._callback</code></pre>
-</details>
 </dd>
 </dl>
 </dd>

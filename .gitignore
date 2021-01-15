@@ -12,5 +12,7 @@ ro_py.egg-info/
 tests/
 ro_py_old/
 other/
+udocs/
 build.bat
+docsbuild.bat
 chat.py

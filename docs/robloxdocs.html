@@ -26,126 +26,6 @@ I don&#39;t know if this is really that useful, but it might be …" />
 <p>This file houses functions and classes that pertain to the Roblox API documentation pages.
 I don't know if this is really that useful, but it might be useful for an API browser program, or for accessing
 endpoints that aren't supported directly by ro.py yet.</p>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">&#34;&#34;&#34;
-
-This file houses functions and classes that pertain to the Roblox API documentation pages.
-I don&#39;t know if this is really that useful, but it might be useful for an API browser program, or for accessing
-endpoints that aren&#39;t supported directly by ro.py yet.
-
-&#34;&#34;&#34;
-
-from lxml import html
-from io import StringIO
-
-
-class EndpointDocsPathRequestTypeProperties:
-    def __init__(self, data):
-        self.internal = data[&#34;internal&#34;]
-        self.metric_ids = data[&#34;metricIds&#34;]
-
-
-class EndpointDocsPathRequestTypeResponse:
-    def __init__(self, data):
-        self.description = None
-        self.schema = None
-        if &#34;description&#34; in data:
-            self.description = data[&#34;description&#34;]
-        if &#34;schema&#34; in data:
-            self.schema = data[&#34;schema&#34;]
-
-
-class EndpointDocsPathRequestTypeParameter:
-    def __init__(self, data):
-        self.name = data[&#34;name&#34;]
-        self.iin = data[&#34;in&#34;]  # I can&#39;t make this say &#34;in&#34; so this is close enough
-
-        if &#34;description&#34; in data:
-            self.description = data[&#34;description&#34;]
-        else:
-            self.description = None
-
-        self.required = data[&#34;required&#34;]
-        self.type = None
-
-        if &#34;type&#34; in data:
-            self.type = data[&#34;type&#34;]
-
-        if &#34;format&#34; in data:
-            self.format = data[&#34;format&#34;]
-        else:
-            self.format = None
-
-
-class EndpointDocsPathRequestType:
-    def __init__(self, data):
-        self.tags = data[&#34;tags&#34;]
-        self.description = None
-        self.summary = None
-
-        if &#34;summary&#34; in data:
-            self.summary = data[&#34;summary&#34;]
-
-        if &#34;description&#34; in data:
-            self.description = data[&#34;description&#34;]
-
-        self.consumes = data[&#34;consumes&#34;]
-        self.produces = data[&#34;produces&#34;]
-        self.parameters = []
-        self.responses = {}
-        self.properties = EndpointDocsPathRequestTypeProperties(data[&#34;properties&#34;])
-        for raw_parameter in data[&#34;parameters&#34;]:
-            self.parameters.append(EndpointDocsPathRequestTypeParameter(raw_parameter))
-        for rr_k, rr_v in data[&#34;responses&#34;].items():
-            self.responses[rr_k] = EndpointDocsPathRequestTypeResponse(rr_v)
-
-
-class EndpointDocsPath:
-    def __init__(self, data):
-        self.data = {}
-        for type_k, type_v in data.items():
-            self.data[type_k] = EndpointDocsPathRequestType(type_v)
-
-
-class EndpointDocsDataInfo:
-    def __init__(self, data):
-        self.version = data[&#34;version&#34;]
-        self.title = data[&#34;title&#34;]
-
-
-class EndpointDocsData:
-    def __init__(self, data):
-        self.swagger_version = data[&#34;swagger&#34;]
-        self.info = EndpointDocsDataInfo(data[&#34;info&#34;])
-        self.host = data[&#34;host&#34;]
-        self.schemes = data[&#34;schemes&#34;]
-        self.paths = {}
-        for path_k, path_v in data[&#34;paths&#34;].items():
-            self.paths[path_k] = EndpointDocsPath(path_v)
-
-
-class EndpointDocs:
-    def __init__(self, requests, docs_url):
-        self.requests = requests
-        self.url = docs_url
-
-    async def get_versions(self):
-        docs_req = await self.requests.get(self.url + &#34;/docs&#34;)
-        root = html.parse(StringIO(docs_req.text)).getroot()
-        try:
-            vs_element = root.get_element_by_id(&#34;version-selector&#34;)
-            return vs_element.value_options
-        except KeyError:
-            return [&#34;v1&#34;]
-
-    async def get_data_for_version(self, version):
-        data_req = await self.requests.get(self.url + &#34;/docs/json/&#34; + version)
-        version_data = data_req.json()
-        return EndpointDocsData(version_data)</code></pre>
-</details>
 </section>
 <section>
 </section>
@@ -162,29 +42,6 @@ class EndpointDocs:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class EndpointDocs:
-    def __init__(self, requests, docs_url):
-        self.requests = requests
-        self.url = docs_url
-
-    async def get_versions(self):
-        docs_req = await self.requests.get(self.url + &#34;/docs&#34;)
-        root = html.parse(StringIO(docs_req.text)).getroot()
-        try:
-            vs_element = root.get_element_by_id(&#34;version-selector&#34;)
-            return vs_element.value_options
-        except KeyError:
-            return [&#34;v1&#34;]
-
-    async def get_data_for_version(self, version):
-        data_req = await self.requests.get(self.url + &#34;/docs/json/&#34; + version)
-        version_data = data_req.json()
-        return EndpointDocsData(version_data)</code></pre>
-</details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.robloxdocs.EndpointDocs.get_data_for_version"><code class="name flex">
@@ -192,34 +49,12 @@ class EndpointDocs:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def get_data_for_version(self, version):
-    data_req = await self.requests.get(self.url + &#34;/docs/json/&#34; + version)
-    version_data = data_req.json()
-    return EndpointDocsData(version_data)</code></pre>
-</details>
 </dd>
 <dt id="ro_py.robloxdocs.EndpointDocs.get_versions"><code class="name flex">
 <span>async def <span class="ident">get_versions</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def get_versions(self):
-    docs_req = await self.requests.get(self.url + &#34;/docs&#34;)
-    root = html.parse(StringIO(docs_req.text)).getroot()
-    try:
-        vs_element = root.get_element_by_id(&#34;version-selector&#34;)
-        return vs_element.value_options
-    except KeyError:
-        return [&#34;v1&#34;]</code></pre>
-</details>
 </dd>
 </dl>
 </dd>
@@ -229,20 +64,6 @@ class EndpointDocs:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class EndpointDocsData:
-    def __init__(self, data):
-        self.swagger_version = data[&#34;swagger&#34;]
-        self.info = EndpointDocsDataInfo(data[&#34;info&#34;])
-        self.host = data[&#34;host&#34;]
-        self.schemes = data[&#34;schemes&#34;]
-        self.paths = {}
-        for path_k, path_v in data[&#34;paths&#34;].items():
-            self.paths[path_k] = EndpointDocsPath(path_v)</code></pre>
-</details>
 </dd>
 <dt id="ro_py.robloxdocs.EndpointDocsDataInfo"><code class="flex name class">
 <span>class <span class="ident">EndpointDocsDataInfo</span></span>
@@ -250,15 +71,6 @@ class EndpointDocs:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class EndpointDocsDataInfo:
-    def __init__(self, data):
-        self.version = data[&#34;version&#34;]
-        self.title = data[&#34;title&#34;]</code></pre>
-</details>
 </dd>
 <dt id="ro_py.robloxdocs.EndpointDocsPath"><code class="flex name class">
 <span>class <span class="ident">EndpointDocsPath</span></span>
@@ -266,16 +78,6 @@ class EndpointDocs:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class EndpointDocsPath:
-    def __init__(self, data):
-        self.data = {}
-        for type_k, type_v in data.items():
-            self.data[type_k] = EndpointDocsPathRequestType(type_v)</code></pre>
-</details>
 </dd>
 <dt id="ro_py.robloxdocs.EndpointDocsPathRequestType"><code class="flex name class">
 <span>class <span class="ident">EndpointDocsPathRequestType</span></span>
@@ -283,32 +85,6 @@ class EndpointDocs:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class EndpointDocsPathRequestType:
-    def __init__(self, data):
-        self.tags = data[&#34;tags&#34;]
-        self.description = None
-        self.summary = None
-
-        if &#34;summary&#34; in data:
-            self.summary = data[&#34;summary&#34;]
-
-        if &#34;description&#34; in data:
-            self.description = data[&#34;description&#34;]
-
-        self.consumes = data[&#34;consumes&#34;]
-        self.produces = data[&#34;produces&#34;]
-        self.parameters = []
-        self.responses = {}
-        self.properties = EndpointDocsPathRequestTypeProperties(data[&#34;properties&#34;])
-        for raw_parameter in data[&#34;parameters&#34;]:
-            self.parameters.append(EndpointDocsPathRequestTypeParameter(raw_parameter))
-        for rr_k, rr_v in data[&#34;responses&#34;].items():
-            self.responses[rr_k] = EndpointDocsPathRequestTypeResponse(rr_v)</code></pre>
-</details>
 </dd>
 <dt id="ro_py.robloxdocs.EndpointDocsPathRequestTypeParameter"><code class="flex name class">
 <span>class <span class="ident">EndpointDocsPathRequestTypeParameter</span></span>
@@ -316,31 +92,6 @@ class EndpointDocs:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class EndpointDocsPathRequestTypeParameter:
-    def __init__(self, data):
-        self.name = data[&#34;name&#34;]
-        self.iin = data[&#34;in&#34;]  # I can&#39;t make this say &#34;in&#34; so this is close enough
-
-        if &#34;description&#34; in data:
-            self.description = data[&#34;description&#34;]
-        else:
-            self.description = None
-
-        self.required = data[&#34;required&#34;]
-        self.type = None
-
-        if &#34;type&#34; in data:
-            self.type = data[&#34;type&#34;]
-
-        if &#34;format&#34; in data:
-            self.format = data[&#34;format&#34;]
-        else:
-            self.format = None</code></pre>
-</details>
 </dd>
 <dt id="ro_py.robloxdocs.EndpointDocsPathRequestTypeProperties"><code class="flex name class">
 <span>class <span class="ident">EndpointDocsPathRequestTypeProperties</span></span>
@@ -348,15 +99,6 @@ class EndpointDocs:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class EndpointDocsPathRequestTypeProperties:
-    def __init__(self, data):
-        self.internal = data[&#34;internal&#34;]
-        self.metric_ids = data[&#34;metricIds&#34;]</code></pre>
-</details>
 </dd>
 <dt id="ro_py.robloxdocs.EndpointDocsPathRequestTypeResponse"><code class="flex name class">
 <span>class <span class="ident">EndpointDocsPathRequestTypeResponse</span></span>
@@ -364,19 +106,6 @@ class EndpointDocs:
 </code></dt>
 <dd>
 <div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class EndpointDocsPathRequestTypeResponse:
-    def __init__(self, data):
-        self.description = None
-        self.schema = None
-        if &#34;description&#34; in data:
-            self.description = data[&#34;description&#34;]
-        if &#34;schema&#34; in data:
-            self.schema = data[&#34;schema&#34;]</code></pre>
-</details>
 </dd>
 </dl>
 </section>
