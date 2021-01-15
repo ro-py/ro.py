@@ -23,6 +23,7 @@ setuptools.setup(
         "iso8601",
         "signalrcore",
         "requests-async",
+        "pytweening",
         "wxPython",
         "wxasync"
     ]
