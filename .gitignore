@@ -13,6 +13,7 @@ tests/
 ro_py_old/
 other/
 udocs/
+docstemplate/
 build.bat
 docsbuild.bat
 chat.py
