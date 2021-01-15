@@ -14,6 +14,33 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+</style>
 </head>
 <body>
 <main>
@@ -23,6 +50,167 @@
 </header>
 <section id="section-intro">
 <p>This file contains classes and functions related to Roblox roles.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+
+This file contains classes and functions related to Roblox roles.
+
+&#34;&#34;&#34;
+
+
+import enum
+
+endpoint = &#34;https://groups.roblox.com&#34;
+
+
+class RolePermissions:
+    &#34;&#34;&#34;
+    Represents role permissions.
+    &#34;&#34;&#34;
+    view_wall = None
+    post_to_wall = None
+    delete_from_wall = None
+    view_status = None
+    post_to_status = None
+    change_rank = None
+    invite_members = None
+    remove_members = None
+    manage_relationships = None
+    view_audit_logs = None
+    spend_group_funds = None
+    advertise_group = None
+    create_items = None
+    manage_items = None
+    manage_group_games = None
+
+
+def get_rp_names(rp):
+    &#34;&#34;&#34;
+    Converts permissions into something Roblox can read.
+
+    Parameters
+    ----------
+    rp : ro_py.roles.RolePermissions
+
+    Returns
+    -------
+    dict
+    &#34;&#34;&#34;
+    return {
+        &#34;viewWall&#34;: rp.view_wall,
+        &#34;PostToWall&#34;: rp.post_to_wall,
+        &#34;deleteFromWall&#34;: rp.delete_from_wall,
+        &#34;viewStatus&#34;: rp.view_status,
+        &#34;postToStatus&#34;: rp.post_to_status,
+        &#34;changeRank&#34;: rp.change_rank,
+        &#34;inviteMembers&#34;: rp.invite_members,
+        &#34;removeMembers&#34;: rp.remove_members,
+        &#34;manageRelationships&#34;: rp.manage_relationships,
+        &#34;viewAuditLogs&#34;: rp.view_audit_logs,
+        &#34;spendGroupFunds&#34;: rp.spend_group_funds,
+        &#34;advertiseGroup&#34;: rp.advertise_group,
+        &#34;createItems&#34;: rp.create_items,
+        &#34;manageItems&#34;: rp.manage_items,
+        &#34;manageGroupGames&#34;: rp.manage_group_games
+    }
+
+
+class Role:
+    &#34;&#34;&#34;
+    Represents a role
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+            Requests object to use for API requests.
+    group : ro_py.groups.Group
+            Group the role belongs to.
+    role_data : dict
+            Dictionary containing role information.
+    &#34;&#34;&#34;
+    def __init__(self, requests, group, role_data):
+        self.requests = requests
+        self.group = group
+        self.id = role_data[&#39;id&#39;]
+        self.name = role_data[&#39;name&#39;]
+        self.description = role_data.get(&#39;description&#39;)
+        self.rank = role_data[&#39;rank&#39;]
+        self.member_count = role_data.get(&#39;memberCount&#39;)
+
+    async def update(self):
+        &#34;&#34;&#34;
+        Updates information of the role.
+        &#34;&#34;&#34;
+        update_req = await self.requests.get(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/roles&#34;
+        )
+        data = update_req.json()
+        for role in data[&#39;roles&#39;]:
+            if role[&#39;id&#39;] == self.id:
+                self.name = role[&#39;name&#39;]
+                self.description = role[&#39;description&#39;]
+                self.rank = role[&#39;rank&#39;]
+                self.member_count = role[&#39;memberCount&#39;]
+                break
+
+    async def edit(self, name=None, description=None, rank=None):
+        &#34;&#34;&#34;
+        Edits the name, description or rank of a role
+
+        Parameters
+        ----------
+        name : str, optional
+            New name for the role.
+        description : str, optional
+            New description for the role.
+        rank : int, optional
+            Number from 1-254 that determains the new rank number for the role.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        edit_req = await self.requests.patch(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/rolesets/{self.id}&#34;,
+            data={
+                &#34;description&#34;: description if description else self.description,
+                &#34;name&#34;: name if name else self.name,
+                &#34;rank&#34;: rank if rank else self.rank
+            }
+        )
+        return edit_req.status_code == 200
+
+    async def edit_permissions(self, role_permissions):
+        &#34;&#34;&#34;
+        Edits the permissions of a role.
+
+        Parameters
+        ----------
+        role_permissions : ro_py.roles.RolePermissions
+            New permissions that will overwrite the old ones.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        data = {
+            &#34;permissions&#34;: {}
+        }
+
+        for key, value in get_rp_names(role_permissions):
+            if value is True or False:
+                data[&#39;permissions&#39;][key] = value
+
+        edit_req = await self.requests.patch(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/roles/{self.id}/permissions&#34;,
+            data=data
+        )
+
+        return edit_req.status_code == 200</code></pre>
+</details>
 </section>
 <section>
 </section>
@@ -46,6 +234,40 @@
 <dt><code>dict</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_rp_names(rp):
+    &#34;&#34;&#34;
+    Converts permissions into something Roblox can read.
+
+    Parameters
+    ----------
+    rp : ro_py.roles.RolePermissions
+
+    Returns
+    -------
+    dict
+    &#34;&#34;&#34;
+    return {
+        &#34;viewWall&#34;: rp.view_wall,
+        &#34;PostToWall&#34;: rp.post_to_wall,
+        &#34;deleteFromWall&#34;: rp.delete_from_wall,
+        &#34;viewStatus&#34;: rp.view_status,
+        &#34;postToStatus&#34;: rp.post_to_status,
+        &#34;changeRank&#34;: rp.change_rank,
+        &#34;inviteMembers&#34;: rp.invite_members,
+        &#34;removeMembers&#34;: rp.remove_members,
+        &#34;manageRelationships&#34;: rp.manage_relationships,
+        &#34;viewAuditLogs&#34;: rp.view_audit_logs,
+        &#34;spendGroupFunds&#34;: rp.spend_group_funds,
+        &#34;advertiseGroup&#34;: rp.advertise_group,
+        &#34;createItems&#34;: rp.create_items,
+        &#34;manageItems&#34;: rp.manage_items,
+        &#34;manageGroupGames&#34;: rp.manage_group_games
+    }</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -67,6 +289,103 @@
 <dt><strong><code>role_data</code></strong> :&ensp;<code>dict</code></dt>
 <dd>Dictionary containing role information.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Role:
+    &#34;&#34;&#34;
+    Represents a role
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+            Requests object to use for API requests.
+    group : ro_py.groups.Group
+            Group the role belongs to.
+    role_data : dict
+            Dictionary containing role information.
+    &#34;&#34;&#34;
+    def __init__(self, requests, group, role_data):
+        self.requests = requests
+        self.group = group
+        self.id = role_data[&#39;id&#39;]
+        self.name = role_data[&#39;name&#39;]
+        self.description = role_data.get(&#39;description&#39;)
+        self.rank = role_data[&#39;rank&#39;]
+        self.member_count = role_data.get(&#39;memberCount&#39;)
+
+    async def update(self):
+        &#34;&#34;&#34;
+        Updates information of the role.
+        &#34;&#34;&#34;
+        update_req = await self.requests.get(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/roles&#34;
+        )
+        data = update_req.json()
+        for role in data[&#39;roles&#39;]:
+            if role[&#39;id&#39;] == self.id:
+                self.name = role[&#39;name&#39;]
+                self.description = role[&#39;description&#39;]
+                self.rank = role[&#39;rank&#39;]
+                self.member_count = role[&#39;memberCount&#39;]
+                break
+
+    async def edit(self, name=None, description=None, rank=None):
+        &#34;&#34;&#34;
+        Edits the name, description or rank of a role
+
+        Parameters
+        ----------
+        name : str, optional
+            New name for the role.
+        description : str, optional
+            New description for the role.
+        rank : int, optional
+            Number from 1-254 that determains the new rank number for the role.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        edit_req = await self.requests.patch(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/rolesets/{self.id}&#34;,
+            data={
+                &#34;description&#34;: description if description else self.description,
+                &#34;name&#34;: name if name else self.name,
+                &#34;rank&#34;: rank if rank else self.rank
+            }
+        )
+        return edit_req.status_code == 200
+
+    async def edit_permissions(self, role_permissions):
+        &#34;&#34;&#34;
+        Edits the permissions of a role.
+
+        Parameters
+        ----------
+        role_permissions : ro_py.roles.RolePermissions
+            New permissions that will overwrite the old ones.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        data = {
+            &#34;permissions&#34;: {}
+        }
+
+        for key, value in get_rp_names(role_permissions):
+            if value is True or False:
+                data[&#39;permissions&#39;][key] = value
+
+        edit_req = await self.requests.patch(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/roles/{self.id}/permissions&#34;,
+            data=data
+        )
+
+        return edit_req.status_code == 200</code></pre>
+</details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.roles.Role.edit"><code class="name flex">
@@ -88,6 +407,37 @@
 <dt><code>int</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def edit(self, name=None, description=None, rank=None):
+    &#34;&#34;&#34;
+    Edits the name, description or rank of a role
+
+    Parameters
+    ----------
+    name : str, optional
+        New name for the role.
+    description : str, optional
+        New description for the role.
+    rank : int, optional
+        Number from 1-254 that determains the new rank number for the role.
+
+    Returns
+    -------
+    int
+    &#34;&#34;&#34;
+    edit_req = await self.requests.patch(
+        url=endpoint + f&#34;/v1/groups/{self.group.id}/rolesets/{self.id}&#34;,
+        data={
+            &#34;description&#34;: description if description else self.description,
+            &#34;name&#34;: name if name else self.name,
+            &#34;rank&#34;: rank if rank else self.rank
+        }
+    )
+    return edit_req.status_code == 200</code></pre>
+</details>
 </dd>
 <dt id="ro_py.roles.Role.edit_permissions"><code class="name flex">
 <span>async def <span class="ident">edit_permissions</span></span>(<span>self, role_permissions)</span>
@@ -104,12 +454,64 @@
 <dt><code>int</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def edit_permissions(self, role_permissions):
+    &#34;&#34;&#34;
+    Edits the permissions of a role.
+
+    Parameters
+    ----------
+    role_permissions : ro_py.roles.RolePermissions
+        New permissions that will overwrite the old ones.
+
+    Returns
+    -------
+    int
+    &#34;&#34;&#34;
+    data = {
+        &#34;permissions&#34;: {}
+    }
+
+    for key, value in get_rp_names(role_permissions):
+        if value is True or False:
+            data[&#39;permissions&#39;][key] = value
+
+    edit_req = await self.requests.patch(
+        url=endpoint + f&#34;/v1/groups/{self.group.id}/roles/{self.id}/permissions&#34;,
+        data=data
+    )
+
+    return edit_req.status_code == 200</code></pre>
+</details>
 </dd>
 <dt id="ro_py.roles.Role.update"><code class="name flex">
 <span>async def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Updates information of the role.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def update(self):
+    &#34;&#34;&#34;
+    Updates information of the role.
+    &#34;&#34;&#34;
+    update_req = await self.requests.get(
+        url=endpoint + f&#34;/v1/groups/{self.group.id}/roles&#34;
+    )
+    data = update_req.json()
+    for role in data[&#39;roles&#39;]:
+        if role[&#39;id&#39;] == self.id:
+            self.name = role[&#39;name&#39;]
+            self.description = role[&#39;description&#39;]
+            self.rank = role[&#39;rank&#39;]
+            self.member_count = role[&#39;memberCount&#39;]
+            break</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -118,6 +520,30 @@
 </code></dt>
 <dd>
 <div class="desc"><p>Represents role permissions.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RolePermissions:
+    &#34;&#34;&#34;
+    Represents role permissions.
+    &#34;&#34;&#34;
+    view_wall = None
+    post_to_wall = None
+    delete_from_wall = None
+    view_status = None
+    post_to_status = None
+    change_rank = None
+    invite_members = None
+    remove_members = None
+    manage_relationships = None
+    view_audit_logs = None
+    spend_group_funds = None
+    advertise_group = None
+    create_items = None
+    manage_items = None
+    manage_group_games = None</code></pre>
+</details>
 <h3>Class variables</h3>
 <dl>
 <dt id="ro_py.roles.RolePermissions.advertise_group"><code class="name">var <span class="ident">advertise_group</span></code></dt>
@@ -186,6 +612,11 @@
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>

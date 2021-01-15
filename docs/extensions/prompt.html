@@ -14,6 +14,33 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+</style>
 </head>
 <body>
 <main>
@@ -23,6 +50,275 @@
 </header>
 <section id="section-intro">
 <p>This extension houses functions that allow human verification prompts for interactive applications.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+
+This extension houses functions that allow human verification prompts for interactive applications.
+
+&#34;&#34;&#34;
+
+
+import wx
+import wxasync
+from wx import html2
+import os
+import pytweening
+
+
+async def user_login(client, username, password, key=None):
+    if key:
+        return await client.user_login(username, password, key)
+    else:
+        return await client.user_login(username, password)
+
+
+class RbxLogin(wx.Frame):
+    &#34;&#34;&#34;
+    wx.Frame wrapper for Roblox authentication.
+    &#34;&#34;&#34;
+    def __init__(self, *args, **kwds):
+        kwds[&#34;style&#34;] = kwds.get(&#34;style&#34;, 0) | wx.DEFAULT_FRAME_STYLE
+        wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((512, 512))
+        self.SetTitle(&#34;Login with Roblox&#34;)
+        self.SetBackgroundColour(wx.Colour(255, 255, 255))
+        self.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(__file__)), &#34;appicon.png&#34;)))
+
+        self.username = None
+        self.password = None
+        self.client = None
+        self.status = False
+
+        root_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.inner_panel = wx.Panel(self, wx.ID_ANY)
+        root_sizer.Add(self.inner_panel, 1, wx.ALL | wx.EXPAND, 100)
+
+        inner_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        inner_sizer.Add((0, 20), 0, 0, 0)
+
+        login_label = wx.StaticText(self.inner_panel, wx.ID_ANY, &#34;Please log in with your username and password.&#34;,
+                                    style=wx.ALIGN_CENTER_HORIZONTAL)
+        inner_sizer.Add(login_label, 1, 0, 0)
+
+        self.username_entry = wx.TextCtrl(self.inner_panel, wx.ID_ANY, &#34;\n&#34;)
+        self.username_entry.SetFont(
+            wx.Font(13, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, &#34;Segoe UI&#34;))
+        self.username_entry.SetFocus()
+        inner_sizer.Add(self.username_entry, 1, wx.BOTTOM | wx.EXPAND | wx.TOP, 4)
+
+        self.password_entry = wx.TextCtrl(self.inner_panel, wx.ID_ANY, &#34;&#34;, style=wx.TE_PASSWORD)
+        self.password_entry.SetFont(
+            wx.Font(13, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, &#34;Segoe UI&#34;))
+        inner_sizer.Add(self.password_entry, 1, wx.BOTTOM | wx.EXPAND | wx.TOP, 4)
+
+        self.log_in_button = wx.Button(self.inner_panel, wx.ID_ANY, &#34;Login&#34;)
+        inner_sizer.Add(self.log_in_button, 1, wx.ALL | wx.EXPAND, 0)
+
+        inner_sizer.Add((0, 20), 0, 0, 0)
+
+        self.web_view = wx.html2.WebView.New(self, wx.ID_ANY)
+        self.web_view.Hide()
+        self.web_view.EnableAccessToDevTools(False)
+        self.web_view.EnableContextMenu(False)
+
+        root_sizer.Add(self.web_view, 1, wx.EXPAND, 0)
+
+        self.inner_panel.SetSizer(inner_sizer)
+
+        self.SetSizer(root_sizer)
+
+        self.Layout()
+
+        wxasync.AsyncBind(wx.EVT_BUTTON, self.login_click, self.log_in_button)
+        wxasync.AsyncBind(wx.html2.EVT_WEBVIEW_NAVIGATED, self.login_load, self.web_view)
+
+    async def login_load(self, event):
+        _, token = self.web_view.RunScript(&#34;try{document.getElementsByTagName(&#39;input&#39;)[0].value}catch(e){}&#34;)
+        if token == &#34;undefined&#34;:
+            token = False
+        if token:
+            self.web_view.Hide()
+            lr = await user_login(
+                self.client,
+                self.username,
+                self.password,
+                token
+            )
+            if &#34;.ROBLOSECURITY&#34; in self.client.requests.session.cookies:
+                self.status = True
+                self.Close()
+            else:
+                self.status = False
+                wx.MessageBox(f&#34;Failed to log in.\n&#34;
+                              f&#34;Detailed information from server: {lr.json()[&#39;errors&#39;][0][&#39;message&#39;]}&#34;,
+                              &#34;Error&#34;, wx.OK | wx.ICON_ERROR)
+                self.Close()
+
+    async def login_click(self, event):
+        self.username = self.username_entry.GetValue()
+        self.password = self.password_entry.GetValue()
+        self.username.strip(&#34;\n&#34;)
+        self.password.strip(&#34;\n&#34;)
+
+        if not (self.username and self.password):
+            # If either the username or password is missing, return
+            return
+
+        if len(self.username) &lt; 3:
+            # If the username is shorter than 3, return
+            return
+
+        # Disable the entries to stop people from typing in them.
+        self.username_entry.Disable()
+        self.password_entry.Disable()
+        self.log_in_button.Disable()
+
+        # Get the position of the inner_panel
+        old_pos = self.inner_panel.GetPosition()
+        start_point = old_pos[0]
+
+        # Move the panel over to the right.
+        for i in range(0, 512):
+            wx.Yield()
+            self.inner_panel.SetPosition((int(start_point + pytweening.easeOutQuad(i / 512) * 512), old_pos[1]))
+
+        # Hide the panel. The panel is already on the right so it&#39;s not visible anyways.
+        self.inner_panel.Hide()
+        self.web_view.SetSize((512, 600))
+
+        # Expand the window.
+        for i in range(0, 88):
+            self.SetSize((512, int(512 + pytweening.easeOutQuad(i / 88) * 88)))
+
+        # Runs the user_login function.
+        fd = await user_login(self.client, self.username, self.password)
+
+        # Load the captcha URL.
+        if fd:
+            self.web_view.LoadURL(fd.url)
+            self.web_view.Show()
+        else:
+            # No captcha needed.
+            self.Close()
+
+
+class RbxCaptcha(wx.Frame):
+    &#34;&#34;&#34;
+    wx.Frame wrapper for Roblox authentication.
+    &#34;&#34;&#34;
+    def __init__(self, *args, **kwds):
+        kwds[&#34;style&#34;] = kwds.get(&#34;style&#34;, 0) | wx.DEFAULT_FRAME_STYLE
+        wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((512, 600))
+        self.SetTitle(&#34;Roblox Captcha (ro.py)&#34;)
+        self.SetBackgroundColour(wx.Colour(255, 255, 255))
+        self.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(__file__)), &#34;appicon.png&#34;)))
+
+        self.status = False
+        self.token = None
+
+        root_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.web_view = wx.html2.WebView.New(self, wx.ID_ANY)
+        self.web_view.SetSize((512, 600))
+        self.web_view.Show()
+        self.web_view.EnableAccessToDevTools(False)
+        self.web_view.EnableContextMenu(False)
+
+        root_sizer.Add(self.web_view, 1, wx.EXPAND, 0)
+
+        self.SetSizer(root_sizer)
+
+        self.Layout()
+
+        self.Bind(wx.html2.EVT_WEBVIEW_NAVIGATED, self.login_load, self.web_view)
+
+    def login_load(self, event):
+        _, token = self.web_view.RunScript(&#34;try{document.getElementsByTagName(&#39;input&#39;)[0].value}catch(e){}&#34;)
+        if token == &#34;undefined&#34;:
+            token = False
+        if token:
+            self.web_view.Hide()
+            self.status = True
+            self.token = token
+            self.Close()
+
+
+class AuthApp(wxasync.WxAsyncApp):
+    &#34;&#34;&#34;
+    wx.App wrapper for Roblox authentication.
+    &#34;&#34;&#34;
+
+    def OnInit(self):
+        self.rbx_login = RbxLogin(None, wx.ID_ANY, &#34;&#34;)
+        self.SetTopWindow(self.rbx_login)
+        self.rbx_login.Show()
+        return True
+
+
+class CaptchaApp(wxasync.WxAsyncApp):
+    &#34;&#34;&#34;
+    wx.App wrapper for Roblox captcha.
+    &#34;&#34;&#34;
+
+    def OnInit(self):
+        self.rbx_captcha = RbxCaptcha(None, wx.ID_ANY, &#34;&#34;)
+        self.SetTopWindow(self.rbx_captcha)
+        self.rbx_captcha.Show()
+        return True
+
+
+async def authenticate_prompt(client):
+    &#34;&#34;&#34;
+    Prompts a login screen.
+    Returns True if the user has sucessfully been authenticated and False if they have not.
+
+    Login prompts look like this:
+    .. image:: https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/login_prompt.png
+    They also display a captcha, which looks very similar to captcha_prompt():
+    .. image:: https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/login_captcha_prompt.png
+
+    Parameters
+    ----------
+    client : ro_py.client.Client
+        Client object to authenticate.
+
+    Returns
+    ------
+    bool
+    &#34;&#34;&#34;
+    app = AuthApp(0)
+    app.rbx_login.client = client
+    await app.MainLoop()
+    return app.rbx_login.status
+
+
+async def captcha_prompt(unsolved_captcha):
+    &#34;&#34;&#34;
+    Prompts a captcha solve screen.
+    First item in tuple is True if the solve was sucessful, and the second item is the token.
+
+    Image will be placed here soon.
+
+    Parameters
+    ----------
+    unsolved_captcha : ro_py.captcha.UnsolvedCaptcha
+        Captcha to solve.
+
+    Returns
+    ------
+    tuple of bool and str
+    &#34;&#34;&#34;
+    app = CaptchaApp(0)
+    app.rbx_captcha.web_view.LoadURL(unsolved_captcha.url)
+    await app.MainLoop()
+    return app.rbx_captcha.status, app.rbx_captcha.token</code></pre>
+</details>
 </section>
 <section>
 </section>
@@ -51,6 +347,34 @@ Returns True if the user has sucessfully been authenticated and False if they ha
 <dt><code>bool</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def authenticate_prompt(client):
+    &#34;&#34;&#34;
+    Prompts a login screen.
+    Returns True if the user has sucessfully been authenticated and False if they have not.
+
+    Login prompts look like this:
+    .. image:: https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/login_prompt.png
+    They also display a captcha, which looks very similar to captcha_prompt():
+    .. image:: https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/login_captcha_prompt.png
+
+    Parameters
+    ----------
+    client : ro_py.client.Client
+        Client object to authenticate.
+
+    Returns
+    ------
+    bool
+    &#34;&#34;&#34;
+    app = AuthApp(0)
+    app.rbx_login.client = client
+    await app.MainLoop()
+    return app.rbx_login.status</code></pre>
+</details>
 </dd>
 <dt id="ro_py.extensions.prompt.captcha_prompt"><code class="name flex">
 <span>async def <span class="ident">captcha_prompt</span></span>(<span>unsolved_captcha)</span>
@@ -69,12 +393,47 @@ First item in tuple is True if the solve was sucessful, and the second item is t
 <dt><code>tuple</code> of <code>bool and str</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def captcha_prompt(unsolved_captcha):
+    &#34;&#34;&#34;
+    Prompts a captcha solve screen.
+    First item in tuple is True if the solve was sucessful, and the second item is the token.
+
+    Image will be placed here soon.
+
+    Parameters
+    ----------
+    unsolved_captcha : ro_py.captcha.UnsolvedCaptcha
+        Captcha to solve.
+
+    Returns
+    ------
+    tuple of bool and str
+    &#34;&#34;&#34;
+    app = CaptchaApp(0)
+    app.rbx_captcha.web_view.LoadURL(unsolved_captcha.url)
+    await app.MainLoop()
+    return app.rbx_captcha.status, app.rbx_captcha.token</code></pre>
+</details>
 </dd>
 <dt id="ro_py.extensions.prompt.user_login"><code class="name flex">
 <span>async def <span class="ident">user_login</span></span>(<span>client, username, password, key=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def user_login(client, username, password, key=None):
+    if key:
+        return await client.user_login(username, password, key)
+    else:
+        return await client.user_login(username, password)</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -112,6 +471,21 @@ GUI apps will.</p>
 <p>:note: You should override OnInit to do application
 initialization to ensure that the system, toolkit and
 wxWidgets are fully initialized.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AuthApp(wxasync.WxAsyncApp):
+    &#34;&#34;&#34;
+    wx.App wrapper for Roblox authentication.
+    &#34;&#34;&#34;
+
+    def OnInit(self):
+        self.rbx_login = RbxLogin(None, wx.ID_ANY, &#34;&#34;)
+        self.SetTopWindow(self.rbx_login)
+        self.rbx_login.Show()
+        return True</code></pre>
+</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>wxasync.WxAsyncApp</li>
@@ -132,6 +506,16 @@ wxWidgets are fully initialized.</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>OnInit(self) -&gt; bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def OnInit(self):
+    self.rbx_login = RbxLogin(None, wx.ID_ANY, &#34;&#34;)
+    self.SetTopWindow(self.rbx_login)
+    self.rbx_login.Show()
+    return True</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -166,6 +550,21 @@ GUI apps will.</p>
 <p>:note: You should override OnInit to do application
 initialization to ensure that the system, toolkit and
 wxWidgets are fully initialized.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CaptchaApp(wxasync.WxAsyncApp):
+    &#34;&#34;&#34;
+    wx.App wrapper for Roblox captcha.
+    &#34;&#34;&#34;
+
+    def OnInit(self):
+        self.rbx_captcha = RbxCaptcha(None, wx.ID_ANY, &#34;&#34;)
+        self.SetTopWindow(self.rbx_captcha)
+        self.rbx_captcha.Show()
+        return True</code></pre>
+</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>wxasync.WxAsyncApp</li>
@@ -186,6 +585,16 @@ wxWidgets are fully initialized.</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>OnInit(self) -&gt; bool</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def OnInit(self):
+    self.rbx_captcha = RbxCaptcha(None, wx.ID_ANY, &#34;&#34;)
+    self.SetTopWindow(self.rbx_captcha)
+    self.rbx_captcha.Show()
+    return True</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -195,6 +604,51 @@ wxWidgets are fully initialized.</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>wx.Frame wrapper for Roblox authentication.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RbxCaptcha(wx.Frame):
+    &#34;&#34;&#34;
+    wx.Frame wrapper for Roblox authentication.
+    &#34;&#34;&#34;
+    def __init__(self, *args, **kwds):
+        kwds[&#34;style&#34;] = kwds.get(&#34;style&#34;, 0) | wx.DEFAULT_FRAME_STYLE
+        wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((512, 600))
+        self.SetTitle(&#34;Roblox Captcha (ro.py)&#34;)
+        self.SetBackgroundColour(wx.Colour(255, 255, 255))
+        self.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(__file__)), &#34;appicon.png&#34;)))
+
+        self.status = False
+        self.token = None
+
+        root_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.web_view = wx.html2.WebView.New(self, wx.ID_ANY)
+        self.web_view.SetSize((512, 600))
+        self.web_view.Show()
+        self.web_view.EnableAccessToDevTools(False)
+        self.web_view.EnableContextMenu(False)
+
+        root_sizer.Add(self.web_view, 1, wx.EXPAND, 0)
+
+        self.SetSizer(root_sizer)
+
+        self.Layout()
+
+        self.Bind(wx.html2.EVT_WEBVIEW_NAVIGATED, self.login_load, self.web_view)
+
+    def login_load(self, event):
+        _, token = self.web_view.RunScript(&#34;try{document.getElementsByTagName(&#39;input&#39;)[0].value}catch(e){}&#34;)
+        if token == &#34;undefined&#34;:
+            token = False
+        if token:
+            self.web_view.Hide()
+            self.status = True
+            self.token = token
+            self.Close()</code></pre>
+</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>wx._core.Frame</li>
@@ -215,6 +669,20 @@ wxWidgets are fully initialized.</p></div>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def login_load(self, event):
+    _, token = self.web_view.RunScript(&#34;try{document.getElementsByTagName(&#39;input&#39;)[0].value}catch(e){}&#34;)
+    if token == &#34;undefined&#34;:
+        token = False
+    if token:
+        self.web_view.Hide()
+        self.status = True
+        self.token = token
+        self.Close()</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -224,6 +692,141 @@ wxWidgets are fully initialized.</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>wx.Frame wrapper for Roblox authentication.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RbxLogin(wx.Frame):
+    &#34;&#34;&#34;
+    wx.Frame wrapper for Roblox authentication.
+    &#34;&#34;&#34;
+    def __init__(self, *args, **kwds):
+        kwds[&#34;style&#34;] = kwds.get(&#34;style&#34;, 0) | wx.DEFAULT_FRAME_STYLE
+        wx.Frame.__init__(self, *args, **kwds)
+        self.SetSize((512, 512))
+        self.SetTitle(&#34;Login with Roblox&#34;)
+        self.SetBackgroundColour(wx.Colour(255, 255, 255))
+        self.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(__file__)), &#34;appicon.png&#34;)))
+
+        self.username = None
+        self.password = None
+        self.client = None
+        self.status = False
+
+        root_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        self.inner_panel = wx.Panel(self, wx.ID_ANY)
+        root_sizer.Add(self.inner_panel, 1, wx.ALL | wx.EXPAND, 100)
+
+        inner_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        inner_sizer.Add((0, 20), 0, 0, 0)
+
+        login_label = wx.StaticText(self.inner_panel, wx.ID_ANY, &#34;Please log in with your username and password.&#34;,
+                                    style=wx.ALIGN_CENTER_HORIZONTAL)
+        inner_sizer.Add(login_label, 1, 0, 0)
+
+        self.username_entry = wx.TextCtrl(self.inner_panel, wx.ID_ANY, &#34;\n&#34;)
+        self.username_entry.SetFont(
+            wx.Font(13, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, &#34;Segoe UI&#34;))
+        self.username_entry.SetFocus()
+        inner_sizer.Add(self.username_entry, 1, wx.BOTTOM | wx.EXPAND | wx.TOP, 4)
+
+        self.password_entry = wx.TextCtrl(self.inner_panel, wx.ID_ANY, &#34;&#34;, style=wx.TE_PASSWORD)
+        self.password_entry.SetFont(
+            wx.Font(13, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_NORMAL, 0, &#34;Segoe UI&#34;))
+        inner_sizer.Add(self.password_entry, 1, wx.BOTTOM | wx.EXPAND | wx.TOP, 4)
+
+        self.log_in_button = wx.Button(self.inner_panel, wx.ID_ANY, &#34;Login&#34;)
+        inner_sizer.Add(self.log_in_button, 1, wx.ALL | wx.EXPAND, 0)
+
+        inner_sizer.Add((0, 20), 0, 0, 0)
+
+        self.web_view = wx.html2.WebView.New(self, wx.ID_ANY)
+        self.web_view.Hide()
+        self.web_view.EnableAccessToDevTools(False)
+        self.web_view.EnableContextMenu(False)
+
+        root_sizer.Add(self.web_view, 1, wx.EXPAND, 0)
+
+        self.inner_panel.SetSizer(inner_sizer)
+
+        self.SetSizer(root_sizer)
+
+        self.Layout()
+
+        wxasync.AsyncBind(wx.EVT_BUTTON, self.login_click, self.log_in_button)
+        wxasync.AsyncBind(wx.html2.EVT_WEBVIEW_NAVIGATED, self.login_load, self.web_view)
+
+    async def login_load(self, event):
+        _, token = self.web_view.RunScript(&#34;try{document.getElementsByTagName(&#39;input&#39;)[0].value}catch(e){}&#34;)
+        if token == &#34;undefined&#34;:
+            token = False
+        if token:
+            self.web_view.Hide()
+            lr = await user_login(
+                self.client,
+                self.username,
+                self.password,
+                token
+            )
+            if &#34;.ROBLOSECURITY&#34; in self.client.requests.session.cookies:
+                self.status = True
+                self.Close()
+            else:
+                self.status = False
+                wx.MessageBox(f&#34;Failed to log in.\n&#34;
+                              f&#34;Detailed information from server: {lr.json()[&#39;errors&#39;][0][&#39;message&#39;]}&#34;,
+                              &#34;Error&#34;, wx.OK | wx.ICON_ERROR)
+                self.Close()
+
+    async def login_click(self, event):
+        self.username = self.username_entry.GetValue()
+        self.password = self.password_entry.GetValue()
+        self.username.strip(&#34;\n&#34;)
+        self.password.strip(&#34;\n&#34;)
+
+        if not (self.username and self.password):
+            # If either the username or password is missing, return
+            return
+
+        if len(self.username) &lt; 3:
+            # If the username is shorter than 3, return
+            return
+
+        # Disable the entries to stop people from typing in them.
+        self.username_entry.Disable()
+        self.password_entry.Disable()
+        self.log_in_button.Disable()
+
+        # Get the position of the inner_panel
+        old_pos = self.inner_panel.GetPosition()
+        start_point = old_pos[0]
+
+        # Move the panel over to the right.
+        for i in range(0, 512):
+            wx.Yield()
+            self.inner_panel.SetPosition((int(start_point + pytweening.easeOutQuad(i / 512) * 512), old_pos[1]))
+
+        # Hide the panel. The panel is already on the right so it&#39;s not visible anyways.
+        self.inner_panel.Hide()
+        self.web_view.SetSize((512, 600))
+
+        # Expand the window.
+        for i in range(0, 88):
+            self.SetSize((512, int(512 + pytweening.easeOutQuad(i / 88) * 88)))
+
+        # Runs the user_login function.
+        fd = await user_login(self.client, self.username, self.password)
+
+        # Load the captcha URL.
+        if fd:
+            self.web_view.LoadURL(fd.url)
+            self.web_view.Show()
+        else:
+            # No captcha needed.
+            self.Close()</code></pre>
+</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>wx._core.Frame</li>
@@ -244,12 +847,89 @@ wxWidgets are fully initialized.</p></div>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def login_click(self, event):
+    self.username = self.username_entry.GetValue()
+    self.password = self.password_entry.GetValue()
+    self.username.strip(&#34;\n&#34;)
+    self.password.strip(&#34;\n&#34;)
+
+    if not (self.username and self.password):
+        # If either the username or password is missing, return
+        return
+
+    if len(self.username) &lt; 3:
+        # If the username is shorter than 3, return
+        return
+
+    # Disable the entries to stop people from typing in them.
+    self.username_entry.Disable()
+    self.password_entry.Disable()
+    self.log_in_button.Disable()
+
+    # Get the position of the inner_panel
+    old_pos = self.inner_panel.GetPosition()
+    start_point = old_pos[0]
+
+    # Move the panel over to the right.
+    for i in range(0, 512):
+        wx.Yield()
+        self.inner_panel.SetPosition((int(start_point + pytweening.easeOutQuad(i / 512) * 512), old_pos[1]))
+
+    # Hide the panel. The panel is already on the right so it&#39;s not visible anyways.
+    self.inner_panel.Hide()
+    self.web_view.SetSize((512, 600))
+
+    # Expand the window.
+    for i in range(0, 88):
+        self.SetSize((512, int(512 + pytweening.easeOutQuad(i / 88) * 88)))
+
+    # Runs the user_login function.
+    fd = await user_login(self.client, self.username, self.password)
+
+    # Load the captcha URL.
+    if fd:
+        self.web_view.LoadURL(fd.url)
+        self.web_view.Show()
+    else:
+        # No captcha needed.
+        self.Close()</code></pre>
+</details>
 </dd>
 <dt id="ro_py.extensions.prompt.RbxLogin.login_load"><code class="name flex">
 <span>async def <span class="ident">login_load</span></span>(<span>self, event)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def login_load(self, event):
+    _, token = self.web_view.RunScript(&#34;try{document.getElementsByTagName(&#39;input&#39;)[0].value}catch(e){}&#34;)
+    if token == &#34;undefined&#34;:
+        token = False
+    if token:
+        self.web_view.Hide()
+        lr = await user_login(
+            self.client,
+            self.username,
+            self.password,
+            token
+        )
+        if &#34;.ROBLOSECURITY&#34; in self.client.requests.session.cookies:
+            self.status = True
+            self.Close()
+        else:
+            self.status = False
+            wx.MessageBox(f&#34;Failed to log in.\n&#34;
+                          f&#34;Detailed information from server: {lr.json()[&#39;errors&#39;][0][&#39;message&#39;]}&#34;,
+                          &#34;Error&#34;, wx.OK | wx.ICON_ERROR)
+            self.Close()</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -257,6 +937,11 @@ wxWidgets are fully initialized.</p></div>
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>

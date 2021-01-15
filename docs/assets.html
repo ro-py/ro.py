@@ -14,6 +14,33 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+</style>
 </head>
 <body>
 <main>
@@ -23,6 +50,130 @@
 </header>
 <section id="section-intro">
 <p>This file houses functions and classes that pertain to Roblox assets.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+
+This file houses functions and classes that pertain to Roblox assets.
+
+&#34;&#34;&#34;
+from ro_py.utilities.errors import NotLimitedError
+from ro_py.economy import LimitedResaleData
+from ro_py.utilities.asset_type import asset_types
+import iso8601
+
+endpoint = &#34;https://api.roblox.com/&#34;
+
+
+class Asset:
+    &#34;&#34;&#34;
+    Represents an asset.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    asset_id
+        ID of the asset.
+    &#34;&#34;&#34;
+
+    def __init__(self, requests, asset_id):
+        self.id = asset_id
+        self.requests = requests
+        self.target_id = None
+        self.product_type = None
+        self.asset_id = None
+        self.product_id = None
+        self.name = None
+        self.description = None
+        self.asset_type_id = None
+        self.asset_type_name = None
+        self.creator = None
+        self.created = None
+        self.updated = None
+        self.price = None
+        self.is_new = None
+        self.is_for_sale = None
+        self.is_public_domain = None
+        self.is_limited = None
+        self.is_limited_unique = None
+        self.minimum_membership_level = None
+        self.content_rating_type_id = None
+
+    async def update(self):
+        &#34;&#34;&#34;
+        Updates the asset&#39;s information.
+        &#34;&#34;&#34;
+        asset_info_req = await self.requests.get(
+            url=endpoint + &#34;marketplace/productinfo&#34;,
+            params={
+                &#34;assetId&#34;: self.id
+            }
+        )
+        asset_info = asset_info_req.json()
+        self.target_id = asset_info[&#34;TargetId&#34;]
+        self.product_type = asset_info[&#34;ProductType&#34;]
+        self.asset_id = asset_info[&#34;AssetId&#34;]
+        self.product_id = asset_info[&#34;ProductId&#34;]
+        self.name = asset_info[&#34;Name&#34;]
+        self.description = asset_info[&#34;Description&#34;]
+        self.asset_type_id = asset_info[&#34;AssetTypeId&#34;]
+        self.asset_type_name = asset_types[self.asset_type_id]
+        # if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;User&#34;:
+        #    self.creator = User(self.requests, asset_info[&#34;Creator&#34;][&#34;Id&#34;])
+        # if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;Group&#34;:
+        #    self.creator = Group(self.requests, asset_info[&#34;Creator&#34;][&#34;CreatorTargetId&#34;])
+        self.created = iso8601.parse_date(asset_info[&#34;Created&#34;])
+        self.updated = iso8601.parse_date(asset_info[&#34;Updated&#34;])
+        self.price = asset_info[&#34;PriceInRobux&#34;]
+        self.is_new = asset_info[&#34;IsNew&#34;]
+        self.is_for_sale = asset_info[&#34;IsForSale&#34;]
+        self.is_public_domain = asset_info[&#34;IsPublicDomain&#34;]
+        self.is_limited = asset_info[&#34;IsLimited&#34;]
+        self.is_limited_unique = asset_info[&#34;IsLimitedUnique&#34;]
+        self.minimum_membership_level = asset_info[&#34;MinimumMembershipLevel&#34;]
+        self.content_rating_type_id = asset_info[&#34;ContentRatingTypeId&#34;]
+
+    async def get_remaining(self):
+        &#34;&#34;&#34;
+        Gets the remaining amount of this asset. (used for Limited U items)
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        asset_info_req = await self.requests.get(
+            url=endpoint + &#34;marketplace/productinfo&#34;,
+            params={
+                &#34;assetId&#34;: self.asset_id
+            }
+        )
+        asset_info = asset_info_req.json()
+        return asset_info[&#34;Remaining&#34;]
+
+    async def get_limited_resale_data(self):
+        &#34;&#34;&#34;
+        Gets the limited resale data
+
+        Returns
+        -------
+        LimitedResaleData
+        &#34;&#34;&#34;
+        if self.is_limited:
+            resale_data_req = await self.requests.get(
+                f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
+            return LimitedResaleData(resale_data_req.json())
+        else:
+            raise NotLimitedError(&#34;You can only read this information on limited items.&#34;)
+
+
+class UserAsset(Asset):
+    def __init__(self, requests, asset_id, user_asset_id):
+        super().__init__(requests, asset_id)
+        self.user_asset_id = user_asset_id</code></pre>
+</details>
 </section>
 <section>
 </section>
@@ -46,6 +197,111 @@
 <dt><strong><code>asset_id</code></strong></dt>
 <dd>ID of the asset.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Asset:
+    &#34;&#34;&#34;
+    Represents an asset.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    asset_id
+        ID of the asset.
+    &#34;&#34;&#34;
+
+    def __init__(self, requests, asset_id):
+        self.id = asset_id
+        self.requests = requests
+        self.target_id = None
+        self.product_type = None
+        self.asset_id = None
+        self.product_id = None
+        self.name = None
+        self.description = None
+        self.asset_type_id = None
+        self.asset_type_name = None
+        self.creator = None
+        self.created = None
+        self.updated = None
+        self.price = None
+        self.is_new = None
+        self.is_for_sale = None
+        self.is_public_domain = None
+        self.is_limited = None
+        self.is_limited_unique = None
+        self.minimum_membership_level = None
+        self.content_rating_type_id = None
+
+    async def update(self):
+        &#34;&#34;&#34;
+        Updates the asset&#39;s information.
+        &#34;&#34;&#34;
+        asset_info_req = await self.requests.get(
+            url=endpoint + &#34;marketplace/productinfo&#34;,
+            params={
+                &#34;assetId&#34;: self.id
+            }
+        )
+        asset_info = asset_info_req.json()
+        self.target_id = asset_info[&#34;TargetId&#34;]
+        self.product_type = asset_info[&#34;ProductType&#34;]
+        self.asset_id = asset_info[&#34;AssetId&#34;]
+        self.product_id = asset_info[&#34;ProductId&#34;]
+        self.name = asset_info[&#34;Name&#34;]
+        self.description = asset_info[&#34;Description&#34;]
+        self.asset_type_id = asset_info[&#34;AssetTypeId&#34;]
+        self.asset_type_name = asset_types[self.asset_type_id]
+        # if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;User&#34;:
+        #    self.creator = User(self.requests, asset_info[&#34;Creator&#34;][&#34;Id&#34;])
+        # if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;Group&#34;:
+        #    self.creator = Group(self.requests, asset_info[&#34;Creator&#34;][&#34;CreatorTargetId&#34;])
+        self.created = iso8601.parse_date(asset_info[&#34;Created&#34;])
+        self.updated = iso8601.parse_date(asset_info[&#34;Updated&#34;])
+        self.price = asset_info[&#34;PriceInRobux&#34;]
+        self.is_new = asset_info[&#34;IsNew&#34;]
+        self.is_for_sale = asset_info[&#34;IsForSale&#34;]
+        self.is_public_domain = asset_info[&#34;IsPublicDomain&#34;]
+        self.is_limited = asset_info[&#34;IsLimited&#34;]
+        self.is_limited_unique = asset_info[&#34;IsLimitedUnique&#34;]
+        self.minimum_membership_level = asset_info[&#34;MinimumMembershipLevel&#34;]
+        self.content_rating_type_id = asset_info[&#34;ContentRatingTypeId&#34;]
+
+    async def get_remaining(self):
+        &#34;&#34;&#34;
+        Gets the remaining amount of this asset. (used for Limited U items)
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        asset_info_req = await self.requests.get(
+            url=endpoint + &#34;marketplace/productinfo&#34;,
+            params={
+                &#34;assetId&#34;: self.asset_id
+            }
+        )
+        asset_info = asset_info_req.json()
+        return asset_info[&#34;Remaining&#34;]
+
+    async def get_limited_resale_data(self):
+        &#34;&#34;&#34;
+        Gets the limited resale data
+
+        Returns
+        -------
+        LimitedResaleData
+        &#34;&#34;&#34;
+        if self.is_limited:
+            resale_data_req = await self.requests.get(
+                f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
+            return LimitedResaleData(resale_data_req.json())
+        else:
+            raise NotLimitedError(&#34;You can only read this information on limited items.&#34;)</code></pre>
+</details>
 <h3>Subclasses</h3>
 <ul class="hlist">
 <li><a title="ro_py.assets.UserAsset" href="#ro_py.assets.UserAsset">UserAsset</a></li>
@@ -62,6 +318,25 @@
 <dt><code>LimitedResaleData</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_limited_resale_data(self):
+    &#34;&#34;&#34;
+    Gets the limited resale data
+
+    Returns
+    -------
+    LimitedResaleData
+    &#34;&#34;&#34;
+    if self.is_limited:
+        resale_data_req = await self.requests.get(
+            f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
+        return LimitedResaleData(resale_data_req.json())
+    else:
+        raise NotLimitedError(&#34;You can only read this information on limited items.&#34;)</code></pre>
+</details>
 </dd>
 <dt id="ro_py.assets.Asset.get_remaining"><code class="name flex">
 <span>async def <span class="ident">get_remaining</span></span>(<span>self)</span>
@@ -73,12 +348,71 @@
 <dt><code>int</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_remaining(self):
+    &#34;&#34;&#34;
+    Gets the remaining amount of this asset. (used for Limited U items)
+
+    Returns
+    -------
+    int
+    &#34;&#34;&#34;
+    asset_info_req = await self.requests.get(
+        url=endpoint + &#34;marketplace/productinfo&#34;,
+        params={
+            &#34;assetId&#34;: self.asset_id
+        }
+    )
+    asset_info = asset_info_req.json()
+    return asset_info[&#34;Remaining&#34;]</code></pre>
+</details>
 </dd>
 <dt id="ro_py.assets.Asset.update"><code class="name flex">
 <span>async def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Updates the asset's information.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def update(self):
+    &#34;&#34;&#34;
+    Updates the asset&#39;s information.
+    &#34;&#34;&#34;
+    asset_info_req = await self.requests.get(
+        url=endpoint + &#34;marketplace/productinfo&#34;,
+        params={
+            &#34;assetId&#34;: self.id
+        }
+    )
+    asset_info = asset_info_req.json()
+    self.target_id = asset_info[&#34;TargetId&#34;]
+    self.product_type = asset_info[&#34;ProductType&#34;]
+    self.asset_id = asset_info[&#34;AssetId&#34;]
+    self.product_id = asset_info[&#34;ProductId&#34;]
+    self.name = asset_info[&#34;Name&#34;]
+    self.description = asset_info[&#34;Description&#34;]
+    self.asset_type_id = asset_info[&#34;AssetTypeId&#34;]
+    self.asset_type_name = asset_types[self.asset_type_id]
+    # if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;User&#34;:
+    #    self.creator = User(self.requests, asset_info[&#34;Creator&#34;][&#34;Id&#34;])
+    # if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;Group&#34;:
+    #    self.creator = Group(self.requests, asset_info[&#34;Creator&#34;][&#34;CreatorTargetId&#34;])
+    self.created = iso8601.parse_date(asset_info[&#34;Created&#34;])
+    self.updated = iso8601.parse_date(asset_info[&#34;Updated&#34;])
+    self.price = asset_info[&#34;PriceInRobux&#34;]
+    self.is_new = asset_info[&#34;IsNew&#34;]
+    self.is_for_sale = asset_info[&#34;IsForSale&#34;]
+    self.is_public_domain = asset_info[&#34;IsPublicDomain&#34;]
+    self.is_limited = asset_info[&#34;IsLimited&#34;]
+    self.is_limited_unique = asset_info[&#34;IsLimitedUnique&#34;]
+    self.minimum_membership_level = asset_info[&#34;MinimumMembershipLevel&#34;]
+    self.content_rating_type_id = asset_info[&#34;ContentRatingTypeId&#34;]</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -95,6 +429,15 @@
 <dt><strong><code>asset_id</code></strong></dt>
 <dd>ID of the asset.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UserAsset(Asset):
+    def __init__(self, requests, asset_id, user_asset_id):
+        super().__init__(requests, asset_id)
+        self.user_asset_id = user_asset_id</code></pre>
+</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="ro_py.assets.Asset" href="#ro_py.assets.Asset">Asset</a></li>
@@ -114,6 +457,11 @@
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>

@@ -14,6 +14,33 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+</style>
 </head>
 <body>
 <main>
@@ -24,6 +51,67 @@
 <section id="section-intro">
 <p>ro.py &gt; asset_type.py</p>
 <p>This file is a conversion table for asset type IDs to asset type names.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+
+ro.py &gt; asset_type.py
+
+This file is a conversion table for asset type IDs to asset type names.
+
+&#34;&#34;&#34;
+
+asset_types = [
+    None,
+    &#34;Image&#34;,
+    &#34;TeeShirt&#34;,
+    &#34;Audio&#34;,
+    &#34;Mesh&#34;,
+    &#34;Lua&#34;,
+    &#34;Hat&#34;,
+    &#34;Place&#34;,
+    &#34;Model&#34;,
+    &#34;Shirt&#34;,
+    &#34;Pants&#34;,
+    &#34;Decal&#34;,
+    &#34;Head&#34;,
+    &#34;Face&#34;,
+    &#34;Gear&#34;,
+    &#34;Badge&#34;,
+    &#34;Animation&#34;,
+    &#34;Torso&#34;,
+    &#34;RightArm&#34;,
+    &#34;LeftArm&#34;,
+    &#34;LeftLeg&#34;,
+    &#34;RightLeg&#34;,
+    &#34;Package&#34;,
+    &#34;GamePass&#34;,
+    &#34;Plugin&#34;,
+    &#34;MeshPart&#34;,
+    &#34;HairAccessory&#34;,
+    &#34;FaceAccessory&#34;,
+    &#34;NeckAccessory&#34;,
+    &#34;ShoulderAccessory&#34;,
+    &#34;FrontAccesory&#34;,
+    &#34;BackAccessory&#34;,
+    &#34;WaistAccessory&#34;,
+    &#34;ClimbAnimation&#34;,
+    &#34;DeathAnimation&#34;,
+    &#34;FallAnimation&#34;,
+    &#34;IdleAnimation&#34;,
+    &#34;JumpAnimation&#34;,
+    &#34;RunAnimation&#34;,
+    &#34;SwimAnimation&#34;,
+    &#34;WalkAnimation&#34;,
+    &#34;PoseAnimation&#34;,
+    &#34;EarAccessory&#34;,
+    &#34;EyeAccessory&#34;,
+    &#34;EmoteAnimation&#34;,
+    &#34;Video&#34;
+]</code></pre>
+</details>
 </section>
 <section>
 </section>
@@ -35,6 +123,11 @@
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>

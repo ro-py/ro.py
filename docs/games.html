@@ -14,6 +14,33 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+</style>
 </head>
 <body>
 <main>
@@ -23,6 +50,185 @@
 </header>
 <section id="section-intro">
 <p>This file houses functions and classes that pertain to Roblox universes and places.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+
+This file houses functions and classes that pertain to Roblox universes and places.
+
+&#34;&#34;&#34;
+
+from ro_py.users import User
+from ro_py.groups import Group
+from ro_py.badges import Badge
+from ro_py.utilities.errors import GameJoinError
+import subprocess
+import json
+import os
+
+endpoint = &#34;https://games.roblox.com/&#34;
+
+
+class Votes:
+    &#34;&#34;&#34;
+    Represents a game&#39;s votes.
+    &#34;&#34;&#34;
+    def __init__(self, votes_data):
+        self.up_votes = votes_data[&#34;upVotes&#34;]
+        self.down_votes = votes_data[&#34;downVotes&#34;]
+
+
+class Game:
+    &#34;&#34;&#34;
+    Represents a Roblox game universe.
+    This class represents multiple game-related endpoints.
+    &#34;&#34;&#34;
+    def __init__(self, requests, universe_id):
+        self.id = universe_id
+        self.requests = requests
+        self.name = None
+        self.description = None
+        self.creator = None
+        self.price = None
+        self.allowed_gear_genres = None
+        self.allowed_gear_categories = None
+        self.max_players = None
+        self.studio_access_to_apis_allowed = None
+        self.create_vip_servers_allowed = None
+
+    async def update(self):
+        &#34;&#34;&#34;
+        Updates the game&#39;s information.
+        &#34;&#34;&#34;
+        game_info_req = await self.requests.get(
+            url=endpoint + &#34;v1/games&#34;,
+            params={
+                &#34;universeIds&#34;: str(self.id)
+            }
+        )
+        game_info = game_info_req.json()
+        game_info = game_info[&#34;data&#34;][0]
+        self.name = game_info[&#34;name&#34;]
+        self.description = game_info[&#34;description&#34;]
+        if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
+            self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+        elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
+            self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+        self.price = game_info[&#34;price&#34;]
+        self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
+        self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
+        self.max_players = game_info[&#34;maxPlayers&#34;]
+        self.studio_access_to_apis_allowed = game_info[&#34;studioAccessToApisAllowed&#34;]
+        self.create_vip_servers_allowed = game_info[&#34;createVipServersAllowed&#34;]
+
+    async def get_votes(self):
+        &#34;&#34;&#34;
+        :return: An instance of Votes
+        &#34;&#34;&#34;
+        votes_info_req = await self.requests.get(
+            url=endpoint + &#34;v1/games/votes&#34;,
+            params={
+                &#34;universeIds&#34;: str(self.id)
+            }
+        )
+        votes_info = votes_info_req.json()
+        votes_info = votes_info[&#34;data&#34;][0]
+        votes = Votes(votes_info)
+        return votes
+
+    async def get_badges(self):
+        &#34;&#34;&#34;
+        Gets the game&#39;s badges.
+        This will be updated soon to use the new Page object.
+        &#34;&#34;&#34;
+        badges_req = await self.requests.get(
+            url=f&#34;https://badges.roblox.com/v1/universes/{self.id}/badges&#34;,
+            params={
+                &#34;limit&#34;: 100,
+                &#34;sortOrder&#34;: &#34;Asc&#34;
+            }
+        )
+        badges_data = badges_req.json()[&#34;data&#34;]
+        badges = []
+        for badge in badges_data:
+            badges.append(Badge(self.requests, badge[&#34;id&#34;]))
+        return badges
+
+
+class Place:
+    &#34;&#34;&#34;DO NOT USE. NOT READY YET.&#34;&#34;&#34;
+    def __init__(self, requests, id):
+        self.requests = requests
+        self.id = id
+        pass
+
+    async def join(self, launchtime=1609186776825, rloc=&#34;en_us&#34;, gloc=&#34;en_us&#34;,
+                   negotiate_url=&#34;https://www.roblox.com/Login/Negotiate.ashx&#34;):
+        &#34;&#34;&#34;
+        Joins the place.
+        This currently only works on Windows since it looks in AppData for the executable.
+
+        .. warning::
+            Please *do not* use this part of ro.py maliciously. We&#39;ve spent lots of time
+            working on ro.py as a resource for building interactive Roblox programs, and
+            we would hate to see it be used as a malicious tool.
+            We do not condone any use of ro.py as an exploit and we are not responsible
+            if you are banned from Roblox due to malicious use of our library.
+        &#34;&#34;&#34;
+        local_app_data = os.getenv(&#39;LocalAppData&#39;)
+        roblox_appdata_path = local_app_data + &#34;\\Roblox&#34;
+        roblox_launcher = None
+
+        app_storage = roblox_appdata_path + &#34;\\LocalStorage&#34;
+        app_versions = roblox_appdata_path + &#34;\\Versions&#34;
+
+        with open(app_storage + &#34;\\appStorage.json&#34;) as app_storage_file:
+            app_storage_data = json.load(app_storage_file)
+        browser_tracker_id = app_storage_data[&#34;BrowserTrackerId&#34;]
+
+        for directory in os.listdir(app_versions):
+            dir_path = app_versions + &#34;\\&#34; + directory
+            if os.path.isdir(dir_path):
+                if os.path.isfile(dir_path + &#34;\\&#34; + &#34;RobloxPlayerBeta.exe&#34;):
+                    roblox_launcher = dir_path + &#34;\\&#34; + &#34;RobloxPlayerBeta.exe&#34;
+
+        if not roblox_launcher:
+            raise GameJoinError(&#34;Couldn&#39;t find RobloxPlayerBeta.exe.&#34;)
+
+        ticket_req = self.requests.back_post(url=&#34;https://auth.roblox.com/v1/authentication-ticket/&#34;)
+        auth_ticket = ticket_req.headers[&#34;rbx-authentication-ticket&#34;]
+
+        launch_url = &#34;https://assetgame.roblox.com/game/PlaceLauncher.ashx&#34; \
+                     &#34;?request=RequestGame&#34; \
+                     f&#34;&amp;browserTrackerId={browser_tracker_id}&#34; \
+                     f&#34;&amp;placeId={self.id}&#34; \
+                     &#34;&amp;isPlayTogetherGame=false&#34;
+        join_parameters = [
+            roblox_launcher,
+            &#34;--play&#34;,
+            &#34;-a&#34;,
+            negotiate_url,
+            &#34;-t&#34;,
+            auth_ticket,
+            &#34;-j&#34;,
+            launch_url,
+            &#34;-b&#34;,
+            browser_tracker_id,
+            &#34;--launchtime=&#34; + str(launchtime),
+            &#34;--rloc&#34;,
+            rloc,
+            &#34;--gloc&#34;,
+            gloc
+        ]
+        join_process = subprocess.run(
+            args=join_parameters,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        return join_process.stdout, join_process.stderr</code></pre>
+</details>
 </section>
 <section>
 </section>
@@ -40,6 +246,86 @@
 <dd>
 <div class="desc"><p>Represents a Roblox game universe.
 This class represents multiple game-related endpoints.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Game:
+    &#34;&#34;&#34;
+    Represents a Roblox game universe.
+    This class represents multiple game-related endpoints.
+    &#34;&#34;&#34;
+    def __init__(self, requests, universe_id):
+        self.id = universe_id
+        self.requests = requests
+        self.name = None
+        self.description = None
+        self.creator = None
+        self.price = None
+        self.allowed_gear_genres = None
+        self.allowed_gear_categories = None
+        self.max_players = None
+        self.studio_access_to_apis_allowed = None
+        self.create_vip_servers_allowed = None
+
+    async def update(self):
+        &#34;&#34;&#34;
+        Updates the game&#39;s information.
+        &#34;&#34;&#34;
+        game_info_req = await self.requests.get(
+            url=endpoint + &#34;v1/games&#34;,
+            params={
+                &#34;universeIds&#34;: str(self.id)
+            }
+        )
+        game_info = game_info_req.json()
+        game_info = game_info[&#34;data&#34;][0]
+        self.name = game_info[&#34;name&#34;]
+        self.description = game_info[&#34;description&#34;]
+        if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
+            self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+        elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
+            self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+        self.price = game_info[&#34;price&#34;]
+        self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
+        self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
+        self.max_players = game_info[&#34;maxPlayers&#34;]
+        self.studio_access_to_apis_allowed = game_info[&#34;studioAccessToApisAllowed&#34;]
+        self.create_vip_servers_allowed = game_info[&#34;createVipServersAllowed&#34;]
+
+    async def get_votes(self):
+        &#34;&#34;&#34;
+        :return: An instance of Votes
+        &#34;&#34;&#34;
+        votes_info_req = await self.requests.get(
+            url=endpoint + &#34;v1/games/votes&#34;,
+            params={
+                &#34;universeIds&#34;: str(self.id)
+            }
+        )
+        votes_info = votes_info_req.json()
+        votes_info = votes_info[&#34;data&#34;][0]
+        votes = Votes(votes_info)
+        return votes
+
+    async def get_badges(self):
+        &#34;&#34;&#34;
+        Gets the game&#39;s badges.
+        This will be updated soon to use the new Page object.
+        &#34;&#34;&#34;
+        badges_req = await self.requests.get(
+            url=f&#34;https://badges.roblox.com/v1/universes/{self.id}/badges&#34;,
+            params={
+                &#34;limit&#34;: 100,
+                &#34;sortOrder&#34;: &#34;Asc&#34;
+            }
+        )
+        badges_data = badges_req.json()[&#34;data&#34;]
+        badges = []
+        for badge in badges_data:
+            badges.append(Badge(self.requests, badge[&#34;id&#34;]))
+        return badges</code></pre>
+</details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.games.Game.get_badges"><code class="name flex">
@@ -48,18 +334,88 @@ This class represents multiple game-related endpoints.</p></div>
 <dd>
 <div class="desc"><p>Gets the game's badges.
 This will be updated soon to use the new Page object.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_badges(self):
+    &#34;&#34;&#34;
+    Gets the game&#39;s badges.
+    This will be updated soon to use the new Page object.
+    &#34;&#34;&#34;
+    badges_req = await self.requests.get(
+        url=f&#34;https://badges.roblox.com/v1/universes/{self.id}/badges&#34;,
+        params={
+            &#34;limit&#34;: 100,
+            &#34;sortOrder&#34;: &#34;Asc&#34;
+        }
+    )
+    badges_data = badges_req.json()[&#34;data&#34;]
+    badges = []
+    for badge in badges_data:
+        badges.append(Badge(self.requests, badge[&#34;id&#34;]))
+    return badges</code></pre>
+</details>
 </dd>
 <dt id="ro_py.games.Game.get_votes"><code class="name flex">
 <span>async def <span class="ident">get_votes</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>:return: An instance of Votes</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_votes(self):
+    &#34;&#34;&#34;
+    :return: An instance of Votes
+    &#34;&#34;&#34;
+    votes_info_req = await self.requests.get(
+        url=endpoint + &#34;v1/games/votes&#34;,
+        params={
+            &#34;universeIds&#34;: str(self.id)
+        }
+    )
+    votes_info = votes_info_req.json()
+    votes_info = votes_info[&#34;data&#34;][0]
+    votes = Votes(votes_info)
+    return votes</code></pre>
+</details>
 </dd>
 <dt id="ro_py.games.Game.update"><code class="name flex">
 <span>async def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Updates the game's information.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def update(self):
+    &#34;&#34;&#34;
+    Updates the game&#39;s information.
+    &#34;&#34;&#34;
+    game_info_req = await self.requests.get(
+        url=endpoint + &#34;v1/games&#34;,
+        params={
+            &#34;universeIds&#34;: str(self.id)
+        }
+    )
+    game_info = game_info_req.json()
+    game_info = game_info[&#34;data&#34;][0]
+    self.name = game_info[&#34;name&#34;]
+    self.description = game_info[&#34;description&#34;]
+    if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
+        self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+    elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
+        self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+    self.price = game_info[&#34;price&#34;]
+    self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
+    self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
+    self.max_players = game_info[&#34;maxPlayers&#34;]
+    self.studio_access_to_apis_allowed = game_info[&#34;studioAccessToApisAllowed&#34;]
+    self.create_vip_servers_allowed = game_info[&#34;createVipServersAllowed&#34;]</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -69,6 +425,82 @@ This will be updated soon to use the new Page object.</p></div>
 </code></dt>
 <dd>
 <div class="desc"><p>DO NOT USE. NOT READY YET.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Place:
+    &#34;&#34;&#34;DO NOT USE. NOT READY YET.&#34;&#34;&#34;
+    def __init__(self, requests, id):
+        self.requests = requests
+        self.id = id
+        pass
+
+    async def join(self, launchtime=1609186776825, rloc=&#34;en_us&#34;, gloc=&#34;en_us&#34;,
+                   negotiate_url=&#34;https://www.roblox.com/Login/Negotiate.ashx&#34;):
+        &#34;&#34;&#34;
+        Joins the place.
+        This currently only works on Windows since it looks in AppData for the executable.
+
+        .. warning::
+            Please *do not* use this part of ro.py maliciously. We&#39;ve spent lots of time
+            working on ro.py as a resource for building interactive Roblox programs, and
+            we would hate to see it be used as a malicious tool.
+            We do not condone any use of ro.py as an exploit and we are not responsible
+            if you are banned from Roblox due to malicious use of our library.
+        &#34;&#34;&#34;
+        local_app_data = os.getenv(&#39;LocalAppData&#39;)
+        roblox_appdata_path = local_app_data + &#34;\\Roblox&#34;
+        roblox_launcher = None
+
+        app_storage = roblox_appdata_path + &#34;\\LocalStorage&#34;
+        app_versions = roblox_appdata_path + &#34;\\Versions&#34;
+
+        with open(app_storage + &#34;\\appStorage.json&#34;) as app_storage_file:
+            app_storage_data = json.load(app_storage_file)
+        browser_tracker_id = app_storage_data[&#34;BrowserTrackerId&#34;]
+
+        for directory in os.listdir(app_versions):
+            dir_path = app_versions + &#34;\\&#34; + directory
+            if os.path.isdir(dir_path):
+                if os.path.isfile(dir_path + &#34;\\&#34; + &#34;RobloxPlayerBeta.exe&#34;):
+                    roblox_launcher = dir_path + &#34;\\&#34; + &#34;RobloxPlayerBeta.exe&#34;
+
+        if not roblox_launcher:
+            raise GameJoinError(&#34;Couldn&#39;t find RobloxPlayerBeta.exe.&#34;)
+
+        ticket_req = self.requests.back_post(url=&#34;https://auth.roblox.com/v1/authentication-ticket/&#34;)
+        auth_ticket = ticket_req.headers[&#34;rbx-authentication-ticket&#34;]
+
+        launch_url = &#34;https://assetgame.roblox.com/game/PlaceLauncher.ashx&#34; \
+                     &#34;?request=RequestGame&#34; \
+                     f&#34;&amp;browserTrackerId={browser_tracker_id}&#34; \
+                     f&#34;&amp;placeId={self.id}&#34; \
+                     &#34;&amp;isPlayTogetherGame=false&#34;
+        join_parameters = [
+            roblox_launcher,
+            &#34;--play&#34;,
+            &#34;-a&#34;,
+            negotiate_url,
+            &#34;-t&#34;,
+            auth_ticket,
+            &#34;-j&#34;,
+            launch_url,
+            &#34;-b&#34;,
+            browser_tracker_id,
+            &#34;--launchtime=&#34; + str(launchtime),
+            &#34;--rloc&#34;,
+            rloc,
+            &#34;--gloc&#34;,
+            gloc
+        ]
+        join_process = subprocess.run(
+            args=join_parameters,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        return join_process.stdout, join_process.stderr</code></pre>
+</details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.games.Place.join"><code class="name flex">
@@ -85,6 +517,75 @@ we would hate to see it be used as a malicious tool.
 We do not condone any use of ro.py as an exploit and we are not responsible
 if you are banned from Roblox due to malicious use of our library.</p>
 </div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def join(self, launchtime=1609186776825, rloc=&#34;en_us&#34;, gloc=&#34;en_us&#34;,
+               negotiate_url=&#34;https://www.roblox.com/Login/Negotiate.ashx&#34;):
+    &#34;&#34;&#34;
+    Joins the place.
+    This currently only works on Windows since it looks in AppData for the executable.
+
+    .. warning::
+        Please *do not* use this part of ro.py maliciously. We&#39;ve spent lots of time
+        working on ro.py as a resource for building interactive Roblox programs, and
+        we would hate to see it be used as a malicious tool.
+        We do not condone any use of ro.py as an exploit and we are not responsible
+        if you are banned from Roblox due to malicious use of our library.
+    &#34;&#34;&#34;
+    local_app_data = os.getenv(&#39;LocalAppData&#39;)
+    roblox_appdata_path = local_app_data + &#34;\\Roblox&#34;
+    roblox_launcher = None
+
+    app_storage = roblox_appdata_path + &#34;\\LocalStorage&#34;
+    app_versions = roblox_appdata_path + &#34;\\Versions&#34;
+
+    with open(app_storage + &#34;\\appStorage.json&#34;) as app_storage_file:
+        app_storage_data = json.load(app_storage_file)
+    browser_tracker_id = app_storage_data[&#34;BrowserTrackerId&#34;]
+
+    for directory in os.listdir(app_versions):
+        dir_path = app_versions + &#34;\\&#34; + directory
+        if os.path.isdir(dir_path):
+            if os.path.isfile(dir_path + &#34;\\&#34; + &#34;RobloxPlayerBeta.exe&#34;):
+                roblox_launcher = dir_path + &#34;\\&#34; + &#34;RobloxPlayerBeta.exe&#34;
+
+    if not roblox_launcher:
+        raise GameJoinError(&#34;Couldn&#39;t find RobloxPlayerBeta.exe.&#34;)
+
+    ticket_req = self.requests.back_post(url=&#34;https://auth.roblox.com/v1/authentication-ticket/&#34;)
+    auth_ticket = ticket_req.headers[&#34;rbx-authentication-ticket&#34;]
+
+    launch_url = &#34;https://assetgame.roblox.com/game/PlaceLauncher.ashx&#34; \
+                 &#34;?request=RequestGame&#34; \
+                 f&#34;&amp;browserTrackerId={browser_tracker_id}&#34; \
+                 f&#34;&amp;placeId={self.id}&#34; \
+                 &#34;&amp;isPlayTogetherGame=false&#34;
+    join_parameters = [
+        roblox_launcher,
+        &#34;--play&#34;,
+        &#34;-a&#34;,
+        negotiate_url,
+        &#34;-t&#34;,
+        auth_ticket,
+        &#34;-j&#34;,
+        launch_url,
+        &#34;-b&#34;,
+        browser_tracker_id,
+        &#34;--launchtime=&#34; + str(launchtime),
+        &#34;--rloc&#34;,
+        rloc,
+        &#34;--gloc&#34;,
+        gloc
+    ]
+    join_process = subprocess.run(
+        args=join_parameters,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    return join_process.stdout, join_process.stderr</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -94,11 +595,28 @@ if you are banned from Roblox due to malicious use of our library.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a game's votes.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Votes:
+    &#34;&#34;&#34;
+    Represents a game&#39;s votes.
+    &#34;&#34;&#34;
+    def __init__(self, votes_data):
+        self.up_votes = votes_data[&#34;upVotes&#34;]
+        self.down_votes = votes_data[&#34;downVotes&#34;]</code></pre>
+</details>
 </dd>
 </dl>
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>

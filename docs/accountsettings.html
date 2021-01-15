@@ -14,6 +14,33 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+</style>
 </head>
 <body>
 <main>
@@ -23,6 +50,94 @@
 </header>
 <section id="section-intro">
 <p>This file houses functions and classes that pertain to Roblox client settings.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+
+This file houses functions and classes that pertain to Roblox client settings.
+
+&#34;&#34;&#34;
+
+import enum
+
+endpoint = &#34;https://accountsettings.roblox.com/&#34;
+
+
+class PrivacyLevel(enum.Enum):
+    &#34;&#34;&#34;
+    Represents a privacy level as you might see at https://www.roblox.com/my/account#!/privacy.
+    &#34;&#34;&#34;
+    no_one = &#34;NoOne&#34;
+    friends = &#34;Friends&#34;
+    everyone = &#34;AllUsers&#34;
+
+
+class PrivacySettings(enum.Enum):
+    &#34;&#34;&#34;
+    Represents a privacy setting as you might see at https://www.roblox.com/my/account#!/privacy.
+    &#34;&#34;&#34;
+    app_chat_privacy = 0
+    game_chat_privacy = 1
+    inventory_privacy = 2
+    phone_discovery = 3
+    phone_discovery_enabled = 4
+    private_message_privacy = 5
+
+
+class RobloxEmail:
+    &#34;&#34;&#34;
+    Represents an obfuscated version of the email you have set on your account.
+
+    Parameters
+    ----------
+    email_data : dict
+        Raw data to parse from.
+    &#34;&#34;&#34;
+    def __init__(self, email_data: dict):
+        self.email_address = email_data[&#34;emailAddress&#34;]
+        self.verified = email_data[&#34;verified&#34;]
+
+
+class AccountSettings:
+    &#34;&#34;&#34;
+    Represents authenticated client account settings (https://accountsettings.roblox.com/)
+    This is only available for authenticated clients as it cannot be accessed otherwise.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    &#34;&#34;&#34;
+    def __init__(self, requests):
+        self.requests = requests
+
+    def get_privacy_setting(self, privacy_setting):
+        &#34;&#34;&#34;
+        Gets the value of a privacy setting.
+        &#34;&#34;&#34;
+        privacy_setting = privacy_setting.value
+        privacy_endpoint = [
+            &#34;app-chat-privacy&#34;,
+            &#34;game-chat-privacy&#34;,
+            &#34;inventory-privacy&#34;,
+            &#34;privacy&#34;,
+            &#34;privacy/info&#34;,
+            &#34;private-message-privacy&#34;
+        ][privacy_setting]
+        privacy_key = [
+            &#34;appChatPrivacy&#34;,
+            &#34;gameChatPrivacy&#34;,
+            &#34;inventoryPrivacy&#34;,
+            &#34;phoneDiscovery&#34;,
+            &#34;isPhoneDiscoveryEnabled&#34;,
+            &#34;privateMessagePrivacy&#34;
+        ][privacy_setting]
+        privacy_endpoint = endpoint + &#34;v1/&#34; + privacy_endpoint
+        privacy_req = self.requests.get(privacy_endpoint)
+        return privacy_req.json()[privacy_key]</code></pre>
+</details>
 </section>
 <section>
 </section>
@@ -45,6 +160,48 @@ This is only available for authenticated clients as it cannot be accessed otherw
 <dt><strong><code>requests</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
 <dd>Requests object to use for API requests.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AccountSettings:
+    &#34;&#34;&#34;
+    Represents authenticated client account settings (https://accountsettings.roblox.com/)
+    This is only available for authenticated clients as it cannot be accessed otherwise.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    &#34;&#34;&#34;
+    def __init__(self, requests):
+        self.requests = requests
+
+    def get_privacy_setting(self, privacy_setting):
+        &#34;&#34;&#34;
+        Gets the value of a privacy setting.
+        &#34;&#34;&#34;
+        privacy_setting = privacy_setting.value
+        privacy_endpoint = [
+            &#34;app-chat-privacy&#34;,
+            &#34;game-chat-privacy&#34;,
+            &#34;inventory-privacy&#34;,
+            &#34;privacy&#34;,
+            &#34;privacy/info&#34;,
+            &#34;private-message-privacy&#34;
+        ][privacy_setting]
+        privacy_key = [
+            &#34;appChatPrivacy&#34;,
+            &#34;gameChatPrivacy&#34;,
+            &#34;inventoryPrivacy&#34;,
+            &#34;phoneDiscovery&#34;,
+            &#34;isPhoneDiscoveryEnabled&#34;,
+            &#34;privateMessagePrivacy&#34;
+        ][privacy_setting]
+        privacy_endpoint = endpoint + &#34;v1/&#34; + privacy_endpoint
+        privacy_req = self.requests.get(privacy_endpoint)
+        return privacy_req.json()[privacy_key]</code></pre>
+</details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.accountsettings.AccountSettings.get_privacy_setting"><code class="name flex">
@@ -52,6 +209,35 @@ This is only available for authenticated clients as it cannot be accessed otherw
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the value of a privacy setting.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_privacy_setting(self, privacy_setting):
+    &#34;&#34;&#34;
+    Gets the value of a privacy setting.
+    &#34;&#34;&#34;
+    privacy_setting = privacy_setting.value
+    privacy_endpoint = [
+        &#34;app-chat-privacy&#34;,
+        &#34;game-chat-privacy&#34;,
+        &#34;inventory-privacy&#34;,
+        &#34;privacy&#34;,
+        &#34;privacy/info&#34;,
+        &#34;private-message-privacy&#34;
+    ][privacy_setting]
+    privacy_key = [
+        &#34;appChatPrivacy&#34;,
+        &#34;gameChatPrivacy&#34;,
+        &#34;inventoryPrivacy&#34;,
+        &#34;phoneDiscovery&#34;,
+        &#34;isPhoneDiscoveryEnabled&#34;,
+        &#34;privateMessagePrivacy&#34;
+    ][privacy_setting]
+    privacy_endpoint = endpoint + &#34;v1/&#34; + privacy_endpoint
+    privacy_req = self.requests.get(privacy_endpoint)
+    return privacy_req.json()[privacy_key]</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -61,6 +247,18 @@ This is only available for authenticated clients as it cannot be accessed otherw
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a privacy level as you might see at <a href="https://www.roblox.com/my/account#!/privacy.">https://www.roblox.com/my/account#!/privacy.</a></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PrivacyLevel(enum.Enum):
+    &#34;&#34;&#34;
+    Represents a privacy level as you might see at https://www.roblox.com/my/account#!/privacy.
+    &#34;&#34;&#34;
+    no_one = &#34;NoOne&#34;
+    friends = &#34;Friends&#34;
+    everyone = &#34;AllUsers&#34;</code></pre>
+</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>enum.Enum</li>
@@ -87,6 +285,21 @@ This is only available for authenticated clients as it cannot be accessed otherw
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a privacy setting as you might see at <a href="https://www.roblox.com/my/account#!/privacy.">https://www.roblox.com/my/account#!/privacy.</a></p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PrivacySettings(enum.Enum):
+    &#34;&#34;&#34;
+    Represents a privacy setting as you might see at https://www.roblox.com/my/account#!/privacy.
+    &#34;&#34;&#34;
+    app_chat_privacy = 0
+    game_chat_privacy = 1
+    inventory_privacy = 2
+    phone_discovery = 3
+    phone_discovery_enabled = 4
+    private_message_privacy = 5</code></pre>
+</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li>enum.Enum</li>
@@ -130,11 +343,33 @@ This is only available for authenticated clients as it cannot be accessed otherw
 <dt><strong><code>email_data</code></strong> :&ensp;<code>dict</code></dt>
 <dd>Raw data to parse from.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RobloxEmail:
+    &#34;&#34;&#34;
+    Represents an obfuscated version of the email you have set on your account.
+
+    Parameters
+    ----------
+    email_data : dict
+        Raw data to parse from.
+    &#34;&#34;&#34;
+    def __init__(self, email_data: dict):
+        self.email_address = email_data[&#34;emailAddress&#34;]
+        self.verified = email_data[&#34;verified&#34;]</code></pre>
+</details>
 </dd>
 </dl>
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>

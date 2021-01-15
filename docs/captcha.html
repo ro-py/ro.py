@@ -14,6 +14,33 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+</style>
 </head>
 <body>
 <main>
@@ -23,6 +50,40 @@
 </header>
 <section id="section-intro">
 <p>This file houses functions and classes that pertain to the Roblox captcha.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+
+This file houses functions and classes that pertain to the Roblox captcha.
+
+&#34;&#34;&#34;
+
+
+class UnsolvedLoginCaptcha:
+    def __init__(self, data, pkey):
+        self.token = data[&#34;token&#34;]
+        self.url = f&#34;https://roblox-api.arkoselabs.com/fc/api/nojs/&#34; \
+                   f&#34;?pkey={pkey}&#34; \
+                   f&#34;&amp;session={self.token.split(&#39;|&#39;)[0]}&#34; \
+                   f&#34;&amp;lang=en&#34;
+        self.challenge_url = data[&#34;challenge_url&#34;]
+        self.challenge_url_cdn = data[&#34;challenge_url_cdn&#34;]
+        self.noscript = data[&#34;noscript&#34;]
+
+
+class UnsolvedCaptcha:
+    def __init__(self, pkey):
+        self.url = f&#34;https://roblox-api.arkoselabs.com/fc/api/nojs/&#34; \
+                   f&#34;?pkey={pkey}&#34; \
+                   f&#34;&amp;lang=en&#34;
+
+
+class CaptchaMetadata:
+    def __init__(self, data):
+        self.fun_captcha_public_keys = data[&#34;funCaptchaPublicKeys&#34;]</code></pre>
+</details>
 </section>
 <section>
 </section>
@@ -39,6 +100,14 @@
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CaptchaMetadata:
+    def __init__(self, data):
+        self.fun_captcha_public_keys = data[&#34;funCaptchaPublicKeys&#34;]</code></pre>
+</details>
 </dd>
 <dt id="ro_py.captcha.UnsolvedCaptcha"><code class="flex name class">
 <span>class <span class="ident">UnsolvedCaptcha</span></span>
@@ -46,6 +115,16 @@
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UnsolvedCaptcha:
+    def __init__(self, pkey):
+        self.url = f&#34;https://roblox-api.arkoselabs.com/fc/api/nojs/&#34; \
+                   f&#34;?pkey={pkey}&#34; \
+                   f&#34;&amp;lang=en&#34;</code></pre>
+</details>
 </dd>
 <dt id="ro_py.captcha.UnsolvedLoginCaptcha"><code class="flex name class">
 <span>class <span class="ident">UnsolvedLoginCaptcha</span></span>
@@ -53,11 +132,31 @@
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UnsolvedLoginCaptcha:
+    def __init__(self, data, pkey):
+        self.token = data[&#34;token&#34;]
+        self.url = f&#34;https://roblox-api.arkoselabs.com/fc/api/nojs/&#34; \
+                   f&#34;?pkey={pkey}&#34; \
+                   f&#34;&amp;session={self.token.split(&#39;|&#39;)[0]}&#34; \
+                   f&#34;&amp;lang=en&#34;
+        self.challenge_url = data[&#34;challenge_url&#34;]
+        self.challenge_url_cdn = data[&#34;challenge_url_cdn&#34;]
+        self.noscript = data[&#34;noscript&#34;]</code></pre>
+</details>
 </dd>
 </dl>
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>

@@ -14,6 +14,33 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+</style>
 </head>
 <body>
 <main>
@@ -22,6 +49,165 @@
 <h1 class="title">Module <code>ro_py.utilities.requests</code></h1>
 </header>
 <section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from ro_py.utilities.errors import ApiError
+from ro_py.utilities.cache import Cache
+from ro_py.captcha import CaptchaMetadata
+from json.decoder import JSONDecodeError
+import requests_async
+import requests
+
+
+class Requests:
+    &#34;&#34;&#34;
+    This wrapper functions similarly to requests_async.Session, but made specifically for Roblox.
+    &#34;&#34;&#34;
+    def __init__(self):
+        self.session = requests_async.Session()
+        &#34;&#34;&#34;Session to use for requests.&#34;&#34;&#34;
+        self.cache = Cache()
+        &#34;&#34;&#34;Cache object to use for object storage.&#34;&#34;&#34;
+
+        &#34;&#34;&#34;
+        Thank you @nsg for letting me know about this!
+        This allows us to access some extra content.
+        ▼▼▼
+        &#34;&#34;&#34;
+        self.session.headers[&#34;User-Agent&#34;] = &#34;Roblox/WinInet&#34;
+        self.session.headers[&#34;Referer&#34;] = &#34;www.roblox.com&#34;  # Possibly useful for some things
+
+    async def get(self, *args, **kwargs):
+        &#34;&#34;&#34;
+        Essentially identical to requests_async.Session.get.
+        &#34;&#34;&#34;
+
+        quickreturn = kwargs.pop(&#34;quickreturn&#34;, False)
+
+        get_request = await self.session.get(*args, **kwargs)
+
+        try:
+            get_request_json = get_request.json()
+        except JSONDecodeError:
+            return get_request
+
+        if isinstance(get_request_json, dict):
+            try:
+                get_request_error = get_request_json[&#34;errors&#34;]
+            except KeyError:
+                return get_request
+        else:
+            return get_request
+
+        if quickreturn:
+            return get_request
+
+        raise ApiError(f&#34;[{str(get_request.status_code)}] {get_request_error[0][&#39;message&#39;]}&#34;)
+
+    def back_post(self, *args, **kwargs):
+        kwargs[&#34;cookies&#34;] = kwargs.pop(&#34;cookies&#34;, self.session.cookies)
+        kwargs[&#34;headers&#34;] = kwargs.pop(&#34;headers&#34;, self.session.headers)
+
+        post_request = requests.post(*args, **kwargs)
+
+        if &#34;X-CSRF-TOKEN&#34; in post_request.headers:
+            self.session.headers[&#39;X-CSRF-TOKEN&#39;] = post_request.headers[&#34;X-CSRF-TOKEN&#34;]
+            post_request = requests.post(*args, **kwargs)
+
+        self.session.cookies = post_request.cookies
+        return post_request
+
+    async def post(self, *args, **kwargs):
+        &#34;&#34;&#34;
+        Essentially identical to requests_async.Session.post.
+        &#34;&#34;&#34;
+
+        quickreturn = kwargs.pop(&#34;quickreturn&#34;, False)
+        doxcsrf = kwargs.pop(&#34;doxcsrf&#34;, True)
+
+        post_request = await self.session.post(*args, **kwargs)
+
+        if doxcsrf:
+            if post_request.status_code == 403:
+                if &#34;X-CSRF-TOKEN&#34; in post_request.headers:
+                    self.session.headers[&#39;X-CSRF-TOKEN&#39;] = post_request.headers[&#34;X-CSRF-TOKEN&#34;]
+                    post_request = await self.session.post(*args, **kwargs)
+
+        try:
+            post_request_json = post_request.json()
+        except JSONDecodeError:
+            return post_request
+
+        if isinstance(post_request_json, dict):
+            try:
+                post_request_error = post_request_json[&#34;errors&#34;]
+            except KeyError:
+                return post_request
+        else:
+            return post_request
+
+        if quickreturn:
+            return post_request
+
+        raise ApiError(f&#34;[{str(post_request.status_code)}] {post_request_error[0][&#39;message&#39;]}&#34;)
+
+    async def patch(self, *args, **kwargs):
+        &#34;&#34;&#34;
+        Essentially identical to requests_async.Session.patch.
+        &#34;&#34;&#34;
+
+        patch_request = await self.session.patch(*args, **kwargs)
+
+        if patch_request.status_code == 403:
+            if &#34;X-CSRF-TOKEN&#34; in patch_request.headers:
+                self.session.headers[&#39;X-CSRF-TOKEN&#39;] = patch_request.headers[&#34;X-CSRF-TOKEN&#34;]
+                patch_request = await self.session.patch(*args, **kwargs)
+
+        patch_request_json = patch_request.json()
+
+        if isinstance(patch_request_json, dict):
+            try:
+                patch_request_error = patch_request_json[&#34;errors&#34;]
+            except KeyError:
+                return patch_request
+        else:
+            return patch_request
+
+        raise ApiError(f&#34;[{str(patch_request.status_code)}] {patch_request_error[0][&#39;message&#39;]}&#34;)
+
+    async def delete(self, *args, **kwargs):
+        &#34;&#34;&#34;
+        Essentially identical to requests_async.Session.delete.
+        &#34;&#34;&#34;
+
+        delete_request = await self.session.delete(*args, **kwargs)
+
+        if delete_request.status_code == 403:
+            if &#34;X-CSRF-TOKEN&#34; in delete_request.headers:
+                self.session.headers[&#39;X-CSRF-TOKEN&#39;] = delete_request.headers[&#34;X-CSRF-TOKEN&#34;]
+                delete_request = await self.session.delete(*args, **kwargs)
+
+        delete_request_json = delete_request.json()
+
+        if isinstance(delete_request_json, dict):
+            try:
+                delete_request_error = delete_request_json[&#34;errors&#34;]
+            except KeyError:
+                return delete_request
+        else:
+            return delete_request
+
+        raise ApiError(f&#34;[{str(delete_request.status_code)}] {delete_request_error[0][&#39;message&#39;]}&#34;)
+
+    async def get_captcha_metadata(self):
+        captcha_meta_req = await self.get(
+            url=&#34;https://apis.roblox.com/captcha/v1/metadata&#34;
+        )
+        captcha_meta_raw = captcha_meta_req.json()
+        return CaptchaMetadata(captcha_meta_raw)</code></pre>
+</details>
 </section>
 <section>
 </section>
@@ -37,6 +223,157 @@
 </code></dt>
 <dd>
 <div class="desc"><p>This wrapper functions similarly to requests_async.Session, but made specifically for Roblox.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Requests:
+    &#34;&#34;&#34;
+    This wrapper functions similarly to requests_async.Session, but made specifically for Roblox.
+    &#34;&#34;&#34;
+    def __init__(self):
+        self.session = requests_async.Session()
+        &#34;&#34;&#34;Session to use for requests.&#34;&#34;&#34;
+        self.cache = Cache()
+        &#34;&#34;&#34;Cache object to use for object storage.&#34;&#34;&#34;
+
+        &#34;&#34;&#34;
+        Thank you @nsg for letting me know about this!
+        This allows us to access some extra content.
+        ▼▼▼
+        &#34;&#34;&#34;
+        self.session.headers[&#34;User-Agent&#34;] = &#34;Roblox/WinInet&#34;
+        self.session.headers[&#34;Referer&#34;] = &#34;www.roblox.com&#34;  # Possibly useful for some things
+
+    async def get(self, *args, **kwargs):
+        &#34;&#34;&#34;
+        Essentially identical to requests_async.Session.get.
+        &#34;&#34;&#34;
+
+        quickreturn = kwargs.pop(&#34;quickreturn&#34;, False)
+
+        get_request = await self.session.get(*args, **kwargs)
+
+        try:
+            get_request_json = get_request.json()
+        except JSONDecodeError:
+            return get_request
+
+        if isinstance(get_request_json, dict):
+            try:
+                get_request_error = get_request_json[&#34;errors&#34;]
+            except KeyError:
+                return get_request
+        else:
+            return get_request
+
+        if quickreturn:
+            return get_request
+
+        raise ApiError(f&#34;[{str(get_request.status_code)}] {get_request_error[0][&#39;message&#39;]}&#34;)
+
+    def back_post(self, *args, **kwargs):
+        kwargs[&#34;cookies&#34;] = kwargs.pop(&#34;cookies&#34;, self.session.cookies)
+        kwargs[&#34;headers&#34;] = kwargs.pop(&#34;headers&#34;, self.session.headers)
+
+        post_request = requests.post(*args, **kwargs)
+
+        if &#34;X-CSRF-TOKEN&#34; in post_request.headers:
+            self.session.headers[&#39;X-CSRF-TOKEN&#39;] = post_request.headers[&#34;X-CSRF-TOKEN&#34;]
+            post_request = requests.post(*args, **kwargs)
+
+        self.session.cookies = post_request.cookies
+        return post_request
+
+    async def post(self, *args, **kwargs):
+        &#34;&#34;&#34;
+        Essentially identical to requests_async.Session.post.
+        &#34;&#34;&#34;
+
+        quickreturn = kwargs.pop(&#34;quickreturn&#34;, False)
+        doxcsrf = kwargs.pop(&#34;doxcsrf&#34;, True)
+
+        post_request = await self.session.post(*args, **kwargs)
+
+        if doxcsrf:
+            if post_request.status_code == 403:
+                if &#34;X-CSRF-TOKEN&#34; in post_request.headers:
+                    self.session.headers[&#39;X-CSRF-TOKEN&#39;] = post_request.headers[&#34;X-CSRF-TOKEN&#34;]
+                    post_request = await self.session.post(*args, **kwargs)
+
+        try:
+            post_request_json = post_request.json()
+        except JSONDecodeError:
+            return post_request
+
+        if isinstance(post_request_json, dict):
+            try:
+                post_request_error = post_request_json[&#34;errors&#34;]
+            except KeyError:
+                return post_request
+        else:
+            return post_request
+
+        if quickreturn:
+            return post_request
+
+        raise ApiError(f&#34;[{str(post_request.status_code)}] {post_request_error[0][&#39;message&#39;]}&#34;)
+
+    async def patch(self, *args, **kwargs):
+        &#34;&#34;&#34;
+        Essentially identical to requests_async.Session.patch.
+        &#34;&#34;&#34;
+
+        patch_request = await self.session.patch(*args, **kwargs)
+
+        if patch_request.status_code == 403:
+            if &#34;X-CSRF-TOKEN&#34; in patch_request.headers:
+                self.session.headers[&#39;X-CSRF-TOKEN&#39;] = patch_request.headers[&#34;X-CSRF-TOKEN&#34;]
+                patch_request = await self.session.patch(*args, **kwargs)
+
+        patch_request_json = patch_request.json()
+
+        if isinstance(patch_request_json, dict):
+            try:
+                patch_request_error = patch_request_json[&#34;errors&#34;]
+            except KeyError:
+                return patch_request
+        else:
+            return patch_request
+
+        raise ApiError(f&#34;[{str(patch_request.status_code)}] {patch_request_error[0][&#39;message&#39;]}&#34;)
+
+    async def delete(self, *args, **kwargs):
+        &#34;&#34;&#34;
+        Essentially identical to requests_async.Session.delete.
+        &#34;&#34;&#34;
+
+        delete_request = await self.session.delete(*args, **kwargs)
+
+        if delete_request.status_code == 403:
+            if &#34;X-CSRF-TOKEN&#34; in delete_request.headers:
+                self.session.headers[&#39;X-CSRF-TOKEN&#39;] = delete_request.headers[&#34;X-CSRF-TOKEN&#34;]
+                delete_request = await self.session.delete(*args, **kwargs)
+
+        delete_request_json = delete_request.json()
+
+        if isinstance(delete_request_json, dict):
+            try:
+                delete_request_error = delete_request_json[&#34;errors&#34;]
+            except KeyError:
+                return delete_request
+        else:
+            return delete_request
+
+        raise ApiError(f&#34;[{str(delete_request.status_code)}] {delete_request_error[0][&#39;message&#39;]}&#34;)
+
+    async def get_captcha_metadata(self):
+        captcha_meta_req = await self.get(
+            url=&#34;https://apis.roblox.com/captcha/v1/metadata&#34;
+        )
+        captcha_meta_raw = captcha_meta_req.json()
+        return CaptchaMetadata(captcha_meta_raw)</code></pre>
+</details>
 <h3>Instance variables</h3>
 <dl>
 <dt id="ro_py.utilities.requests.Requests.cache"><code class="name">var <span class="ident">cache</span></code></dt>
@@ -55,36 +392,189 @@
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def back_post(self, *args, **kwargs):
+    kwargs[&#34;cookies&#34;] = kwargs.pop(&#34;cookies&#34;, self.session.cookies)
+    kwargs[&#34;headers&#34;] = kwargs.pop(&#34;headers&#34;, self.session.headers)
+
+    post_request = requests.post(*args, **kwargs)
+
+    if &#34;X-CSRF-TOKEN&#34; in post_request.headers:
+        self.session.headers[&#39;X-CSRF-TOKEN&#39;] = post_request.headers[&#34;X-CSRF-TOKEN&#34;]
+        post_request = requests.post(*args, **kwargs)
+
+    self.session.cookies = post_request.cookies
+    return post_request</code></pre>
+</details>
 </dd>
 <dt id="ro_py.utilities.requests.Requests.delete"><code class="name flex">
 <span>async def <span class="ident">delete</span></span>(<span>self, *args, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Essentially identical to requests_async.Session.delete.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def delete(self, *args, **kwargs):
+    &#34;&#34;&#34;
+    Essentially identical to requests_async.Session.delete.
+    &#34;&#34;&#34;
+
+    delete_request = await self.session.delete(*args, **kwargs)
+
+    if delete_request.status_code == 403:
+        if &#34;X-CSRF-TOKEN&#34; in delete_request.headers:
+            self.session.headers[&#39;X-CSRF-TOKEN&#39;] = delete_request.headers[&#34;X-CSRF-TOKEN&#34;]
+            delete_request = await self.session.delete(*args, **kwargs)
+
+    delete_request_json = delete_request.json()
+
+    if isinstance(delete_request_json, dict):
+        try:
+            delete_request_error = delete_request_json[&#34;errors&#34;]
+        except KeyError:
+            return delete_request
+    else:
+        return delete_request
+
+    raise ApiError(f&#34;[{str(delete_request.status_code)}] {delete_request_error[0][&#39;message&#39;]}&#34;)</code></pre>
+</details>
 </dd>
 <dt id="ro_py.utilities.requests.Requests.get"><code class="name flex">
 <span>async def <span class="ident">get</span></span>(<span>self, *args, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Essentially identical to requests_async.Session.get.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get(self, *args, **kwargs):
+    &#34;&#34;&#34;
+    Essentially identical to requests_async.Session.get.
+    &#34;&#34;&#34;
+
+    quickreturn = kwargs.pop(&#34;quickreturn&#34;, False)
+
+    get_request = await self.session.get(*args, **kwargs)
+
+    try:
+        get_request_json = get_request.json()
+    except JSONDecodeError:
+        return get_request
+
+    if isinstance(get_request_json, dict):
+        try:
+            get_request_error = get_request_json[&#34;errors&#34;]
+        except KeyError:
+            return get_request
+    else:
+        return get_request
+
+    if quickreturn:
+        return get_request
+
+    raise ApiError(f&#34;[{str(get_request.status_code)}] {get_request_error[0][&#39;message&#39;]}&#34;)</code></pre>
+</details>
 </dd>
 <dt id="ro_py.utilities.requests.Requests.get_captcha_metadata"><code class="name flex">
 <span>async def <span class="ident">get_captcha_metadata</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_captcha_metadata(self):
+    captcha_meta_req = await self.get(
+        url=&#34;https://apis.roblox.com/captcha/v1/metadata&#34;
+    )
+    captcha_meta_raw = captcha_meta_req.json()
+    return CaptchaMetadata(captcha_meta_raw)</code></pre>
+</details>
 </dd>
 <dt id="ro_py.utilities.requests.Requests.patch"><code class="name flex">
 <span>async def <span class="ident">patch</span></span>(<span>self, *args, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Essentially identical to requests_async.Session.patch.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def patch(self, *args, **kwargs):
+    &#34;&#34;&#34;
+    Essentially identical to requests_async.Session.patch.
+    &#34;&#34;&#34;
+
+    patch_request = await self.session.patch(*args, **kwargs)
+
+    if patch_request.status_code == 403:
+        if &#34;X-CSRF-TOKEN&#34; in patch_request.headers:
+            self.session.headers[&#39;X-CSRF-TOKEN&#39;] = patch_request.headers[&#34;X-CSRF-TOKEN&#34;]
+            patch_request = await self.session.patch(*args, **kwargs)
+
+    patch_request_json = patch_request.json()
+
+    if isinstance(patch_request_json, dict):
+        try:
+            patch_request_error = patch_request_json[&#34;errors&#34;]
+        except KeyError:
+            return patch_request
+    else:
+        return patch_request
+
+    raise ApiError(f&#34;[{str(patch_request.status_code)}] {patch_request_error[0][&#39;message&#39;]}&#34;)</code></pre>
+</details>
 </dd>
 <dt id="ro_py.utilities.requests.Requests.post"><code class="name flex">
 <span>async def <span class="ident">post</span></span>(<span>self, *args, **kwargs)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Essentially identical to requests_async.Session.post.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def post(self, *args, **kwargs):
+    &#34;&#34;&#34;
+    Essentially identical to requests_async.Session.post.
+    &#34;&#34;&#34;
+
+    quickreturn = kwargs.pop(&#34;quickreturn&#34;, False)
+    doxcsrf = kwargs.pop(&#34;doxcsrf&#34;, True)
+
+    post_request = await self.session.post(*args, **kwargs)
+
+    if doxcsrf:
+        if post_request.status_code == 403:
+            if &#34;X-CSRF-TOKEN&#34; in post_request.headers:
+                self.session.headers[&#39;X-CSRF-TOKEN&#39;] = post_request.headers[&#34;X-CSRF-TOKEN&#34;]
+                post_request = await self.session.post(*args, **kwargs)
+
+    try:
+        post_request_json = post_request.json()
+    except JSONDecodeError:
+        return post_request
+
+    if isinstance(post_request_json, dict):
+        try:
+            post_request_error = post_request_json[&#34;errors&#34;]
+        except KeyError:
+            return post_request
+    else:
+        return post_request
+
+    if quickreturn:
+        return post_request
+
+    raise ApiError(f&#34;[{str(post_request.status_code)}] {post_request_error[0][&#39;message&#39;]}&#34;)</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -92,6 +582,11 @@
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>

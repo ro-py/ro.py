@@ -14,6 +14,33 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+</style>
 </head>
 <body>
 <main>
@@ -23,6 +50,307 @@
 </header>
 <section id="section-intro">
 <p>This file houses functions and classes that pertain to Roblox groups.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+
+This file houses functions and classes that pertain to Roblox groups.
+
+&#34;&#34;&#34;
+import iso8601
+from typing import List
+from ro_py.users import User
+from ro_py.roles import Role
+from ro_py.utilities.errors import NotFound
+from ro_py.utilities.pages import Pages, SortOrder
+
+endpoint = &#34;https://groups.roblox.com&#34;
+
+
+class Shout:
+    &#34;&#34;&#34;
+    Represents a group shout.
+    &#34;&#34;&#34;
+    def __init__(self, requests, shout_data):
+        self.body = shout_data[&#34;body&#34;]
+        self.poster = User(requests, shout_data[&#34;poster&#34;][&#34;userId&#34;])
+
+
+class WallPost:
+    &#34;&#34;&#34;
+    Represents a roblox wall post.
+    &#34;&#34;&#34;
+    def __init__(self, requests, wall_data, group):
+        self.requests = requests
+        self.group = group
+        self.id = wall_data[&#39;id&#39;]
+        self.body = wall_data[&#39;body&#39;]
+        self.created = iso8601.parse(wall_data[&#39;created&#39;])
+        self.updated = iso8601.parse(wall_data[&#39;updated&#39;])
+        self.poster = User(requests, wall_data[&#39;user&#39;][&#39;userId&#39;], wall_data[&#39;user&#39;][&#39;username&#39;])
+
+    async def delete(self):
+        wall_req = await self.requests.delete(
+            url=endpoint + f&#34;/v1/groups/{self.id}/wall/posts/{self.id}&#34;
+        )
+        return wall_req.status == 200
+
+
+def wall_post_handeler(requests, this_page, args) -&gt; List[WallPost]:
+    wall_posts = []
+    for wall_post in this_page:
+        wall_posts.append(WallPost(requests, wall_post, args))
+    return wall_posts
+
+
+class Group:
+    &#34;&#34;&#34;
+    Represents a group.
+    &#34;&#34;&#34;
+    def __init__(self, requests, group_id):
+        self.requests = requests
+        self.id = group_id
+
+        self.name = None
+        self.description = None
+        self.owner = None
+        self.member_count = None
+        self.is_builders_club_only = None
+        self.public_entry_allowed = None
+        self.shout = None
+
+    async def update(self):
+        &#34;&#34;&#34;
+        Updates the group&#39;s information.
+        &#34;&#34;&#34;
+        group_info_req = await self.requests.get(endpoint + f&#34;/v1/groups/{self.id}&#34;)
+        group_info = group_info_req.json()
+        self.name = group_info[&#34;name&#34;]
+        self.description = group_info[&#34;description&#34;]
+        self.owner = User(self.requests, group_info[&#34;owner&#34;][&#34;userId&#34;])
+        self.member_count = group_info[&#34;memberCount&#34;]
+        self.is_builders_club_only = group_info[&#34;isBuildersClubOnly&#34;]
+        self.public_entry_allowed = group_info[&#34;publicEntryAllowed&#34;]
+        if &#34;shout&#34; in group_info:
+            self.shout = group_info[&#34;shout&#34;]
+        else:
+            self.shout = None
+        # self.is_locked = group_info[&#34;isLocked&#34;]
+
+    async def update_shout(self, message):
+        &#34;&#34;&#34;
+        Updates the shout of the group.
+
+        Parameters
+        ----------
+        message : str
+            Message that will overwrite the current shout of a group.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        shout_req = await self.requests.patch(
+            url=endpoint + f&#34;/v1/groups/{self.id}/status&#34;,
+            data={
+                &#34;message&#34;: message
+            }
+        )
+        return shout_req.status_code == 200
+
+    async def get_roles(self):
+        &#34;&#34;&#34;
+        Gets all roles of the group.
+
+        Returns
+        -------
+        list
+        &#34;&#34;&#34;
+        role_req = await self.requests.get(
+            url=endpoint + f&#34;/v1/groups/{self.id}/roles&#34;
+        )
+        roles = []
+        for role in role_req.json()[&#39;roles&#39;]:
+            roles.append(Role(self.requests, self, role))
+        return roles
+
+    async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit=100):
+        wall_req = Pages(
+            requests=self.requests,
+            url=endpoint + f&#34;/v2/groups/{self.id}/wall/posts&#34;,
+            sort_order=sort_order,
+            limit=limit,
+            handler=wall_post_handeler,
+            handler_args=self
+        )
+        return wall_req
+
+    async def get_member_by_id(self, roblox_id):
+        # Get list of group user is in.
+        member_req = await self.requests.get(
+            url=endpoint + f&#34;/v2/users/{roblox_id}/groups/roles&#34;
+        )
+        data = member_req.json()
+
+        # Find group in list.
+        group_data = None
+        for group in data[&#39;data&#39;]:
+            if group[&#39;group&#39;][&#39;id&#39;] == self.id:
+                group_data = group
+                break
+
+        # Check if user is in group.
+        if not group_data:
+            raise NotFound(f&#34;The user {roblox_id} was not found in group {self.id}&#34;)
+
+        # Create data to return.
+        role = Role(self.requests, self, group_data[&#39;role&#39;])
+        member = Member(self.requests, roblox_id, &#34;&#34;, self, role)
+        return await member.update()
+
+
+class PartialGroup(Group):
+    &#34;&#34;&#34;
+    Represents a group with less information
+    &#34;&#34;&#34;
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class Member(User):
+    &#34;&#34;&#34;
+    Represents a user in a group.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+            Requests object to use for API requests.
+    roblox_id : int
+            The id of a user.
+    name : str
+            The name of the user.
+    group : ro_py.groups.Group
+            The group the user is in.
+    role : ro_py.roles.Role
+            The role the user has is the group.
+    &#34;&#34;&#34;
+    def __init__(self, requests, roblox_id, name, group, role):
+        super().__init__(requests, roblox_id, name)
+        self.role = role
+        self.group = group
+
+    async def update_role(self):
+        &#34;&#34;&#34;
+        Updates the role information of the user.
+
+        Returns
+        -------
+        ro_py.roles.Role
+        &#34;&#34;&#34;
+        member_req = await self.requests.get(
+            url=endpoint + f&#34;/v2/users/{self.id}/groups/roles&#34;
+        )
+        data = member_req.json()
+        for role in data[&#39;data&#39;]:
+            if role[&#39;group&#39;][&#39;id&#39;] == self.group.id:
+                self.role = Role(self.requests, self.group, role[&#39;role&#39;])
+                break
+        return self.role
+
+    async def change_rank(self, num):
+        &#34;&#34;&#34;
+        Changes the users rank specified by a number.
+        If num is 1 the users role will go up by 1.
+        If num is -1 the users role will go down by 1.
+
+        Parameters
+        ----------
+        num : int
+                How much to change the rank by.
+        &#34;&#34;&#34;
+        await self.update_role()
+        roles = await self.group.get_roles()
+        role_counter = -1
+        for group_role in roles:
+            role_counter += 1
+            if group_role.id == self.role.id:
+                break
+        if not roles:
+            raise NotFound(f&#34;User {self.id} is not in group {self.group.id}&#34;)
+        return await self.setrank(roles[role_counter + num].id)
+
+    async def promote(self):
+        &#34;&#34;&#34;
+        Promotes the user.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        return await self.change_rank(1)
+
+    async def demote(self):
+        &#34;&#34;&#34;
+        Demotes the user.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        return await self.change_rank(-1)
+
+    async def setrank(self, rank):
+        &#34;&#34;&#34;
+        Sets the users role to specified role using rank id.
+
+        Parameters
+        ----------
+        rank : int
+                Rank id
+
+        Returns
+        -------
+        bool
+        &#34;&#34;&#34;
+        rank_request = await self.requests.patch(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/users/{self.id}&#34;,
+            data={
+                &#34;roleId&#34;: rank
+            }
+        )
+        return rank_request.status == 200
+
+    async def setrole(self, role_num):
+        &#34;&#34;&#34;
+         Sets the users role to specified role using role number (1-255).
+
+         Parameters
+         ----------
+         role_num : int
+                Role number (1-255)
+
+         Returns
+         -------
+         bool
+         &#34;&#34;&#34;
+        roles = await self.group.get_roles()
+        rank_role = None
+        for role in roles:
+            if role.role == role_num:
+                rank_role = role
+                break
+        if not rank_role:
+            raise NotFound(f&#34;Role {role_num} not found&#34;)
+        return await self.setrank(rank_role.id)
+
+    async def exile(self):
+        exile_req = await self.requests.delete(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/users/{self.id}&#34;
+        )
+        return exile_req.status == 200</code></pre>
+</details>
 </section>
 <section>
 </section>
@@ -36,6 +364,16 @@
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def wall_post_handeler(requests, this_page, args) -&gt; List[WallPost]:
+    wall_posts = []
+    for wall_post in this_page:
+        wall_posts.append(WallPost(requests, wall_post, args))
+    return wall_posts</code></pre>
+</details>
 </dd>
 </dl>
 </section>
@@ -48,6 +386,115 @@
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a group.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Group:
+    &#34;&#34;&#34;
+    Represents a group.
+    &#34;&#34;&#34;
+    def __init__(self, requests, group_id):
+        self.requests = requests
+        self.id = group_id
+
+        self.name = None
+        self.description = None
+        self.owner = None
+        self.member_count = None
+        self.is_builders_club_only = None
+        self.public_entry_allowed = None
+        self.shout = None
+
+    async def update(self):
+        &#34;&#34;&#34;
+        Updates the group&#39;s information.
+        &#34;&#34;&#34;
+        group_info_req = await self.requests.get(endpoint + f&#34;/v1/groups/{self.id}&#34;)
+        group_info = group_info_req.json()
+        self.name = group_info[&#34;name&#34;]
+        self.description = group_info[&#34;description&#34;]
+        self.owner = User(self.requests, group_info[&#34;owner&#34;][&#34;userId&#34;])
+        self.member_count = group_info[&#34;memberCount&#34;]
+        self.is_builders_club_only = group_info[&#34;isBuildersClubOnly&#34;]
+        self.public_entry_allowed = group_info[&#34;publicEntryAllowed&#34;]
+        if &#34;shout&#34; in group_info:
+            self.shout = group_info[&#34;shout&#34;]
+        else:
+            self.shout = None
+        # self.is_locked = group_info[&#34;isLocked&#34;]
+
+    async def update_shout(self, message):
+        &#34;&#34;&#34;
+        Updates the shout of the group.
+
+        Parameters
+        ----------
+        message : str
+            Message that will overwrite the current shout of a group.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        shout_req = await self.requests.patch(
+            url=endpoint + f&#34;/v1/groups/{self.id}/status&#34;,
+            data={
+                &#34;message&#34;: message
+            }
+        )
+        return shout_req.status_code == 200
+
+    async def get_roles(self):
+        &#34;&#34;&#34;
+        Gets all roles of the group.
+
+        Returns
+        -------
+        list
+        &#34;&#34;&#34;
+        role_req = await self.requests.get(
+            url=endpoint + f&#34;/v1/groups/{self.id}/roles&#34;
+        )
+        roles = []
+        for role in role_req.json()[&#39;roles&#39;]:
+            roles.append(Role(self.requests, self, role))
+        return roles
+
+    async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit=100):
+        wall_req = Pages(
+            requests=self.requests,
+            url=endpoint + f&#34;/v2/groups/{self.id}/wall/posts&#34;,
+            sort_order=sort_order,
+            limit=limit,
+            handler=wall_post_handeler,
+            handler_args=self
+        )
+        return wall_req
+
+    async def get_member_by_id(self, roblox_id):
+        # Get list of group user is in.
+        member_req = await self.requests.get(
+            url=endpoint + f&#34;/v2/users/{roblox_id}/groups/roles&#34;
+        )
+        data = member_req.json()
+
+        # Find group in list.
+        group_data = None
+        for group in data[&#39;data&#39;]:
+            if group[&#39;group&#39;][&#39;id&#39;] == self.id:
+                group_data = group
+                break
+
+        # Check if user is in group.
+        if not group_data:
+            raise NotFound(f&#34;The user {roblox_id} was not found in group {self.id}&#34;)
+
+        # Create data to return.
+        role = Role(self.requests, self, group_data[&#39;role&#39;])
+        member = Member(self.requests, roblox_id, &#34;&#34;, self, role)
+        return await member.update()</code></pre>
+</details>
 <h3>Subclasses</h3>
 <ul class="hlist">
 <li><a title="ro_py.groups.PartialGroup" href="#ro_py.groups.PartialGroup">PartialGroup</a></li>
@@ -59,6 +506,33 @@
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_member_by_id(self, roblox_id):
+    # Get list of group user is in.
+    member_req = await self.requests.get(
+        url=endpoint + f&#34;/v2/users/{roblox_id}/groups/roles&#34;
+    )
+    data = member_req.json()
+
+    # Find group in list.
+    group_data = None
+    for group in data[&#39;data&#39;]:
+        if group[&#39;group&#39;][&#39;id&#39;] == self.id:
+            group_data = group
+            break
+
+    # Check if user is in group.
+    if not group_data:
+        raise NotFound(f&#34;The user {roblox_id} was not found in group {self.id}&#34;)
+
+    # Create data to return.
+    role = Role(self.requests, self, group_data[&#39;role&#39;])
+    member = Member(self.requests, roblox_id, &#34;&#34;, self, role)
+    return await member.update()</code></pre>
+</details>
 </dd>
 <dt id="ro_py.groups.Group.get_roles"><code class="name flex">
 <span>async def <span class="ident">get_roles</span></span>(<span>self)</span>
@@ -70,18 +544,74 @@
 <dt><code>list</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_roles(self):
+    &#34;&#34;&#34;
+    Gets all roles of the group.
+
+    Returns
+    -------
+    list
+    &#34;&#34;&#34;
+    role_req = await self.requests.get(
+        url=endpoint + f&#34;/v1/groups/{self.id}/roles&#34;
+    )
+    roles = []
+    for role in role_req.json()[&#39;roles&#39;]:
+        roles.append(Role(self.requests, self, role))
+    return roles</code></pre>
+</details>
 </dd>
 <dt id="ro_py.groups.Group.get_wall_posts"><code class="name flex">
 <span>async def <span class="ident">get_wall_posts</span></span>(<span>self, sort_order=SortOrder.Ascending, limit=100)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit=100):
+    wall_req = Pages(
+        requests=self.requests,
+        url=endpoint + f&#34;/v2/groups/{self.id}/wall/posts&#34;,
+        sort_order=sort_order,
+        limit=limit,
+        handler=wall_post_handeler,
+        handler_args=self
+    )
+    return wall_req</code></pre>
+</details>
 </dd>
 <dt id="ro_py.groups.Group.update"><code class="name flex">
 <span>async def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Updates the group's information.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def update(self):
+    &#34;&#34;&#34;
+    Updates the group&#39;s information.
+    &#34;&#34;&#34;
+    group_info_req = await self.requests.get(endpoint + f&#34;/v1/groups/{self.id}&#34;)
+    group_info = group_info_req.json()
+    self.name = group_info[&#34;name&#34;]
+    self.description = group_info[&#34;description&#34;]
+    self.owner = User(self.requests, group_info[&#34;owner&#34;][&#34;userId&#34;])
+    self.member_count = group_info[&#34;memberCount&#34;]
+    self.is_builders_club_only = group_info[&#34;isBuildersClubOnly&#34;]
+    self.public_entry_allowed = group_info[&#34;publicEntryAllowed&#34;]
+    if &#34;shout&#34; in group_info:
+        self.shout = group_info[&#34;shout&#34;]
+    else:
+        self.shout = None</code></pre>
+</details>
 </dd>
 <dt id="ro_py.groups.Group.update_shout"><code class="name flex">
 <span>async def <span class="ident">update_shout</span></span>(<span>self, message)</span>
@@ -98,6 +628,31 @@
 <dt><code>int</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def update_shout(self, message):
+    &#34;&#34;&#34;
+    Updates the shout of the group.
+
+    Parameters
+    ----------
+    message : str
+        Message that will overwrite the current shout of a group.
+
+    Returns
+    -------
+    int
+    &#34;&#34;&#34;
+    shout_req = await self.requests.patch(
+        url=endpoint + f&#34;/v1/groups/{self.id}/status&#34;,
+        data={
+            &#34;message&#34;: message
+        }
+    )
+    return shout_req.status_code == 200</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -120,6 +675,142 @@
 <dt><strong><code>role</code></strong> :&ensp;<code><a title="ro_py.roles.Role" href="roles.html#ro_py.roles.Role">Role</a></code></dt>
 <dd>The role the user has is the group.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Member(User):
+    &#34;&#34;&#34;
+    Represents a user in a group.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+            Requests object to use for API requests.
+    roblox_id : int
+            The id of a user.
+    name : str
+            The name of the user.
+    group : ro_py.groups.Group
+            The group the user is in.
+    role : ro_py.roles.Role
+            The role the user has is the group.
+    &#34;&#34;&#34;
+    def __init__(self, requests, roblox_id, name, group, role):
+        super().__init__(requests, roblox_id, name)
+        self.role = role
+        self.group = group
+
+    async def update_role(self):
+        &#34;&#34;&#34;
+        Updates the role information of the user.
+
+        Returns
+        -------
+        ro_py.roles.Role
+        &#34;&#34;&#34;
+        member_req = await self.requests.get(
+            url=endpoint + f&#34;/v2/users/{self.id}/groups/roles&#34;
+        )
+        data = member_req.json()
+        for role in data[&#39;data&#39;]:
+            if role[&#39;group&#39;][&#39;id&#39;] == self.group.id:
+                self.role = Role(self.requests, self.group, role[&#39;role&#39;])
+                break
+        return self.role
+
+    async def change_rank(self, num):
+        &#34;&#34;&#34;
+        Changes the users rank specified by a number.
+        If num is 1 the users role will go up by 1.
+        If num is -1 the users role will go down by 1.
+
+        Parameters
+        ----------
+        num : int
+                How much to change the rank by.
+        &#34;&#34;&#34;
+        await self.update_role()
+        roles = await self.group.get_roles()
+        role_counter = -1
+        for group_role in roles:
+            role_counter += 1
+            if group_role.id == self.role.id:
+                break
+        if not roles:
+            raise NotFound(f&#34;User {self.id} is not in group {self.group.id}&#34;)
+        return await self.setrank(roles[role_counter + num].id)
+
+    async def promote(self):
+        &#34;&#34;&#34;
+        Promotes the user.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        return await self.change_rank(1)
+
+    async def demote(self):
+        &#34;&#34;&#34;
+        Demotes the user.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        return await self.change_rank(-1)
+
+    async def setrank(self, rank):
+        &#34;&#34;&#34;
+        Sets the users role to specified role using rank id.
+
+        Parameters
+        ----------
+        rank : int
+                Rank id
+
+        Returns
+        -------
+        bool
+        &#34;&#34;&#34;
+        rank_request = await self.requests.patch(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/users/{self.id}&#34;,
+            data={
+                &#34;roleId&#34;: rank
+            }
+        )
+        return rank_request.status == 200
+
+    async def setrole(self, role_num):
+        &#34;&#34;&#34;
+         Sets the users role to specified role using role number (1-255).
+
+         Parameters
+         ----------
+         role_num : int
+                Role number (1-255)
+
+         Returns
+         -------
+         bool
+         &#34;&#34;&#34;
+        roles = await self.group.get_roles()
+        rank_role = None
+        for role in roles:
+            if role.role == role_num:
+                rank_role = role
+                break
+        if not rank_role:
+            raise NotFound(f&#34;Role {role_num} not found&#34;)
+        return await self.setrank(rank_role.id)
+
+    async def exile(self):
+        exile_req = await self.requests.delete(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/users/{self.id}&#34;
+        )
+        return exile_req.status == 200</code></pre>
+</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="ro_py.users.User" href="users.html#ro_py.users.User">User</a></li>
@@ -138,6 +829,32 @@ If num is -1 the users role will go down by 1.</p>
 <dt><strong><code>num</code></strong> :&ensp;<code>int</code></dt>
 <dd>How much to change the rank by.</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def change_rank(self, num):
+    &#34;&#34;&#34;
+    Changes the users rank specified by a number.
+    If num is 1 the users role will go up by 1.
+    If num is -1 the users role will go down by 1.
+
+    Parameters
+    ----------
+    num : int
+            How much to change the rank by.
+    &#34;&#34;&#34;
+    await self.update_role()
+    roles = await self.group.get_roles()
+    role_counter = -1
+    for group_role in roles:
+        role_counter += 1
+        if group_role.id == self.role.id:
+            break
+    if not roles:
+        raise NotFound(f&#34;User {self.id} is not in group {self.group.id}&#34;)
+    return await self.setrank(roles[role_counter + num].id)</code></pre>
+</details>
 </dd>
 <dt id="ro_py.groups.Member.demote"><code class="name flex">
 <span>async def <span class="ident">demote</span></span>(<span>self)</span>
@@ -149,12 +866,36 @@ If num is -1 the users role will go down by 1.</p>
 <dt><code>int</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def demote(self):
+    &#34;&#34;&#34;
+    Demotes the user.
+
+    Returns
+    -------
+    int
+    &#34;&#34;&#34;
+    return await self.change_rank(-1)</code></pre>
+</details>
 </dd>
 <dt id="ro_py.groups.Member.exile"><code class="name flex">
 <span>async def <span class="ident">exile</span></span>(<span>self)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def exile(self):
+    exile_req = await self.requests.delete(
+        url=endpoint + f&#34;/v1/groups/{self.group.id}/users/{self.id}&#34;
+    )
+    return exile_req.status == 200</code></pre>
+</details>
 </dd>
 <dt id="ro_py.groups.Member.promote"><code class="name flex">
 <span>async def <span class="ident">promote</span></span>(<span>self)</span>
@@ -166,6 +907,20 @@ If num is -1 the users role will go down by 1.</p>
 <dt><code>int</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def promote(self):
+    &#34;&#34;&#34;
+    Promotes the user.
+
+    Returns
+    -------
+    int
+    &#34;&#34;&#34;
+    return await self.change_rank(1)</code></pre>
+</details>
 </dd>
 <dt id="ro_py.groups.Member.setrank"><code class="name flex">
 <span>async def <span class="ident">setrank</span></span>(<span>self, rank)</span>
@@ -182,6 +937,31 @@ If num is -1 the users role will go down by 1.</p>
 <dt><code>bool</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def setrank(self, rank):
+    &#34;&#34;&#34;
+    Sets the users role to specified role using rank id.
+
+    Parameters
+    ----------
+    rank : int
+            Rank id
+
+    Returns
+    -------
+    bool
+    &#34;&#34;&#34;
+    rank_request = await self.requests.patch(
+        url=endpoint + f&#34;/v1/groups/{self.group.id}/users/{self.id}&#34;,
+        data={
+            &#34;roleId&#34;: rank
+        }
+    )
+    return rank_request.status == 200</code></pre>
+</details>
 </dd>
 <dt id="ro_py.groups.Member.setrole"><code class="name flex">
 <span>async def <span class="ident">setrole</span></span>(<span>self, role_num)</span>
@@ -198,6 +978,33 @@ If num is -1 the users role will go down by 1.</p>
 <dt><code>bool</code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def setrole(self, role_num):
+    &#34;&#34;&#34;
+     Sets the users role to specified role using role number (1-255).
+
+     Parameters
+     ----------
+     role_num : int
+            Role number (1-255)
+
+     Returns
+     -------
+     bool
+     &#34;&#34;&#34;
+    roles = await self.group.get_roles()
+    rank_role = None
+    for role in roles:
+        if role.role == role_num:
+            rank_role = role
+            break
+    if not rank_role:
+        raise NotFound(f&#34;Role {role_num} not found&#34;)
+    return await self.setrank(rank_role.id)</code></pre>
+</details>
 </dd>
 <dt id="ro_py.groups.Member.update_role"><code class="name flex">
 <span>async def <span class="ident">update_role</span></span>(<span>self)</span>
@@ -209,6 +1016,28 @@ If num is -1 the users role will go down by 1.</p>
 <dt><code><a title="ro_py.roles.Role" href="roles.html#ro_py.roles.Role">Role</a></code></dt>
 <dd>&nbsp;</dd>
 </dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def update_role(self):
+    &#34;&#34;&#34;
+    Updates the role information of the user.
+
+    Returns
+    -------
+    ro_py.roles.Role
+    &#34;&#34;&#34;
+    member_req = await self.requests.get(
+        url=endpoint + f&#34;/v2/users/{self.id}/groups/roles&#34;
+    )
+    data = member_req.json()
+    for role in data[&#39;data&#39;]:
+        if role[&#39;group&#39;][&#39;id&#39;] == self.group.id:
+            self.role = Role(self.requests, self.group, role[&#39;role&#39;])
+            break
+    return self.role</code></pre>
+</details>
 </dd>
 </dl>
 <h3>Inherited members</h3>
@@ -233,6 +1062,17 @@ If num is -1 the users role will go down by 1.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a group with less information</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PartialGroup(Group):
+    &#34;&#34;&#34;
+    Represents a group with less information
+    &#34;&#34;&#34;
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)</code></pre>
+</details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="ro_py.groups.Group" href="#ro_py.groups.Group">Group</a></li>
@@ -254,6 +1094,18 @@ If num is -1 the users role will go down by 1.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a group shout.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Shout:
+    &#34;&#34;&#34;
+    Represents a group shout.
+    &#34;&#34;&#34;
+    def __init__(self, requests, shout_data):
+        self.body = shout_data[&#34;body&#34;]
+        self.poster = User(requests, shout_data[&#34;poster&#34;][&#34;userId&#34;])</code></pre>
+</details>
 </dd>
 <dt id="ro_py.groups.WallPost"><code class="flex name class">
 <span>class <span class="ident">WallPost</span></span>
@@ -261,6 +1113,29 @@ If num is -1 the users role will go down by 1.</p>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a roblox wall post.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class WallPost:
+    &#34;&#34;&#34;
+    Represents a roblox wall post.
+    &#34;&#34;&#34;
+    def __init__(self, requests, wall_data, group):
+        self.requests = requests
+        self.group = group
+        self.id = wall_data[&#39;id&#39;]
+        self.body = wall_data[&#39;body&#39;]
+        self.created = iso8601.parse(wall_data[&#39;created&#39;])
+        self.updated = iso8601.parse(wall_data[&#39;updated&#39;])
+        self.poster = User(requests, wall_data[&#39;user&#39;][&#39;userId&#39;], wall_data[&#39;user&#39;][&#39;username&#39;])
+
+    async def delete(self):
+        wall_req = await self.requests.delete(
+            url=endpoint + f&#34;/v1/groups/{self.id}/wall/posts/{self.id}&#34;
+        )
+        return wall_req.status == 200</code></pre>
+</details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.groups.WallPost.delete"><code class="name flex">
@@ -268,6 +1143,16 @@ If num is -1 the users role will go down by 1.</p>
 </code></dt>
 <dd>
 <div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def delete(self):
+    wall_req = await self.requests.delete(
+        url=endpoint + f&#34;/v1/groups/{self.id}/wall/posts/{self.id}&#34;
+    )
+    return wall_req.status == 200</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -275,6 +1160,11 @@ If num is -1 the users role will go down by 1.</p>
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>
