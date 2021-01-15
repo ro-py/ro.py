@@ -15,8 +15,8 @@ client = Client()
 
 
 async def main():
-    game = await client.get_game_by_place_id(47324)  # ⚔️ Sword Fights on the Heights IV
     auth_prompt = await authenticate_prompt(client)
+    game = await client.get_game_by_place_id(47324)  # ⚔️ Sword Fights on the Heights IV
     print(f"Authenticated: {auth_prompt}")
     if auth_prompt:
         await game.root_place.join()
