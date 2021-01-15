@@ -15,7 +15,7 @@ from ro_py.utilities.cache import CacheType
 from ro_py.utilities.requests import Requests
 from ro_py.accountsettings import AccountSettings
 from ro_py.accountinformation import AccountInformation
-from ro_py.utilities.errors import UserDoesNotExistError
+from ro_py.utilities.errors import UserDoesNotExistError, InvalidPlaceIDError
 from ro_py.captcha import UnsolvedLoginCaptcha
 
 import logging
@@ -193,21 +193,47 @@ class Client:
             await group.update()
         return group
 
-    async def get_game(self, game_id):
+    async def get_game_by_universe_id(self, universe_id):
         """
         Gets a Roblox game.
 
         Parameters
         ----------
-        game_id
+        universe_id
             ID of the game to generate the object from.
         """
-        game = self.requests.cache.get(CacheType.Games, game_id)
+        game = self.requests.cache.get(CacheType.Games, universe_id)
         if not game:
-            game = Game(self.requests, game_id)
-            self.requests.cache.set(CacheType.Games, game_id, game)
+            game = Game(self.requests, universe_id)
+            self.requests.cache.set(CacheType.Games, universe_id, game)
             await game.update()
         return game
+
+    async def get_game_by_place_id(self, place_id):
+        """
+        Gets a Roblox game by one of it's place's Plaece IDs.
+
+        Parameters
+        ----------
+        place_id
+            ID of the place to generate the object from.
+        """
+        place_req = await self.requests.get(
+            url="https://games.roblox.com/v1/games/multiget-place-details",
+            params={
+                "placeIds": place_id
+            }
+        )
+        place_data = place_req.json()
+
+        try:
+            place_details = place_data[0]
+        except IndexError:
+            raise InvalidPlaceIDError("Invalid place ID.")
+
+        universe_id = place_details["universeId"]
+
+        return await self.get_game_by_universe_id(universe_id)
 
     async def get_asset(self, asset_id):
         """

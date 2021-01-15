@@ -45,3 +45,7 @@ class UserDoesNotExistError(Exception):
 
 class GameJoinError(Exception):
     """Called when an error occurs when joining a game."""
+
+
+class InvalidPlaceIDError(Exception):
+    """Called when place ID is invalid."""
