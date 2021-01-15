@@ -8,6 +8,7 @@ from ro_py.users import User
 from ro_py.groups import Group
 from ro_py.badges import Badge
 from ro_py.utilities.errors import GameJoinError
+from ro_py.utilities.cache import CacheType
 import subprocess
 import json
 import os
@@ -34,6 +35,7 @@ class Game:
         self.requests = requests
         self.name = None
         self.description = None
+        self.root_place = None
         self.creator = None
         self.price = None
         self.allowed_gear_genres = None
@@ -56,10 +58,19 @@ class Game:
         game_info = game_info["data"][0]
         self.name = game_info["name"]
         self.description = game_info["description"]
+        self.root_place = Place(self.requests, game_info["rootPlaceId"])
         if game_info["creator"]["type"] == "User":
-            self.creator = User(self.requests, game_info["creator"]["id"])
+            self.creator = self.requests.cache.get(CacheType.Users, game_info["creator"]["id"])
+            if not self.creator:
+                self.creator = User(self.requests, game_info["creator"]["id"])
+                self.requests.cache.set(CacheType.Users, game_info["creator"]["id"], self.creator)
+                await self.creator.update()
         elif game_info["creator"]["type"] == "Group":
-            self.creator = Group(self.requests, game_info["creator"]["id"])
+            self.creator = self.requests.cache.get(CacheType.Groups, game_info["creator"]["id"])
+            if not self.creator:
+                self.creator = Group(self.requests, game_info["creator"]["id"])
+                self.requests.cache.set(CacheType.Group, game_info["creator"]["id"], self.creator)
+                await self.creator.update()
         self.price = game_info["price"]
         self.allowed_gear_genres = game_info["allowedGearGenres"]
         self.allowed_gear_categories = game_info["allowedGearCategories"]
@@ -69,7 +80,9 @@ class Game:
 
     async def get_votes(self):
         """
-        :return: An instance of Votes
+        Returns
+        -------
+        ro_py.games.Votes
         """
         votes_info_req = await self.requests.get(
             url=endpoint + "v1/games/votes",
@@ -102,7 +115,6 @@ class Game:
 
 
 class Place:
-    """DO NOT USE. NOT READY YET."""
     def __init__(self, requests, id):
         self.requests = requests
         self.id = id
