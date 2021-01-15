@@ -15,7 +15,7 @@
 
 ## Information
 Welcome, and thank you for using ro.py!  
-ro.py is an object oriented, asynchrnous wrapper for the Roblox Web API (and other Roblox-related APIs) with many new and interesting features.  
+ro.py is an object oriented, asynchronous wrapper for the Roblox Web API (and other Roblox-related APIs) with many new and interesting features.  
 ro.py allows you to automate much of what you would do on the Roblox website and on other Roblox-related websites.
 
 ## Requirements
