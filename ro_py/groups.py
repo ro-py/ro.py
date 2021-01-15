@@ -56,7 +56,7 @@ class Group:
     def __init__(self, requests, group_id):
         self.requests = requests
         self.id = group_id
-
+        self.wall = Wall(requests, self)
         self.name = None
         self.description = None
         self.owner = None
@@ -120,17 +120,6 @@ class Group:
             roles.append(Role(self.requests, self, role))
         return roles
 
-    async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit=100):
-        wall_req = Pages(
-            requests=self.requests,
-            url=endpoint + f"/v2/groups/{self.id}/wall/posts",
-            sort_order=sort_order,
-            limit=limit,
-            handler=wall_post_handeler,
-            handler_args=self
-        )
-        return wall_req
-
     async def get_member_by_id(self, roblox_id):
         # Get list of group user is in.
         member_req = await self.requests.get(
@@ -161,6 +150,23 @@ class PartialGroup(Group):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
+class Wall:
+    def __init__(self, requests, group):
+        self.requests = requests
+        self.group = group
+
+    async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit=100):
+        wall_req = Pages(
+            requests=self.requests,
+            url=endpoint + f"/v2/groups/{self.group.id}/wall/posts",
+            sort_order=sort_order,
+            limit=limit,
+            handler=wall_post_handeler,
+            handler_args=self
+        )
+        return wall_req
 
 
 class Member(User):
