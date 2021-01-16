@@ -7,6 +7,7 @@ import iso8601
 from typing import List
 from ro_py.users import User
 from ro_py.roles import Role
+from ro_py.captcha import UnsolvedCaptcha
 from ro_py.utilities.errors import NotFound
 from ro_py.utilities.pages import Pages, SortOrder
 
@@ -157,7 +158,7 @@ class Wall:
         self.requests = requests
         self.group = group
 
-    async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit=100):
+    async def get_posts(self, sort_order=SortOrder.Ascending, limit=100):
         wall_req = Pages(
             requests=self.requests,
             url=endpoint + f"/v2/groups/{self.group.id}/wall/posts",
@@ -167,6 +168,26 @@ class Wall:
             handler_args=self
         )
         return wall_req
+
+    async def post(self, content, captcha_key=None):
+        data = {
+            "body": content
+        }
+
+        if captcha_key:
+            data['captchaProvider'] = "PROVIDER_ARKOSE_LABS"
+            data['captchaToken'] = captcha_key
+
+        post_req = await self.requests.post(
+            url=endpoint + f"/v1/groups/2695946/wall/posts",
+            data=data,
+            quickreturn=True
+        )
+
+        if post_req.status_code == 403:
+            return UnsolvedCaptcha(pkey="63E4117F-E727-42B4-6DAA-C8448E9B137F")
+        else:
+            return post_req.status == 200
 
 
 class Member(User):

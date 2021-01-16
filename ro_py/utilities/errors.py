@@ -49,3 +49,18 @@ class GameJoinError(Exception):
 
 class InvalidPlaceIDError(Exception):
     """Called when place ID is invalid."""
+
+
+class IncorrectKeyError(Exception):
+    """Raised when the api key for 2captcha is incorrect."""
+    pass
+
+
+class InsufficientCreditError(Exception):
+    """Raised when there is insufficient credit in 2captcha."""
+    pass
+
+
+class NoAvailableWorkersError(Exception):
+    """Raised when there are no available workers."""
+    pass
