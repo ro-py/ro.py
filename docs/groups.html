@@ -63,6 +63,7 @@ import iso8601
 from typing import List
 from ro_py.users import User
 from ro_py.roles import Role
+from ro_py.captcha import UnsolvedCaptcha
 from ro_py.utilities.errors import NotFound
 from ro_py.utilities.pages import Pages, SortOrder
 
@@ -112,7 +113,7 @@ class Group:
     def __init__(self, requests, group_id):
         self.requests = requests
         self.id = group_id
-
+        self.wall = Wall(requests, self)
         self.name = None
         self.description = None
         self.owner = None
@@ -176,17 +177,6 @@ class Group:
             roles.append(Role(self.requests, self, role))
         return roles
 
-    async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit=100):
-        wall_req = Pages(
-            requests=self.requests,
-            url=endpoint + f&#34;/v2/groups/{self.id}/wall/posts&#34;,
-            sort_order=sort_order,
-            limit=limit,
-            handler=wall_post_handeler,
-            handler_args=self
-        )
-        return wall_req
-
     async def get_member_by_id(self, roblox_id):
         # Get list of group user is in.
         member_req = await self.requests.get(
@@ -217,6 +207,43 @@ class PartialGroup(Group):
     &#34;&#34;&#34;
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
+class Wall:
+    def __init__(self, requests, group):
+        self.requests = requests
+        self.group = group
+
+    async def get_posts(self, sort_order=SortOrder.Ascending, limit=100):
+        wall_req = Pages(
+            requests=self.requests,
+            url=endpoint + f&#34;/v2/groups/{self.group.id}/wall/posts&#34;,
+            sort_order=sort_order,
+            limit=limit,
+            handler=wall_post_handeler,
+            handler_args=self
+        )
+        return wall_req
+
+    async def post(self, content, captcha_key=None):
+        data = {
+            &#34;body&#34;: content
+        }
+
+        if captcha_key:
+            data[&#39;captchaProvider&#39;] = &#34;PROVIDER_ARKOSE_LABS&#34;
+            data[&#39;captchaToken&#39;] = captcha_key
+
+        post_req = await self.requests.post(
+            url=endpoint + f&#34;/v1/groups/2695946/wall/posts&#34;,
+            data=data,
+            quickreturn=True
+        )
+
+        if post_req.status_code == 403:
+            return UnsolvedCaptcha(pkey=&#34;63E4117F-E727-42B4-6DAA-C8448E9B137F&#34;)
+        else:
+            return post_req.status == 200
 
 
 class Member(User):
@@ -397,7 +424,7 @@ class Member(User):
     def __init__(self, requests, group_id):
         self.requests = requests
         self.id = group_id
-
+        self.wall = Wall(requests, self)
         self.name = None
         self.description = None
         self.owner = None
@@ -460,17 +487,6 @@ class Member(User):
         for role in role_req.json()[&#39;roles&#39;]:
             roles.append(Role(self.requests, self, role))
         return roles
-
-    async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit=100):
-        wall_req = Pages(
-            requests=self.requests,
-            url=endpoint + f&#34;/v2/groups/{self.id}/wall/posts&#34;,
-            sort_order=sort_order,
-            limit=limit,
-            handler=wall_post_handeler,
-            handler_args=self
-        )
-        return wall_req
 
     async def get_member_by_id(self, roblox_id):
         # Get list of group user is in.
@@ -563,27 +579,6 @@ class Member(User):
     for role in role_req.json()[&#39;roles&#39;]:
         roles.append(Role(self.requests, self, role))
     return roles</code></pre>
-</details>
-</dd>
-<dt id="ro_py.groups.Group.get_wall_posts"><code class="name flex">
-<span>async def <span class="ident">get_wall_posts</span></span>(<span>self, sort_order=SortOrder.Ascending, limit=100)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit=100):
-    wall_req = Pages(
-        requests=self.requests,
-        url=endpoint + f&#34;/v2/groups/{self.id}/wall/posts&#34;,
-        sort_order=sort_order,
-        limit=limit,
-        handler=wall_post_handeler,
-        handler_args=self
-    )
-    return wall_req</code></pre>
 </details>
 </dd>
 <dt id="ro_py.groups.Group.update"><code class="name flex">
@@ -1107,6 +1102,107 @@ If num is -1 the users role will go down by 1.</p>
         self.poster = User(requests, shout_data[&#34;poster&#34;][&#34;userId&#34;])</code></pre>
 </details>
 </dd>
+<dt id="ro_py.groups.Wall"><code class="flex name class">
+<span>class <span class="ident">Wall</span></span>
+<span>(</span><span>requests, group)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Wall:
+    def __init__(self, requests, group):
+        self.requests = requests
+        self.group = group
+
+    async def get_posts(self, sort_order=SortOrder.Ascending, limit=100):
+        wall_req = Pages(
+            requests=self.requests,
+            url=endpoint + f&#34;/v2/groups/{self.group.id}/wall/posts&#34;,
+            sort_order=sort_order,
+            limit=limit,
+            handler=wall_post_handeler,
+            handler_args=self
+        )
+        return wall_req
+
+    async def post(self, content, captcha_key=None):
+        data = {
+            &#34;body&#34;: content
+        }
+
+        if captcha_key:
+            data[&#39;captchaProvider&#39;] = &#34;PROVIDER_ARKOSE_LABS&#34;
+            data[&#39;captchaToken&#39;] = captcha_key
+
+        post_req = await self.requests.post(
+            url=endpoint + f&#34;/v1/groups/2695946/wall/posts&#34;,
+            data=data,
+            quickreturn=True
+        )
+
+        if post_req.status_code == 403:
+            return UnsolvedCaptcha(pkey=&#34;63E4117F-E727-42B4-6DAA-C8448E9B137F&#34;)
+        else:
+            return post_req.status == 200</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.groups.Wall.get_posts"><code class="name flex">
+<span>async def <span class="ident">get_posts</span></span>(<span>self, sort_order=SortOrder.Ascending, limit=100)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_posts(self, sort_order=SortOrder.Ascending, limit=100):
+    wall_req = Pages(
+        requests=self.requests,
+        url=endpoint + f&#34;/v2/groups/{self.group.id}/wall/posts&#34;,
+        sort_order=sort_order,
+        limit=limit,
+        handler=wall_post_handeler,
+        handler_args=self
+    )
+    return wall_req</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Wall.post"><code class="name flex">
+<span>async def <span class="ident">post</span></span>(<span>self, content, captcha_key=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def post(self, content, captcha_key=None):
+    data = {
+        &#34;body&#34;: content
+    }
+
+    if captcha_key:
+        data[&#39;captchaProvider&#39;] = &#34;PROVIDER_ARKOSE_LABS&#34;
+        data[&#39;captchaToken&#39;] = captcha_key
+
+    post_req = await self.requests.post(
+        url=endpoint + f&#34;/v1/groups/2695946/wall/posts&#34;,
+        data=data,
+        quickreturn=True
+    )
+
+    if post_req.status_code == 403:
+        return UnsolvedCaptcha(pkey=&#34;63E4117F-E727-42B4-6DAA-C8448E9B137F&#34;)
+    else:
+        return post_req.status == 200</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
 <dt id="ro_py.groups.WallPost"><code class="flex name class">
 <span>class <span class="ident">WallPost</span></span>
 <span>(</span><span>requests, wall_data, group)</span>
@@ -1187,7 +1283,6 @@ If num is -1 the users role will go down by 1.</p>
 <ul class="">
 <li><code><a title="ro_py.groups.Group.get_member_by_id" href="#ro_py.groups.Group.get_member_by_id">get_member_by_id</a></code></li>
 <li><code><a title="ro_py.groups.Group.get_roles" href="#ro_py.groups.Group.get_roles">get_roles</a></code></li>
-<li><code><a title="ro_py.groups.Group.get_wall_posts" href="#ro_py.groups.Group.get_wall_posts">get_wall_posts</a></code></li>
 <li><code><a title="ro_py.groups.Group.update" href="#ro_py.groups.Group.update">update</a></code></li>
 <li><code><a title="ro_py.groups.Group.update_shout" href="#ro_py.groups.Group.update_shout">update_shout</a></code></li>
 </ul>
@@ -1209,6 +1304,13 @@ If num is -1 the users role will go down by 1.</p>
 </li>
 <li>
 <h4><code><a title="ro_py.groups.Shout" href="#ro_py.groups.Shout">Shout</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.groups.Wall" href="#ro_py.groups.Wall">Wall</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.groups.Wall.get_posts" href="#ro_py.groups.Wall.get_posts">get_posts</a></code></li>
+<li><code><a title="ro_py.groups.Wall.post" href="#ro_py.groups.Wall.post">post</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="ro_py.groups.WallPost" href="#ro_py.groups.WallPost">WallPost</a></code></h4>

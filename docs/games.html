@@ -64,6 +64,7 @@ from ro_py.users import User
 from ro_py.groups import Group
 from ro_py.badges import Badge
 from ro_py.utilities.errors import GameJoinError
+from ro_py.utilities.cache import CacheType
 import subprocess
 import json
 import os
@@ -90,6 +91,7 @@ class Game:
         self.requests = requests
         self.name = None
         self.description = None
+        self.root_place = None
         self.creator = None
         self.price = None
         self.allowed_gear_genres = None
@@ -112,10 +114,19 @@ class Game:
         game_info = game_info[&#34;data&#34;][0]
         self.name = game_info[&#34;name&#34;]
         self.description = game_info[&#34;description&#34;]
+        self.root_place = Place(self.requests, game_info[&#34;rootPlaceId&#34;])
         if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
-            self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.creator = self.requests.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
+            if not self.creator:
+                self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+                self.requests.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+                await self.creator.update()
         elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
-            self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.creator = self.requests.cache.get(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;])
+            if not self.creator:
+                self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+                self.requests.cache.set(CacheType.Group, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+                await self.creator.update()
         self.price = game_info[&#34;price&#34;]
         self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
         self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
@@ -125,7 +136,9 @@ class Game:
 
     async def get_votes(self):
         &#34;&#34;&#34;
-        :return: An instance of Votes
+        Returns
+        -------
+        ro_py.games.Votes
         &#34;&#34;&#34;
         votes_info_req = await self.requests.get(
             url=endpoint + &#34;v1/games/votes&#34;,
@@ -158,7 +171,6 @@ class Game:
 
 
 class Place:
-    &#34;&#34;&#34;DO NOT USE. NOT READY YET.&#34;&#34;&#34;
     def __init__(self, requests, id):
         self.requests = requests
         self.id = id
@@ -260,6 +272,7 @@ This class represents multiple game-related endpoints.</p></div>
         self.requests = requests
         self.name = None
         self.description = None
+        self.root_place = None
         self.creator = None
         self.price = None
         self.allowed_gear_genres = None
@@ -282,10 +295,19 @@ This class represents multiple game-related endpoints.</p></div>
         game_info = game_info[&#34;data&#34;][0]
         self.name = game_info[&#34;name&#34;]
         self.description = game_info[&#34;description&#34;]
+        self.root_place = Place(self.requests, game_info[&#34;rootPlaceId&#34;])
         if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
-            self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.creator = self.requests.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
+            if not self.creator:
+                self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+                self.requests.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+                await self.creator.update()
         elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
-            self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.creator = self.requests.cache.get(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;])
+            if not self.creator:
+                self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+                self.requests.cache.set(CacheType.Group, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+                await self.creator.update()
         self.price = game_info[&#34;price&#34;]
         self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
         self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
@@ -295,7 +317,9 @@ This class represents multiple game-related endpoints.</p></div>
 
     async def get_votes(self):
         &#34;&#34;&#34;
-        :return: An instance of Votes
+        Returns
+        -------
+        ro_py.games.Votes
         &#34;&#34;&#34;
         votes_info_req = await self.requests.get(
             url=endpoint + &#34;v1/games/votes&#34;,
@@ -361,14 +385,20 @@ This will be updated soon to use the new Page object.</p></div>
 <span>async def <span class="ident">get_votes</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>:return: An instance of Votes</p></div>
+<div class="desc"><h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="ro_py.games.Votes" href="#ro_py.games.Votes">Votes</a></code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def get_votes(self):
     &#34;&#34;&#34;
-    :return: An instance of Votes
+    Returns
+    -------
+    ro_py.games.Votes
     &#34;&#34;&#34;
     votes_info_req = await self.requests.get(
         url=endpoint + &#34;v1/games/votes&#34;,
@@ -405,10 +435,19 @@ This will be updated soon to use the new Page object.</p></div>
     game_info = game_info[&#34;data&#34;][0]
     self.name = game_info[&#34;name&#34;]
     self.description = game_info[&#34;description&#34;]
+    self.root_place = Place(self.requests, game_info[&#34;rootPlaceId&#34;])
     if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
-        self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+        self.creator = self.requests.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
+        if not self.creator:
+            self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.requests.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+            await self.creator.update()
     elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
-        self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+        self.creator = self.requests.cache.get(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;])
+        if not self.creator:
+            self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.requests.cache.set(CacheType.Group, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+            await self.creator.update()
     self.price = game_info[&#34;price&#34;]
     self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
     self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
@@ -424,13 +463,12 @@ This will be updated soon to use the new Page object.</p></div>
 <span>(</span><span>requests, id)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>DO NOT USE. NOT READY YET.</p></div>
+<div class="desc"></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Place:
-    &#34;&#34;&#34;DO NOT USE. NOT READY YET.&#34;&#34;&#34;
     def __init__(self, requests, id):
         self.requests = requests
         self.id = id

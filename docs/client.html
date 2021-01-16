@@ -71,7 +71,7 @@ from ro_py.utilities.cache import CacheType
 from ro_py.utilities.requests import Requests
 from ro_py.accountsettings import AccountSettings
 from ro_py.accountinformation import AccountInformation
-from ro_py.utilities.errors import UserDoesNotExistError
+from ro_py.utilities.errors import UserDoesNotExistError, InvalidPlaceIDError
 from ro_py.captcha import UnsolvedLoginCaptcha
 
 import logging
@@ -249,21 +249,47 @@ class Client:
             await group.update()
         return group
 
-    async def get_game(self, game_id):
+    async def get_game_by_universe_id(self, universe_id):
         &#34;&#34;&#34;
         Gets a Roblox game.
 
         Parameters
         ----------
-        game_id
+        universe_id
             ID of the game to generate the object from.
         &#34;&#34;&#34;
-        game = self.requests.cache.get(CacheType.Games, game_id)
+        game = self.requests.cache.get(CacheType.Games, universe_id)
         if not game:
-            game = Game(self.requests, game_id)
-            self.requests.cache.set(CacheType.Games, game_id, game)
+            game = Game(self.requests, universe_id)
+            self.requests.cache.set(CacheType.Games, universe_id, game)
             await game.update()
         return game
+
+    async def get_game_by_place_id(self, place_id):
+        &#34;&#34;&#34;
+        Gets a Roblox game by one of it&#39;s place&#39;s Plaece IDs.
+
+        Parameters
+        ----------
+        place_id
+            ID of the place to generate the object from.
+        &#34;&#34;&#34;
+        place_req = await self.requests.get(
+            url=&#34;https://games.roblox.com/v1/games/multiget-place-details&#34;,
+            params={
+                &#34;placeIds&#34;: place_id
+            }
+        )
+        place_data = place_req.json()
+
+        try:
+            place_details = place_data[0]
+        except IndexError:
+            raise InvalidPlaceIDError(&#34;Invalid place ID.&#34;)
+
+        universe_id = place_details[&#34;universeId&#34;]
+
+        return await self.get_game_by_universe_id(universe_id)
 
     async def get_asset(self, asset_id):
         &#34;&#34;&#34;
@@ -494,21 +520,47 @@ class Client:
             await group.update()
         return group
 
-    async def get_game(self, game_id):
+    async def get_game_by_universe_id(self, universe_id):
         &#34;&#34;&#34;
         Gets a Roblox game.
 
         Parameters
         ----------
-        game_id
+        universe_id
             ID of the game to generate the object from.
         &#34;&#34;&#34;
-        game = self.requests.cache.get(CacheType.Games, game_id)
+        game = self.requests.cache.get(CacheType.Games, universe_id)
         if not game:
-            game = Game(self.requests, game_id)
-            self.requests.cache.set(CacheType.Games, game_id, game)
+            game = Game(self.requests, universe_id)
+            self.requests.cache.set(CacheType.Games, universe_id, game)
             await game.update()
         return game
+
+    async def get_game_by_place_id(self, place_id):
+        &#34;&#34;&#34;
+        Gets a Roblox game by one of it&#39;s place&#39;s Plaece IDs.
+
+        Parameters
+        ----------
+        place_id
+            ID of the place to generate the object from.
+        &#34;&#34;&#34;
+        place_req = await self.requests.get(
+            url=&#34;https://games.roblox.com/v1/games/multiget-place-details&#34;,
+            params={
+                &#34;placeIds&#34;: place_id
+            }
+        )
+        place_data = place_req.json()
+
+        try:
+            place_details = place_data[0]
+        except IndexError:
+            raise InvalidPlaceIDError(&#34;Invalid place ID.&#34;)
+
+        universe_id = place_details[&#34;universeId&#34;]
+
+        return await self.get_game_by_universe_id(universe_id)
 
     async def get_asset(self, asset_id):
         &#34;&#34;&#34;
@@ -629,33 +681,74 @@ class Client:
     return badge</code></pre>
 </details>
 </dd>
-<dt id="ro_py.client.Client.get_game"><code class="name flex">
-<span>async def <span class="ident">get_game</span></span>(<span>self, game_id)</span>
+<dt id="ro_py.client.Client.get_game_by_place_id"><code class="name flex">
+<span>async def <span class="ident">get_game_by_place_id</span></span>(<span>self, place_id)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets a Roblox game by one of it's place's Plaece IDs.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>place_id</code></strong></dt>
+<dd>ID of the place to generate the object from.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_game_by_place_id(self, place_id):
+    &#34;&#34;&#34;
+    Gets a Roblox game by one of it&#39;s place&#39;s Plaece IDs.
+
+    Parameters
+    ----------
+    place_id
+        ID of the place to generate the object from.
+    &#34;&#34;&#34;
+    place_req = await self.requests.get(
+        url=&#34;https://games.roblox.com/v1/games/multiget-place-details&#34;,
+        params={
+            &#34;placeIds&#34;: place_id
+        }
+    )
+    place_data = place_req.json()
+
+    try:
+        place_details = place_data[0]
+    except IndexError:
+        raise InvalidPlaceIDError(&#34;Invalid place ID.&#34;)
+
+    universe_id = place_details[&#34;universeId&#34;]
+
+    return await self.get_game_by_universe_id(universe_id)</code></pre>
+</details>
+</dd>
+<dt id="ro_py.client.Client.get_game_by_universe_id"><code class="name flex">
+<span>async def <span class="ident">get_game_by_universe_id</span></span>(<span>self, universe_id)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets a Roblox game.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>game_id</code></strong></dt>
+<dt><strong><code>universe_id</code></strong></dt>
 <dd>ID of the game to generate the object from.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def get_game(self, game_id):
+<pre><code class="python">async def get_game_by_universe_id(self, universe_id):
     &#34;&#34;&#34;
     Gets a Roblox game.
 
     Parameters
     ----------
-    game_id
+    universe_id
         ID of the game to generate the object from.
     &#34;&#34;&#34;
-    game = self.requests.cache.get(CacheType.Games, game_id)
+    game = self.requests.cache.get(CacheType.Games, universe_id)
     if not game:
-        game = Game(self.requests, game_id)
-        self.requests.cache.set(CacheType.Games, game_id, game)
+        game = Game(self.requests, universe_id)
+        self.requests.cache.set(CacheType.Games, universe_id, game)
         await game.update()
     return game</code></pre>
 </details>
@@ -924,7 +1017,8 @@ class Client:
 <li><code><a title="ro_py.client.Client.chat" href="#ro_py.client.Client.chat">chat</a></code></li>
 <li><code><a title="ro_py.client.Client.get_asset" href="#ro_py.client.Client.get_asset">get_asset</a></code></li>
 <li><code><a title="ro_py.client.Client.get_badge" href="#ro_py.client.Client.get_badge">get_badge</a></code></li>
-<li><code><a title="ro_py.client.Client.get_game" href="#ro_py.client.Client.get_game">get_game</a></code></li>
+<li><code><a title="ro_py.client.Client.get_game_by_place_id" href="#ro_py.client.Client.get_game_by_place_id">get_game_by_place_id</a></code></li>
+<li><code><a title="ro_py.client.Client.get_game_by_universe_id" href="#ro_py.client.Client.get_game_by_universe_id">get_game_by_universe_id</a></code></li>
 <li><code><a title="ro_py.client.Client.get_group" href="#ro_py.client.Client.get_group">get_group</a></code></li>
 <li><code><a title="ro_py.client.Client.get_self" href="#ro_py.client.Client.get_self">get_self</a></code></li>
 <li><code><a title="ro_py.client.Client.get_user" href="#ro_py.client.Client.get_user">get_user</a></code></li>

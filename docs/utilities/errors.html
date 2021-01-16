@@ -101,7 +101,26 @@ class UserDoesNotExistError(Exception):
 
 
 class GameJoinError(Exception):
-    &#34;&#34;&#34;Called when an error occurs when joining a game.&#34;&#34;&#34;</code></pre>
+    &#34;&#34;&#34;Called when an error occurs when joining a game.&#34;&#34;&#34;
+
+
+class InvalidPlaceIDError(Exception):
+    &#34;&#34;&#34;Called when place ID is invalid.&#34;&#34;&#34;
+
+
+class IncorrectKeyError(Exception):
+    &#34;&#34;&#34;Raised when the api key for 2captcha is incorrect.&#34;&#34;&#34;
+    pass
+
+
+class InsufficientCreditError(Exception):
+    &#34;&#34;&#34;Raised when there is insufficient credit in 2captcha.&#34;&#34;&#34;
+    pass
+
+
+class NoAvailableWorkersError(Exception):
+    &#34;&#34;&#34;Raised when there are no available workers.&#34;&#34;&#34;
+    pass</code></pre>
 </details>
 </section>
 <section>
@@ -171,6 +190,46 @@ class GameJoinError(Exception):
 <li>builtins.BaseException</li>
 </ul>
 </dd>
+<dt id="ro_py.utilities.errors.IncorrectKeyError"><code class="flex name class">
+<span>class <span class="ident">IncorrectKeyError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Raised when the api key for 2captcha is incorrect.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IncorrectKeyError(Exception):
+    &#34;&#34;&#34;Raised when the api key for 2captcha is incorrect.&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.InsufficientCreditError"><code class="flex name class">
+<span>class <span class="ident">InsufficientCreditError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Raised when there is insufficient credit in 2captcha.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class InsufficientCreditError(Exception):
+    &#34;&#34;&#34;Raised when there is insufficient credit in 2captcha.&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
 <dt id="ro_py.utilities.errors.InvalidIconSizeError"><code class="flex name class">
 <span>class <span class="ident">InvalidIconSizeError</span></span>
 <span>(</span><span>*args, **kwargs)</span>
@@ -210,6 +269,25 @@ class GameJoinError(Exception):
 <li>builtins.BaseException</li>
 </ul>
 </dd>
+<dt id="ro_py.utilities.errors.InvalidPlaceIDError"><code class="flex name class">
+<span>class <span class="ident">InvalidPlaceIDError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called when place ID is invalid.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class InvalidPlaceIDError(Exception):
+    &#34;&#34;&#34;Called when place ID is invalid.&#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
 <dt id="ro_py.utilities.errors.InvalidShotTypeError"><code class="flex name class">
 <span>class <span class="ident">InvalidShotTypeError</span></span>
 <span>(</span><span>*args, **kwargs)</span>
@@ -222,6 +300,26 @@ class GameJoinError(Exception):
 </summary>
 <pre><code class="python">class InvalidShotTypeError(Exception):
     &#34;&#34;&#34;Called when code attempts to pass in an improper avatar image type to a thumbnail function.&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.NoAvailableWorkersError"><code class="flex name class">
+<span>class <span class="ident">NoAvailableWorkersError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Raised when there are no available workers.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NoAvailableWorkersError(Exception):
+    &#34;&#34;&#34;Raised when there are no available workers.&#34;&#34;&#34;
     pass</code></pre>
 </details>
 <h3>Ancestors</h3>
@@ -319,13 +417,25 @@ class GameJoinError(Exception):
 <h4><code><a title="ro_py.utilities.errors.GameJoinError" href="#ro_py.utilities.errors.GameJoinError">GameJoinError</a></code></h4>
 </li>
 <li>
+<h4><code><a title="ro_py.utilities.errors.IncorrectKeyError" href="#ro_py.utilities.errors.IncorrectKeyError">IncorrectKeyError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.utilities.errors.InsufficientCreditError" href="#ro_py.utilities.errors.InsufficientCreditError">InsufficientCreditError</a></code></h4>
+</li>
+<li>
 <h4><code><a title="ro_py.utilities.errors.InvalidIconSizeError" href="#ro_py.utilities.errors.InvalidIconSizeError">InvalidIconSizeError</a></code></h4>
 </li>
 <li>
 <h4><code><a title="ro_py.utilities.errors.InvalidPageError" href="#ro_py.utilities.errors.InvalidPageError">InvalidPageError</a></code></h4>
 </li>
 <li>
+<h4><code><a title="ro_py.utilities.errors.InvalidPlaceIDError" href="#ro_py.utilities.errors.InvalidPlaceIDError">InvalidPlaceIDError</a></code></h4>
+</li>
+<li>
 <h4><code><a title="ro_py.utilities.errors.InvalidShotTypeError" href="#ro_py.utilities.errors.InvalidShotTypeError">InvalidShotTypeError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.utilities.errors.NoAvailableWorkersError" href="#ro_py.utilities.errors.NoAvailableWorkersError">NoAvailableWorkersError</a></code></h4>
 </li>
 <li>
 <h4><code><a title="ro_py.utilities.errors.NotFound" href="#ro_py.utilities.errors.NotFound">NotFound</a></code></h4>
