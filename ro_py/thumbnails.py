@@ -60,7 +60,8 @@ class GameThumbnailGenerator:
         self.requests = requests
         self.id = id
 
-    async def get_game_icon(self, size, file_format, is_circular):
+    async def get_game_icon(self, size=ThumbnailSize.size_50x50, file_format=ThumbnailFormat.format_png,
+                            is_circular=False):
         """
         Gets a game's icon.
 
@@ -81,13 +82,13 @@ class GameThumbnailGenerator:
         file_format = file_format.value
         size = size.value
 
-        game_icon_req = self.requests.get(
+        game_icon_req = await self.requests.get(
             url=endpoint + "v1/games/icons",
             params={
                 "universeIds": str(self.id),
                 "returnPolicy": ReturnPolicy.place_holder.value,
                 "size": size,
-                "file_format": file_format,
+                "format": file_format,
                 "isCircular": is_circular
             }
         )
