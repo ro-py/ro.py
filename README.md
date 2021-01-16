@@ -22,7 +22,8 @@ ro.py allows you to automate much of what you would do on the Roblox website and
 - iso8601 (for parsing dates)
 - signalrcore (for recieving notifications)
 - ~~cachecontrol (for caching requests)~~
-- requests-async (for sending requests)
+- requests-async (for sending requests, might be updated to a new lib soon)
+- pytweening (for UI animations for the "prompts" extension, optional)
 - wxPython (for the "prompts" extension, optional)
 - wxasync (see above)
 
@@ -42,6 +43,7 @@ If you want the latest bleeding-edge version, clone from git:
 ```
 pip install git+git://github.com/rbx-libdev/ro.py.git
 ```
+Known issue: wxPython sometimes has trouble building on certain devices. I put wxPython last on the requirements so Python attempts to install it last, so you can safely ignore this error as everything else should be installed.
 
 ## Credits
 [@iranathan](https://github.com/iranathan) - maintainer  
