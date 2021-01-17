@@ -8,7 +8,6 @@ This extension houses functions that allow human verification prompts for intera
 import wx
 import wxasync
 from wx import html2
-import os
 import pytweening
 from wx.lib.embeddedimage import PyEmbeddedImage
 
@@ -54,7 +53,8 @@ icon_image = PyEmbeddedImage(
     b'NxNyNQSete0cGBQCYUBoNBbrEUo6IZzqefGR4qG4iISgmc/v6VoOgSYI6NBtIQpTmQH0kCxz'
     b'hBKFihDIxgUP/Sa7fm8fg8HTuFRCM7B+HAOYPZbLcCo7QtFLuxES70LifL77OGUCBPL+cFVx'
     b'AmEQHXQVjGX8TOdSM5zWY+M1+8eTiU7dsNdvuHJugnR6Hsa/pf+TD0NOIAwIIZngJG0yu80h'
-    b'AbxAFN5wdwtB5F91LAlTEJXvrgAAAABJRU5ErkJggg==')
+    b'AbxAFN5wdwtB5F91LAlTEJXvrgAAAABJRU5ErkJggg=='
+)
 
 
 async def user_login(client, username, password, key=None):
