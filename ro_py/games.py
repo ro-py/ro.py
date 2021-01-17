@@ -71,7 +71,7 @@ class Game:
             self.creator = self.requests.cache.get(CacheType.Groups, game_info["creator"]["id"])
             if not self.creator:
                 self.creator = Group(self.requests, game_info["creator"]["id"])
-                self.requests.cache.set(CacheType.Group, game_info["creator"]["id"], self.creator)
+                self.requests.cache.set(CacheType.Groups, game_info["creator"]["id"], self.creator)
                 await self.creator.update()
         self.price = game_info["price"]
         self.allowed_gear_genres = game_info["allowedGearGenres"]
