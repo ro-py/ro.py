@@ -33,6 +33,10 @@ class Requests:
 
         get_request = await self.session.get(*args, **kwargs)
 
+        if kwargs.pop("stream", False):
+            # Skip request checking and just get on with it.
+            return get_request
+
         try:
             get_request_json = get_request.json()
         except JSONDecodeError:
