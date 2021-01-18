@@ -46,7 +46,6 @@ class AntiCaptcha:
         if create_res['errorId'] == 10:
             raise InsufficientCreditError("Insufficient credit in the 2captcha account.")
 
-        print(create_res)
         solution = None
         while True:
             await asyncio.sleep(5)
@@ -56,7 +55,6 @@ class AntiCaptcha:
             }
             check_req = await requests_async.get("https://api.anti-captcha.com/getTaskResult", json=check_data)
             check_res = check_req.json()
-            print(check_res, "@")
             if check_res['status'] == "ready":
                 solution = check_res['solution']['token']
                 break
