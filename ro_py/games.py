@@ -7,6 +7,7 @@ This file houses functions and classes that pertain to Roblox universes and plac
 from ro_py.users import User
 from ro_py.groups import Group
 from ro_py.badges import Badge
+from ro_py.thumbnails import GameThumbnailGenerator
 from ro_py.utilities.errors import GameJoinError
 from ro_py.utilities.cache import CacheType
 import subprocess
@@ -43,6 +44,7 @@ class Game:
         self.max_players = None
         self.studio_access_to_apis_allowed = None
         self.create_vip_servers_allowed = None
+        self.thumbnails = GameThumbnailGenerator(self.requests, self.id)
 
     async def update(self):
         """
@@ -69,7 +71,7 @@ class Game:
             self.creator = self.requests.cache.get(CacheType.Groups, game_info["creator"]["id"])
             if not self.creator:
                 self.creator = Group(self.requests, game_info["creator"]["id"])
-                self.requests.cache.set(CacheType.Group, game_info["creator"]["id"], self.creator)
+                self.requests.cache.set(CacheType.Groups, game_info["creator"]["id"], self.creator)
                 await self.creator.update()
         self.price = game_info["price"]
         self.allowed_gear_genres = game_info["allowedGearGenres"]

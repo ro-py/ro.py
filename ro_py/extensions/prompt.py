@@ -8,8 +8,53 @@ This extension houses functions that allow human verification prompts for intera
 import wx
 import wxasync
 from wx import html2
-import os
 import pytweening
+from wx.lib.embeddedimage import PyEmbeddedImage
+
+icon_image = PyEmbeddedImage(
+    b'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1B'
+    b'AACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAhaSURBVGhDxZl5bFRVFMbPfTNtQRTF'
+    b'uOAWVKKIylqptCBiNBQ1MURjQv8Qt8RoxCWKawTFGLdo4oIaY2LUGCUmBo3BAKJgtRTFQi3u'
+    b'KBA1LhEXqMK0nb7n79w7M05f36zt1C+9c++7b/re+c757rnLGCkBQbvMkyq5XHxZw+UGyldm'
+    b'guyzN/8nFEWgftGqC/Z1j1q55YrTa7jcKCNlgnRKkv/+juuPKOtob6T+FkJJ6iFDQQIYP5xq'
+    b'K+WG1kfmriQKZ0tcVhOFmHj0xikBpVsSPO1rWi3U66k3SbXsNONoVRDFEJhovNingd+7mcsZ'
+    b'kEhA4hUZJk2Y/B/0SUomRvEpPbKHvs9pfZgitJno/EI9qFAfFkK9icXFi9dMpX2l65IleHy3'
+    b'NTYNjUIPRUl1UwxCi0u91MgtvGUlpLYGHbKWsiTYKrMpB/OtAaOYCLyK8fMDPylB4P/MRy1R'
+    b'+Jko3C3D5Z6ih7CSTRcl6MtPvL2N1nrqD6m/IEJ/U5eEvAQwfj+qDuPFxyoBr2qY+D2JZRC4'
+    b'DgIHcm8TWekE6/lSoG9Njx9tdxE/IztofUxRQprhvoFQF3VeFCIwRYzZRDOG5/m24c9LMB5m'
+    b'QqINEvMZqK9ajw4EaoVGRgkpuniikW9ptVKvo/6Ieoc5VXrt/SwUInCtV1WzzO/5zxHISfxk'
+    b'15ogMOe2Lmg0+G4VOj+nsK9KQDYhl+H20vclrXRCaCM6P1AXHMRn2gdkAePFxKrmGBNcZCZZ'
+    b'j9xJ5u8qKh0UC32nziaaENQxRvaDUC3RvoF6BeOngyTQjALuyhkBvD+C6jNS6LFIxnWmoFkp'
+    b'6E1qzq9DSnt40NMM6GuGbE5WZ+no/Fva8vltPII/JvA1qfcFxuuA1inqetcj9+GtX23YhwJq'
+    b'kvPp6nwEZnjxakwKaSiFIMnINd5NROp4M5mUGMj9ZKShg8t8zfkIoP9o4xXMCQzoqlE0l7oe'
+    b'eY4obEGnlYdGOil/8NkeSQCvHkB1Wlj7YfhEgTEyn+/PJgo6Au4kvH7+3DYIcFLtIOq/5orA'
+    b'yeT7o6L03wdECAKa7B6Yvmh1NSRW4ZkVpNXKwhFoNlNyp9GZJl7NvdwSSkOjwFiZzoRwaapr'
+    b'MXm7c1DTahhO/x/oR67XzBI0XixcpMxipHQoUfgSET1ZsSg4/e/is10v+xHACF3j1BbSfzbc'
+    b'OqnmGJq3ux55lAG9k7mh8FRZKpx82nGUkoh8/Cno/8iC+g9B0yr/dzUOmMTD/0B9N5KrN1Pv'
+    b'tdEYRkkv3gYCR8DKRxFFQPXPawrrPxuaVk28SufHJXU3rRFIvCnfSx1vmEzIL2FcPI+0dD2T'
+    b'vQ0qDUreLRyb7SeIIkD+L837GTjOQVVqVWnmSi+Lrm2Ul81ENkNGyBvyYNnjQ63tZcbXFJpC'
+    b'HwKE/yCqKaXovw+cPNa2PDzHNsKw6/tAxpYtI+cY1b9OYhbhCEwwnje6VP1bsFcgpeoastV1'
+    b'9AeLPh3WDXalWQ6ctRn5KMIEzjCx0vWvMIbRFQQ7aX7jeiIxDu+P6b8tKQJO/2pYZgArwgRK'
+    b'yv/ZYEbWagPL63yL6gb0z1o8dVUK1NJee6qhRzwZZAigfz0lKF//apUx2xtufUcTZj8EW2x1'
+    b'TlnGK5z+t6D/v2wrhcxwgsBZePG98gkAY3T/tIOds57SreN6Y3fnru2fPNOUDDRv+PI688GF'
+    b'ZSVSHT375DYIPOw6HLIlhP4HvKCvYSycxHMuY9f2InNDe82Bh3+Mc+aRRhVL7f42LNxCUDdr'
+    b'/tI9cQj2URdf/JpWZes/A1anuqzQfbMu8sBwBge53zymEsV7HUThmZLnAbVSz5HEnvT1gSXw'
+    b'45iRh1JN0pcPKiDk9yR0nTSGq0WuUx5CQj+kNF0c3HfbcMBu28pCOpiT0P8hZeX/IpBaJy0k'
+    b'CuMx4jfEcG9qTVMcnJXv288Q0gRmDYL+c8Kuk2JVusu7Txbs0a6X0HRrUdtPp3/1bIu9DsGb'
+    b'fvNqrc+QCnk/Dbf9jM+rP2zDuURBB4huP/U3hvzQSPnyI59f2OsQPGOCw6knDrr++4HtJzqi'
+    b'cT9SGg6J9eyslhcc0E5qqv9O2wpBHzgZzxysYa40/N4ePZqcTPMq22HkbmLxZ97x4CIUqX+F'
+    b'EkD/paSEgcFG2pg7iMKReHU78ng051hQ47vtyilS/wol0KjrGBfdykNneqKgsl3seuQJZtiv'
+    b'Iw/FnP71EFc3QpFQq1eQq5uZgv70yETkbM0YsK8cIXtA7MUuJwrTUtq+y90JwQljE9/5x7Yi'
+    b'kMkBLMKOJt/V0pzNnD0TX42H0AhCY71m10h5TupKhRev1sz0bhCYxtYFjfhP3mZAN9rT6DR0'
+    b'WZiQhRB4ynX0R2QSa7h1Le4PjsfgOi7P4un11Cd4sWqrVtWxm/QGRkgjzsBuYgm+nM3OVCTT'
+    b'wiOH2azvLONFUgcBt5aNQCSBMIgOhgcn8rAGLomQJXYcXvQ0Ki5CpRNKHdNvozkNErsh8SSr'
+    b'p4X2kFLlk7S/Q0+EwF7qSBRFIAwIjcDYk7EXqVlCtSyhjzLIAib2+L3YtJz63e0eCCyFwGgs'
+    b'2kwkjrAEErIc45vcN6NRFoEwIDQKi3XBPItyJoTs2or5RZO/i1AOQqnst5v7GoVtkLgWES2z'
+    b'NxNyNQSete0cGBQCYUBoNBbrEUo6IZzqefGR4qG4iISgmc/v6VoOgSYI6NBtIQpTmQH0kCxz'
+    b'hBKFihDIxgUP/Sa7fm8fg8HTuFRCM7B+HAOYPZbLcCo7QtFLuxES70LifL77OGUCBPL+cFVx'
+    b'AmEQHXQVjGX8TOdSM5zWY+M1+8eTiU7dsNdvuHJugnR6Hsa/pf+TD0NOIAwIIZngJG0yu80h'
+    b'AbxAFN5wdwtB5F91LAlTEJXvrgAAAABJRU5ErkJggg=='
+)
 
 
 async def user_login(client, username, password, key=None):
@@ -29,7 +74,7 @@ class RbxLogin(wx.Frame):
         self.SetSize((512, 512))
         self.SetTitle("Login with Roblox")
         self.SetBackgroundColour(wx.Colour(255, 255, 255))
-        self.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "appicon.png")))
+        self.SetIcon(icon_image.GetIcon())
 
         self.username = None
         self.password = None
@@ -161,7 +206,7 @@ class RbxCaptcha(wx.Frame):
         self.SetSize((512, 600))
         self.SetTitle("Roblox Captcha (ro.py)")
         self.SetBackgroundColour(wx.Colour(255, 255, 255))
-        self.SetIcon(wx.Icon(os.path.join(os.path.dirname(os.path.realpath(__file__)), "appicon.png")))
+        self.SetIcon(icon_image.GetIcon())
 
         self.status = False
         self.token = None
