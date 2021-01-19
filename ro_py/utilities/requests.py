@@ -1,5 +1,4 @@
 from ro_py.utilities.errors import ApiError
-from ro_py.utilities.cache import Cache
 from ro_py.captcha import CaptchaMetadata
 from json.decoder import JSONDecodeError
 import requests_async
@@ -13,8 +12,6 @@ class Requests:
     def __init__(self):
         self.session = requests_async.Session()
         """Session to use for requests."""
-        self.cache = Cache()
-        """Cache object to use for object storage."""
 
         """
         Thank you @nsg for letting me know about this!

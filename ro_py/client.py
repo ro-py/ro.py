@@ -28,6 +28,7 @@ class ClientSharedObject:
     def __init__(self, client):
         self.client = client
         self.cache = Cache()
+        self.requests = Requests()
 
 
 class Client:
@@ -41,8 +42,8 @@ class Client:
     """
 
     def __init__(self, token: str = None):
-        self.requests = Requests()
         self.cso = ClientSharedObject(self)
+        self.requests = self.cso.requests
 
         logging.debug("Initialized requests.")
 
@@ -58,12 +59,12 @@ class Client:
         if token:
             self.token_login(token)
             logging.debug("Initialized token.")
-            self.accountinformation = AccountInformation(self.requests)
-            self.accountsettings = AccountSettings(self.requests)
+            self.accountinformation = AccountInformation(self.cso)
+            self.accountsettings = AccountSettings(self.cso)
             logging.debug("Initialized AccountInformation and AccountSettings.")
-            self.chat = ChatWrapper(self.requests)
+            self.chat = ChatWrapper(self.cso)
             logging.debug("Initialized chat wrapper.")
-            self.trade = TradesWrapper(self.requests, self.get_self)
+            self.trade = TradesWrapper(self.cso, self.get_self)
             logging.debug("Initialized trade wrapper.")
 
     def token_login(self, token):
@@ -95,7 +96,7 @@ class Client:
         ro_py.captcha.UnsolvedCaptcha or request
         """
         if token:
-            login_req = self.requests.back_post(
+            login_req = self.cso.requests.back_post(
                 url="https://auth.roblox.com/v2/login",
                 json={
                     "ctype": "Username",
