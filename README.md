@@ -49,3 +49,11 @@ Known issue: wxPython sometimes has trouble building on certain devices. I put w
 [@iranathan](https://github.com/iranathan) - maintainer  
 [@jmkdev](https://github.com/iranathan) - maintainer  
 [@nsg-mfd](https://github.com/nsg-mfd) - helped with endpoints 
+
+## Other Libraries
+ro.py not for you? Come check out these other libraries!
+Name        | Language | OOP     | Async | Maintained | More Info                       |
+------------|----------|---------|-------|------------|---------------------------------|
+ro.py       | Python 3 | Yes     | Yes   | Yes        | You are here!                   |
+robloxapi   | Python 3 | Yes     | Yes   | No         | Predecessor to ro.py.           |
+pyblox      | Python 3 | Partial | No    | Yes        |                                 |
