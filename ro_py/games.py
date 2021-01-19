@@ -31,9 +31,10 @@ class Game:
     Represents a Roblox game universe.
     This class represents multiple game-related endpoints.
     """
-    def __init__(self, requests, universe_id):
+    def __init__(self, cso, universe_id):
         self.id = universe_id
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
         self.name = None
         self.description = None
         self.root_place = None

@@ -96,7 +96,7 @@ class Client:
         ro_py.captcha.UnsolvedCaptcha or request
         """
         if token:
-            login_req = self.cso.requests.back_post(
+            login_req = self.requests.back_post(
                 url="https://auth.roblox.com/v2/login",
                 json={
                     "ctype": "Username",
@@ -149,10 +149,10 @@ class Client:
         user_id
             ID of the user to generate the object from.
         """
-        user = self.requests.cache.get(CacheType.Users, user_id)
+        user = self.cso.cache.get(CacheType.Users, user_id)
         if not user:
             user = User(self.requests, user_id)
-            self.requests.cache.set(CacheType.Users, user_id, user)
+            self.cso.cache.set(CacheType.Users, user_id, user)
             await user.update()
         return user
 
@@ -179,10 +179,10 @@ class Client:
         username_data = username_req.json()
         if len(username_data["data"]) > 0:
             user_id = username_req.json()["data"][0]["id"]  # TODO: make this a partialuser
-            user = self.requests.cache.get(CacheType.Users, user_id)
+            user = self.cso.cache.get(CacheType.Users, user_id)
             if not user:
                 user = User(self.requests, user_id)
-                self.requests.cache.set(CacheType.Users, user_id, user)
+                self.cso.cache.set(CacheType.Users, user_id, user)
                 await user.update()
             return user
         else:
@@ -197,10 +197,10 @@ class Client:
         group_id
             ID of the group to generate the object from.
         """
-        group = self.requests.cache.get(CacheType.Groups, group_id)
+        group = self.cso.cache.get(CacheType.Groups, group_id)
         if not group:
             group = Group(self.requests, group_id)
-            self.requests.cache.set(CacheType.Groups, group_id, group)
+            self.cso.cache.set(CacheType.Groups, group_id, group)
             await group.update()
         return group
 
@@ -213,10 +213,10 @@ class Client:
         universe_id
             ID of the game to generate the object from.
         """
-        game = self.requests.cache.get(CacheType.Games, universe_id)
+        game = self.cso.cache.get(CacheType.Games, universe_id)
         if not game:
             game = Game(self.requests, universe_id)
-            self.requests.cache.set(CacheType.Games, universe_id, game)
+            self.cso.cache.set(CacheType.Games, universe_id, game)
             await game.update()
         return game
 
@@ -255,10 +255,10 @@ class Client:
         asset_id
             ID of the asset to generate the object from.
         """
-        asset = self.requests.cache.get(CacheType.Assets, asset_id)
+        asset = self.cso.cache.get(CacheType.Assets, asset_id)
         if not asset:
             asset = Asset(self.requests, asset_id)
-            self.requests.cache.set(CacheType.Assets, asset_id, asset)
+            self.cso.cache.set(CacheType.Assets, asset_id, asset)
             await asset.update()
         return asset
 
@@ -271,9 +271,9 @@ class Client:
         badge_id
             ID of the badge to generate the object from.
         """
-        badge = self.requests.cache.get(CacheType.Assets, badge_id)
+        badge = self.cso.cache.get(CacheType.Assets, badge_id)
         if not badge:
             badge = Badge(self.requests, badge_id)
-            self.requests.cache.set(CacheType.Assets, badge_id, badge)
+            self.cso.cache.set(CacheType.Assets, badge_id, badge)
             await badge.update()
         return badge
