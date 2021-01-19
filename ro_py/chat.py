@@ -17,8 +17,9 @@ class ChatSettings:
 
 
 class ConversationTyping:
-    def __init__(self, requests, conversation_id):
-        self.requests = requests
+    def __init__(self, cso, conversation_id):
+        self.cso = cso
+        self.requests = cso.requests
         self.id = conversation_id
 
     async def __aenter__(self):
@@ -41,22 +42,23 @@ class ConversationTyping:
 
 
 class Conversation:
-    def __init__(self, requests, conversation_id=None, raw=False, raw_data=None):
-        self.requests = requests
+    def __init__(self, cso, conversation_id=None, raw=False, raw_data=None):
+        self.cso = cso
+        self.requests = cso.requests
         self.raw = raw
         self.id = None
         self.title = None
         self.initiator = None
         self.type = None
-        self.typing = ConversationTyping(self.requests, conversation_id)
+        self.typing = ConversationTyping(self.cso, conversation_id)
 
         if self.raw:
             data = raw_data
             self.id = data["id"]
             self.title = data["title"]
-            self.initiator = User(self.requests, data["initiator"]["targetId"])
+            self.initiator = User(self.cso, data["initiator"]["targetId"])
             self.type = data["conversationType"]
-            self.typing = ConversationTyping(self.requests, conversation_id)
+            self.typing = ConversationTyping(self.cso, conversation_id)
 
     async def update(self):
         conversation_req = await self.requests.get(
@@ -70,7 +72,6 @@ class Conversation:
         self.title = data["title"]
         self.initiator = User(self.requests, data["initiator"]["targetId"])
         self.type = data["conversationType"]
-        self.typing = ConversationTyping(self.requests, conversation_id)
 
     async def get_message(self, message_id):
         return Message(self.requests, message_id, self.id)

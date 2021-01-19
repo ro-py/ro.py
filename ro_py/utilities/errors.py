@@ -7,6 +7,53 @@ This file houses custom exceptions unique to this module.
 """
 
 
+# The following are HTTP generic errors used by requests.py
+class ApiError(Exception):
+    """Called in requests when an API request fails with an error code that doesn't have an independent error."""
+    pass
+
+
+class BadRequest(Exception):
+    """400 HTTP error"""
+    pass
+
+
+class Unauthorized(Exception):
+    """401 HTTP error"""
+    pass
+
+
+class Forbidden(Exception):
+    """403 HTTP error"""
+    pass
+
+
+class NotFound(Exception):
+    """404 HTTP error (also used for other things)"""
+    pass
+
+
+class Conflict(Exception):
+    """409 HTTP error"""
+    pass
+
+
+class TooManyRequests(Exception):
+    """429 HTTP error"""
+    pass
+
+
+class InternalServerError(Exception):
+    """500 HTTP error"""
+    pass
+
+
+class BadGateway(Exception):
+    """502 HTTP error"""
+    pass
+
+
+# The following errors are specific to certain parts of ro.py
 class NotLimitedError(Exception):
     """Called when code attempts to read limited-only information."""
     pass
@@ -22,21 +69,12 @@ class InvalidShotTypeError(Exception):
     pass
 
 
-class ApiError(Exception):
-    """Called in requests when an API request fails."""
-    pass
-
-
 class ChatError(Exception):
     """Called in chat when a chat action fails."""
 
 
 class InvalidPageError(Exception):
     """Called when an invalid page is requested."""
-
-
-class NotFound(Exception):
-    """Called when something is not found."""
 
 
 class UserDoesNotExistError(Exception):
@@ -64,3 +102,15 @@ class InsufficientCreditError(Exception):
 class NoAvailableWorkersError(Exception):
     """Raised when there are no available workers."""
     pass
+
+
+c_errors = {
+    "400": BadRequest,
+    "401": Unauthorized,
+    "403": Forbidden,
+    "404": NotFound,
+    "409": Conflict,
+    "429": TooManyRequests,
+    "500": InternalServerError,
+    "502": BadGateway
+}
