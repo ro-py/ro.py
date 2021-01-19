@@ -54,10 +54,11 @@ class Group:
     """
     Represents a group.
     """
-    def __init__(self, requests, group_id):
-        self.requests = requests
+    def __init__(self, cso, group_id):
+        self.cso = cso
+        self.requests = cso.requests
         self.id = group_id
-        self.wall = Wall(requests, self)
+        self.wall = Wall(self.cso, self)
         self.name = None
         self.description = None
         self.owner = None
@@ -74,7 +75,7 @@ class Group:
         group_info = group_info_req.json()
         self.name = group_info["name"]
         self.description = group_info["description"]
-        self.owner = User(self.requests, group_info["owner"]["userId"])
+        self.owner = User(self.cso, group_info["owner"]["userId"])
         self.member_count = group_info["memberCount"]
         self.is_builders_club_only = group_info["isBuildersClubOnly"]
         self.public_entry_allowed = group_info["publicEntryAllowed"]
@@ -154,8 +155,9 @@ class PartialGroup(Group):
 
 
 class Wall:
-    def __init__(self, requests, group):
-        self.requests = requests
+    def __init__(self, cso, group):
+        self.cso = cso
+        self.requests = cso.requests
         self.group = group
 
     async def get_posts(self, sort_order=SortOrder.Ascending, limit=100):

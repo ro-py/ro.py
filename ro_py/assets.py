@@ -23,9 +23,10 @@ class Asset:
         ID of the asset.
     """
 
-    def __init__(self, requests, asset_id):
+    def __init__(self, cso, asset_id):
         self.id = asset_id
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
         self.target_id = None
         self.product_type = None
         self.asset_id = None

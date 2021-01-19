@@ -31,9 +31,10 @@ class Game:
     Represents a Roblox game universe.
     This class represents multiple game-related endpoints.
     """
-    def __init__(self, requests, universe_id):
+    def __init__(self, cso, universe_id):
         self.id = universe_id
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
         self.name = None
         self.description = None
         self.root_place = None
@@ -62,16 +63,16 @@ class Game:
         self.description = game_info["description"]
         self.root_place = Place(self.requests, game_info["rootPlaceId"])
         if game_info["creator"]["type"] == "User":
-            self.creator = self.requests.cache.get(CacheType.Users, game_info["creator"]["id"])
+            self.creator = self.cso.cache.get(CacheType.Users, game_info["creator"]["id"])
             if not self.creator:
-                self.creator = User(self.requests, game_info["creator"]["id"])
-                self.requests.cache.set(CacheType.Users, game_info["creator"]["id"], self.creator)
+                self.creator = User(self.cso, game_info["creator"]["id"])
+                self.cso.cache.set(CacheType.Users, game_info["creator"]["id"], self.creator)
                 await self.creator.update()
         elif game_info["creator"]["type"] == "Group":
-            self.creator = self.requests.cache.get(CacheType.Groups, game_info["creator"]["id"])
+            self.creator = self.cso.cache.get(CacheType.Groups, game_info["creator"]["id"])
             if not self.creator:
-                self.creator = Group(self.requests, game_info["creator"]["id"])
-                self.requests.cache.set(CacheType.Groups, game_info["creator"]["id"], self.creator)
+                self.creator = Group(self.cso, game_info["creator"]["id"])
+                self.cso.cache.set(CacheType.Groups, game_info["creator"]["id"], self.creator)
                 await self.creator.update()
         self.price = game_info["price"]
         self.allowed_gear_genres = game_info["allowedGearGenres"]
@@ -112,7 +113,7 @@ class Game:
         badges_data = badges_req.json()["data"]
         badges = []
         for badge in badges_data:
-            badges.append(Badge(self.requests, badge["id"]))
+            badges.append(Badge(self.cso, badge["id"]))
         return badges
 
 
