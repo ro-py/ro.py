@@ -117,7 +117,7 @@ class User:
         friends_list = []
         for friend_raw in friends_raw:
             friends_list.append(
-                User(self.requests, friend_raw["id"])
+                User(self.cso, friend_raw["id"])
             )
         return friends_list
 
@@ -130,7 +130,7 @@ class User:
         groups = []
         for group in data['data']:
             group = group['group']
-            groups.append(PartialGroup(self.requests, group['id'], group['name'], group['memberCount']))
+            groups.append(PartialGroup(self.cso, group['id'], group['name'], group['memberCount']))
         return groups
 
     async def get_limiteds(self):

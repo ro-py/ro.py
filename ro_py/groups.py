@@ -119,7 +119,7 @@ class Group:
         )
         roles = []
         for role in role_req.json()['roles']:
-            roles.append(Role(self.requests, self, role))
+            roles.append(Role(self.cso, self, role))
         return roles
 
     async def get_member_by_id(self, roblox_id):
@@ -141,8 +141,8 @@ class Group:
             raise NotFound(f"The user {roblox_id} was not found in group {self.id}")
 
         # Create data to return.
-        role = Role(self.requests, self, group_data['role'])
-        member = Member(self.requests, roblox_id, "", self, role)
+        role = Role(self.cso, self, group_data['role'])
+        member = Member(self.cso, roblox_id, "", self, role)
         return await member.update()
 
 
@@ -209,8 +209,8 @@ class Member(User):
     role : ro_py.roles.Role
             The role the user has is the group.
     """
-    def __init__(self, requests, roblox_id, name, group, role):
-        super().__init__(requests, roblox_id, name)
+    def __init__(self, cso, roblox_id, name, group, role):
+        super().__init__(cso, roblox_id, name)
         self.role = role
         self.group = group
 

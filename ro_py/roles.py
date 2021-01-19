@@ -75,8 +75,9 @@ class Role:
     role_data : dict
             Dictionary containing role information.
     """
-    def __init__(self, requests, group, role_data):
-        self.requests = requests
+    def __init__(self, cso, group, role_data):
+        self.cso = cso
+        self.requests = cso.requests
         self.group = group
         self.id = role_data['id']
         self.name = role_data['name']
