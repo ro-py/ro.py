@@ -52,16 +52,16 @@ Known issue: wxPython sometimes has trouble building on certain devices. I put w
 
 ## Other Libraries
 ro.py not for you? Come check out these other libraries!
-Name         | Language | OOP     | Async | Maintained | More Info                       |
--------------|----------|---------|-------|------------|---------------------------------|
-ro.py        | Python 3 | Yes     | Yes   | Yes        | You are here!                   |
-robloxapi    | Python 3 | Yes     | Yes   | No         | Predecessor to ro.py.           |
-pyblox       | Python 3 | Partial | No    | Yes        |                                 |
-bloxy        | Node.JS  | Yes     | Yes   | Yes        |                                 |
-noblox.js    | Node.JS  | No      | Yes?  | Yes        |                                 |
-roblox.js    | Node.JS  | No      | Yes?  | No         | Predecessor to noblox.js.       |
-cblox        | C++      | Yes     | No?   | Yes        |                                 |
-robloxapi    | C#       | Yes     | Yes   | Maybe      |                                 |
-roblox4j     | Java     | Yes     | No?   | No         |                                 |
-KotlinRoblox | Kotlin   | Yes?    | No?   | No         |                                 |
-rbx.lua      | Lua      | N/A     | No?   | Yes?       |                                 |
+Name                                                        | Language | OOP     | Async | Maintained | More Info                       |
+------------------------------------------------------------|----------|---------|-------|------------|---------------------------------|
+[ro.py](https://github.com/rbx-libdev/ro.py)                | Python 3 | Yes     | Yes   | Yes        | You are here!                   |
+[robloxapi](https://github.com/iranathan/robloxapi)         | Python 3 | Yes     | Yes   | No         | Predecessor to ro.py.           |
+[pyblox](https://github.com/RbxAPI/Pyblox)                  | Python 3 | Partial | No    | Yes        |                                 |
+[bloxy](https://github.com/Visualizememe/bloxy)             | Node.JS  | Yes     | Yes   | Yes        |                                 |
+[noblox.js](https://github.com/suufi/noblox.js)             | Node.JS  | No      | Yes?  | Yes        |                                 |
+[roblox.js](https://github.com/sentanos/roblox-js)          | Node.JS  | No      | Yes?  | No         | Predecessor to noblox.js.       |
+[cblox](https://github.com/Meqolo/cblox)                    | C++      | Yes     | No?   | Yes        |                                 |
+[robloxapi](https://github.com/gamenew09/RobloxAPI)         | C#       | Yes     | Yes   | Maybe      |                                 |
+[roblox4j](https://github.com/PizzaCrust/Roblox4j)          | Java     | Yes     | No?   | No         |                                 |
+[KotlinRoblox](https://github.com/PizzaCrust/KotlinRoblox)  | Kotlin   | Yes?    | No?   | No         |                                 |
+[rbx.lua](https://github.com/iiToxicity/rbx.lua)            | Lua      | N/A     | No?   | Yes?       |                                 |
