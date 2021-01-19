@@ -90,7 +90,8 @@ class Group:
         self.is_builders_club_only = group_info["isBuildersClubOnly"]
         self.public_entry_allowed = group_info["publicEntryAllowed"]
         if "shout" in group_info:
-            self.shout = Shout(self.cso, group_info['shout'])
+            if group_info["shout"]:
+                self.shout = Shout(self.cso, group_info["shout"])
         else:
             self.shout = None
         # self.is_locked = group_info["isLocked"]

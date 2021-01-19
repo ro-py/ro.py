@@ -1,11 +1,25 @@
 from ro_py.utilities.errors import ApiError, c_errors
 from ro_py.captcha import CaptchaMetadata
 from json.decoder import JSONDecodeError
-import requests_async
 import requests
+import httpx
+
+
+class AsyncSession(httpx.AsyncClient):
+    """
+    This serves no purpose other than to get around an annoying HTTPX warning.
+    """
+    def __init__(self):
+        super().__init__()
+
+    def __del__(self):
+        pass
 
 
 def status_code_error(status_code):
+    """
+    Converts a status code to the proper exception.
+    """
     if str(status_code) in c_errors:
         return c_errors[str(status_code)]
     else:
@@ -17,7 +31,7 @@ class Requests:
     This wrapper functions similarly to requests_async.Session, but made specifically for Roblox.
     """
     def __init__(self):
-        self.session = requests_async.Session()
+        self.session = AsyncSession()
         """Session to use for requests."""
 
         """
