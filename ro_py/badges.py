@@ -28,9 +28,10 @@ class Badge:
     badge_id
         ID of the badge.
     """
-    def __init__(self, requests, badge_id):
+    def __init__(self, cso, badge_id):
         self.id = badge_id
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
         self.name = None
         self.description = None
         self.display_name = None
