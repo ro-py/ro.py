@@ -11,14 +11,23 @@ from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
 from ro_py.trades import TradesWrapper
-from ro_py.utilities.cache import CacheType
 from ro_py.utilities.requests import Requests
 from ro_py.accountsettings import AccountSettings
+from ro_py.utilities.cache import Cache, CacheType
 from ro_py.accountinformation import AccountInformation
 from ro_py.utilities.errors import UserDoesNotExistError, InvalidPlaceIDError
 from ro_py.captcha import UnsolvedLoginCaptcha
 
 import logging
+
+
+class ClientSharedObject:
+    """
+    This object will be shared across most instances and classes for a particular client.
+    """
+    def __init__(self, client):
+        self.client = client
+        self.cache = Cache()
 
 
 class Client:
@@ -33,6 +42,7 @@ class Client:
 
     def __init__(self, token: str = None):
         self.requests = Requests()
+        self.cso = ClientSharedObject(self)
 
         logging.debug("Initialized requests.")
 
