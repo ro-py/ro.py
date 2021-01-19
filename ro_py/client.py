@@ -11,6 +11,7 @@ from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
 from ro_py.trades import TradesWrapper
+from ro_py.events import EventsWrapper
 from ro_py.utilities.requests import Requests
 from ro_py.accountsettings import AccountSettings
 from ro_py.utilities.cache import Cache, CacheType
@@ -66,6 +67,7 @@ class Client:
             logging.debug("Initialized chat wrapper.")
             self.trade = TradesWrapper(self.cso, self.get_self)
             logging.debug("Initialized trade wrapper.")
+            self.event =
 
     def token_login(self, token):
         """
@@ -138,7 +140,7 @@ class Client:
             url="https://roblox.com/my/profile"
         )
         data = self_req.json()
-        return User(self.cso, data['Username'], data['UserId'])
+        return User(self.cso, data['UserId'], data['Username'])
 
     async def get_user(self, user_id):
         """
