@@ -118,3 +118,14 @@ class UserAsset(Asset):
     def __init__(self, requests, asset_id, user_asset_id):
         super().__init__(requests, asset_id)
         self.user_asset_id = user_asset_id
+
+
+class Events:
+    def __init__(self, cso):
+        self.cso = cso
+
+    async def bind(self, func, event, delay=15):
+        pass
+
+
+
