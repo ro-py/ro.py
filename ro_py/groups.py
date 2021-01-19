@@ -189,7 +189,7 @@ class Wall:
         if post_req.status_code == 403:
             return UnsolvedCaptcha(pkey="63E4117F-E727-42B4-6DAA-C8448E9B137F")
         else:
-            return post_req.status == 200
+            return post_req.status_code == 200
 
 
 class Member(User):
@@ -293,7 +293,7 @@ class Member(User):
                 "roleId": rank
             }
         )
-        return rank_request.status == 200
+        return rank_request.status_code == 200
 
     async def setrole(self, role_num):
         """
@@ -322,4 +322,4 @@ class Member(User):
         exile_req = await self.requests.delete(
             url=endpoint + f"/v1/groups/{self.group.id}/users/{self.id}"
         )
-        return exile_req.status == 200
+        return exile_req.status_code == 200
