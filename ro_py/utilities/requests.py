@@ -1,8 +1,15 @@
-from ro_py.utilities.errors import ApiError
+from ro_py.utilities.errors import ApiError, c_errors
 from ro_py.captcha import CaptchaMetadata
 from json.decoder import JSONDecodeError
 import requests_async
 import requests
+
+
+def status_code_error(status_code):
+    if str(status_code) in c_errors:
+        return c_errors[str(status_code)]
+    else:
+        return ApiError
 
 
 class Requests:
@@ -50,7 +57,7 @@ class Requests:
         if quickreturn:
             return get_request
 
-        raise ApiError(f"[{str(get_request.status_code)}] {get_request_error[0]['message']}")
+        raise status_code_error(get_request.status_code)(get_request.status_code)(f"[{get_request.status_code}] {get_request_error[0]['message']}")
 
     def back_post(self, *args, **kwargs):
         kwargs["cookies"] = kwargs.pop("cookies", self.session.cookies)
@@ -97,7 +104,7 @@ class Requests:
         if quickreturn:
             return post_request
 
-        raise ApiError(f"[{str(post_request.status_code)}] {post_request_error[0]['message']}")
+        raise status_code_error(post_request.status_code)(f"[{post_request.status_code}] {post_request_error[0]['message']}")
 
     async def patch(self, *args, **kwargs):
         """
@@ -121,7 +128,7 @@ class Requests:
         else:
             return patch_request
 
-        raise ApiError(f"[{str(patch_request.status_code)}] {patch_request_error[0]['message']}")
+        raise status_code_error(patch_request.status_code)(f"[{patch_request.status_code}] {patch_request_error[0]['message']}")
 
     async def delete(self, *args, **kwargs):
         """
@@ -145,7 +152,7 @@ class Requests:
         else:
             return delete_request
 
-        raise ApiError(f"[{str(delete_request.status_code)}] {delete_request_error[0]['message']}")
+        raise status_code_error(delete_request.status_code)(f"[{delete_request.status_code}] {delete_request_error[0]['message']}")
 
     async def get_captcha_metadata(self):
         captcha_meta_req = await self.get(
