@@ -52,8 +52,16 @@ Known issue: wxPython sometimes has trouble building on certain devices. I put w
 
 ## Other Libraries
 ro.py not for you? Come check out these other libraries!
-Name        | Language | OOP     | Async | Maintained | More Info                       |
-------------|----------|---------|-------|------------|---------------------------------|
-ro.py       | Python 3 | Yes     | Yes   | Yes        | You are here!                   |
-robloxapi   | Python 3 | Yes     | Yes   | No         | Predecessor to ro.py.           |
-pyblox      | Python 3 | Partial | No    | Yes        |                                 |
+Name         | Language | OOP     | Async | Maintained | More Info                       |
+-------------|----------|---------|-------|------------|---------------------------------|
+ro.py        | Python 3 | Yes     | Yes   | Yes        | You are here!                   |
+robloxapi    | Python 3 | Yes     | Yes   | No         | Predecessor to ro.py.           |
+pyblox       | Python 3 | Partial | No    | Yes        |                                 |
+bloxy        | Node.JS  | Yes     | Yes   | Yes        |                                 |
+noblox.js    | Node.JS  | No      | Yes?  | Yes        |                                 |
+roblox.js    | Node.JS  | No      | Yes?  | No         | Predecessor to noblox.js.       |
+cblox        | C++      | Yes     | No?   | Yes        |                                 |
+robloxapi    | C#       | Yes     | Yes   | Maybe      |                                 |
+roblox4j     | Java     | Yes     | No?   | No         |                                 |
+KotlinRoblox | Kotlin   | Yes?    | No?   | No         |                                 |
+rbx.lua      | Lua      | N/A     | No?   | Yes?       |                                 |
