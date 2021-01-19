@@ -90,8 +90,9 @@ class User:
     name : str
             The name of the user.
     &#34;&#34;&#34;
-    def __init__(self, requests, roblox_id, name=None):
-        self.requests = requests
+    def __init__(self, cso, roblox_id, name=None):
+        self.cso = cso
+        self.requests = cso.requests
         self.id = roblox_id
         self.description = None
         self.created = None
@@ -172,7 +173,7 @@ class User:
         friends_list = []
         for friend_raw in friends_raw:
             friends_list.append(
-                User(self.requests, friend_raw[&#34;id&#34;])
+                User(self.cso, friend_raw[&#34;id&#34;])
             )
         return friends_list
 
@@ -185,7 +186,7 @@ class User:
         groups = []
         for group in data[&#39;data&#39;]:
             group = group[&#39;group&#39;]
-            groups.append(PartialGroup(self.requests, group[&#39;id&#39;], group[&#39;name&#39;], group[&#39;memberCount&#39;]))
+            groups.append(PartialGroup(self.cso, group[&#39;id&#39;], group[&#39;name&#39;], group[&#39;memberCount&#39;]))
         return groups
 
     async def get_limiteds(self):
@@ -278,7 +279,7 @@ class PartialUser(User):
 </dd>
 <dt id="ro_py.users.User"><code class="flex name class">
 <span>class <span class="ident">User</span></span>
-<span>(</span><span>requests, roblox_id, name=None)</span>
+<span>(</span><span>cso, roblox_id, name=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a Roblox user and their profile.
@@ -310,8 +311,9 @@ Can be initialized with either a user ID or a username.</p>
     name : str
             The name of the user.
     &#34;&#34;&#34;
-    def __init__(self, requests, roblox_id, name=None):
-        self.requests = requests
+    def __init__(self, cso, roblox_id, name=None):
+        self.cso = cso
+        self.requests = cso.requests
         self.id = roblox_id
         self.description = None
         self.created = None
@@ -392,7 +394,7 @@ Can be initialized with either a user ID or a username.</p>
         friends_list = []
         for friend_raw in friends_raw:
             friends_list.append(
-                User(self.requests, friend_raw[&#34;id&#34;])
+                User(self.cso, friend_raw[&#34;id&#34;])
             )
         return friends_list
 
@@ -405,7 +407,7 @@ Can be initialized with either a user ID or a username.</p>
         groups = []
         for group in data[&#39;data&#39;]:
             group = group[&#39;group&#39;]
-            groups.append(PartialGroup(self.requests, group[&#39;id&#39;], group[&#39;name&#39;], group[&#39;memberCount&#39;]))
+            groups.append(PartialGroup(self.cso, group[&#39;id&#39;], group[&#39;name&#39;], group[&#39;memberCount&#39;]))
         return groups
 
     async def get_limiteds(self):
@@ -489,7 +491,7 @@ Can be initialized with either a user ID or a username.</p>
     friends_list = []
     for friend_raw in friends_raw:
         friends_list.append(
-            User(self.requests, friend_raw[&#34;id&#34;])
+            User(self.cso, friend_raw[&#34;id&#34;])
         )
     return friends_list</code></pre>
 </details>
@@ -532,7 +534,7 @@ Can be initialized with either a user ID or a username.</p>
     groups = []
     for group in data[&#39;data&#39;]:
         group = group[&#39;group&#39;]
-        groups.append(PartialGroup(self.requests, group[&#39;id&#39;], group[&#39;name&#39;], group[&#39;memberCount&#39;]))
+        groups.append(PartialGroup(self.cso, group[&#39;id&#39;], group[&#39;name&#39;], group[&#39;memberCount&#39;]))
     return groups</code></pre>
 </details>
 </dd>

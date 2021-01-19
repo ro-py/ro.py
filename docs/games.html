@@ -63,6 +63,7 @@ This file houses functions and classes that pertain to Roblox universes and plac
 from ro_py.users import User
 from ro_py.groups import Group
 from ro_py.badges import Badge
+from ro_py.thumbnails import GameThumbnailGenerator
 from ro_py.utilities.errors import GameJoinError
 from ro_py.utilities.cache import CacheType
 import subprocess
@@ -86,9 +87,10 @@ class Game:
     Represents a Roblox game universe.
     This class represents multiple game-related endpoints.
     &#34;&#34;&#34;
-    def __init__(self, requests, universe_id):
+    def __init__(self, cso, universe_id):
         self.id = universe_id
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
         self.name = None
         self.description = None
         self.root_place = None
@@ -99,6 +101,7 @@ class Game:
         self.max_players = None
         self.studio_access_to_apis_allowed = None
         self.create_vip_servers_allowed = None
+        self.thumbnails = GameThumbnailGenerator(self.requests, self.id)
 
     async def update(self):
         &#34;&#34;&#34;
@@ -116,16 +119,16 @@ class Game:
         self.description = game_info[&#34;description&#34;]
         self.root_place = Place(self.requests, game_info[&#34;rootPlaceId&#34;])
         if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
-            self.creator = self.requests.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.creator = self.cso.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
             if not self.creator:
-                self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
-                self.requests.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+                self.creator = User(self.cso, game_info[&#34;creator&#34;][&#34;id&#34;])
+                self.cso.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
                 await self.creator.update()
         elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
-            self.creator = self.requests.cache.get(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.creator = self.cso.cache.get(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;])
             if not self.creator:
-                self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
-                self.requests.cache.set(CacheType.Group, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+                self.creator = Group(self.cso, game_info[&#34;creator&#34;][&#34;id&#34;])
+                self.cso.cache.set(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
                 await self.creator.update()
         self.price = game_info[&#34;price&#34;]
         self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
@@ -166,7 +169,7 @@ class Game:
         badges_data = badges_req.json()[&#34;data&#34;]
         badges = []
         for badge in badges_data:
-            badges.append(Badge(self.requests, badge[&#34;id&#34;]))
+            badges.append(Badge(self.cso, badge[&#34;id&#34;]))
         return badges
 
 
@@ -253,7 +256,7 @@ class Place:
 <dl>
 <dt id="ro_py.games.Game"><code class="flex name class">
 <span>class <span class="ident">Game</span></span>
-<span>(</span><span>requests, universe_id)</span>
+<span>(</span><span>cso, universe_id)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a Roblox game universe.
@@ -267,9 +270,10 @@ This class represents multiple game-related endpoints.</p></div>
     Represents a Roblox game universe.
     This class represents multiple game-related endpoints.
     &#34;&#34;&#34;
-    def __init__(self, requests, universe_id):
+    def __init__(self, cso, universe_id):
         self.id = universe_id
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
         self.name = None
         self.description = None
         self.root_place = None
@@ -280,6 +284,7 @@ This class represents multiple game-related endpoints.</p></div>
         self.max_players = None
         self.studio_access_to_apis_allowed = None
         self.create_vip_servers_allowed = None
+        self.thumbnails = GameThumbnailGenerator(self.requests, self.id)
 
     async def update(self):
         &#34;&#34;&#34;
@@ -297,16 +302,16 @@ This class represents multiple game-related endpoints.</p></div>
         self.description = game_info[&#34;description&#34;]
         self.root_place = Place(self.requests, game_info[&#34;rootPlaceId&#34;])
         if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
-            self.creator = self.requests.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.creator = self.cso.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
             if not self.creator:
-                self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
-                self.requests.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+                self.creator = User(self.cso, game_info[&#34;creator&#34;][&#34;id&#34;])
+                self.cso.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
                 await self.creator.update()
         elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
-            self.creator = self.requests.cache.get(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.creator = self.cso.cache.get(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;])
             if not self.creator:
-                self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
-                self.requests.cache.set(CacheType.Group, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+                self.creator = Group(self.cso, game_info[&#34;creator&#34;][&#34;id&#34;])
+                self.cso.cache.set(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
                 await self.creator.update()
         self.price = game_info[&#34;price&#34;]
         self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
@@ -347,7 +352,7 @@ This class represents multiple game-related endpoints.</p></div>
         badges_data = badges_req.json()[&#34;data&#34;]
         badges = []
         for badge in badges_data:
-            badges.append(Badge(self.requests, badge[&#34;id&#34;]))
+            badges.append(Badge(self.cso, badge[&#34;id&#34;]))
         return badges</code></pre>
 </details>
 <h3>Methods</h3>
@@ -377,7 +382,7 @@ This will be updated soon to use the new Page object.</p></div>
     badges_data = badges_req.json()[&#34;data&#34;]
     badges = []
     for badge in badges_data:
-        badges.append(Badge(self.requests, badge[&#34;id&#34;]))
+        badges.append(Badge(self.cso, badge[&#34;id&#34;]))
     return badges</code></pre>
 </details>
 </dd>
@@ -437,16 +442,16 @@ This will be updated soon to use the new Page object.</p></div>
     self.description = game_info[&#34;description&#34;]
     self.root_place = Place(self.requests, game_info[&#34;rootPlaceId&#34;])
     if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
-        self.creator = self.requests.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
+        self.creator = self.cso.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
         if not self.creator:
-            self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
-            self.requests.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+            self.creator = User(self.cso, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.cso.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
             await self.creator.update()
     elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
-        self.creator = self.requests.cache.get(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;])
+        self.creator = self.cso.cache.get(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;])
         if not self.creator:
-            self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
-            self.requests.cache.set(CacheType.Group, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+            self.creator = Group(self.cso, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.cso.cache.set(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
             await self.creator.update()
     self.price = game_info[&#34;price&#34;]
     self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]

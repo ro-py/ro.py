@@ -20,9 +20,9 @@ setuptools.setup(
     ],
     python_requires='>=3.6',
     install_requires=[
+        "httpx",
         "iso8601",
         "signalrcore",
-        "requests-async",
         "pytweening",
         "wxPython",
         "wxasync"

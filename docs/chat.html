@@ -73,8 +73,9 @@ class ChatSettings:
 
 
 class ConversationTyping:
-    def __init__(self, requests, conversation_id):
-        self.requests = requests
+    def __init__(self, cso, conversation_id):
+        self.cso = cso
+        self.requests = cso.requests
         self.id = conversation_id
 
     async def __aenter__(self):
@@ -97,22 +98,23 @@ class ConversationTyping:
 
 
 class Conversation:
-    def __init__(self, requests, conversation_id=None, raw=False, raw_data=None):
-        self.requests = requests
+    def __init__(self, cso, conversation_id=None, raw=False, raw_data=None):
+        self.cso = cso
+        self.requests = cso.requests
         self.raw = raw
         self.id = None
         self.title = None
         self.initiator = None
         self.type = None
-        self.typing = ConversationTyping(self.requests, conversation_id)
+        self.typing = ConversationTyping(self.cso, conversation_id)
 
         if self.raw:
             data = raw_data
             self.id = data[&#34;id&#34;]
             self.title = data[&#34;title&#34;]
-            self.initiator = User(self.requests, data[&#34;initiator&#34;][&#34;targetId&#34;])
+            self.initiator = User(self.cso, data[&#34;initiator&#34;][&#34;targetId&#34;])
             self.type = data[&#34;conversationType&#34;]
-            self.typing = ConversationTyping(self.requests, conversation_id)
+            self.typing = ConversationTyping(self.cso, conversation_id)
 
     async def update(self):
         conversation_req = await self.requests.get(
@@ -126,7 +128,6 @@ class Conversation:
         self.title = data[&#34;title&#34;]
         self.initiator = User(self.requests, data[&#34;initiator&#34;][&#34;targetId&#34;])
         self.type = data[&#34;conversationType&#34;]
-        self.typing = ConversationTyping(self.requests, conversation_id)
 
     async def get_message(self, message_id):
         return Message(self.requests, message_id, self.id)
@@ -370,7 +371,7 @@ of the Roblox web client.</p></div>
 </dd>
 <dt id="ro_py.chat.Conversation"><code class="flex name class">
 <span>class <span class="ident">Conversation</span></span>
-<span>(</span><span>requests, conversation_id=None, raw=False, raw_data=None)</span>
+<span>(</span><span>cso, conversation_id=None, raw=False, raw_data=None)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -379,22 +380,23 @@ of the Roblox web client.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Conversation:
-    def __init__(self, requests, conversation_id=None, raw=False, raw_data=None):
-        self.requests = requests
+    def __init__(self, cso, conversation_id=None, raw=False, raw_data=None):
+        self.cso = cso
+        self.requests = cso.requests
         self.raw = raw
         self.id = None
         self.title = None
         self.initiator = None
         self.type = None
-        self.typing = ConversationTyping(self.requests, conversation_id)
+        self.typing = ConversationTyping(self.cso, conversation_id)
 
         if self.raw:
             data = raw_data
             self.id = data[&#34;id&#34;]
             self.title = data[&#34;title&#34;]
-            self.initiator = User(self.requests, data[&#34;initiator&#34;][&#34;targetId&#34;])
+            self.initiator = User(self.cso, data[&#34;initiator&#34;][&#34;targetId&#34;])
             self.type = data[&#34;conversationType&#34;]
-            self.typing = ConversationTyping(self.requests, conversation_id)
+            self.typing = ConversationTyping(self.cso, conversation_id)
 
     async def update(self):
         conversation_req = await self.requests.get(
@@ -408,7 +410,6 @@ of the Roblox web client.</p></div>
         self.title = data[&#34;title&#34;]
         self.initiator = User(self.requests, data[&#34;initiator&#34;][&#34;targetId&#34;])
         self.type = data[&#34;conversationType&#34;]
-        self.typing = ConversationTyping(self.requests, conversation_id)
 
     async def get_message(self, message_id):
         return Message(self.requests, message_id, self.id)
@@ -486,15 +487,14 @@ of the Roblox web client.</p></div>
     self.id = data[&#34;id&#34;]
     self.title = data[&#34;title&#34;]
     self.initiator = User(self.requests, data[&#34;initiator&#34;][&#34;targetId&#34;])
-    self.type = data[&#34;conversationType&#34;]
-    self.typing = ConversationTyping(self.requests, conversation_id)</code></pre>
+    self.type = data[&#34;conversationType&#34;]</code></pre>
 </details>
 </dd>
 </dl>
 </dd>
 <dt id="ro_py.chat.ConversationTyping"><code class="flex name class">
 <span>class <span class="ident">ConversationTyping</span></span>
-<span>(</span><span>requests, conversation_id)</span>
+<span>(</span><span>cso, conversation_id)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -503,8 +503,9 @@ of the Roblox web client.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ConversationTyping:
-    def __init__(self, requests, conversation_id):
-        self.requests = requests
+    def __init__(self, cso, conversation_id):
+        self.cso = cso
+        self.requests = cso.requests
         self.id = conversation_id
 
     async def __aenter__(self):

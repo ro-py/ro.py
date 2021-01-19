@@ -19,10 +19,11 @@ ro.py is an object oriented, asynchronous wrapper for the Roblox Web API (and ot
 ro.py allows you to automate much of what you would do on the Roblox website and on other Roblox-related websites.
 
 ## Requirements
+- httpx (for sending requests)
 - iso8601 (for parsing dates)
 - signalrcore (for recieving notifications)
 - ~~cachecontrol (for caching requests)~~
-- requests-async (for sending requests, might be updated to a new lib soon)
+- ~~requests-async (for sending requests, might be updated to a new lib soon)~~
 - pytweening (for UI animations for the "prompts" extension, optional)
 - wxPython (for the "prompts" extension, optional)
 - wxasync (see above)
@@ -32,7 +33,9 @@ We are not responsible for any malicious use of this library.
 If you use this library in a way that violates the [Roblox Terms of Use](https://en.help.roblox.com/hc/en-us/articles/115004647846-Roblox-Terms-of-Use) your account may be punished.
 
 ## Documentation
-You can view documentation for ro.py at [ro.py.jmksite.dev](https://ro.py.jmksite.dev/). If something's missing from docs, feel free to dive into the code and read the docstrings as most things are documented there.
+You can view documentation for ro.py at [ro.py.jmksite.dev](https://ro.py.jmksite.dev/).  
+If something's missing from docs, feel free to dive into the code and read the docstrings as most things are documented there.
+The docs are generated from docstrings in the code using pdoc3.
 
 ## Installation
 You can install ro.py from pip:

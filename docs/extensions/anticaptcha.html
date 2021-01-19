@@ -49,6 +49,73 @@ background: #555;
 <h1 class="title">Module <code>ro_py.extensions.anticaptcha</code></h1>
 </header>
 <section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">from ro_py.utilities.errors import IncorrectKeyError, InsufficientCreditError, NoAvailableWorkersError
+from ro_py.captcha import UnsolvedCaptcha
+import requests_async
+import asyncio
+
+endpoint = &#34;https://2captcha.com&#34;
+
+
+class Task:
+    def __init__(self):
+        self.type = &#34;FunCaptchaTaskProxyless&#34;
+        self.website_url = None
+        self.website_public_key = None
+        self.funcaptcha_api_js_subdomain = None
+
+    def get_raw(self):
+        return {
+            &#34;type&#34;: self.type,
+            &#34;websiteURL&#34;: self.website_url,
+            &#34;websitePublicKey&#34;: self.website_public_key,
+            &#34;funcaptchaApiJSSubdomain&#34;: self.funcaptcha_api_js_subdomain
+        }
+
+
+class AntiCaptcha:
+    def __init__(self, api_key):
+        self.api_key = api_key
+
+    async def solve(self, captcha: UnsolvedCaptcha):
+        task = Task()
+        task.website_url = &#34;https://roblox.com&#34;
+        task.website_public_key = captcha.pkey
+        task.funcaptcha_api_js_subdomain = &#34;https://roblox-api.arkoselabs.com&#34;
+
+        data = {
+            &#34;clientKey&#34;: self.api_key,
+            &#34;task&#34;: task.get_raw()
+        }
+
+        create_req = await requests_async.post(&#39;https://api.anti-captcha.com/createTask&#39;, json=data)
+        create_res = create_req.json()
+        if create_res[&#39;errorId&#39;] == 1:
+            raise IncorrectKeyError(&#34;The provided anit-captcha api key was incorrect.&#34;)
+        if create_res[&#39;errorId&#39;] == 2:
+            raise NoAvailableWorkersError(&#34;There are currently no available workers.&#34;)
+        if create_res[&#39;errorId&#39;] == 10:
+            raise InsufficientCreditError(&#34;Insufficient credit in the 2captcha account.&#34;)
+
+        solution = None
+        while True:
+            await asyncio.sleep(5)
+            check_data = {
+                &#34;clientKey&#34;: self.api_key,
+                &#34;taskId&#34;: create_res[&#39;taskId&#39;]
+            }
+            check_req = await requests_async.get(&#34;https://api.anti-captcha.com/getTaskResult&#34;, json=check_data)
+            check_res = check_req.json()
+            if check_res[&#39;status&#39;] == &#34;ready&#34;:
+                solution = check_res[&#39;solution&#39;][&#39;token&#39;]
+                break
+
+        return solution</code></pre>
+</details>
 </section>
 <section>
 </section>
@@ -57,6 +124,153 @@ background: #555;
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="ro_py.extensions.anticaptcha.AntiCaptcha"><code class="flex name class">
+<span>class <span class="ident">AntiCaptcha</span></span>
+<span>(</span><span>api_key)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AntiCaptcha:
+    def __init__(self, api_key):
+        self.api_key = api_key
+
+    async def solve(self, captcha: UnsolvedCaptcha):
+        task = Task()
+        task.website_url = &#34;https://roblox.com&#34;
+        task.website_public_key = captcha.pkey
+        task.funcaptcha_api_js_subdomain = &#34;https://roblox-api.arkoselabs.com&#34;
+
+        data = {
+            &#34;clientKey&#34;: self.api_key,
+            &#34;task&#34;: task.get_raw()
+        }
+
+        create_req = await requests_async.post(&#39;https://api.anti-captcha.com/createTask&#39;, json=data)
+        create_res = create_req.json()
+        if create_res[&#39;errorId&#39;] == 1:
+            raise IncorrectKeyError(&#34;The provided anit-captcha api key was incorrect.&#34;)
+        if create_res[&#39;errorId&#39;] == 2:
+            raise NoAvailableWorkersError(&#34;There are currently no available workers.&#34;)
+        if create_res[&#39;errorId&#39;] == 10:
+            raise InsufficientCreditError(&#34;Insufficient credit in the 2captcha account.&#34;)
+
+        solution = None
+        while True:
+            await asyncio.sleep(5)
+            check_data = {
+                &#34;clientKey&#34;: self.api_key,
+                &#34;taskId&#34;: create_res[&#39;taskId&#39;]
+            }
+            check_req = await requests_async.get(&#34;https://api.anti-captcha.com/getTaskResult&#34;, json=check_data)
+            check_res = check_req.json()
+            if check_res[&#39;status&#39;] == &#34;ready&#34;:
+                solution = check_res[&#39;solution&#39;][&#39;token&#39;]
+                break
+
+        return solution</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.extensions.anticaptcha.AntiCaptcha.solve"><code class="name flex">
+<span>async def <span class="ident">solve</span></span>(<span>self, captcha: <a title="ro_py.captcha.UnsolvedCaptcha" href="../captcha.html#ro_py.captcha.UnsolvedCaptcha">UnsolvedCaptcha</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def solve(self, captcha: UnsolvedCaptcha):
+    task = Task()
+    task.website_url = &#34;https://roblox.com&#34;
+    task.website_public_key = captcha.pkey
+    task.funcaptcha_api_js_subdomain = &#34;https://roblox-api.arkoselabs.com&#34;
+
+    data = {
+        &#34;clientKey&#34;: self.api_key,
+        &#34;task&#34;: task.get_raw()
+    }
+
+    create_req = await requests_async.post(&#39;https://api.anti-captcha.com/createTask&#39;, json=data)
+    create_res = create_req.json()
+    if create_res[&#39;errorId&#39;] == 1:
+        raise IncorrectKeyError(&#34;The provided anit-captcha api key was incorrect.&#34;)
+    if create_res[&#39;errorId&#39;] == 2:
+        raise NoAvailableWorkersError(&#34;There are currently no available workers.&#34;)
+    if create_res[&#39;errorId&#39;] == 10:
+        raise InsufficientCreditError(&#34;Insufficient credit in the 2captcha account.&#34;)
+
+    solution = None
+    while True:
+        await asyncio.sleep(5)
+        check_data = {
+            &#34;clientKey&#34;: self.api_key,
+            &#34;taskId&#34;: create_res[&#39;taskId&#39;]
+        }
+        check_req = await requests_async.get(&#34;https://api.anti-captcha.com/getTaskResult&#34;, json=check_data)
+        check_res = check_req.json()
+        if check_res[&#39;status&#39;] == &#34;ready&#34;:
+            solution = check_res[&#39;solution&#39;][&#39;token&#39;]
+            break
+
+    return solution</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="ro_py.extensions.anticaptcha.Task"><code class="flex name class">
+<span>class <span class="ident">Task</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Task:
+    def __init__(self):
+        self.type = &#34;FunCaptchaTaskProxyless&#34;
+        self.website_url = None
+        self.website_public_key = None
+        self.funcaptcha_api_js_subdomain = None
+
+    def get_raw(self):
+        return {
+            &#34;type&#34;: self.type,
+            &#34;websiteURL&#34;: self.website_url,
+            &#34;websitePublicKey&#34;: self.website_public_key,
+            &#34;funcaptchaApiJSSubdomain&#34;: self.funcaptcha_api_js_subdomain
+        }</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.extensions.anticaptcha.Task.get_raw"><code class="name flex">
+<span>def <span class="ident">get_raw</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_raw(self):
+    return {
+        &#34;type&#34;: self.type,
+        &#34;websiteURL&#34;: self.website_url,
+        &#34;websitePublicKey&#34;: self.website_public_key,
+        &#34;funcaptchaApiJSSubdomain&#34;: self.funcaptcha_api_js_subdomain
+    }</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -73,6 +287,22 @@ background: #555;
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="ro_py.extensions" href="index.html">ro_py.extensions</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="ro_py.extensions.anticaptcha.AntiCaptcha" href="#ro_py.extensions.anticaptcha.AntiCaptcha">AntiCaptcha</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.extensions.anticaptcha.AntiCaptcha.solve" href="#ro_py.extensions.anticaptcha.AntiCaptcha.solve">solve</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.extensions.anticaptcha.Task" href="#ro_py.extensions.anticaptcha.Task">Task</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.extensions.anticaptcha.Task.get_raw" href="#ro_py.extensions.anticaptcha.Task.get_raw">get_raw</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

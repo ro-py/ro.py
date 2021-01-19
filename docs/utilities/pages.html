@@ -91,7 +91,7 @@ class Pages:
         Automatic page caching will be added in the future. It is suggested to
         cache the pages yourself if speed is required.
     &#34;&#34;&#34;
-    def __init__(self, requests, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None, handler_args=None):
+    def __init__(self, cso, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None, handler_args=None):
         if extra_parameters is None:
             extra_parameters = {}
 
@@ -103,15 +103,15 @@ class Pages:
 
         self.parameters = extra_parameters
         &#34;&#34;&#34;Extra parameters for the request.&#34;&#34;&#34;
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
         &#34;&#34;&#34;Requests object.&#34;&#34;&#34;
         self.url = url
         &#34;&#34;&#34;URL containing the paginated data, accessible with a GET request.&#34;&#34;&#34;
         self.page = 0
         &#34;&#34;&#34;Current page number.&#34;&#34;&#34;
         self.handler_args = handler_args
-
-        # self.data = self._get_page()
+        self.data = None
 
     async def get_page(self, cursor=None):
         &#34;&#34;&#34;
@@ -125,19 +125,19 @@ class Pages:
             url=self.url,
             params=this_parameters
         )
-        return Page(
-            requests=self.requests,
+        self.data = Page(
+            requests=self.cso,
             data=page_req.json(),
             handler=self.handler,
             handler_args=self.handler_args
-        )
+        ).data
 
     async def previous(self):
         &#34;&#34;&#34;
         Moves to the previous page.
         &#34;&#34;&#34;
         if self.data.previous_page_cursor:
-            self.data = await self._get_page(self.data.previous_page_cursor)
+            await self.get_page(self.data.previous_page_cursor)
         else:
             raise InvalidPageError
 
@@ -146,7 +146,7 @@ class Pages:
         Moves to the next page.
         &#34;&#34;&#34;
         if self.data.next_page_cursor:
-            self.data = await self._get_page(self.data.next_page_cursor)
+            await self.get_page(self.data.next_page_cursor)
         else:
             raise InvalidPageError</code></pre>
 </details>
@@ -204,7 +204,7 @@ class Pages:
 </dd>
 <dt id="ro_py.utilities.pages.Pages"><code class="flex name class">
 <span>class <span class="ident">Pages</span></span>
-<span>(</span><span>requests, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None, handler_args=None)</span>
+<span>(</span><span>cso, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None, handler_args=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a paged object.</p>
@@ -227,7 +227,7 @@ cache the pages yourself if speed is required.</p>
         Automatic page caching will be added in the future. It is suggested to
         cache the pages yourself if speed is required.
     &#34;&#34;&#34;
-    def __init__(self, requests, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None, handler_args=None):
+    def __init__(self, cso, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None, handler_args=None):
         if extra_parameters is None:
             extra_parameters = {}
 
@@ -239,15 +239,15 @@ cache the pages yourself if speed is required.</p>
 
         self.parameters = extra_parameters
         &#34;&#34;&#34;Extra parameters for the request.&#34;&#34;&#34;
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
         &#34;&#34;&#34;Requests object.&#34;&#34;&#34;
         self.url = url
         &#34;&#34;&#34;URL containing the paginated data, accessible with a GET request.&#34;&#34;&#34;
         self.page = 0
         &#34;&#34;&#34;Current page number.&#34;&#34;&#34;
         self.handler_args = handler_args
-
-        # self.data = self._get_page()
+        self.data = None
 
     async def get_page(self, cursor=None):
         &#34;&#34;&#34;
@@ -261,19 +261,19 @@ cache the pages yourself if speed is required.</p>
             url=self.url,
             params=this_parameters
         )
-        return Page(
-            requests=self.requests,
+        self.data = Page(
+            requests=self.cso,
             data=page_req.json(),
             handler=self.handler,
             handler_args=self.handler_args
-        )
+        ).data
 
     async def previous(self):
         &#34;&#34;&#34;
         Moves to the previous page.
         &#34;&#34;&#34;
         if self.data.previous_page_cursor:
-            self.data = await self._get_page(self.data.previous_page_cursor)
+            await self.get_page(self.data.previous_page_cursor)
         else:
             raise InvalidPageError
 
@@ -282,7 +282,7 @@ cache the pages yourself if speed is required.</p>
         Moves to the next page.
         &#34;&#34;&#34;
         if self.data.next_page_cursor:
-            self.data = await self._get_page(self.data.next_page_cursor)
+            await self.get_page(self.data.next_page_cursor)
         else:
             raise InvalidPageError</code></pre>
 </details>
@@ -332,12 +332,12 @@ cache the pages yourself if speed is required.</p>
         url=self.url,
         params=this_parameters
     )
-    return Page(
-        requests=self.requests,
+    self.data = Page(
+        requests=self.cso,
         data=page_req.json(),
         handler=self.handler,
         handler_args=self.handler_args
-    )</code></pre>
+    ).data</code></pre>
 </details>
 </dd>
 <dt id="ro_py.utilities.pages.Pages.next"><code class="name flex">
@@ -354,7 +354,7 @@ cache the pages yourself if speed is required.</p>
     Moves to the next page.
     &#34;&#34;&#34;
     if self.data.next_page_cursor:
-        self.data = await self._get_page(self.data.next_page_cursor)
+        await self.get_page(self.data.next_page_cursor)
     else:
         raise InvalidPageError</code></pre>
 </details>
@@ -373,7 +373,7 @@ cache the pages yourself if speed is required.</p>
     Moves to the previous page.
     &#34;&#34;&#34;
     if self.data.previous_page_cursor:
-        self.data = await self._get_page(self.data.previous_page_cursor)
+        await self.get_page(self.data.previous_page_cursor)
     else:
         raise InvalidPageError</code></pre>
 </details>

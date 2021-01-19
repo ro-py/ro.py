@@ -66,15 +66,29 @@ from ro_py.groups import Group
 from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
+from ro_py.events import EventTypes
 from ro_py.trades import TradesWrapper
-from ro_py.utilities.cache import CacheType
 from ro_py.utilities.requests import Requests
 from ro_py.accountsettings import AccountSettings
+from ro_py.utilities.cache import Cache, CacheType
 from ro_py.accountinformation import AccountInformation
 from ro_py.utilities.errors import UserDoesNotExistError, InvalidPlaceIDError
 from ro_py.captcha import UnsolvedLoginCaptcha
 
 import logging
+
+
+class ClientSharedObject:
+    &#34;&#34;&#34;
+    This object is shared across most instances and classes for a particular client.
+    &#34;&#34;&#34;
+    def __init__(self, client):
+        self.client = client
+        &#34;&#34;&#34;Client (parent) of this object.&#34;&#34;&#34;
+        self.cache = Cache()
+        &#34;&#34;&#34;Cache object to keep objects that don&#39;t need to be recreated.&#34;&#34;&#34;
+        self.requests = Requests()
+        &#34;&#34;&#34;Reqests object for all web requests.&#34;&#34;&#34;
 
 
 class Client:
@@ -88,7 +102,10 @@ class Client:
     &#34;&#34;&#34;
 
     def __init__(self, token: str = None):
-        self.requests = Requests()
+        self.cso = ClientSharedObject(self)
+        &#34;&#34;&#34;ClientSharedObject. Passed to each new object to share information.&#34;&#34;&#34;
+        self.requests = self.cso.requests
+        &#34;&#34;&#34;See self.cso.requests&#34;&#34;&#34;
 
         logging.debug(&#34;Initialized requests.&#34;)
 
@@ -100,16 +117,18 @@ class Client:
         &#34;&#34;&#34;ChatWrapper object. Only available for authenticated clients.&#34;&#34;&#34;
         self.trade = None
         &#34;&#34;&#34;TradesWrapper object. Only available for authenticated clients.&#34;&#34;&#34;
+        self.events = EventTypes
+        &#34;&#34;&#34;Types of events used for binding events to a function.&#34;&#34;&#34;
 
         if token:
             self.token_login(token)
             logging.debug(&#34;Initialized token.&#34;)
-            self.accountinformation = AccountInformation(self.requests)
-            self.accountsettings = AccountSettings(self.requests)
+            self.accountinformation = AccountInformation(self.cso)
+            self.accountsettings = AccountSettings(self.cso)
             logging.debug(&#34;Initialized AccountInformation and AccountSettings.&#34;)
-            self.chat = ChatWrapper(self.requests)
+            self.chat = ChatWrapper(self.cso)
             logging.debug(&#34;Initialized chat wrapper.&#34;)
-            self.trade = TradesWrapper(self.requests, self.get_self)
+            self.trade = TradesWrapper(self.cso, self.get_self)
             logging.debug(&#34;Initialized trade wrapper.&#34;)
 
     def token_login(self, token):
@@ -183,7 +202,7 @@ class Client:
             url=&#34;https://roblox.com/my/profile&#34;
         )
         data = self_req.json()
-        return User(self.requests, data[&#39;Username&#39;], data[&#39;UserId&#39;])
+        return User(self.cso, data[&#39;UserId&#39;], data[&#39;Username&#39;])
 
     async def get_user(self, user_id):
         &#34;&#34;&#34;
@@ -194,10 +213,10 @@ class Client:
         user_id
             ID of the user to generate the object from.
         &#34;&#34;&#34;
-        user = self.requests.cache.get(CacheType.Users, user_id)
+        user = self.cso.cache.get(CacheType.Users, user_id)
         if not user:
-            user = User(self.requests, user_id)
-            self.requests.cache.set(CacheType.Users, user_id, user)
+            user = User(self.cso, user_id)
+            self.cso.cache.set(CacheType.Users, user_id, user)
             await user.update()
         return user
 
@@ -224,10 +243,10 @@ class Client:
         username_data = username_req.json()
         if len(username_data[&#34;data&#34;]) &gt; 0:
             user_id = username_req.json()[&#34;data&#34;][0][&#34;id&#34;]  # TODO: make this a partialuser
-            user = self.requests.cache.get(CacheType.Users, user_id)
+            user = self.cso.cache.get(CacheType.Users, user_id)
             if not user:
-                user = User(self.requests, user_id)
-                self.requests.cache.set(CacheType.Users, user_id, user)
+                user = User(self.cso, user_id)
+                self.cso.cache.set(CacheType.Users, user_id, user)
                 await user.update()
             return user
         else:
@@ -242,10 +261,10 @@ class Client:
         group_id
             ID of the group to generate the object from.
         &#34;&#34;&#34;
-        group = self.requests.cache.get(CacheType.Groups, group_id)
+        group = self.cso.cache.get(CacheType.Groups, group_id)
         if not group:
-            group = Group(self.requests, group_id)
-            self.requests.cache.set(CacheType.Groups, group_id, group)
+            group = Group(self.cso, group_id)
+            self.cso.cache.set(CacheType.Groups, group_id, group)
             await group.update()
         return group
 
@@ -258,10 +277,10 @@ class Client:
         universe_id
             ID of the game to generate the object from.
         &#34;&#34;&#34;
-        game = self.requests.cache.get(CacheType.Games, universe_id)
+        game = self.cso.cache.get(CacheType.Games, universe_id)
         if not game:
-            game = Game(self.requests, universe_id)
-            self.requests.cache.set(CacheType.Games, universe_id, game)
+            game = Game(self.cso, universe_id)
+            self.cso.cache.set(CacheType.Games, universe_id, game)
             await game.update()
         return game
 
@@ -300,10 +319,10 @@ class Client:
         asset_id
             ID of the asset to generate the object from.
         &#34;&#34;&#34;
-        asset = self.requests.cache.get(CacheType.Assets, asset_id)
+        asset = self.cso.cache.get(CacheType.Assets, asset_id)
         if not asset:
-            asset = Asset(self.requests, asset_id)
-            self.requests.cache.set(CacheType.Assets, asset_id, asset)
+            asset = Asset(self.cso, asset_id)
+            self.cso.cache.set(CacheType.Assets, asset_id, asset)
             await asset.update()
         return asset
 
@@ -316,10 +335,10 @@ class Client:
         badge_id
             ID of the badge to generate the object from.
         &#34;&#34;&#34;
-        badge = self.requests.cache.get(CacheType.Assets, badge_id)
+        badge = self.cso.cache.get(CacheType.Assets, badge_id)
         if not badge:
-            badge = Badge(self.requests, badge_id)
-            self.requests.cache.set(CacheType.Assets, badge_id, badge)
+            badge = Badge(self.cso, badge_id)
+            self.cso.cache.set(CacheType.Assets, badge_id, badge)
             await badge.update()
         return badge</code></pre>
 </details>
@@ -359,7 +378,10 @@ class Client:
     &#34;&#34;&#34;
 
     def __init__(self, token: str = None):
-        self.requests = Requests()
+        self.cso = ClientSharedObject(self)
+        &#34;&#34;&#34;ClientSharedObject. Passed to each new object to share information.&#34;&#34;&#34;
+        self.requests = self.cso.requests
+        &#34;&#34;&#34;See self.cso.requests&#34;&#34;&#34;
 
         logging.debug(&#34;Initialized requests.&#34;)
 
@@ -371,16 +393,18 @@ class Client:
         &#34;&#34;&#34;ChatWrapper object. Only available for authenticated clients.&#34;&#34;&#34;
         self.trade = None
         &#34;&#34;&#34;TradesWrapper object. Only available for authenticated clients.&#34;&#34;&#34;
+        self.events = EventTypes
+        &#34;&#34;&#34;Types of events used for binding events to a function.&#34;&#34;&#34;
 
         if token:
             self.token_login(token)
             logging.debug(&#34;Initialized token.&#34;)
-            self.accountinformation = AccountInformation(self.requests)
-            self.accountsettings = AccountSettings(self.requests)
+            self.accountinformation = AccountInformation(self.cso)
+            self.accountsettings = AccountSettings(self.cso)
             logging.debug(&#34;Initialized AccountInformation and AccountSettings.&#34;)
-            self.chat = ChatWrapper(self.requests)
+            self.chat = ChatWrapper(self.cso)
             logging.debug(&#34;Initialized chat wrapper.&#34;)
-            self.trade = TradesWrapper(self.requests, self.get_self)
+            self.trade = TradesWrapper(self.cso, self.get_self)
             logging.debug(&#34;Initialized trade wrapper.&#34;)
 
     def token_login(self, token):
@@ -454,7 +478,7 @@ class Client:
             url=&#34;https://roblox.com/my/profile&#34;
         )
         data = self_req.json()
-        return User(self.requests, data[&#39;Username&#39;], data[&#39;UserId&#39;])
+        return User(self.cso, data[&#39;UserId&#39;], data[&#39;Username&#39;])
 
     async def get_user(self, user_id):
         &#34;&#34;&#34;
@@ -465,10 +489,10 @@ class Client:
         user_id
             ID of the user to generate the object from.
         &#34;&#34;&#34;
-        user = self.requests.cache.get(CacheType.Users, user_id)
+        user = self.cso.cache.get(CacheType.Users, user_id)
         if not user:
-            user = User(self.requests, user_id)
-            self.requests.cache.set(CacheType.Users, user_id, user)
+            user = User(self.cso, user_id)
+            self.cso.cache.set(CacheType.Users, user_id, user)
             await user.update()
         return user
 
@@ -495,10 +519,10 @@ class Client:
         username_data = username_req.json()
         if len(username_data[&#34;data&#34;]) &gt; 0:
             user_id = username_req.json()[&#34;data&#34;][0][&#34;id&#34;]  # TODO: make this a partialuser
-            user = self.requests.cache.get(CacheType.Users, user_id)
+            user = self.cso.cache.get(CacheType.Users, user_id)
             if not user:
-                user = User(self.requests, user_id)
-                self.requests.cache.set(CacheType.Users, user_id, user)
+                user = User(self.cso, user_id)
+                self.cso.cache.set(CacheType.Users, user_id, user)
                 await user.update()
             return user
         else:
@@ -513,10 +537,10 @@ class Client:
         group_id
             ID of the group to generate the object from.
         &#34;&#34;&#34;
-        group = self.requests.cache.get(CacheType.Groups, group_id)
+        group = self.cso.cache.get(CacheType.Groups, group_id)
         if not group:
-            group = Group(self.requests, group_id)
-            self.requests.cache.set(CacheType.Groups, group_id, group)
+            group = Group(self.cso, group_id)
+            self.cso.cache.set(CacheType.Groups, group_id, group)
             await group.update()
         return group
 
@@ -529,10 +553,10 @@ class Client:
         universe_id
             ID of the game to generate the object from.
         &#34;&#34;&#34;
-        game = self.requests.cache.get(CacheType.Games, universe_id)
+        game = self.cso.cache.get(CacheType.Games, universe_id)
         if not game:
-            game = Game(self.requests, universe_id)
-            self.requests.cache.set(CacheType.Games, universe_id, game)
+            game = Game(self.cso, universe_id)
+            self.cso.cache.set(CacheType.Games, universe_id, game)
             await game.update()
         return game
 
@@ -571,10 +595,10 @@ class Client:
         asset_id
             ID of the asset to generate the object from.
         &#34;&#34;&#34;
-        asset = self.requests.cache.get(CacheType.Assets, asset_id)
+        asset = self.cso.cache.get(CacheType.Assets, asset_id)
         if not asset:
-            asset = Asset(self.requests, asset_id)
-            self.requests.cache.set(CacheType.Assets, asset_id, asset)
+            asset = Asset(self.cso, asset_id)
+            self.cso.cache.set(CacheType.Assets, asset_id, asset)
             await asset.update()
         return asset
 
@@ -587,10 +611,10 @@ class Client:
         badge_id
             ID of the badge to generate the object from.
         &#34;&#34;&#34;
-        badge = self.requests.cache.get(CacheType.Assets, badge_id)
+        badge = self.cso.cache.get(CacheType.Assets, badge_id)
         if not badge:
-            badge = Badge(self.requests, badge_id)
-            self.requests.cache.set(CacheType.Assets, badge_id, badge)
+            badge = Badge(self.cso, badge_id)
+            self.cso.cache.set(CacheType.Assets, badge_id, badge)
             await badge.update()
         return badge</code></pre>
 </details>
@@ -611,6 +635,18 @@ class Client:
 <dt id="ro_py.client.Client.chat"><code class="name">var <span class="ident">chat</span></code></dt>
 <dd>
 <div class="desc"><p>ChatWrapper object. Only available for authenticated clients.</p></div>
+</dd>
+<dt id="ro_py.client.Client.cso"><code class="name">var <span class="ident">cso</span></code></dt>
+<dd>
+<div class="desc"><p>ClientSharedObject. Passed to each new object to share information.</p></div>
+</dd>
+<dt id="ro_py.client.Client.events"><code class="name">var <span class="ident">events</span></code></dt>
+<dd>
+<div class="desc"><p>Types of events used for binding events to a function.</p></div>
+</dd>
+<dt id="ro_py.client.Client.requests"><code class="name">var <span class="ident">requests</span></code></dt>
+<dd>
+<div class="desc"><p>See self.cso.requests</p></div>
 </dd>
 <dt id="ro_py.client.Client.trade"><code class="name">var <span class="ident">trade</span></code></dt>
 <dd>
@@ -642,10 +678,10 @@ class Client:
     asset_id
         ID of the asset to generate the object from.
     &#34;&#34;&#34;
-    asset = self.requests.cache.get(CacheType.Assets, asset_id)
+    asset = self.cso.cache.get(CacheType.Assets, asset_id)
     if not asset:
-        asset = Asset(self.requests, asset_id)
-        self.requests.cache.set(CacheType.Assets, asset_id, asset)
+        asset = Asset(self.cso, asset_id)
+        self.cso.cache.set(CacheType.Assets, asset_id, asset)
         await asset.update()
     return asset</code></pre>
 </details>
@@ -673,10 +709,10 @@ class Client:
     badge_id
         ID of the badge to generate the object from.
     &#34;&#34;&#34;
-    badge = self.requests.cache.get(CacheType.Assets, badge_id)
+    badge = self.cso.cache.get(CacheType.Assets, badge_id)
     if not badge:
-        badge = Badge(self.requests, badge_id)
-        self.requests.cache.set(CacheType.Assets, badge_id, badge)
+        badge = Badge(self.cso, badge_id)
+        self.cso.cache.set(CacheType.Assets, badge_id, badge)
         await badge.update()
     return badge</code></pre>
 </details>
@@ -745,10 +781,10 @@ class Client:
     universe_id
         ID of the game to generate the object from.
     &#34;&#34;&#34;
-    game = self.requests.cache.get(CacheType.Games, universe_id)
+    game = self.cso.cache.get(CacheType.Games, universe_id)
     if not game:
-        game = Game(self.requests, universe_id)
-        self.requests.cache.set(CacheType.Games, universe_id, game)
+        game = Game(self.cso, universe_id)
+        self.cso.cache.set(CacheType.Games, universe_id, game)
         await game.update()
     return game</code></pre>
 </details>
@@ -776,10 +812,10 @@ class Client:
     group_id
         ID of the group to generate the object from.
     &#34;&#34;&#34;
-    group = self.requests.cache.get(CacheType.Groups, group_id)
+    group = self.cso.cache.get(CacheType.Groups, group_id)
     if not group:
-        group = Group(self.requests, group_id)
-        self.requests.cache.set(CacheType.Groups, group_id, group)
+        group = Group(self.cso, group_id)
+        self.cso.cache.set(CacheType.Groups, group_id, group)
         await group.update()
     return group</code></pre>
 </details>
@@ -798,7 +834,7 @@ class Client:
         url=&#34;https://roblox.com/my/profile&#34;
     )
     data = self_req.json()
-    return User(self.requests, data[&#39;Username&#39;], data[&#39;UserId&#39;])</code></pre>
+    return User(self.cso, data[&#39;UserId&#39;], data[&#39;Username&#39;])</code></pre>
 </details>
 </dd>
 <dt id="ro_py.client.Client.get_user"><code class="name flex">
@@ -824,10 +860,10 @@ class Client:
     user_id
         ID of the user to generate the object from.
     &#34;&#34;&#34;
-    user = self.requests.cache.get(CacheType.Users, user_id)
+    user = self.cso.cache.get(CacheType.Users, user_id)
     if not user:
-        user = User(self.requests, user_id)
-        self.requests.cache.set(CacheType.Users, user_id, user)
+        user = User(self.cso, user_id)
+        self.cso.cache.set(CacheType.Users, user_id, user)
         await user.update()
     return user</code></pre>
 </details>
@@ -871,10 +907,10 @@ class Client:
     username_data = username_req.json()
     if len(username_data[&#34;data&#34;]) &gt; 0:
         user_id = username_req.json()[&#34;data&#34;][0][&#34;id&#34;]  # TODO: make this a partialuser
-        user = self.requests.cache.get(CacheType.Users, user_id)
+        user = self.cso.cache.get(CacheType.Users, user_id)
         if not user:
-            user = User(self.requests, user_id)
-            self.requests.cache.set(CacheType.Users, user_id, user)
+            user = User(self.cso, user_id)
+            self.cso.cache.set(CacheType.Users, user_id, user)
             await user.update()
         return user
     else:
@@ -988,6 +1024,44 @@ class Client:
 </dd>
 </dl>
 </dd>
+<dt id="ro_py.client.ClientSharedObject"><code class="flex name class">
+<span>class <span class="ident">ClientSharedObject</span></span>
+<span>(</span><span>client)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>This object is shared across most instances and classes for a particular client.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ClientSharedObject:
+    &#34;&#34;&#34;
+    This object is shared across most instances and classes for a particular client.
+    &#34;&#34;&#34;
+    def __init__(self, client):
+        self.client = client
+        &#34;&#34;&#34;Client (parent) of this object.&#34;&#34;&#34;
+        self.cache = Cache()
+        &#34;&#34;&#34;Cache object to keep objects that don&#39;t need to be recreated.&#34;&#34;&#34;
+        self.requests = Requests()
+        &#34;&#34;&#34;Reqests object for all web requests.&#34;&#34;&#34;</code></pre>
+</details>
+<h3>Instance variables</h3>
+<dl>
+<dt id="ro_py.client.ClientSharedObject.cache"><code class="name">var <span class="ident">cache</span></code></dt>
+<dd>
+<div class="desc"><p>Cache object to keep objects that don't need to be recreated.</p></div>
+</dd>
+<dt id="ro_py.client.ClientSharedObject.client"><code class="name">var <span class="ident">client</span></code></dt>
+<dd>
+<div class="desc"><p>Client (parent) of this object.</p></div>
+</dd>
+<dt id="ro_py.client.ClientSharedObject.requests"><code class="name">var <span class="ident">requests</span></code></dt>
+<dd>
+<div class="desc"><p>Reqests object for all web requests.</p></div>
+</dd>
+</dl>
+</dd>
 </dl>
 </section>
 </article>
@@ -1015,6 +1089,8 @@ class Client:
 <li><code><a title="ro_py.client.Client.accountinformation" href="#ro_py.client.Client.accountinformation">accountinformation</a></code></li>
 <li><code><a title="ro_py.client.Client.accountsettings" href="#ro_py.client.Client.accountsettings">accountsettings</a></code></li>
 <li><code><a title="ro_py.client.Client.chat" href="#ro_py.client.Client.chat">chat</a></code></li>
+<li><code><a title="ro_py.client.Client.cso" href="#ro_py.client.Client.cso">cso</a></code></li>
+<li><code><a title="ro_py.client.Client.events" href="#ro_py.client.Client.events">events</a></code></li>
 <li><code><a title="ro_py.client.Client.get_asset" href="#ro_py.client.Client.get_asset">get_asset</a></code></li>
 <li><code><a title="ro_py.client.Client.get_badge" href="#ro_py.client.Client.get_badge">get_badge</a></code></li>
 <li><code><a title="ro_py.client.Client.get_game_by_place_id" href="#ro_py.client.Client.get_game_by_place_id">get_game_by_place_id</a></code></li>
@@ -1023,9 +1099,18 @@ class Client:
 <li><code><a title="ro_py.client.Client.get_self" href="#ro_py.client.Client.get_self">get_self</a></code></li>
 <li><code><a title="ro_py.client.Client.get_user" href="#ro_py.client.Client.get_user">get_user</a></code></li>
 <li><code><a title="ro_py.client.Client.get_user_by_username" href="#ro_py.client.Client.get_user_by_username">get_user_by_username</a></code></li>
+<li><code><a title="ro_py.client.Client.requests" href="#ro_py.client.Client.requests">requests</a></code></li>
 <li><code><a title="ro_py.client.Client.token_login" href="#ro_py.client.Client.token_login">token_login</a></code></li>
 <li><code><a title="ro_py.client.Client.trade" href="#ro_py.client.Client.trade">trade</a></code></li>
 <li><code><a title="ro_py.client.Client.user_login" href="#ro_py.client.Client.user_login">user_login</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.client.ClientSharedObject" href="#ro_py.client.ClientSharedObject">ClientSharedObject</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.client.ClientSharedObject.cache" href="#ro_py.client.ClientSharedObject.cache">cache</a></code></li>
+<li><code><a title="ro_py.client.ClientSharedObject.client" href="#ro_py.client.ClientSharedObject.client">client</a></code></li>
+<li><code><a title="ro_py.client.ClientSharedObject.requests" href="#ro_py.client.ClientSharedObject.requests">requests</a></code></li>
 </ul>
 </li>
 </ul>

@@ -131,8 +131,9 @@ class Role:
     role_data : dict
             Dictionary containing role information.
     &#34;&#34;&#34;
-    def __init__(self, requests, group, role_data):
-        self.requests = requests
+    def __init__(self, cso, group, role_data):
+        self.cso = cso
+        self.requests = cso.requests
         self.group = group
         self.id = role_data[&#39;id&#39;]
         self.name = role_data[&#39;name&#39;]
@@ -276,7 +277,7 @@ class Role:
 <dl>
 <dt id="ro_py.roles.Role"><code class="flex name class">
 <span>class <span class="ident">Role</span></span>
-<span>(</span><span>requests, group, role_data)</span>
+<span>(</span><span>cso, group, role_data)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a role</p>
@@ -306,8 +307,9 @@ class Role:
     role_data : dict
             Dictionary containing role information.
     &#34;&#34;&#34;
-    def __init__(self, requests, group, role_data):
-        self.requests = requests
+    def __init__(self, cso, group, role_data):
+        self.cso = cso
+        self.requests = cso.requests
         self.group = group
         self.id = role_data[&#39;id&#39;]
         self.name = role_data[&#39;name&#39;]
