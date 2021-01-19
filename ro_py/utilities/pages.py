@@ -36,7 +36,7 @@ class Pages:
         Automatic page caching will be added in the future. It is suggested to
         cache the pages yourself if speed is required.
     """
-    def __init__(self, requests, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None, handler_args=None):
+    def __init__(self, cso, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None, handler_args=None):
         if extra_parameters is None:
             extra_parameters = {}
 
@@ -48,15 +48,15 @@ class Pages:
 
         self.parameters = extra_parameters
         """Extra parameters for the request."""
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
         """Requests object."""
         self.url = url
         """URL containing the paginated data, accessible with a GET request."""
         self.page = 0
         """Current page number."""
         self.handler_args = handler_args
-
-        # self.data = self._get_page()
+        self.data = None
 
     async def get_page(self, cursor=None):
         """
@@ -70,19 +70,19 @@ class Pages:
             url=self.url,
             params=this_parameters
         )
-        return Page(
-            requests=self.requests,
+        self.data = Page(
+            requests=self.cso,
             data=page_req.json(),
             handler=self.handler,
             handler_args=self.handler_args
-        )
+        ).data
 
     async def previous(self):
         """
         Moves to the previous page.
         """
         if self.data.previous_page_cursor:
-            self.data = await self._get_page(self.data.previous_page_cursor)
+            await self.get_page(self.data.previous_page_cursor)
         else:
             raise InvalidPageError
 
@@ -91,6 +91,6 @@ class Pages:
         Moves to the next page.
         """
         if self.data.next_page_cursor:
-            self.data = await self._get_page(self.data.next_page_cursor)
+            await self.get_page(self.data.next_page_cursor)
         else:
             raise InvalidPageError

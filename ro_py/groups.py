@@ -4,10 +4,12 @@ This file houses functions and classes that pertain to Roblox groups.
 
 """
 import iso8601
+import asyncio
 from typing import List
-from ro_py.users import User
+from ro_py.wall import Wall
 from ro_py.roles import Role
 from ro_py.captcha import UnsolvedCaptcha
+from ro_py.users import User, PartialUser
 from ro_py.utilities.errors import NotFound
 from ro_py.utilities.pages import Pages, SortOrder
 
@@ -18,36 +20,43 @@ class Shout:
     """
     Represents a group shout.
     """
-    def __init__(self, requests, shout_data):
+    def __init__(self, cso, shout_data):
         self.body = shout_data["body"]
-        self.poster = User(requests, shout_data["poster"]["userId"])
+        self.poster = User(cso, shout_data["poster"]["userId"], shout_data['poster']['username'])
 
 
-class WallPost:
-    """
-    Represents a roblox wall post.
-    """
-    def __init__(self, requests, wall_data, group):
-        self.requests = requests
+class JoinRequest:
+    def __init__(self, cso, data, group):
+        self.requests = cso.requests
         self.group = group
-        self.id = wall_data['id']
-        self.body = wall_data['body']
-        self.created = iso8601.parse(wall_data['created'])
-        self.updated = iso8601.parse(wall_data['updated'])
-        self.poster = User(requests, wall_data['user']['userId'], wall_data['user']['username'])
+        self.requester = PartialUser(cso, data['requester']['userId'], data['requester']['username'])
+        self.created = iso8601.parse_date(data['created'])
 
-    async def delete(self):
-        wall_req = await self.requests.delete(
-            url=endpoint + f"/v1/groups/{self.id}/wall/posts/{self.id}"
+    async def accept(self):
+        accept_req = await self.requests.post(
+            url=endpoint + f"/v1/groups/{self.group.id}/join-requests/users/{self.requests.id}"
         )
-        return wall_req.status == 200
+        return accept_req.status_code == 200
+
+    async def decline(self):
+        accept_req = await self.requests.delete(
+            url=endpoint + f"/v1/groups/{self.group.id}/join-requests/users/{self.requests.id}"
+        )
+        return accept_req.status_code == 200
 
 
-def wall_post_handeler(requests, this_page, args) -> List[WallPost]:
-    wall_posts = []
-    for wall_post in this_page:
-        wall_posts.append(WallPost(requests, wall_post, args))
-    return wall_posts
+def join_request_handler(cso, data, args):
+    join_requests = []
+    for request in data:
+        join_requests.append(JoinRequest(cso, request, args))
+    return join_requests
+
+
+def member_handler(cso, data, args):
+    members = []
+    for member in data:
+        members.append()
+    return members
 
 
 class Group:
@@ -66,6 +75,7 @@ class Group:
         self.is_builders_club_only = None
         self.public_entry_allowed = None
         self.shout = None
+        self.events = Events(cso, self)
 
     async def update(self):
         """
@@ -80,7 +90,7 @@ class Group:
         self.is_builders_club_only = group_info["isBuildersClubOnly"]
         self.public_entry_allowed = group_info["publicEntryAllowed"]
         if "shout" in group_info:
-            self.shout = group_info["shout"]
+            self.shout = Shout(self.cso, group_info['shout'])
         else:
             self.shout = None
         # self.is_locked = group_info["isLocked"]
@@ -145,6 +155,30 @@ class Group:
         member = Member(self.cso, roblox_id, "", self, role)
         return await member.update()
 
+    async def get_join_requests(self, sort_order=SortOrder.Ascending, limit=100):
+        pages = Pages(
+            cso=self.cso,
+            url=endpoint + f"/v1/groups/{self.id}/join-requests",
+            sort_order=sort_order,
+            limit=limit,
+            handler=join_request_handler,
+            handler_args=self
+        )
+        await pages.get_page()
+        return pages
+
+    async def get_members(self, sort_order=SortOrder.Ascending, limit=100):
+        pages = Pages(
+            cso=self.cso,
+            url=endpoint + f"/v1/groups/{self.id}/users?limit=100&sortOrder=Desc",
+            sort_order=sort_order,
+            limit=limit,
+            handler=member_handler,
+            handler_args=self
+        )
+        await pages.get_page()
+        return pages
+
 
 class PartialGroup(Group):
     """
@@ -152,44 +186,6 @@ class PartialGroup(Group):
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-
-class Wall:
-    def __init__(self, cso, group):
-        self.cso = cso
-        self.requests = cso.requests
-        self.group = group
-
-    async def get_posts(self, sort_order=SortOrder.Ascending, limit=100):
-        wall_req = Pages(
-            requests=self.requests,
-            url=endpoint + f"/v2/groups/{self.group.id}/wall/posts",
-            sort_order=sort_order,
-            limit=limit,
-            handler=wall_post_handeler,
-            handler_args=self
-        )
-        return wall_req
-
-    async def post(self, content, captcha_key=None):
-        data = {
-            "body": content
-        }
-
-        if captcha_key:
-            data['captchaProvider'] = "PROVIDER_ARKOSE_LABS"
-            data['captchaToken'] = captcha_key
-
-        post_req = await self.requests.post(
-            url=endpoint + f"/v1/groups/2695946/wall/posts",
-            data=data,
-            quickreturn=True
-        )
-
-        if post_req.status_code == 403:
-            return UnsolvedCaptcha(pkey="63E4117F-E727-42B4-6DAA-C8448E9B137F")
-        else:
-            return post_req.status_code == 200
 
 
 class Member(User):
@@ -323,3 +319,71 @@ class Member(User):
             url=endpoint + f"/v1/groups/{self.group.id}/users/{self.id}"
         )
         return exile_req.status_code == 200
+
+
+class Events:
+    def __init__(self, cso, group):
+        self.cso = cso
+        self.group = group
+
+    async def bind(self, func, event, delay=15):
+        """
+        Binds a function to an event.
+
+        Parameters
+        ----------
+        func : function
+                Function that will be bound to the event.
+        event : str
+                Event that will be bound to the function.
+        delay : int
+                How many seconds between each poll.
+        """
+        if event == "on_join_request":
+            return await asyncio.create_task(self.on_join_request(func, delay))
+        if event == "on_wall_post":
+            return await asyncio.create_task(self.on_wall_post(func, delay))
+        if event == "on_shout_update":
+            return await asyncio.create_task(self.on_shout_update(func, delay))
+
+    async def on_join_request(self, func, delay):
+        current_group_reqs = await self.group.get_join_requests()
+        old_req = current_group_reqs.data.requester.id
+        while True:
+            await asyncio.sleep(delay)
+            current_group_reqs = await self.group.get_join_requests()
+            current_group_reqs = current_group_reqs.data
+            if current_group_reqs[0].requester.id != old_req:
+                new_reqs = []
+                for request in current_group_reqs:
+                    if request.requester.id != old_req:
+                        new_reqs.append(request)
+                old_req = current_group_reqs[0].requester.id
+                for new_req in new_reqs:
+                    await func(new_req)
+
+    async def on_wall_post(self, func, delay):
+        current_wall_posts = await self.group.wall.get_posts()
+        newest_wall_poster = current_wall_posts.data[0].poster.id
+        while True:
+            await asyncio.sleep(delay)
+            current_wall_posts = await self.group.wall.get_posts()
+            current_wall_posts = current_wall_posts.data
+            if current_wall_posts[0].poster.id != newest_wall_poster:
+                new_posts = []
+                for post in current_wall_posts:
+                    if post.poster.id != newest_wall_poster:
+                        new_posts.append(post)
+                newest_wall_poster = current_wall_posts[0].poster.id
+                for new_post in new_posts:
+                    await func(new_post)
+
+    async def on_shout_update(self, func, delay):
+        await self.group.update()
+        current_shout = self.group.shout
+        while True:
+            await asyncio.sleep(delay)
+            await self.group.update()
+            if current_shout.poster.id != self.group.shout.poster.id or current_shout.body != self.group.shout.body:
+                current_shout = self.group.shout
+                await func(self.group.shout)

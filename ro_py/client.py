@@ -10,6 +10,7 @@ from ro_py.groups import Group
 from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
+from ro_py.events import EventTypes
 from ro_py.trades import TradesWrapper
 from ro_py.utilities.requests import Requests
 from ro_py.accountsettings import AccountSettings
@@ -55,6 +56,8 @@ class Client:
         """ChatWrapper object. Only available for authenticated clients."""
         self.trade = None
         """TradesWrapper object. Only available for authenticated clients."""
+        self.events = EventTypes
+        """Types of events used for binding events to a function."""
 
         if token:
             self.token_login(token)

@@ -27,8 +27,8 @@ class Trade:
         self.sender = sender
         self.recieve_items = recieve_items
         self.send_items = send_items
-        self.created = iso8601.parse(created)
-        self.experation = iso8601.parse(expiration)
+        self.created = iso8601.parse_date(created)
+        self.experation = iso8601.parse_date(expiration)
         self.status = status
 
     async def accept(self) -> bool:
