@@ -138,7 +138,7 @@ class Client:
             url="https://roblox.com/my/profile"
         )
         data = self_req.json()
-        return User(self.requests, data['Username'], data['UserId'])
+        return User(self.cso, data['Username'], data['UserId'])
 
     async def get_user(self, user_id):
         """
@@ -151,7 +151,7 @@ class Client:
         """
         user = self.cso.cache.get(CacheType.Users, user_id)
         if not user:
-            user = User(self.requests, user_id)
+            user = User(self.cso, user_id)
             self.cso.cache.set(CacheType.Users, user_id, user)
             await user.update()
         return user
@@ -181,7 +181,7 @@ class Client:
             user_id = username_req.json()["data"][0]["id"]  # TODO: make this a partialuser
             user = self.cso.cache.get(CacheType.Users, user_id)
             if not user:
-                user = User(self.requests, user_id)
+                user = User(self.cso, user_id)
                 self.cso.cache.set(CacheType.Users, user_id, user)
                 await user.update()
             return user
@@ -199,7 +199,7 @@ class Client:
         """
         group = self.cso.cache.get(CacheType.Groups, group_id)
         if not group:
-            group = Group(self.requests, group_id)
+            group = Group(self.cso, group_id)
             self.cso.cache.set(CacheType.Groups, group_id, group)
             await group.update()
         return group
@@ -215,7 +215,7 @@ class Client:
         """
         game = self.cso.cache.get(CacheType.Games, universe_id)
         if not game:
-            game = Game(self.requests, universe_id)
+            game = Game(self.cso, universe_id)
             self.cso.cache.set(CacheType.Games, universe_id, game)
             await game.update()
         return game
@@ -257,7 +257,7 @@ class Client:
         """
         asset = self.cso.cache.get(CacheType.Assets, asset_id)
         if not asset:
-            asset = Asset(self.requests, asset_id)
+            asset = Asset(self.cso, asset_id)
             self.cso.cache.set(CacheType.Assets, asset_id, asset)
             await asset.update()
         return asset
@@ -273,7 +273,7 @@ class Client:
         """
         badge = self.cso.cache.get(CacheType.Assets, badge_id)
         if not badge:
-            badge = Badge(self.requests, badge_id)
+            badge = Badge(self.cso, badge_id)
             self.cso.cache.set(CacheType.Assets, badge_id, badge)
             await badge.update()
         return badge

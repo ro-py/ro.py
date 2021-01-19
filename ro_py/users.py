@@ -34,8 +34,9 @@ class User:
     name : str
             The name of the user.
     """
-    def __init__(self, requests, roblox_id, name=None):
-        self.requests = requests
+    def __init__(self, cso, roblox_id, name=None):
+        self.cso = cso
+        self.requests = cso.requests
         self.id = roblox_id
         self.description = None
         self.created = None
