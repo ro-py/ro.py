@@ -14,4 +14,5 @@ async def main():
     print(f"logged in as {me.name} with id {me.id}")
 
 
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.get_event_loop().run_until_complete(main())

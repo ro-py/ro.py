@@ -1,5 +1,5 @@
 from ro_py.client import Client
-from ro_py.extensions.anticaptcha import TwoCaptcha
+from ro_py.extensions.twocaptcha import TwoCaptcha
 import asyncio
 
 client = Client()
@@ -14,4 +14,5 @@ async def main():
     print(f"logged in as {me.name} with id {me.id}")
 
 
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.get_event_loop().run_until_complete(main())
