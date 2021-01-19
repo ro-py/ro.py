@@ -67,7 +67,6 @@ class Client:
             logging.debug("Initialized chat wrapper.")
             self.trade = TradesWrapper(self.cso, self.get_self)
             logging.debug("Initialized trade wrapper.")
-            self.event =
 
     def token_login(self, token):
         """
