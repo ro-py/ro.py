@@ -23,12 +23,15 @@ import logging
 
 class ClientSharedObject:
     """
-    This object will be shared across most instances and classes for a particular client.
+    This object is shared across most instances and classes for a particular client.
     """
     def __init__(self, client):
         self.client = client
+        """Client (parent) of this object."""
         self.cache = Cache()
+        """Cache object to keep objects that don't need to be recreated."""
         self.requests = Requests()
+        """Reqests object for all web requests."""
 
 
 class Client:
@@ -43,7 +46,9 @@ class Client:
 
     def __init__(self, token: str = None):
         self.cso = ClientSharedObject(self)
+        """ClientSharedObject. Passed to each new object to share information."""
         self.requests = self.cso.requests
+        """See self.cso.requests"""
 
         logging.debug("Initialized requests.")
 
