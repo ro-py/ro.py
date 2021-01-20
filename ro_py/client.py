@@ -66,14 +66,6 @@ class Client:
 
         if token:
             self.token_login(token)
-            logging.debug("Initialized token.")
-            self.accountinformation = AccountInformation(self.cso)
-            self.accountsettings = AccountSettings(self.cso)
-            logging.debug("Initialized AccountInformation and AccountSettings.")
-            self.chat = ChatWrapper(self.cso)
-            logging.debug("Initialized chat wrapper.")
-            self.trade = TradesWrapper(self.cso, self.get_self)
-            logging.debug("Initialized trade wrapper.")
 
     def token_login(self, token):
         """
@@ -85,6 +77,14 @@ class Client:
             .ROBLOSECURITY token to authenticate with.
         """
         self.requests.session.cookies[".ROBLOSECURITY"] = token
+        logging.debug("Initialized token.")
+        self.accountinformation = AccountInformation(self.cso)
+        self.accountsettings = AccountSettings(self.cso)
+        logging.debug("Initialized AccountInformation and AccountSettings.")
+        self.chat = ChatWrapper(self.cso)
+        logging.debug("Initialized chat wrapper.")
+        self.trade = TradesWrapper(self.cso, self.get_self)
+        logging.debug("Initialized trade wrapper.")
 
     async def user_login(self, username, password, token=None):
         """

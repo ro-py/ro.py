@@ -111,22 +111,6 @@ class NotificationReceiver:
             else:
                 return
 
-        def _internal_send(_self, message, protocol=None):
-
-            _self.logger.debug("Sending message {0}".format(message))
-
-            try:
-                protocol = _self.protocol if protocol is None else protocol
-
-                _self._ws.send(protocol.encode(message))
-                _self.connection_checker.last_message = time.time()
-
-                if _self.reconnection_handler is not None:
-                    _self.reconnection_handler.reset()
-
-            except Exception as ex:
-                raise ex
-
         self.connection = self.connection.with_automatic_reconnect({
             "type": "raw",
             "keep_alive_interval": 10,
@@ -141,7 +125,6 @@ class NotificationReceiver:
         if self.on_error:
             self.connection.on_error(self.on_error)
         self.connection.on_message = on_message
-        self.connection._internal_send = _internal_send
 
         await self.connection.start()
 
