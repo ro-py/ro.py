@@ -90,8 +90,7 @@ class Group:
         self.is_builders_club_only = group_info["isBuildersClubOnly"]
         self.public_entry_allowed = group_info["publicEntryAllowed"]
         if "shout" in group_info:
-            if group_info["shout"]:
-                self.shout = Shout(self.cso, group_info["shout"])
+            self.shout = Shout(self.cso, group_info['shout'])
         else:
             self.shout = None
         # self.is_locked = group_info["isLocked"]
@@ -225,7 +224,7 @@ class Member(User):
         data = member_req.json()
         for role in data['data']:
             if role['group']['id'] == self.group.id:
-                self.role = Role(self.requests, self.group, role['role'])
+                self.role = Role(self.cso, self.group, role['role'])
                 break
         return self.role
 
