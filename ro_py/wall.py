@@ -2,6 +2,10 @@ import iso8601
 from typing import List
 from ro_py.captcha import UnsolvedCaptcha
 from ro_py.utilities.pages import Pages, SortOrder
+from ro_py.users import User
+
+
+endpoint = "https://groups.roblox.com"
 
 
 class WallPost:
@@ -9,13 +13,14 @@ class WallPost:
     Represents a roblox wall post.
     """
     def __init__(self, cso, wall_data, group):
+        self.cso = cso
         self.requests = cso.requests
         self.group = group
         self.id = wall_data['id']
         self.body = wall_data['body']
         self.created = iso8601.parse_date(wall_data['created'])
         self.updated = iso8601.parse_date(wall_data['updated'])
-        self.poster = User(requests, wall_data['user']['userId'], wall_data['user']['username'])
+        self.poster = User(self.cso, wall_data['user']['userId'], wall_data['user']['username'])
 
     async def delete(self):
         wall_req = await self.requests.delete(
@@ -39,7 +44,7 @@ class Wall:
 
     async def get_posts(self, sort_order=SortOrder.Ascending, limit=100):
         wall_req = Pages(
-            requests=self.cso,
+            cso=self.cso,
             url=endpoint + f"/v2/groups/{self.group.id}/wall/posts",
             sort_order=sort_order,
             limit=limit,
