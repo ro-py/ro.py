@@ -10,7 +10,7 @@ endpoint = "https://groups.roblox.com"
 
 class WallPost:
     """
-    Represents a roblox wall post.
+    Represents a Roblox wall post.
     """
     def __init__(self, cso, wall_data, group):
         self.cso = cso

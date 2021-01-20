@@ -65,7 +65,7 @@ class Game:
         if game_info["creator"]["type"] == "User":
             self.creator = self.cso.cache.get(CacheType.Users, game_info["creator"]["id"])
             if not self.creator:
-                self.creator = User(self.cso, game_info["creator"]["id"])
+                self.creator = await self.cso.client.get_user(game_info["creator"]["id"])
                 self.cso.cache.set(CacheType.Users, game_info["creator"]["id"], self.creator)
                 await self.creator.update()
         elif game_info["creator"]["type"] == "Group":

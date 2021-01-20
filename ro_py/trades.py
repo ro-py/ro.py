@@ -6,7 +6,7 @@ This file houses functions and classes that pertain to Roblox trades and trading
 
 from ro_py.utilities.pages import Pages, SortOrder
 from ro_py.assets import Asset, UserAsset
-from ro_py.users import User, PartialUser
+from ro_py.users import PartialUser
 import iso8601
 import enum
 
@@ -53,8 +53,9 @@ class Trade:
 
 
 class PartialTrade:
-    def __init__(self, requests, trade_id: int, user: PartialUser, created, expiration, status: bool):
-        self.requests = requests
+    def __init__(self, cso, trade_id: int, user: PartialUser, created, expiration, status: bool):
+        self.cso = cso
+        self.requests = cso.requests
         self.trade_id = trade_id
         self.user = user
         self.created = iso8601.parse(created)
@@ -92,7 +93,7 @@ class PartialTrade:
         data = expend_req.json()
 
         # generate a user class and update it
-        sender = User(self.requests, data['user']['id'])
+        sender = await self.cso.client.get_user(data['user']['id'])
         await sender.update()
 
         # load items that will be/have been sent and items that you will/have recieve(d)
@@ -107,7 +108,16 @@ class PartialTrade:
             await item_1.update()
             send_items.append(item_1)
 
-        return Trade(self.requests, self.trade_id, sender, recieve_items, send_items, data['created'], data['expiration'], data['status'])
+        return Trade(
+            self.cso,
+            self.trade_id,
+            sender,
+            recieve_items,
+            send_items,
+            data['created'],
+            data['expiration'],
+            data['status']
+        )
 
 
 class TradeStatusType(enum.Enum):
@@ -187,14 +197,15 @@ class TradesWrapper:
     """
     Represents the Roblox trades page.
     """
-    def __init__(self, requests, get_self):
-        self.requests = requests
+    def __init__(self, cso, get_self):
+        self.cso = cso
+        self.requests = cso.requests
         self.get_self = get_self
         self.TradeRequest = TradeRequest
 
     async def get_trades(self, trade_status_type: TradeStatusType.Inbound, sort_order=SortOrder.Ascending, limit=10) -> Pages:
-        trades = await Pages(
-            requests=self.requests,
+        trades = Pages(
+            cso=self.cso,
             url=endpoint + f"/v1/trades/{trade_status_type}",
             sort_order=sort_order,
             limit=limit,

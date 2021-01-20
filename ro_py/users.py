@@ -27,8 +27,8 @@ class User:
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-            Requests object to use for API requests.
+    cso : ro_py.client.ClientSharedObject
+            ClientSharedObject.
     roblox_id : int
             The id of a user.
     name : str
@@ -117,7 +117,7 @@ class User:
         friends_list = []
         for friend_raw in friends_raw:
             friends_list.append(
-                User(self.cso, friend_raw["id"])
+                await self.cso.client.get_user(friend_raw["id"])
             )
         return friends_list
 

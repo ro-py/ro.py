@@ -56,7 +56,7 @@ class Conversation:
             data = raw_data
             self.id = data["id"]
             self.title = data["title"]
-            self.initiator = User(self.cso, data["initiator"]["targetId"])
+            self.initiator = data["initiator"]["targetId"]
             self.type = data["conversationType"]
             self.typing = ConversationTyping(self.cso, conversation_id)
 
@@ -70,7 +70,7 @@ class Conversation:
         data = conversation_req.json()[0]
         self.id = data["id"]
         self.title = data["title"]
-        self.initiator = User(self.requests, data["initiator"]["targetId"])
+        self.initiator = await self.cso.client.get_user(data["initiator"]["targetId"])
         self.type = data["conversationType"]
 
     async def get_message(self, message_id):

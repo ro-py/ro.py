@@ -22,8 +22,11 @@ class Shout:
     Represents a group shout.
     """
     def __init__(self, cso, shout_data):
+        self.cso = cso
+        self.data = shout_data
         self.body = shout_data["body"]
-        self.poster = User(cso, shout_data["poster"]["userId"], shout_data['poster']['username'])
+        # TODO: Make this a PartialUser
+        self.poster = None
 
 
 class JoinRequest:
@@ -86,7 +89,7 @@ class Group:
         group_info = group_info_req.json()
         self.name = group_info["name"]
         self.description = group_info["description"]
-        self.owner = User(self.cso, group_info["owner"]["userId"])
+        self.owner = await self.cso.client.get_user(group_info["owner"]["userId"])
         self.member_count = group_info["memberCount"]
         self.is_builders_club_only = group_info["isBuildersClubOnly"]
         self.public_entry_allowed = group_info["publicEntryAllowed"]
