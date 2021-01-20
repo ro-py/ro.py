@@ -97,15 +97,16 @@ class Message:
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
+    cso : ro_py.client.ClientSharedObject
+        ClientSharedObject.
     message_id
         ID of the message.
     conversation_id
         ID of the conversation that contains the message.
     """
-    def __init__(self, requests, message_id, conversation_id):
-        self.requests = requests
+    def __init__(self, cso, message_id, conversation_id):
+        self.cso = cso
+        self.requests = cso.requests
         self.id = message_id
         self.conversation_id = conversation_id
 
@@ -128,7 +129,7 @@ class Message:
 
         message_json = message_req.json()[0]
         self.content = message_json["content"]
-        self.sender = User(self.requests, message_json["senderTargetId"])
+        self.sender = User(self.cso, message_json["senderTargetId"])
         self.read = message_json["read"]
 
 
@@ -137,8 +138,9 @@ class ChatWrapper:
     Represents the Roblox chat client. It essentially mirrors the functionality of the chat window at the bottom right
     of the Roblox web client.
     """
-    def __init__(self, requests):
-        self.requests = requests
+    def __init__(self, cso):
+        self.cso = cso
+        self.requests = cso.requests
 
     async def get_conversation(self, conversation_id):
         """
@@ -167,7 +169,7 @@ class ChatWrapper:
         conversations = []
         for conversation_raw in conversations_json:
             conversations.append(Conversation(
-                requests=self.requests,
+                cso=self.cso,
                 raw=True,
                 raw_data=conversation_raw
             ))
