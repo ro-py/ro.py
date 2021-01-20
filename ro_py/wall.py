@@ -46,6 +46,7 @@ class Wall:
             handler=wall_post_handler,
             handler_args=self.group
         )
+        await wall_req.get_page()
         return wall_req
 
     async def post(self, content, captcha_key=None):

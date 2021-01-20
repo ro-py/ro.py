@@ -5,9 +5,9 @@ This file houses functions and classes that pertain to Roblox groups.
 """
 import iso8601
 import asyncio
-from typing import List
 from ro_py.wall import Wall
 from ro_py.roles import Role
+from typing import List, Tuple
 from ro_py.captcha import UnsolvedCaptcha
 from ro_py.users import User, PartialUser
 from ro_py.utilities.errors import NotFound
@@ -89,7 +89,7 @@ class Group:
         self.member_count = group_info["memberCount"]
         self.is_builders_club_only = group_info["isBuildersClubOnly"]
         self.public_entry_allowed = group_info["publicEntryAllowed"]
-        if "shout" in group_info:
+        if group_info.get('shout'):
             self.shout = Shout(self.cso, group_info['shout'])
         else:
             self.shout = None
@@ -228,7 +228,7 @@ class Member(User):
                 break
         return self.role
 
-    async def change_rank(self, num):
+    async def change_rank(self, num) -> Tuple[Role, Role]:
         """
         Changes the users rank specified by a number.
         If num is 1 the users role will go up by 1.
@@ -241,6 +241,7 @@ class Member(User):
         """
         await self.update_role()
         roles = await self.group.get_roles()
+        old_role = self.role
         role_counter = -1
         for group_role in roles:
             role_counter += 1
@@ -248,7 +249,9 @@ class Member(User):
                 break
         if not roles:
             raise NotFound(f"User {self.id} is not in group {self.group.id}")
-        return await self.setrank(roles[role_counter + num].id)
+        await self.setrank(roles[role_counter + num].id)
+        self.role = roles[role_counter + num].id
+        return old_role, roles[role_counter + num].id
 
     async def promote(self):
         """
@@ -385,5 +388,5 @@ class Events:
             await asyncio.sleep(delay)
             await self.group.update()
             if current_shout.poster.id != self.group.shout.poster.id or current_shout.body != self.group.shout.body:
+                await func(current_shout, self.group.shout)
                 current_shout = self.group.shout
-                await func(self.group.shout)

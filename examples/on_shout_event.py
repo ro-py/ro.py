@@ -3,8 +3,8 @@ import asyncio
 client = Client()
 
 
-async def on_shout(shout):
-    print(shout)
+async def on_shout(old_shout, new_shout):
+    print(old_shout, new_shout)
 
 
 async def main():

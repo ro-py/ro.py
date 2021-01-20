@@ -7,6 +7,8 @@ from ro_py.utilities.errors import NotLimitedError
 from ro_py.economy import LimitedResaleData
 from ro_py.utilities.asset_type import asset_types
 import iso8601
+import asyncio
+import copy
 
 endpoint = "https://api.roblox.com/"
 
@@ -27,6 +29,7 @@ class Asset:
         self.id = asset_id
         self.cso = cso
         self.requests = cso.requests
+        self.events = Events(cso, self)
         self.target_id = None
         self.product_type = None
         self.asset_id = None
@@ -121,11 +124,21 @@ class UserAsset(Asset):
 
 
 class Events:
-    def __init__(self, cso):
+    def __init__(self, cso, asset):
         self.cso = cso
+        self.asset = asset
 
     async def bind(self, func, event, delay=15):
-        pass
+        if event == self.cso.client.events.on_asset_change:
+            await asyncio.create_task(self.on_asset_change(func, delay))
 
-
-
+    async def on_asset_change(self, func, delay):
+        await self.asset.update()
+        old_asset = copy.copy(self.asset)
+        while True:
+            await asyncio.sleep(delay)
+            await self.asset.update()
+            for attr, value in self.asset.__dict__.items():
+                if getattr(old_asset, attr) != value:
+                    await func(old_asset, self.asset)
+                    old_asset = self.asset
