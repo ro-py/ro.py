@@ -16,3 +16,5 @@
 </p>
 
 """
+
+from ro_py.client import Client
