@@ -3,6 +3,7 @@
 This file houses functions and classes that pertain to Roblox groups.
 
 """
+import copy
 import iso8601
 import asyncio
 from ro_py.wall import Wall
@@ -241,7 +242,7 @@ class Member(User):
         """
         await self.update_role()
         roles = await self.group.get_roles()
-        old_role = self.role
+        old_role = copy.copy(self.role)
         role_counter = -1
         for group_role in roles:
             role_counter += 1
@@ -251,7 +252,7 @@ class Member(User):
             raise NotFound(f"User {self.id} is not in group {self.group.id}")
         await self.setrank(roles[role_counter + num].id)
         self.role = roles[role_counter + num].id
-        return old_role, roles[role_counter + num].id
+        return old_role, roles[role_counter + num]
 
     async def promote(self):
         """
