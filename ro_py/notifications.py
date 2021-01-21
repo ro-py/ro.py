@@ -11,11 +11,9 @@ notification menu on the Roblox web client.
 
 from ro_py.utilities.caseconvert import to_snake_case
 
-from signalrcore_async.hub_connection_builder import HubConnectionBuilder
+from signalrcore.hub_connection_builder import HubConnectionBuilder
 from urllib.parse import quote
 import json
-import time
-import asyncio
 
 
 class Notification:
@@ -60,28 +58,20 @@ class NotificationReceiver:
     This should only be generated once per client as to not duplicate notifications.
     """
 
-    def __init__(self, requests, on_open, on_close, on_error, on_notification):
-        self.requests = requests
-
-        self.on_open = on_open
-        self.on_close = on_close
-        self.on_error = on_error
-        self.on_notification = on_notification
-
-        self.roblosecurity = self.requests.session.cookies[".ROBLOSECURITY"]
-        self.connection = None
-
+    def __init__(self, cso):
+        self.cso = cso
+        self.requests = cso.requests
+        self.evtloop = cso.evtloop
         self.negotiate_request = None
         self.wss_url = None
+        self.connection = None
 
     async def initialize(self):
         self.negotiate_request = await self.requests.get(
             url="https://realtime.roblox.com/notifications/negotiate"
                 "?clientProtocol=1.5"
                 "&connectionData=%5B%7B%22name%22%3A%22usernotificationhub%22%7D%5D",
-            cookies={
-                ".ROBLOSECURITY": self.roblosecurity
-            }
+            cookies=self.requests.session.cookies
         )
         self.wss_url = f"wss://realtime.roblox.com/notifications?transport=websockets" \
                        f"&connectionToken={quote(self.negotiate_request.json()['ConnectionToken'])}" \
@@ -91,13 +81,13 @@ class NotificationReceiver:
             self.wss_url,
             options={
                 "headers": {
-                    "Cookie": f".ROBLOSECURITY={self.roblosecurity};"
+                    "Cookie": f".ROBLOSECURITY={self.requests.session.cookies['.ROBLOSECURITY']};"
                 },
                 "skip_negotiation": False
             }
         )
 
-        async def on_message(_self, raw_notification):
+        def on_message(_self, raw_notification):
             """
             Internal callback when a message is received.
             """
@@ -107,28 +97,22 @@ class NotificationReceiver:
                 return
             if len(notification_json) > 0:
                 notification = Notification(notification_json)
-                await self.on_notification(notification)
+                self.evtloop.run_until_complete(self.on_notification(notification))
             else:
                 return
 
-        self.connection = self.connection.with_automatic_reconnect({
+        self.connection.with_automatic_reconnect({
             "type": "raw",
             "keep_alive_interval": 10,
             "reconnect_interval": 5,
             "max_attempts": 5
         }).build()
 
-        if self.on_open:
-            self.connection.on_open(self.on_open)
-        if self.on_close:
-            self.connection.on_close(self.on_close)
-        if self.on_error:
-            self.connection.on_error(self.on_error)
-        self.connection.on_message = on_message
+        self.connection.hub.on_message = on_message
 
-        await self.connection.start()
+        self.connection.start()
 
-    async def close(self):
+    def close(self):
         """
         Closes the connection and stops receiving notifications.
         """

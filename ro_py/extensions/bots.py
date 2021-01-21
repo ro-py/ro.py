@@ -17,7 +17,7 @@ class Bot(Client):
 
     def run(self, token):
         self.token_login(token)
-        self.evtloop = asyncio.new_event_loop()
+        self.evtloop = self.cso.evtloop
         self.evtloop.run_until_complete(self._run())
 
     async def _run(self):

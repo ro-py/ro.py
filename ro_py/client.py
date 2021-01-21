@@ -15,9 +15,11 @@ from ro_py.trades import TradesWrapper
 from ro_py.utilities.requests import Requests
 from ro_py.accountsettings import AccountSettings
 from ro_py.utilities.cache import Cache, CacheType
+from ro_py.notifications import NotificationReceiver
 from ro_py.accountinformation import AccountInformation
 from ro_py.utilities.errors import UserDoesNotExistError, InvalidPlaceIDError
 from ro_py.captcha import UnsolvedLoginCaptcha
+import asyncio
 
 
 class ClientSharedObject:
@@ -31,6 +33,8 @@ class ClientSharedObject:
         """Cache object to keep objects that don't need to be recreated."""
         self.requests = Requests()
         """Reqests object for all web requests."""
+        self.evtloop = asyncio.new_event_loop()
+        """Event loop for certain things."""
 
 
 class Client:
@@ -56,6 +60,8 @@ class Client:
         """ChatWrapper object. Only available for authenticated clients."""
         self.trade = None
         """TradesWrapper object. Only available for authenticated clients."""
+        self.notifications = None
+        """NotificationReceiver object. Only available for authenticated clients."""
         self.events = EventTypes
         """Types of events used for binding events to a function."""
 
@@ -76,6 +82,7 @@ class Client:
         self.accountsettings = AccountSettings(self.cso)
         self.chat = ChatWrapper(self.cso)
         self.trade = TradesWrapper(self.cso, self.get_self)
+        self.notifications = NotificationReceiver(self.cso)
 
     async def user_login(self, username, password, token=None):
         """
