@@ -17,11 +17,15 @@ class Bot(Client):
 
     def run(self, token):
         self.token_login(token)
+        self.notifications.on_notification = self._on_notification
         self.evtloop = self.cso.evtloop
         self.evtloop.run_until_complete(self._run())
 
+    async def _on_notification(self, notification):
+        print(notification.__dict__)
+
     async def _run(self):
-        pass
+        await self.notifications.initialize()
 
     def command(self, _="_", **kwargs):
         def decorator(func):
