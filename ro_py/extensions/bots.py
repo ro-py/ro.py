@@ -13,6 +13,14 @@ class Bot(Client):
     def __init__(self):
         super().__init__()
 
+    def command(self, _="_", **kwargs):
+        def decorator(func):
+            if isinstance(func, Command):
+                raise TypeError('Callback is already a command.')
+            return Command(func=func, **kwargs)
+
+        return decorator
+
 
 class Command:
     def __init__(self, func, **kwargs):
@@ -28,10 +36,4 @@ class Command:
         return await self.callback(*args, **kwargs)
 
 
-def command(**attrs):
-    def decorator(func):
-        if isinstance(func, Command):
-            raise TypeError('Callback is already a command.')
-        return Command(func, **attrs)
 
-    return decorator
