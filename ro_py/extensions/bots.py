@@ -4,13 +4,46 @@ This extension houses functions that allow generation of Bot objects, which inte
 
 """
 
+from ro_py.utilities.errors import ChatError
 from ro_py.client import Client
+from ro_py.chat import Message
 import asyncio
+import iso8601
 
 
 class Context:
-    def __init__(self):
-        pass
+    def __init__(self, cso, latest_data, notif_data):
+        self.cso = cso
+        self.requests = cso.requests
+
+        self.conversation_id = notif_data["conversation_id"]
+        self.actor_target_id = notif_data["actor_target_id"]
+        self.actor_type = notif_data["actor_type"]
+        self.type = notif_data["type"]
+        self.sequence_number = notif_data["sequence_number"]
+
+        self.id = latest_data["id"]
+        self.content = latest_data["content"]
+        self.sender_type = latest_data["senderType"]
+        self.sender_id = latest_data["senderTargetId"]
+        self.decorators = latest_data["decorators"]
+        self.message_type = latest_data["messageType"]
+        self.read = latest_data["read"]
+        self.sent = iso8601.parse_date(latest_data["sent"])
+
+    async def send(self, content):
+        send_message_req = await self.requests.post(
+            url="https://chat.roblox.com/v2/send-message",
+            data={
+                "message": content,
+                "conversationId": self.conversation_id
+            }
+        )
+        send_message_json = send_message_req.json()
+        if send_message_json["sent"]:
+            return Message(self.requests, send_message_json["messageId"], self.id)
+        else:
+            raise ChatError(send_message_json["statusMessage"])
 
 
 class Bot(Client):
@@ -27,14 +60,18 @@ class Bot(Client):
         self.evtloop = self.cso.evtloop
         self.evtloop.run_until_complete(self._run())
 
-    async def _process_command(self, data):
+    async def _process_command(self, data, n_data):
         content = data["content"]
         if content.startswith(self.prefix):
             content = content[len(self.prefix):]
             content_split = content.split(" ")
             command = content_split[0]
             if command in self.commands:
-                context = Context()
+                context = Context(
+                    cso=self.cso,
+                    latest_data=data,
+                    notif_data=n_data
+                )
                 await self.commands[command](context)
 
     async def _on_notification(self, notification):
@@ -47,7 +84,7 @@ class Bot(Client):
                 }
             )
             latest_data = latest_req.json()[0]
-            await self._process_command(latest_data)
+            await self._process_command(latest_data, notification.data)
 
     async def _run(self):
         await self.notifications.initialize()
