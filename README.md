@@ -50,7 +50,7 @@ Known issue: wxPython sometimes has trouble building on certain devices. I put w
 
 ## Credits
 [@iranathan](https://github.com/iranathan) - maintainer  
-[@jmkdev](https://github.com/iranathan) - maintainer  
+[@jmk-developer](https://github.com/jmk-developer) - maintainer  
 [@nsg-mfd](https://github.com/nsg-mfd) - helped with endpoints 
 
 ## Other Libraries
