@@ -4,7 +4,6 @@ This file houses functions and classes that pertain to Roblox universes and plac
 
 """
 
-from ro_py.users import User
 from ro_py.groups import Group
 from ro_py.badges import Badge
 from ro_py.thumbnails import GameThumbnailGenerator

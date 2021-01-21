@@ -3,6 +3,7 @@
 This file houses functions and classes that pertain to Roblox users and profiles.
 
 """
+from typing import List
 
 from ro_py.robloxbadges import RobloxBadge
 from ro_py.thumbnails import UserThumbnailGenerator
@@ -20,56 +21,30 @@ def limited_handler(requests, data, args):
     return assets
 
 
-class User:
-    """
-    Represents a Roblox user and their profile.
-    Can be initialized with either a user ID or a username.
-
-    Parameters
-    ----------
-    cso : ro_py.client.ClientSharedObject
-            ClientSharedObject.
-    roblox_id : int
-            The id of a user.
-    name : str
-            The name of the user.
-    """
-    def __init__(self, cso, roblox_id, name=None):
+class PartialUser:
+    def __init__(self, cso, roblox_id, roblox_name=None):
         self.cso = cso
         self.requests = cso.requests
         self.id = roblox_id
-        self.description = None
-        self.created = None
-        self.is_banned = None
-        self.name = name
-        self.display_name = None
-        self.thumbnails = UserThumbnailGenerator(self.requests, self.id)
+        self.name = roblox_name
 
-    async def update(self):
+    async def expand(self):
         """
         Updates some class values.
         :return: Nothing
         """
         user_info_req = await self.requests.get(endpoint + f"v1/users/{self.id}")
         user_info = user_info_req.json()
-        self.description = user_info["description"]
-        self.created = iso8601.parse_date(user_info["created"])
-        self.is_banned = user_info["isBanned"]
-        self.name = user_info["name"]
-        self.display_name = user_info["displayName"]
+        description = user_info["description"]
+        created = iso8601.parse_date(user_info["created"])
+        is_banned = user_info["isBanned"]
+        name = user_info["name"]
+        display_name = user_info["displayName"]
         # has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
         # self.has_premium = has_premium_req
-        return self
+        return User(self.cso, self.id, name, description, created, is_banned, display_name)
 
-    async def get_status(self):
-        """
-        Gets the user's status.
-        :return: A string
-        """
-        status_req = await self.requests.get(endpoint + f"v1/users/{self.id}/status")
-        return status_req.json()["status"]
-
-    async def get_roblox_badges(self):
+    async def get_roblox_badges(self) -> List[RobloxBadge]:
         """
         Gets the user's roblox badges.
         :return: A list of RobloxBadge instances
@@ -80,7 +55,7 @@ class User:
             roblox_badges.append(RobloxBadge(roblox_badge_data))
         return roblox_badges
 
-    async def get_friends_count(self):
+    async def get_friends_count(self) -> int:
         """
         Gets the user's friends count.
         :return: An integer
@@ -89,7 +64,7 @@ class User:
         friends_count = friends_count_req.json()["count"]
         return friends_count
 
-    async def get_followers_count(self):
+    async def get_followers_count(self) -> int:
         """
         Gets the user's followers count.
         :return: An integer
@@ -98,7 +73,7 @@ class User:
         followers_count = followers_count_req.json()["count"]
         return followers_count
 
-    async def get_followings_count(self):
+    async def get_followings_count(self) -> int:
         """
         Gets the user's followings count.
         :return: An integer
@@ -142,15 +117,60 @@ class User:
         list
         """
         return Pages(
-            requests=self.requests,
+            cso=self.cso,
             url=f"https://inventory.roblox.com/v1/users/{self.id}/assets/collectibles?cursor=&limit=100&sortOrder=Desc",
             handler=limited_handler
         )
 
+    async def get_status(self):
+        """
+        Gets the user's status.
+        :return: A string
+        """
+        status_req = await self.requests.get(endpoint + f"v1/users/{self.id}/status")
+        return status_req.json()["status"]
 
-class PartialUser(User):
+
+class User(PartialUser):
     """
-    Represents a user with less information then the normal User class.
+    Represents a Roblox user and their profile.
+    Can be initialized with either a user ID or a username.
+
+    Parameters
+    ----------
+    cso : ro_py.client.ClientSharedObject
+            ClientSharedObject.
+    roblox_id : int
+            The id of a user.
+    roblox_name : str
+            The name of the user.
+    description : str
+            The description of the user.
+    created : any
+            Time the user was created.
     """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, cso, roblox_id, roblox_name, description, created, banned, display_name):
+        super().__init__(cso, roblox_id, roblox_name)
+        self.cso = cso
+        self.id = roblox_id
+        self.name = roblox_name
+        self.description = description
+        self.created = created
+        self.is_banned = banned
+        self.display_name = display_name
+        self.thumbnails = UserThumbnailGenerator(cso, roblox_id)
+
+    async def update(self):
+        """
+        Updates some class values.
+        :return: Nothing
+        """
+        user_info_req = await self.requests.get(endpoint + f"v1/users/{self.id}")
+        user_info = user_info_req.json()
+        self.description = user_info["description"]
+        self.created = iso8601.parse_date(user_info["created"])
+        self.is_banned = user_info["isBanned"]
+        self.name = user_info["name"]
+        self.display_name = user_info["displayName"]
+        # has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
+        # self.has_premium = has_premium_req

@@ -2,7 +2,7 @@ import iso8601
 from typing import List
 from ro_py.captcha import UnsolvedCaptcha
 from ro_py.utilities.pages import Pages, SortOrder
-from ro_py.users import User
+from ro_py.users import PartialUser
 
 
 endpoint = "https://groups.roblox.com"
@@ -20,7 +20,7 @@ class WallPost:
         self.body = wall_data['body']
         self.created = iso8601.parse_date(wall_data['created'])
         self.updated = iso8601.parse_date(wall_data['updated'])
-        self.poster = User(self.cso, wall_data['user']['userId'], wall_data['user']['username'])
+        self.poster = PartialUser(self.cso, wall_data['user']['userId'], wall_data['user']['username'])
 
     async def delete(self):
         wall_req = await self.requests.delete(

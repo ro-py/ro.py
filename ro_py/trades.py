@@ -7,6 +7,7 @@ This file houses functions and classes that pertain to Roblox trades and trading
 from ro_py.utilities.pages import Pages, SortOrder
 from ro_py.assets import Asset, UserAsset
 from ro_py.users import PartialUser
+import datetime
 import iso8601
 import enum
 
@@ -21,14 +22,14 @@ def trade_page_handler(requests, this_page) -> list:
 
 
 class Trade:
-    def __init__(self, requests, trade_id: int, sender: PartialUser, recieve_items, send_items, created, expiration, status: bool):
+    def __init__(self, requests, trade_id: int, sender: PartialUser, receive_items, send_items, created: datetime.datetime, expiration: datetime.datetime, status: bool):
         self.trade_id = trade_id
         self.requests = requests
         self.sender = sender
-        self.recieve_items = recieve_items
+        self.receive_items = receive_items
         self.send_items = send_items
         self.created = iso8601.parse_date(created)
-        self.experation = iso8601.parse_date(expiration)
+        self.expiration = iso8601.parse_date(expiration)
         self.status = status
 
     async def accept(self) -> bool:
@@ -53,13 +54,13 @@ class Trade:
 
 
 class PartialTrade:
-    def __init__(self, cso, trade_id: int, user: PartialUser, created, expiration, status: bool):
+    def __init__(self, cso, trade_id: int, user: PartialUser, created: datetime.datetime, expiration: datetime.datetime, status: bool):
         self.cso = cso
         self.requests = cso.requests
         self.trade_id = trade_id
         self.user = user
-        self.created = iso8601.parse(created)
-        self.expiration = iso8601.parse(expiration)
+        self.created = iso8601.parse_date(created)
+        self.expiration = iso8601.parse_date(expiration)
         self.status = status
 
     async def accept(self) -> bool:
@@ -97,11 +98,11 @@ class PartialTrade:
         await sender.update()
 
         # load items that will be/have been sent and items that you will/have recieve(d)
-        recieve_items, send_items = [], []
+        receive_items, send_items = [], []
         for items_0 in data['offers'][0]['userAssets']:
             item_0 = Asset(self.requests, items_0['assetId'])
             await item_0.update()
-            recieve_items.append(item_0)
+            receive_items.append(item_0)
 
         for items_1 in data['offers'][1]['userAssets']:
             item_1 = Asset(self.requests, items_1['assetId'])
@@ -112,7 +113,7 @@ class PartialTrade:
             self.cso,
             self.trade_id,
             sender,
-            recieve_items,
+            receive_items,
             send_items,
             data['created'],
             data['expiration'],
@@ -143,13 +144,13 @@ class TradesMetadata:
 
 class TradeRequest:
     def __init__(self):
-        self.recieve_asset = []
+        self.receive_asset = []
         """Limiteds that will be recieved when the trade is accepted."""
         self.send_asset = []
         """Limiteds that will be sent when the trade is accepted."""
         self.send_robux = 0
         """Robux that will be sent when the trade is accepted."""
-        self.recieve_robux = 0
+        self.receive_robux = 0
         """Robux that will be recieved when the trade is accepted."""
 
     def request_item(self, asset: UserAsset):
@@ -160,7 +161,7 @@ class TradeRequest:
         ----------
         asset : ro_py.assets.UserAsset
         """
-        self.recieve_asset.append(asset)
+        self.receive_asset.append(asset)
 
     def send_item(self, asset: UserAsset):
         """
@@ -180,7 +181,7 @@ class TradeRequest:
         ----------
         robux : int
         """
-        self.recieve_robux = robux
+        self.receive_robux = robux
 
     def send_robux(self, robux: int):
         """
@@ -248,10 +249,10 @@ class TradesWrapper:
         for asset in trade.send_asset:
             data['offers'][1]['userAssetIds'].append(asset.user_asset_id)
 
-        for asset in trade.recieve_asset:
+        for asset in trade.receive_asset:
             data['offers'][0]['userAssetIds'].append(asset.user_asset_id)
 
-        data['offers'][0]['robux'] = trade.recieve_robux
+        data['offers'][0]['robux'] = trade.receive_robux
         data['offers'][1]['robux'] = trade.send_robux
 
         trade_req = await self.requests.post(

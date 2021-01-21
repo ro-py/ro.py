@@ -157,7 +157,7 @@ class Group:
         # Create data to return.
         role = Role(self.cso, self, group_data['role'])
         member = Member(self.cso, roblox_id, "", self, role)
-        return await member.update()
+        return member
 
     async def get_join_requests(self, sort_order=SortOrder.Ascending, limit=100):
         pages = Pages(
@@ -192,13 +192,13 @@ class PartialGroup(Group):
         super().__init__(*args, **kwargs)
 
 
-class Member(User):
+class Member(PartialUser):
     """
     Represents a user in a group.
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
+    cso : ro_py.utilities.requests.Requests
             Requests object to use for API requests.
     roblox_id : int
             The id of a user.
@@ -211,6 +211,7 @@ class Member(User):
     """
     def __init__(self, cso, roblox_id, name, group, role):
         super().__init__(cso, roblox_id, name)
+        self.requests = cso.requests
         self.role = role
         self.group = group
 

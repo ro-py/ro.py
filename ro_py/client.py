@@ -4,7 +4,6 @@ This file houses functions and classes that represent the core Roblox web client
 
 """
 
-from ro_py.users import User
 from ro_py.games import Game
 from ro_py.groups import Group
 from ro_py.assets import Asset
@@ -12,6 +11,7 @@ from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
 from ro_py.events import EventTypes
 from ro_py.trades import TradesWrapper
+from ro_py.users import PartialUser
 from ro_py.utilities.requests import Requests
 from ro_py.accountsettings import AccountSettings
 from ro_py.utilities.cache import Cache, CacheType
@@ -144,7 +144,7 @@ class Client:
             url="https://roblox.com/my/profile"
         )
         data = self_req.json()
-        return User(self.cso, data['UserId'], data['Username'])
+        return PartialUser(self.cso, data['UserId'], data['Username'])
 
     async def get_user(self, user_id):
         """
@@ -157,9 +157,10 @@ class Client:
         """
         user = self.cso.cache.get(CacheType.Users, user_id)
         if not user:
-            user = User(self.cso, user_id)
-            self.cso.cache.set(CacheType.Users, user_id, user)
-            await user.update()
+            user = PartialUser(self.cso, user_id)
+            expanded = await user.expand()
+            self.cso.cache.set(CacheType.Users, user_id, expanded)
+            return expanded
         return user
 
     async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False):
@@ -187,9 +188,10 @@ class Client:
             user_id = username_req.json()["data"][0]["id"]  # TODO: make this a partialuser
             user = self.cso.cache.get(CacheType.Users, user_id)
             if not user:
-                user = User(self.cso, user_id)
-                self.cso.cache.set(CacheType.Users, user_id, user)
-                await user.update()
+                user = PartialUser(self.cso, user_id)
+                expanded = await user.expand()
+                self.cso.cache.set(CacheType.Users, user_id, expanded)
+                return expanded
             return user
         else:
             raise UserDoesNotExistError
