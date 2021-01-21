@@ -8,10 +8,17 @@ from ro_py.client import Client
 import asyncio
 
 
-class Bot(Client):
+class Context:
     def __init__(self):
+        pass
+
+
+class Bot(Client):
+    def __init__(self, prefix="!"):
         super().__init__()
+        self.prefix = prefix
         self.commands = {}
+        self.events = {}
         self.evtloop = asyncio.new_event_loop()
 
     def run(self, token):
@@ -19,6 +26,16 @@ class Bot(Client):
         self.notifications.on_notification = self._on_notification
         self.evtloop = self.cso.evtloop
         self.evtloop.run_until_complete(self._run())
+
+    async def _process_command(self, data):
+        content = data["content"]
+        if content.startswith(self.prefix):
+            content = content[len(self.prefix):]
+            content_split = content.split(" ")
+            command = content_split[0]
+            if command in self.commands:
+                context = Context()
+                await self.commands[command](context)
 
     async def _on_notification(self, notification):
         if notification.type == "NewMessage":
@@ -30,7 +47,7 @@ class Bot(Client):
                 }
             )
             latest_data = latest_req.json()[0]
-            latest_content = latest_data["content"]
+            await self._process_command(latest_data)
 
     async def _run(self):
         await self.notifications.initialize()
