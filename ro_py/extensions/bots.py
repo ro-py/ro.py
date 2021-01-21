@@ -4,7 +4,6 @@ This extension houses functions that allow generation of Bot objects, which inte
 
 """
 
-
 from ro_py.client import Client
 import asyncio
 
@@ -22,7 +21,16 @@ class Bot(Client):
         self.evtloop.run_until_complete(self._run())
 
     async def _on_notification(self, notification):
-        print(notification.__dict__)
+        if notification.type == "NewMessage":
+            latest_req = await self.requests.get(
+                url="https://chat.roblox.com/v2/get-messages",
+                params={
+                    "conversationId": notification.data["conversation_id"],
+                    "pageSize": 1
+                }
+            )
+            latest_data = latest_req.json()[0]
+            latest_content = latest_data["content"]
 
     async def _run(self):
         await self.notifications.initialize()
@@ -50,6 +58,3 @@ class Command:
 
     async def __call__(self, *args, **kwargs):
         return await self.callback(*args, **kwargs)
-
-
-
