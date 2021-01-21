@@ -47,12 +47,26 @@ class Context:
 
 
 class Bot(Client):
-    def __init__(self, prefix="!"):
+    def __init__(self, prefix="!", auto_help=True):
         super().__init__()
         self.prefix = prefix
         self.commands = {}
         self.events = {}
         self.evtloop = asyncio.new_event_loop()
+
+        if auto_help:
+            command_help = self._generate_help()
+
+            @self.command(a=0)
+            async def command_help_func(ctx):
+                print("HEA")
+                await ctx.send(command_help)
+
+    def _generate_help(self):
+        help_string = f"Prefix: {self.prefix}"
+        for command in self.commands:
+            help_string = help_string + "\n" + command + ": " + command.help[:24]
+        return help_string
 
     def run(self, token):
         self.token_login(token)
@@ -72,7 +86,10 @@ class Bot(Client):
                     latest_data=data,
                     notif_data=n_data
                 )
-                await self.commands[command](context)
+                try:
+                    await self.commands[command](context)
+                except Exception as e:
+                    await context.send("Something went wrong when running this command.")
 
     async def _on_notification(self, notification):
         if notification.type == "NewMessage":
@@ -105,6 +122,7 @@ class Command:
         if not asyncio.iscoroutinefunction(func):
             raise TypeError('Callback must be a coroutine.')
         self._callback = func
+        self.help = func.__doc__ or "No help available."
 
     @property
     def callback(self):
