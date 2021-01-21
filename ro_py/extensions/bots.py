@@ -12,12 +12,24 @@ import asyncio
 class Bot(Client):
     def __init__(self):
         super().__init__()
+        self.commands = {}
+        self.evtloop = asyncio.new_event_loop()
+
+    def run(self, token):
+        self.token_login(token)
+        self.evtloop = asyncio.new_event_loop()
+        self.evtloop.run_until_complete(self._run())
+
+    async def _run(self):
+        pass
 
     def command(self, _="_", **kwargs):
         def decorator(func):
             if isinstance(func, Command):
                 raise TypeError('Callback is already a command.')
-            return Command(func=func, **kwargs)
+            command = Command(func=func, **kwargs)
+            self.commands[func.__name__] = command
+            return command
 
         return decorator
 
