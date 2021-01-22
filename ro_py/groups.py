@@ -8,9 +8,9 @@ import iso8601
 import asyncio
 from ro_py.wall import Wall
 from ro_py.roles import Role
-from typing import List, Tuple
-from ro_py.captcha import UnsolvedCaptcha
-from ro_py.users import User, PartialUser
+from ro_py.users import PartialUser
+from ro_py.events import EventTypes
+from typing import Tuple, Callable
 from ro_py.utilities.errors import NotFound
 from ro_py.utilities.pages import Pages, SortOrder
 
@@ -334,7 +334,7 @@ class Events:
         self.cso = cso
         self.group = group
 
-    async def bind(self, func, event, delay=15):
+    async def bind(self, func: Callable, event: EventTypes, delay: int = 15):
         """
         Binds a function to an event.
 
@@ -342,19 +342,19 @@ class Events:
         ----------
         func : function
                 Function that will be bound to the event.
-        event : str
+        event : ro_py.events.EventTypes
                 Event that will be bound to the function.
         delay : int
                 How many seconds between each poll.
         """
-        if event == "on_join_request":
+        if event == EventTypes.on_join_request:
             return await asyncio.create_task(self.on_join_request(func, delay))
-        if event == "on_wall_post":
+        if event == EventTypes.on_wall_post:
             return await asyncio.create_task(self.on_wall_post(func, delay))
-        if event == "on_shout_update":
-            return await asyncio.create_task(self.on_shout_update(func, delay))
+        if event == EventTypes.on_group_change:
+            return await asyncio.create_task(self.on_group_change(func, delay))
 
-    async def on_join_request(self, func, delay):
+    async def on_join_request(self, func: Callable, delay: int):
         current_group_reqs = await self.group.get_join_requests()
         old_req = current_group_reqs.data.requester.id
         while True:
@@ -370,7 +370,7 @@ class Events:
                 for new_req in new_reqs:
                     await func(new_req)
 
-    async def on_wall_post(self, func, delay):
+    async def on_wall_post(self, func: Callable, delay: int):
         current_wall_posts = await self.group.wall.get_posts()
         newest_wall_poster = current_wall_posts.data[0].poster.id
         while True:
@@ -386,7 +386,7 @@ class Events:
                 for new_post in new_posts:
                     await func(new_post)
 
-    async def on_shout_update(self, func, delay):
+    async def on_shout_update(self, func: Callable, delay: int):
         await self.group.update()
         current_shout = self.group.shout
         while True:
@@ -395,3 +395,16 @@ class Events:
             if current_shout.poster.id != self.group.shout.poster.id or current_shout.body != self.group.shout.body:
                 await func(current_shout, self.group.shout)
                 current_shout = self.group.shout
+
+    async def on_group_change(self, func: Callable, delay: int):
+        await self.group.update()
+        current_group = copy.copy(self.group)
+        while True:
+            await asyncio.sleep(delay)
+            await self.group.update()
+            has_changed = False
+            for attr, value in current_group.__dict__.items():
+                if getattr(self.group, attr) != value:
+                    has_changed = True
+            if has_changed:
+                func(current_group, self.group)

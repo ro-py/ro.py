@@ -3,13 +3,15 @@
 This file houses functions and classes that pertain to Roblox users and profiles.
 
 """
-from typing import List
-
+import copy
+from typing import List, Callable
+from ro_py.events import EventTypes
 from ro_py.robloxbadges import RobloxBadge
 from ro_py.thumbnails import UserThumbnailGenerator
 from ro_py.utilities.pages import Pages
 from ro_py.assets import UserAsset
 import iso8601
+import asyncio
 
 endpoint = "https://users.roblox.com/"
 
@@ -49,7 +51,8 @@ class PartialUser:
         Gets the user's roblox badges.
         :return: A list of RobloxBadge instances
         """
-        roblox_badges_req = await self.requests.get(f"https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges")
+        roblox_badges_req = await self.requests.get(
+            f"https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges")
         roblox_badges = []
         for roblox_badge_data in roblox_badges_req.json():
             roblox_badges.append(RobloxBadge(roblox_badge_data))
@@ -78,7 +81,8 @@ class PartialUser:
         Gets the user's followings count.
         :return: An integer
         """
-        followings_count_req = await self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/followings/count")
+        followings_count_req = await self.requests.get(
+            f"https://friends.roblox.com/v1/users/{self.id}/followings/count")
         followings_count = followings_count_req.json()["count"]
         return followings_count
 
@@ -149,6 +153,7 @@ class User(PartialUser):
     created : any
             Time the user was created.
     """
+
     def __init__(self, cso, roblox_id, roblox_name, description, created, banned, display_name):
         super().__init__(cso, roblox_id, roblox_name)
         self.cso = cso
@@ -172,5 +177,40 @@ class User(PartialUser):
         self.is_banned = user_info["isBanned"]
         self.name = user_info["name"]
         self.display_name = user_info["displayName"]
+        return self
         # has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
         # self.has_premium = has_premium_req
+
+
+class Events:
+    def __init__(self, cso, user):
+        self.cso = cso
+        self.user = user
+
+    async def bind(self, func: Callable, event: str, delay: int = 15):
+        """
+        Binds an event to the provided function.
+
+        Parameters
+        ----------
+        func : function
+                Function that will be called when the event fires.
+        event : ro_py.events.EventTypes
+                The name of the event.
+        delay : int
+                How many seconds between requests.
+        """
+        if event == EventTypes.on_user_change:
+            return await asyncio.create_task(self.on_user_change(func, delay))
+
+    async def on_user_change(self, func: Callable, delay: int):
+        old_user = copy.copy(await self.user.update())
+        while True:
+            await asyncio.sleep(delay)
+            new_user = await self.user.update()
+            has_changed = False
+            for attr, value in old_user.__dict__.items():
+                if getattr(new_user, attr) != value:
+                    has_changed = True
+            if has_changed:
+                func(old_user, new_user)

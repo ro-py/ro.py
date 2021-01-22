@@ -138,7 +138,8 @@ class Events:
         while True:
             await asyncio.sleep(delay)
             await self.asset.update()
+            has_changed = False
             for attr, value in self.asset.__dict__.items():
                 if getattr(old_asset, attr) != value:
-                    await func(old_asset, self.asset)
-                    old_asset = self.asset
+                    has_changed = True
+            func(old_asset, self.asset)
