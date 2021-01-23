@@ -19,10 +19,8 @@ class TwoCaptcha:
         url += "&surl=https://roblox-api.arkoselabs.com"
         url += "&pageurl=https://www.roblox.com"
         url += "&json=1"
-        print(url)
 
         solve_req = await requests_async.post(url)
-        print(solve_req.text)
         data = solve_req.json()
         if data['request'] == "ERROR_WRONG_USER_KEY" or data['request'] == "ERROR_KEY_DOES_NOT_EXIST":
             raise IncorrectKeyError("The provided 2captcha api key was incorrect.")
