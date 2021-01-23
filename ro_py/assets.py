@@ -138,12 +138,9 @@ class Events:
         while True:
             await asyncio.sleep(delay)
             await self.asset.update()
-            has_changed = False
-            for attr, value in self.asset.__dict__.items():
-                if getattr(old_asset, attr) != value:
-                    has_changed = True
-            if asyncio.iscoroutinefunction(func):
-                await func(old_asset, self.asset)
-            else:
-                func(old_asset, self.asset)
-            old_asset = copy.copy(self.asset)
+            if old_asset.updated < self.asset.updated:
+                if asyncio.iscoroutinefunction(func):
+                    await func(old_asset, self.asset)
+                else:
+                    func(old_asset, self.asset)
+                old_asset = copy.copy(self.asset)
