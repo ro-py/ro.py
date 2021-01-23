@@ -407,4 +407,4 @@ class Events:
                     await func(current_group, self.group)
                 else:
                     func(current_group, self.group)
-                current_group = self.group
+                current_group = copy.copy(self.group)

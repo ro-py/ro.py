@@ -217,3 +217,4 @@ class Events:
                     await func(old_user, new_user)
                 else:
                     func(old_user, new_user)
+                old_user = copy.copy(new_user)

@@ -146,3 +146,4 @@ class Events:
                 await func(old_asset, self.asset)
             else:
                 func(old_asset, self.asset)
+            old_asset = copy.copy(self.asset)
