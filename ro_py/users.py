@@ -213,4 +213,7 @@ class Events:
                 if getattr(new_user, attr) != value:
                     has_changed = True
             if has_changed:
-                func(old_user, new_user)
+                if asyncio.iscoroutinefunction(func):
+                    await func(old_user, new_user)
+                else:
+                    func(old_user, new_user)

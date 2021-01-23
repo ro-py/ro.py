@@ -368,7 +368,10 @@ class Events:
                         new_reqs.append(request)
                 old_req = current_group_reqs[0].requester.id
                 for new_req in new_reqs:
-                    await func(new_req)
+                    if asyncio.iscoroutinefunction(func):
+                        await func(new_req)
+                    else:
+                        func(new_req)
 
     async def on_wall_post(self, func: Callable, delay: int):
         current_wall_posts = await self.group.wall.get_posts()
@@ -384,17 +387,10 @@ class Events:
                         new_posts.append(post)
                 newest_wall_poster = current_wall_posts[0].poster.id
                 for new_post in new_posts:
-                    await func(new_post)
-
-    async def on_shout_update(self, func: Callable, delay: int):
-        await self.group.update()
-        current_shout = self.group.shout
-        while True:
-            await asyncio.sleep(delay)
-            await self.group.update()
-            if current_shout.poster.id != self.group.shout.poster.id or current_shout.body != self.group.shout.body:
-                await func(current_shout, self.group.shout)
-                current_shout = self.group.shout
+                    if asyncio.iscoroutinefunction(func):
+                        await func(new_post)
+                    else:
+                        func(new_post)
 
     async def on_group_change(self, func: Callable, delay: int):
         await self.group.update()
@@ -407,4 +403,8 @@ class Events:
                 if getattr(self.group, attr) != value:
                     has_changed = True
             if has_changed:
-                func(current_group, self.group)
+                if asyncio.iscoroutinefunction(func):
+                    await func(current_group, self.group)
+                else:
+                    func(current_group, self.group)
+                current_group = self.group

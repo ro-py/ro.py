@@ -142,4 +142,7 @@ class Events:
             for attr, value in self.asset.__dict__.items():
                 if getattr(old_asset, attr) != value:
                     has_changed = True
-            func(old_asset, self.asset)
+            if asyncio.iscoroutinefunction(func):
+                await func(old_asset, self.asset)
+            else:
+                func(old_asset, self.asset)
