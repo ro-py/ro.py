@@ -71,7 +71,7 @@ class Requests:
         if quickreturn:
             return get_request
 
-        raise status_code_error(get_request.status_code)(get_request.status_code)(f"[{get_request.status_code}] {get_request_error[0]['message']}")
+        raise status_code_error(get_request.status_code)(f"[{get_request.status_code}] {get_request_error[0]['message']}")
 
     def back_post(self, *args, **kwargs):
         kwargs["cookies"] = kwargs.pop("cookies", self.session.cookies)

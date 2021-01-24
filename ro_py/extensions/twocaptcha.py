@@ -35,7 +35,10 @@ class TwoCaptcha:
         solution = None
         while True:
             await asyncio.sleep(5)
-            captcha_req = await requests_async.get(endpoint + f"/res.php?key={self.api_key}&id={task_id}&json=1&action=get")
+            captcha_req = await requests_async.get(endpoint + f"/res.php"
+                                                              f"?key={self.api_key}"
+                                                              f"&id={task_id}"
+                                                              f"&json=1&action=get")
             captcha_data = captcha_req.json()
             if captcha_data['request'] != "CAPCHA_NOT_READY":
                 solution = captcha_data['request']
