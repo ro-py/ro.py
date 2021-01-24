@@ -97,9 +97,9 @@ class GameThumbnailGenerator:
 
 
 class UserThumbnailGenerator:
-    def __init__(self, requests, id):
-        self.requests = requests
-        self.id = id
+    def __init__(self, cso, roblox_id):
+        self.requests = cso.requests
+        self.id = roblox_id
 
     async def get_avatar_image(self, shot_type=ThumbnailType.avatar_full_body, size=ThumbnailSize.size_48x48,
                                file_format=ThumbnailFormat.format_png, is_circular=False):

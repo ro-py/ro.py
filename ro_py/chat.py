@@ -5,7 +5,7 @@ This file houses functions and classes that pertain to chatting and messaging.
 """
 
 from ro_py.utilities.errors import ChatError
-from ro_py.users import User
+from ro_py.users import PartialUser
 
 endpoint = "https://chat.roblox.com/"
 
@@ -129,7 +129,7 @@ class Message:
 
         message_json = message_req.json()[0]
         self.content = message_json["content"]
-        self.sender = User(self.cso, message_json["senderTargetId"])
+        self.sender = PartialUser(self.cso, message_json["senderTargetId"])
         self.read = message_json["read"]
 
 
