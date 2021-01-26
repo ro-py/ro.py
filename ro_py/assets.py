@@ -128,9 +128,9 @@ class Events:
         self.cso = cso
         self.asset = asset
 
-    async def bind(self, func, event, delay=15):
+    def bind(self, func, event, delay=15):
         if event == self.cso.client.events.on_asset_change:
-            await asyncio.create_task(self.on_asset_change(func, delay))
+            return asyncio.create_task(self.on_asset_change(func, delay))
 
     async def on_asset_change(self, func, delay):
         await self.asset.update()

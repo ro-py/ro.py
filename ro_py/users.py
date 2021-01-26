@@ -187,7 +187,7 @@ class Events:
         self.cso = cso
         self.user = user
 
-    async def bind(self, func: Callable, event: str, delay: int = 15):
+    def bind(self, func: Callable, event: str, delay: int = 15):
         """
         Binds an event to the provided function.
 
@@ -201,7 +201,7 @@ class Events:
                 How many seconds between requests.
         """
         if event == EventTypes.on_user_change:
-            return await asyncio.create_task(self.on_user_change(func, delay))
+            return asyncio.create_task(self.on_user_change(func, delay))
 
     async def on_user_change(self, func: Callable, delay: int):
         old_user = copy.copy(await self.user.update())

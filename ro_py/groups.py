@@ -334,7 +334,7 @@ class Events:
         self.cso = cso
         self.group = group
 
-    async def bind(self, func: Callable, event: EventTypes, delay: int = 15):
+    def bind(self, func: Callable, event: EventTypes, delay: int = 15):
         """
         Binds a function to an event.
 
@@ -348,11 +348,11 @@ class Events:
                 How many seconds between each poll.
         """
         if event == EventTypes.on_join_request:
-            return await asyncio.create_task(self.on_join_request(func, delay))
+            return asyncio.create_task(self.on_join_request(func, delay))
         if event == EventTypes.on_wall_post:
-            return await asyncio.create_task(self.on_wall_post(func, delay))
+            return asyncio.create_task(self.on_wall_post(func, delay))
         if event == EventTypes.on_group_change:
-            return await asyncio.create_task(self.on_group_change(func, delay))
+            return asyncio.create_task(self.on_group_change(func, delay))
 
     async def on_join_request(self, func: Callable, delay: int):
         current_group_reqs = await self.group.get_join_requests()
