@@ -18,6 +18,9 @@ Welcome, and thank you for using ro.py!
 ro.py is an object oriented, asynchronous wrapper for the Roblox Web API (and other Roblox-related APIs) with many new and interesting features.  
 ro.py allows you to automate much of what you would do on the Roblox website and on other Roblox-related websites.
 
+## Get Started
+If you are looking for a full tutorial on ro.py, check out [the new DevForum article!](https://devforum.roblox.com/t/use-python-to-interact-with-the-roblox-api-with-ro-py/1006465)
+
 ## Requirements
 - httpx (for sending requests)
 - iso8601 (for parsing dates)
