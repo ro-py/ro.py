@@ -58,7 +58,7 @@ class AccountSettings:
         self.cso = cso
         self.requests = cso.requests
 
-    def get_privacy_setting(self, privacy_setting):
+    async def get_privacy_setting(self, privacy_setting):
         """
         Gets the value of a privacy setting.
         """
@@ -80,5 +80,5 @@ class AccountSettings:
             "privateMessagePrivacy"
         ][privacy_setting]
         privacy_endpoint = endpoint + "v1/" + privacy_endpoint
-        privacy_req = self.requests.get(privacy_endpoint)
+        privacy_req = await self.requests.get(privacy_endpoint)
         return privacy_req.json()[privacy_key]
