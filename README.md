@@ -2,7 +2,7 @@
     <img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py" width="400" />
     <br>
 </h1>
-<h4 align="center">ro.py is a powerful Python 3 wrapper for the Roblox Web API.</h4>
+<h4 align="center">ro.py is a powerful Python 3 wrapper for the Roblox Web API by [@jmkd3v](https://github.com/jmkd3v) and [@iranathan](https://github.com/iranathan)</h4>
 <p align="center">
   <a href="#information">Information</a> |
   <a href="#requirements">Requirements</a> |
@@ -53,8 +53,9 @@ Known issue: wxPython sometimes has trouble building on certain devices. I put w
 
 ## Credits
 [@iranathan](https://github.com/iranathan) - maintainer  
-[@jmk-developer](https://github.com/jmk-developer) - maintainer  
+[@jmkd3v](https://github.com/jmkd3v) - maintainer  
 [@nsg-mfd](https://github.com/nsg-mfd) - helped with endpoints 
+(adding more soon)
 
 ## Other Libraries
 ro.py not for you? Come check out these other libraries!
