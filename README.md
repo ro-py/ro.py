@@ -2,7 +2,7 @@
     <img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py" width="400" />
     <br>
 </h1>
-<h4 align="center">ro.py is a powerful Python 3 wrapper for the Roblox Web API by [@jmkd3v](https://github.com/jmkd3v) and [@iranathan](https://github.com/iranathan)</h4>
+<h4 align="center">ro.py is a powerful Python 3 wrapper for the Roblox Web API by <a href="https://github.com/jmkd3v">@jmkd3v</a> and <a href="https://github.com/iranathan">iranathan</a>.</h4>
 <p align="center">
   <a href="#information">Information</a> |
   <a href="#requirements">Requirements</a> |
