@@ -59,13 +59,14 @@ background: #555;
 This file houses functions and classes that pertain to Roblox groups.
 
 &#34;&#34;&#34;
+import copy
 import iso8601
 import asyncio
-from typing import List
 from ro_py.wall import Wall
 from ro_py.roles import Role
-from ro_py.captcha import UnsolvedCaptcha
-from ro_py.users import User, PartialUser
+from ro_py.users import PartialUser
+from ro_py.events import EventTypes
+from typing import Tuple, Callable
 from ro_py.utilities.errors import NotFound
 from ro_py.utilities.pages import Pages, SortOrder
 
@@ -77,8 +78,11 @@ class Shout:
     Represents a group shout.
     &#34;&#34;&#34;
     def __init__(self, cso, shout_data):
+        self.cso = cso
+        self.data = shout_data
         self.body = shout_data[&#34;body&#34;]
-        self.poster = User(cso, shout_data[&#34;poster&#34;][&#34;userId&#34;], shout_data[&#39;poster&#39;][&#39;username&#39;])
+        # TODO: Make this a PartialUser
+        self.poster = None
 
 
 class JoinRequest:
@@ -141,13 +145,12 @@ class Group:
         group_info = group_info_req.json()
         self.name = group_info[&#34;name&#34;]
         self.description = group_info[&#34;description&#34;]
-        self.owner = User(self.cso, group_info[&#34;owner&#34;][&#34;userId&#34;])
+        self.owner = await self.cso.client.get_user(group_info[&#34;owner&#34;][&#34;userId&#34;])
         self.member_count = group_info[&#34;memberCount&#34;]
         self.is_builders_club_only = group_info[&#34;isBuildersClubOnly&#34;]
         self.public_entry_allowed = group_info[&#34;publicEntryAllowed&#34;]
-        if &#34;shout&#34; in group_info:
-            if group_info[&#34;shout&#34;]:
-                self.shout = Shout(self.cso, group_info[&#34;shout&#34;])
+        if group_info.get(&#39;shout&#39;):
+            self.shout = Shout(self.cso, group_info[&#39;shout&#39;])
         else:
             self.shout = None
         # self.is_locked = group_info[&#34;isLocked&#34;]
@@ -210,7 +213,7 @@ class Group:
         # Create data to return.
         role = Role(self.cso, self, group_data[&#39;role&#39;])
         member = Member(self.cso, roblox_id, &#34;&#34;, self, role)
-        return await member.update()
+        return member
 
     async def get_join_requests(self, sort_order=SortOrder.Ascending, limit=100):
         pages = Pages(
@@ -245,13 +248,13 @@ class PartialGroup(Group):
         super().__init__(*args, **kwargs)
 
 
-class Member(User):
+class Member(PartialUser):
     &#34;&#34;&#34;
     Represents a user in a group.
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
+    cso : ro_py.utilities.requests.Requests
             Requests object to use for API requests.
     roblox_id : int
             The id of a user.
@@ -264,6 +267,7 @@ class Member(User):
     &#34;&#34;&#34;
     def __init__(self, cso, roblox_id, name, group, role):
         super().__init__(cso, roblox_id, name)
+        self.requests = cso.requests
         self.role = role
         self.group = group
 
@@ -281,11 +285,11 @@ class Member(User):
         data = member_req.json()
         for role in data[&#39;data&#39;]:
             if role[&#39;group&#39;][&#39;id&#39;] == self.group.id:
-                self.role = Role(self.requests, self.group, role[&#39;role&#39;])
+                self.role = Role(self.cso, self.group, role[&#39;role&#39;])
                 break
         return self.role
 
-    async def change_rank(self, num):
+    async def change_rank(self, num) -&gt; Tuple[Role, Role]:
         &#34;&#34;&#34;
         Changes the users rank specified by a number.
         If num is 1 the users role will go up by 1.
@@ -298,6 +302,7 @@ class Member(User):
         &#34;&#34;&#34;
         await self.update_role()
         roles = await self.group.get_roles()
+        old_role = copy.copy(self.role)
         role_counter = -1
         for group_role in roles:
             role_counter += 1
@@ -305,7 +310,9 @@ class Member(User):
                 break
         if not roles:
             raise NotFound(f&#34;User {self.id} is not in group {self.group.id}&#34;)
-        return await self.setrank(roles[role_counter + num].id)
+        await self.setrank(roles[role_counter + num].id)
+        self.role = roles[role_counter + num].id
+        return old_role, roles[role_counter + num]
 
     async def promote(self):
         &#34;&#34;&#34;
@@ -383,7 +390,7 @@ class Events:
         self.cso = cso
         self.group = group
 
-    async def bind(self, func, event, delay=15):
+    def bind(self, func: Callable, event: EventTypes, delay: int = 15):
         &#34;&#34;&#34;
         Binds a function to an event.
 
@@ -391,19 +398,19 @@ class Events:
         ----------
         func : function
                 Function that will be bound to the event.
-        event : str
+        event : ro_py.events.EventTypes
                 Event that will be bound to the function.
         delay : int
                 How many seconds between each poll.
         &#34;&#34;&#34;
-        if event == &#34;on_join_request&#34;:
-            return await asyncio.create_task(self.on_join_request(func, delay))
-        if event == &#34;on_wall_post&#34;:
-            return await asyncio.create_task(self.on_wall_post(func, delay))
-        if event == &#34;on_shout_update&#34;:
-            return await asyncio.create_task(self.on_shout_update(func, delay))
+        if event == EventTypes.on_join_request:
+            return asyncio.create_task(self.on_join_request(func, delay))
+        if event == EventTypes.on_wall_post:
+            return asyncio.create_task(self.on_wall_post(func, delay))
+        if event == EventTypes.on_group_change:
+            return asyncio.create_task(self.on_group_change(func, delay))
 
-    async def on_join_request(self, func, delay):
+    async def on_join_request(self, func: Callable, delay: int):
         current_group_reqs = await self.group.get_join_requests()
         old_req = current_group_reqs.data.requester.id
         while True:
@@ -417,9 +424,12 @@ class Events:
                         new_reqs.append(request)
                 old_req = current_group_reqs[0].requester.id
                 for new_req in new_reqs:
-                    await func(new_req)
+                    if asyncio.iscoroutinefunction(func):
+                        await func(new_req)
+                    else:
+                        func(new_req)
 
-    async def on_wall_post(self, func, delay):
+    async def on_wall_post(self, func: Callable, delay: int):
         current_wall_posts = await self.group.wall.get_posts()
         newest_wall_poster = current_wall_posts.data[0].poster.id
         while True:
@@ -433,17 +443,27 @@ class Events:
                         new_posts.append(post)
                 newest_wall_poster = current_wall_posts[0].poster.id
                 for new_post in new_posts:
-                    await func(new_post)
+                    if asyncio.iscoroutinefunction(func):
+                        await func(new_post)
+                    else:
+                        func(new_post)
 
-    async def on_shout_update(self, func, delay):
+    async def on_group_change(self, func: Callable, delay: int):
         await self.group.update()
-        current_shout = self.group.shout
+        current_group = copy.copy(self.group)
         while True:
             await asyncio.sleep(delay)
             await self.group.update()
-            if current_shout.poster.id != self.group.shout.poster.id or current_shout.body != self.group.shout.body:
-                current_shout = self.group.shout
-                await func(self.group.shout)</code></pre>
+            has_changed = False
+            for attr, value in current_group.__dict__.items():
+                if getattr(self.group, attr) != value:
+                    has_changed = True
+            if has_changed:
+                if asyncio.iscoroutinefunction(func):
+                    await func(current_group, self.group)
+                else:
+                    func(current_group, self.group)
+                current_group = copy.copy(self.group)</code></pre>
 </details>
 </section>
 <section>
@@ -505,7 +525,7 @@ class Events:
         self.cso = cso
         self.group = group
 
-    async def bind(self, func, event, delay=15):
+    def bind(self, func: Callable, event: EventTypes, delay: int = 15):
         &#34;&#34;&#34;
         Binds a function to an event.
 
@@ -513,19 +533,19 @@ class Events:
         ----------
         func : function
                 Function that will be bound to the event.
-        event : str
+        event : ro_py.events.EventTypes
                 Event that will be bound to the function.
         delay : int
                 How many seconds between each poll.
         &#34;&#34;&#34;
-        if event == &#34;on_join_request&#34;:
-            return await asyncio.create_task(self.on_join_request(func, delay))
-        if event == &#34;on_wall_post&#34;:
-            return await asyncio.create_task(self.on_wall_post(func, delay))
-        if event == &#34;on_shout_update&#34;:
-            return await asyncio.create_task(self.on_shout_update(func, delay))
+        if event == EventTypes.on_join_request:
+            return asyncio.create_task(self.on_join_request(func, delay))
+        if event == EventTypes.on_wall_post:
+            return asyncio.create_task(self.on_wall_post(func, delay))
+        if event == EventTypes.on_group_change:
+            return asyncio.create_task(self.on_group_change(func, delay))
 
-    async def on_join_request(self, func, delay):
+    async def on_join_request(self, func: Callable, delay: int):
         current_group_reqs = await self.group.get_join_requests()
         old_req = current_group_reqs.data.requester.id
         while True:
@@ -539,9 +559,12 @@ class Events:
                         new_reqs.append(request)
                 old_req = current_group_reqs[0].requester.id
                 for new_req in new_reqs:
-                    await func(new_req)
+                    if asyncio.iscoroutinefunction(func):
+                        await func(new_req)
+                    else:
+                        func(new_req)
 
-    async def on_wall_post(self, func, delay):
+    async def on_wall_post(self, func: Callable, delay: int):
         current_wall_posts = await self.group.wall.get_posts()
         newest_wall_poster = current_wall_posts.data[0].poster.id
         while True:
@@ -555,22 +578,32 @@ class Events:
                         new_posts.append(post)
                 newest_wall_poster = current_wall_posts[0].poster.id
                 for new_post in new_posts:
-                    await func(new_post)
+                    if asyncio.iscoroutinefunction(func):
+                        await func(new_post)
+                    else:
+                        func(new_post)
 
-    async def on_shout_update(self, func, delay):
+    async def on_group_change(self, func: Callable, delay: int):
         await self.group.update()
-        current_shout = self.group.shout
+        current_group = copy.copy(self.group)
         while True:
             await asyncio.sleep(delay)
             await self.group.update()
-            if current_shout.poster.id != self.group.shout.poster.id or current_shout.body != self.group.shout.body:
-                current_shout = self.group.shout
-                await func(self.group.shout)</code></pre>
+            has_changed = False
+            for attr, value in current_group.__dict__.items():
+                if getattr(self.group, attr) != value:
+                    has_changed = True
+            if has_changed:
+                if asyncio.iscoroutinefunction(func):
+                    await func(current_group, self.group)
+                else:
+                    func(current_group, self.group)
+                current_group = copy.copy(self.group)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.groups.Events.bind"><code class="name flex">
-<span>async def <span class="ident">bind</span></span>(<span>self, func, event, delay=15)</span>
+<span>def <span class="ident">bind</span></span>(<span>self, func: Callable, event: <a title="ro_py.events.EventTypes" href="events.html#ro_py.events.EventTypes">EventTypes</a>, delay: int = 15)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Binds a function to an event.</p>
@@ -578,7 +611,7 @@ class Events:
 <dl>
 <dt><strong><code>func</code></strong> :&ensp;<code>function</code></dt>
 <dd>Function that will be bound to the event.</dd>
-<dt><strong><code>event</code></strong> :&ensp;<code>str</code></dt>
+<dt><strong><code>event</code></strong> :&ensp;<code><a title="ro_py.events.EventTypes" href="events.html#ro_py.events.EventTypes">EventTypes</a></code></dt>
 <dd>Event that will be bound to the function.</dd>
 <dt><strong><code>delay</code></strong> :&ensp;<code>int</code></dt>
 <dd>How many seconds between each poll.</dd>
@@ -587,7 +620,7 @@ class Events:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def bind(self, func, event, delay=15):
+<pre><code class="python">def bind(self, func: Callable, event: EventTypes, delay: int = 15):
     &#34;&#34;&#34;
     Binds a function to an event.
 
@@ -595,21 +628,21 @@ class Events:
     ----------
     func : function
             Function that will be bound to the event.
-    event : str
+    event : ro_py.events.EventTypes
             Event that will be bound to the function.
     delay : int
             How many seconds between each poll.
     &#34;&#34;&#34;
-    if event == &#34;on_join_request&#34;:
-        return await asyncio.create_task(self.on_join_request(func, delay))
-    if event == &#34;on_wall_post&#34;:
-        return await asyncio.create_task(self.on_wall_post(func, delay))
-    if event == &#34;on_shout_update&#34;:
-        return await asyncio.create_task(self.on_shout_update(func, delay))</code></pre>
+    if event == EventTypes.on_join_request:
+        return asyncio.create_task(self.on_join_request(func, delay))
+    if event == EventTypes.on_wall_post:
+        return asyncio.create_task(self.on_wall_post(func, delay))
+    if event == EventTypes.on_group_change:
+        return asyncio.create_task(self.on_group_change(func, delay))</code></pre>
 </details>
 </dd>
-<dt id="ro_py.groups.Events.on_join_request"><code class="name flex">
-<span>async def <span class="ident">on_join_request</span></span>(<span>self, func, delay)</span>
+<dt id="ro_py.groups.Events.on_group_change"><code class="name flex">
+<span>async def <span class="ident">on_group_change</span></span>(<span>self, func: Callable, delay: int)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -617,7 +650,34 @@ class Events:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def on_join_request(self, func, delay):
+<pre><code class="python">async def on_group_change(self, func: Callable, delay: int):
+    await self.group.update()
+    current_group = copy.copy(self.group)
+    while True:
+        await asyncio.sleep(delay)
+        await self.group.update()
+        has_changed = False
+        for attr, value in current_group.__dict__.items():
+            if getattr(self.group, attr) != value:
+                has_changed = True
+        if has_changed:
+            if asyncio.iscoroutinefunction(func):
+                await func(current_group, self.group)
+            else:
+                func(current_group, self.group)
+            current_group = copy.copy(self.group)</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Events.on_join_request"><code class="name flex">
+<span>async def <span class="ident">on_join_request</span></span>(<span>self, func: Callable, delay: int)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def on_join_request(self, func: Callable, delay: int):
     current_group_reqs = await self.group.get_join_requests()
     old_req = current_group_reqs.data.requester.id
     while True:
@@ -631,31 +691,14 @@ class Events:
                     new_reqs.append(request)
             old_req = current_group_reqs[0].requester.id
             for new_req in new_reqs:
-                await func(new_req)</code></pre>
-</details>
-</dd>
-<dt id="ro_py.groups.Events.on_shout_update"><code class="name flex">
-<span>async def <span class="ident">on_shout_update</span></span>(<span>self, func, delay)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def on_shout_update(self, func, delay):
-    await self.group.update()
-    current_shout = self.group.shout
-    while True:
-        await asyncio.sleep(delay)
-        await self.group.update()
-        if current_shout.poster.id != self.group.shout.poster.id or current_shout.body != self.group.shout.body:
-            current_shout = self.group.shout
-            await func(self.group.shout)</code></pre>
+                if asyncio.iscoroutinefunction(func):
+                    await func(new_req)
+                else:
+                    func(new_req)</code></pre>
 </details>
 </dd>
 <dt id="ro_py.groups.Events.on_wall_post"><code class="name flex">
-<span>async def <span class="ident">on_wall_post</span></span>(<span>self, func, delay)</span>
+<span>async def <span class="ident">on_wall_post</span></span>(<span>self, func: Callable, delay: int)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -663,7 +706,7 @@ class Events:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def on_wall_post(self, func, delay):
+<pre><code class="python">async def on_wall_post(self, func: Callable, delay: int):
     current_wall_posts = await self.group.wall.get_posts()
     newest_wall_poster = current_wall_posts.data[0].poster.id
     while True:
@@ -677,7 +720,10 @@ class Events:
                     new_posts.append(post)
             newest_wall_poster = current_wall_posts[0].poster.id
             for new_post in new_posts:
-                await func(new_post)</code></pre>
+                if asyncio.iscoroutinefunction(func):
+                    await func(new_post)
+                else:
+                    func(new_post)</code></pre>
 </details>
 </dd>
 </dl>
@@ -718,13 +764,12 @@ class Events:
         group_info = group_info_req.json()
         self.name = group_info[&#34;name&#34;]
         self.description = group_info[&#34;description&#34;]
-        self.owner = User(self.cso, group_info[&#34;owner&#34;][&#34;userId&#34;])
+        self.owner = await self.cso.client.get_user(group_info[&#34;owner&#34;][&#34;userId&#34;])
         self.member_count = group_info[&#34;memberCount&#34;]
         self.is_builders_club_only = group_info[&#34;isBuildersClubOnly&#34;]
         self.public_entry_allowed = group_info[&#34;publicEntryAllowed&#34;]
-        if &#34;shout&#34; in group_info:
-            if group_info[&#34;shout&#34;]:
-                self.shout = Shout(self.cso, group_info[&#34;shout&#34;])
+        if group_info.get(&#39;shout&#39;):
+            self.shout = Shout(self.cso, group_info[&#39;shout&#39;])
         else:
             self.shout = None
         # self.is_locked = group_info[&#34;isLocked&#34;]
@@ -787,7 +832,7 @@ class Events:
         # Create data to return.
         role = Role(self.cso, self, group_data[&#39;role&#39;])
         member = Member(self.cso, roblox_id, &#34;&#34;, self, role)
-        return await member.update()
+        return member
 
     async def get_join_requests(self, sort_order=SortOrder.Ascending, limit=100):
         pages = Pages(
@@ -871,7 +916,7 @@ class Events:
     # Create data to return.
     role = Role(self.cso, self, group_data[&#39;role&#39;])
     member = Member(self.cso, roblox_id, &#34;&#34;, self, role)
-    return await member.update()</code></pre>
+    return member</code></pre>
 </details>
 </dd>
 <dt id="ro_py.groups.Group.get_members"><code class="name flex">
@@ -944,13 +989,12 @@ class Events:
     group_info = group_info_req.json()
     self.name = group_info[&#34;name&#34;]
     self.description = group_info[&#34;description&#34;]
-    self.owner = User(self.cso, group_info[&#34;owner&#34;][&#34;userId&#34;])
+    self.owner = await self.cso.client.get_user(group_info[&#34;owner&#34;][&#34;userId&#34;])
     self.member_count = group_info[&#34;memberCount&#34;]
     self.is_builders_club_only = group_info[&#34;isBuildersClubOnly&#34;]
     self.public_entry_allowed = group_info[&#34;publicEntryAllowed&#34;]
-    if &#34;shout&#34; in group_info:
-        if group_info[&#34;shout&#34;]:
-            self.shout = Shout(self.cso, group_info[&#34;shout&#34;])
+    if group_info.get(&#39;shout&#39;):
+        self.shout = Shout(self.cso, group_info[&#39;shout&#39;])
     else:
         self.shout = None</code></pre>
 </details>
@@ -1071,7 +1115,7 @@ class Events:
 <div class="desc"><p>Represents a user in a group.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>requests</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
+<dt><strong><code>cso</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
 <dd>Requests object to use for API requests.</dd>
 <dt><strong><code>roblox_id</code></strong> :&ensp;<code>int</code></dt>
 <dd>The id of a user.</dd>
@@ -1086,13 +1130,13 @@ class Events:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Member(User):
+<pre><code class="python">class Member(PartialUser):
     &#34;&#34;&#34;
     Represents a user in a group.
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
+    cso : ro_py.utilities.requests.Requests
             Requests object to use for API requests.
     roblox_id : int
             The id of a user.
@@ -1105,6 +1149,7 @@ class Events:
     &#34;&#34;&#34;
     def __init__(self, cso, roblox_id, name, group, role):
         super().__init__(cso, roblox_id, name)
+        self.requests = cso.requests
         self.role = role
         self.group = group
 
@@ -1122,11 +1167,11 @@ class Events:
         data = member_req.json()
         for role in data[&#39;data&#39;]:
             if role[&#39;group&#39;][&#39;id&#39;] == self.group.id:
-                self.role = Role(self.requests, self.group, role[&#39;role&#39;])
+                self.role = Role(self.cso, self.group, role[&#39;role&#39;])
                 break
         return self.role
 
-    async def change_rank(self, num):
+    async def change_rank(self, num) -&gt; Tuple[Role, Role]:
         &#34;&#34;&#34;
         Changes the users rank specified by a number.
         If num is 1 the users role will go up by 1.
@@ -1139,6 +1184,7 @@ class Events:
         &#34;&#34;&#34;
         await self.update_role()
         roles = await self.group.get_roles()
+        old_role = copy.copy(self.role)
         role_counter = -1
         for group_role in roles:
             role_counter += 1
@@ -1146,7 +1192,9 @@ class Events:
                 break
         if not roles:
             raise NotFound(f&#34;User {self.id} is not in group {self.group.id}&#34;)
-        return await self.setrank(roles[role_counter + num].id)
+        await self.setrank(roles[role_counter + num].id)
+        self.role = roles[role_counter + num].id
+        return old_role, roles[role_counter + num]
 
     async def promote(self):
         &#34;&#34;&#34;
@@ -1220,12 +1268,12 @@ class Events:
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="ro_py.users.User" href="users.html#ro_py.users.User">User</a></li>
+<li><a title="ro_py.users.PartialUser" href="users.html#ro_py.users.PartialUser">PartialUser</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.groups.Member.change_rank"><code class="name flex">
-<span>async def <span class="ident">change_rank</span></span>(<span>self, num)</span>
+<span>async def <span class="ident">change_rank</span></span>(<span>self, num) ‑> Tuple[<a title="ro_py.roles.Role" href="roles.html#ro_py.roles.Role">Role</a>, <a title="ro_py.roles.Role" href="roles.html#ro_py.roles.Role">Role</a>]</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Changes the users rank specified by a number.
@@ -1240,7 +1288,7 @@ If num is -1 the users role will go down by 1.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def change_rank(self, num):
+<pre><code class="python">async def change_rank(self, num) -&gt; Tuple[Role, Role]:
     &#34;&#34;&#34;
     Changes the users rank specified by a number.
     If num is 1 the users role will go up by 1.
@@ -1253,6 +1301,7 @@ If num is -1 the users role will go down by 1.</p>
     &#34;&#34;&#34;
     await self.update_role()
     roles = await self.group.get_roles()
+    old_role = copy.copy(self.role)
     role_counter = -1
     for group_role in roles:
         role_counter += 1
@@ -1260,7 +1309,9 @@ If num is -1 the users role will go down by 1.</p>
             break
     if not roles:
         raise NotFound(f&#34;User {self.id} is not in group {self.group.id}&#34;)
-    return await self.setrank(roles[role_counter + num].id)</code></pre>
+    await self.setrank(roles[role_counter + num].id)
+    self.role = roles[role_counter + num].id
+    return old_role, roles[role_counter + num]</code></pre>
 </details>
 </dd>
 <dt id="ro_py.groups.Member.demote"><code class="name flex">
@@ -1441,7 +1492,7 @@ If num is -1 the users role will go down by 1.</p>
     data = member_req.json()
     for role in data[&#39;data&#39;]:
         if role[&#39;group&#39;][&#39;id&#39;] == self.group.id:
-            self.role = Role(self.requests, self.group, role[&#39;role&#39;])
+            self.role = Role(self.cso, self.group, role[&#39;role&#39;])
             break
     return self.role</code></pre>
 </details>
@@ -1449,16 +1500,16 @@ If num is -1 the users role will go down by 1.</p>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="ro_py.users.User" href="users.html#ro_py.users.User">User</a></b></code>:
+<li><code><b><a title="ro_py.users.PartialUser" href="users.html#ro_py.users.PartialUser">PartialUser</a></b></code>:
 <ul class="hlist">
-<li><code><a title="ro_py.users.User.get_followers_count" href="users.html#ro_py.users.User.get_followers_count">get_followers_count</a></code></li>
-<li><code><a title="ro_py.users.User.get_followings_count" href="users.html#ro_py.users.User.get_followings_count">get_followings_count</a></code></li>
-<li><code><a title="ro_py.users.User.get_friends" href="users.html#ro_py.users.User.get_friends">get_friends</a></code></li>
-<li><code><a title="ro_py.users.User.get_friends_count" href="users.html#ro_py.users.User.get_friends_count">get_friends_count</a></code></li>
-<li><code><a title="ro_py.users.User.get_limiteds" href="users.html#ro_py.users.User.get_limiteds">get_limiteds</a></code></li>
-<li><code><a title="ro_py.users.User.get_roblox_badges" href="users.html#ro_py.users.User.get_roblox_badges">get_roblox_badges</a></code></li>
-<li><code><a title="ro_py.users.User.get_status" href="users.html#ro_py.users.User.get_status">get_status</a></code></li>
-<li><code><a title="ro_py.users.User.update" href="users.html#ro_py.users.User.update">update</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.expand" href="users.html#ro_py.users.PartialUser.expand">expand</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.get_followers_count" href="users.html#ro_py.users.PartialUser.get_followers_count">get_followers_count</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.get_followings_count" href="users.html#ro_py.users.PartialUser.get_followings_count">get_followings_count</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.get_friends" href="users.html#ro_py.users.PartialUser.get_friends">get_friends</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.get_friends_count" href="users.html#ro_py.users.PartialUser.get_friends_count">get_friends_count</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.get_limiteds" href="users.html#ro_py.users.PartialUser.get_limiteds">get_limiteds</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.get_roblox_badges" href="users.html#ro_py.users.PartialUser.get_roblox_badges">get_roblox_badges</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.get_status" href="users.html#ro_py.users.PartialUser.get_status">get_status</a></code></li>
 </ul>
 </li>
 </ul>
@@ -1510,8 +1561,11 @@ If num is -1 the users role will go down by 1.</p>
     Represents a group shout.
     &#34;&#34;&#34;
     def __init__(self, cso, shout_data):
+        self.cso = cso
+        self.data = shout_data
         self.body = shout_data[&#34;body&#34;]
-        self.poster = User(cso, shout_data[&#34;poster&#34;][&#34;userId&#34;], shout_data[&#39;poster&#39;][&#39;username&#39;])</code></pre>
+        # TODO: Make this a PartialUser
+        self.poster = None</code></pre>
 </details>
 </dd>
 </dl>
@@ -1545,8 +1599,8 @@ If num is -1 the users role will go down by 1.</p>
 <h4><code><a title="ro_py.groups.Events" href="#ro_py.groups.Events">Events</a></code></h4>
 <ul class="">
 <li><code><a title="ro_py.groups.Events.bind" href="#ro_py.groups.Events.bind">bind</a></code></li>
+<li><code><a title="ro_py.groups.Events.on_group_change" href="#ro_py.groups.Events.on_group_change">on_group_change</a></code></li>
 <li><code><a title="ro_py.groups.Events.on_join_request" href="#ro_py.groups.Events.on_join_request">on_join_request</a></code></li>
-<li><code><a title="ro_py.groups.Events.on_shout_update" href="#ro_py.groups.Events.on_shout_update">on_shout_update</a></code></li>
 <li><code><a title="ro_py.groups.Events.on_wall_post" href="#ro_py.groups.Events.on_wall_post">on_wall_post</a></code></li>
 </ul>
 </li>

@@ -60,14 +60,127 @@ This extension houses functions that allow generation of Bot objects, which inte
 
 &#34;&#34;&#34;
 
-
+from ro_py.utilities.errors import ChatError
 from ro_py.client import Client
+from ro_py.chat import Message
+from sys import stderr
+from time import sleep
 import asyncio
+import iso8601
+
+
+class Context:
+    def __init__(self, cso, latest_data, notif_data):
+        self.cso = cso
+        self.requests = cso.requests
+
+        self.conversation_id = notif_data[&#34;conversation_id&#34;]
+        self.actor_target_id = notif_data[&#34;actor_target_id&#34;]
+        self.actor_type = notif_data[&#34;actor_type&#34;]
+        self.type = notif_data[&#34;type&#34;]
+        self.sequence_number = notif_data[&#34;sequence_number&#34;]
+
+        self.id = latest_data[&#34;id&#34;]
+        self.content = latest_data[&#34;content&#34;]
+        self.sender_type = latest_data[&#34;senderType&#34;]
+        self.sender_id = latest_data[&#34;senderTargetId&#34;]
+        self.decorators = latest_data[&#34;decorators&#34;]
+        self.message_type = latest_data[&#34;messageType&#34;]
+        self.read = latest_data[&#34;read&#34;]
+        self.sent = iso8601.parse_date(latest_data[&#34;sent&#34;])
+
+    async def send(self, content):
+        send_message_req = await self.requests.post(
+            url=&#34;https://chat.roblox.com/v2/send-message&#34;,
+            data={
+                &#34;message&#34;: content,
+                &#34;conversationId&#34;: self.conversation_id
+            }
+        )
+        send_message_json = send_message_req.json()
+        if send_message_json[&#34;sent&#34;]:
+            return Message(self.cso, send_message_json[&#34;messageId&#34;], self.id)
+        else:
+            raise ChatError(send_message_json[&#34;statusMessage&#34;])
 
 
 class Bot(Client):
-    def __init__(self):
+    def __init__(self, prefix=&#34;!&#34;):
         super().__init__()
+        self.prefix = prefix
+        self.commands = {}
+        self.events = {}
+        self.evtloop = asyncio.new_event_loop()
+        self.keepgoing = False
+
+    def _generate_help(self):
+        help_string = f&#34;Prefix: {self.prefix}&#34;
+        for command in self.commands:
+            help_string = help_string + &#34;\n&#34; + command + &#34;: &#34; + command.help[:24]
+        return help_string
+
+    def run(self, token):
+        self.keepgoing = True
+        self.token_login(token)
+        self.notifications.on_notification = self._on_notification
+        self.evtloop = self.cso.evtloop
+        self.evtloop.run_until_complete(self._run())
+        while self.keepgoing:
+            sleep(1/32)
+
+    async def _process_command(self, data, n_data):
+        content = data[&#34;content&#34;]
+        if content.startswith(self.prefix):
+            content = content[len(self.prefix):]
+            content_split = content.split(&#34; &#34;)
+            command = content_split[0]
+            if command in self.commands:
+                context = Context(
+                    cso=self.cso,
+                    latest_data=data,
+                    notif_data=n_data
+                )
+                try:
+                    await self.commands[command](context, *content_split[1:])
+                except Exception as e:
+                    if &#34;on_error&#34; in self.events:
+                        await self.events[&#34;on_error&#34;](context, e)
+                    else:
+                        stderr.write(&#34;Ignoring error: &#34; + str(e) + &#34;\n&#34;)
+                        await context.send(&#34;Something went wrong when running this command.&#34;)
+
+    async def _on_notification(self, notification):
+        if notification.type == &#34;NewMessage&#34;:
+            latest_req = await self.requests.get(
+                url=&#34;https://chat.roblox.com/v2/get-messages&#34;,
+                params={
+                    &#34;conversationId&#34;: notification.data[&#34;conversation_id&#34;],
+                    &#34;pageSize&#34;: 1
+                }
+            )
+            latest_data = latest_req.json()[0]
+            await self._process_command(latest_data, notification.data)
+
+    async def _run(self):
+        await self.notifications.initialize()
+
+    def command(self, *args, **kwargs):
+        def decorator(func):
+            if isinstance(func, Command):
+                raise TypeError(&#39;Callback is already a command.&#39;)
+            command = Command(func=func, **kwargs)
+            self.commands[func.__name__] = command
+            return command
+
+        return decorator
+
+    def event(self, *args, **kwargs):
+        def decorator(func):
+            command = Command(func=func, **kwargs)
+            self.events[func.__name__] = command
+            return command
+
+        return decorator
 
 
 class Command:
@@ -75,22 +188,14 @@ class Command:
         if not asyncio.iscoroutinefunction(func):
             raise TypeError(&#39;Callback must be a coroutine.&#39;)
         self._callback = func
+        self.help = func.__doc__ or &#34;No help available.&#34;
 
     @property
     def callback(self):
         return self._callback
 
     async def __call__(self, *args, **kwargs):
-        return await self.callback(*args, **kwargs)
-
-
-def command(**attrs):
-    def decorator(func):
-        if isinstance(func, Command):
-            raise TypeError(&#39;Callback is already a command.&#39;)
-        return Command(func, **attrs)
-
-    return decorator</code></pre>
+        return await self.callback(*args, **kwargs)</code></pre>
 </details>
 </section>
 <section>
@@ -98,33 +203,13 @@ def command(**attrs):
 <section>
 </section>
 <section>
-<h2 class="section-title" id="header-functions">Functions</h2>
-<dl>
-<dt id="ro_py.extensions.bots.command"><code class="name flex">
-<span>def <span class="ident">command</span></span>(<span>**attrs)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def command(**attrs):
-    def decorator(func):
-        if isinstance(func, Command):
-            raise TypeError(&#39;Callback is already a command.&#39;)
-        return Command(func, **attrs)
-
-    return decorator</code></pre>
-</details>
-</dd>
-</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
 <dt id="ro_py.extensions.bots.Bot"><code class="flex name class">
 <span>class <span class="ident">Bot</span></span>
+<span>(</span><span>prefix='!')</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents an authenticated Roblox client.</p>
@@ -138,13 +223,147 @@ def command(**attrs):
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Bot(Client):
-    def __init__(self):
-        super().__init__()</code></pre>
+    def __init__(self, prefix=&#34;!&#34;):
+        super().__init__()
+        self.prefix = prefix
+        self.commands = {}
+        self.events = {}
+        self.evtloop = asyncio.new_event_loop()
+        self.keepgoing = False
+
+    def _generate_help(self):
+        help_string = f&#34;Prefix: {self.prefix}&#34;
+        for command in self.commands:
+            help_string = help_string + &#34;\n&#34; + command + &#34;: &#34; + command.help[:24]
+        return help_string
+
+    def run(self, token):
+        self.keepgoing = True
+        self.token_login(token)
+        self.notifications.on_notification = self._on_notification
+        self.evtloop = self.cso.evtloop
+        self.evtloop.run_until_complete(self._run())
+        while self.keepgoing:
+            sleep(1/32)
+
+    async def _process_command(self, data, n_data):
+        content = data[&#34;content&#34;]
+        if content.startswith(self.prefix):
+            content = content[len(self.prefix):]
+            content_split = content.split(&#34; &#34;)
+            command = content_split[0]
+            if command in self.commands:
+                context = Context(
+                    cso=self.cso,
+                    latest_data=data,
+                    notif_data=n_data
+                )
+                try:
+                    await self.commands[command](context, *content_split[1:])
+                except Exception as e:
+                    if &#34;on_error&#34; in self.events:
+                        await self.events[&#34;on_error&#34;](context, e)
+                    else:
+                        stderr.write(&#34;Ignoring error: &#34; + str(e) + &#34;\n&#34;)
+                        await context.send(&#34;Something went wrong when running this command.&#34;)
+
+    async def _on_notification(self, notification):
+        if notification.type == &#34;NewMessage&#34;:
+            latest_req = await self.requests.get(
+                url=&#34;https://chat.roblox.com/v2/get-messages&#34;,
+                params={
+                    &#34;conversationId&#34;: notification.data[&#34;conversation_id&#34;],
+                    &#34;pageSize&#34;: 1
+                }
+            )
+            latest_data = latest_req.json()[0]
+            await self._process_command(latest_data, notification.data)
+
+    async def _run(self):
+        await self.notifications.initialize()
+
+    def command(self, *args, **kwargs):
+        def decorator(func):
+            if isinstance(func, Command):
+                raise TypeError(&#39;Callback is already a command.&#39;)
+            command = Command(func=func, **kwargs)
+            self.commands[func.__name__] = command
+            return command
+
+        return decorator
+
+    def event(self, *args, **kwargs):
+        def decorator(func):
+            command = Command(func=func, **kwargs)
+            self.events[func.__name__] = command
+            return command
+
+        return decorator</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="ro_py.client.Client" href="../client.html#ro_py.client.Client">Client</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.extensions.bots.Bot.command"><code class="name flex">
+<span>def <span class="ident">command</span></span>(<span>self, *args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def command(self, *args, **kwargs):
+    def decorator(func):
+        if isinstance(func, Command):
+            raise TypeError(&#39;Callback is already a command.&#39;)
+        command = Command(func=func, **kwargs)
+        self.commands[func.__name__] = command
+        return command
+
+    return decorator</code></pre>
+</details>
+</dd>
+<dt id="ro_py.extensions.bots.Bot.event"><code class="name flex">
+<span>def <span class="ident">event</span></span>(<span>self, *args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def event(self, *args, **kwargs):
+    def decorator(func):
+        command = Command(func=func, **kwargs)
+        self.events[func.__name__] = command
+        return command
+
+    return decorator</code></pre>
+</details>
+</dd>
+<dt id="ro_py.extensions.bots.Bot.run"><code class="name flex">
+<span>def <span class="ident">run</span></span>(<span>self, token)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def run(self, token):
+    self.keepgoing = True
+    self.token_login(token)
+    self.notifications.on_notification = self._on_notification
+    self.evtloop = self.cso.evtloop
+    self.evtloop.run_until_complete(self._run())
+    while self.keepgoing:
+        sleep(1/32)</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
 <li><code><b><a title="ro_py.client.Client" href="../client.html#ro_py.client.Client">Client</a></b></code>:
@@ -161,6 +380,7 @@ def command(**attrs):
 <li><code><a title="ro_py.client.Client.get_group" href="../client.html#ro_py.client.Client.get_group">get_group</a></code></li>
 <li><code><a title="ro_py.client.Client.get_user" href="../client.html#ro_py.client.Client.get_user">get_user</a></code></li>
 <li><code><a title="ro_py.client.Client.get_user_by_username" href="../client.html#ro_py.client.Client.get_user_by_username">get_user_by_username</a></code></li>
+<li><code><a title="ro_py.client.Client.notifications" href="../client.html#ro_py.client.Client.notifications">notifications</a></code></li>
 <li><code><a title="ro_py.client.Client.requests" href="../client.html#ro_py.client.Client.requests">requests</a></code></li>
 <li><code><a title="ro_py.client.Client.token_login" href="../client.html#ro_py.client.Client.token_login">token_login</a></code></li>
 <li><code><a title="ro_py.client.Client.trade" href="../client.html#ro_py.client.Client.trade">trade</a></code></li>
@@ -184,6 +404,7 @@ def command(**attrs):
         if not asyncio.iscoroutinefunction(func):
             raise TypeError(&#39;Callback must be a coroutine.&#39;)
         self._callback = func
+        self.help = func.__doc__ or &#34;No help available.&#34;
 
     @property
     def callback(self):
@@ -208,6 +429,78 @@ def callback(self):
 </dd>
 </dl>
 </dd>
+<dt id="ro_py.extensions.bots.Context"><code class="flex name class">
+<span>class <span class="ident">Context</span></span>
+<span>(</span><span>cso, latest_data, notif_data)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Context:
+    def __init__(self, cso, latest_data, notif_data):
+        self.cso = cso
+        self.requests = cso.requests
+
+        self.conversation_id = notif_data[&#34;conversation_id&#34;]
+        self.actor_target_id = notif_data[&#34;actor_target_id&#34;]
+        self.actor_type = notif_data[&#34;actor_type&#34;]
+        self.type = notif_data[&#34;type&#34;]
+        self.sequence_number = notif_data[&#34;sequence_number&#34;]
+
+        self.id = latest_data[&#34;id&#34;]
+        self.content = latest_data[&#34;content&#34;]
+        self.sender_type = latest_data[&#34;senderType&#34;]
+        self.sender_id = latest_data[&#34;senderTargetId&#34;]
+        self.decorators = latest_data[&#34;decorators&#34;]
+        self.message_type = latest_data[&#34;messageType&#34;]
+        self.read = latest_data[&#34;read&#34;]
+        self.sent = iso8601.parse_date(latest_data[&#34;sent&#34;])
+
+    async def send(self, content):
+        send_message_req = await self.requests.post(
+            url=&#34;https://chat.roblox.com/v2/send-message&#34;,
+            data={
+                &#34;message&#34;: content,
+                &#34;conversationId&#34;: self.conversation_id
+            }
+        )
+        send_message_json = send_message_req.json()
+        if send_message_json[&#34;sent&#34;]:
+            return Message(self.cso, send_message_json[&#34;messageId&#34;], self.id)
+        else:
+            raise ChatError(send_message_json[&#34;statusMessage&#34;])</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.extensions.bots.Context.send"><code class="name flex">
+<span>async def <span class="ident">send</span></span>(<span>self, content)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def send(self, content):
+    send_message_req = await self.requests.post(
+        url=&#34;https://chat.roblox.com/v2/send-message&#34;,
+        data={
+            &#34;message&#34;: content,
+            &#34;conversationId&#34;: self.conversation_id
+        }
+    )
+    send_message_json = send_message_req.json()
+    if send_message_json[&#34;sent&#34;]:
+        return Message(self.cso, send_message_json[&#34;messageId&#34;], self.id)
+    else:
+        raise ChatError(send_message_json[&#34;statusMessage&#34;])</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
 </dl>
 </section>
 </article>
@@ -227,20 +520,26 @@ def callback(self):
 <li><code><a title="ro_py.extensions" href="index.html">ro_py.extensions</a></code></li>
 </ul>
 </li>
-<li><h3><a href="#header-functions">Functions</a></h3>
-<ul class="">
-<li><code><a title="ro_py.extensions.bots.command" href="#ro_py.extensions.bots.command">command</a></code></li>
-</ul>
-</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
 <h4><code><a title="ro_py.extensions.bots.Bot" href="#ro_py.extensions.bots.Bot">Bot</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.extensions.bots.Bot.command" href="#ro_py.extensions.bots.Bot.command">command</a></code></li>
+<li><code><a title="ro_py.extensions.bots.Bot.event" href="#ro_py.extensions.bots.Bot.event">event</a></code></li>
+<li><code><a title="ro_py.extensions.bots.Bot.run" href="#ro_py.extensions.bots.Bot.run">run</a></code></li>
+</ul>
 </li>
 <li>
 <h4><code><a title="ro_py.extensions.bots.Command" href="#ro_py.extensions.bots.Command">Command</a></code></h4>
 <ul class="">
 <li><code><a title="ro_py.extensions.bots.Command.callback" href="#ro_py.extensions.bots.Command.callback">callback</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.extensions.bots.Context" href="#ro_py.extensions.bots.Context">Context</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.extensions.bots.Context.send" href="#ro_py.extensions.bots.Context.send">send</a></code></li>
 </ul>
 </li>
 </ul>

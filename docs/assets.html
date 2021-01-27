@@ -63,6 +63,8 @@ from ro_py.utilities.errors import NotLimitedError
 from ro_py.economy import LimitedResaleData
 from ro_py.utilities.asset_type import asset_types
 import iso8601
+import asyncio
+import copy
 
 endpoint = &#34;https://api.roblox.com/&#34;
 
@@ -83,6 +85,7 @@ class Asset:
         self.id = asset_id
         self.cso = cso
         self.requests = cso.requests
+        self.events = Events(cso, self)
         self.target_id = None
         self.product_type = None
         self.asset_id = None
@@ -177,11 +180,30 @@ class UserAsset(Asset):
 
 
 class Events:
-    def __init__(self, cso):
+    def __init__(self, cso, asset):
         self.cso = cso
+        self.asset = asset
 
-    async def bind(self, func, event, delay=15):
-        pass</code></pre>
+    def bind(self, func, event, delay=15):
+        if event == self.cso.client.events.on_asset_change:
+            return asyncio.create_task(self.on_asset_change(func, delay))
+
+    async def on_asset_change(self, func, delay):
+        await self.asset.update()
+        old_asset = copy.copy(self.asset)
+        while True:
+            await asyncio.sleep(delay)
+            await self.asset.update()
+            has_changed = False
+            for attr, value in old_asset.__dict__.items():
+                if getattr(self.asset, attr) != value:
+                    has_changed = True
+            if has_changed:
+                if asyncio.iscoroutinefunction(func):
+                    await func(old_asset, self.asset)
+                else:
+                    func(old_asset, self.asset)
+                old_asset = copy.copy(self.asset)</code></pre>
 </details>
 </section>
 <section>
@@ -226,6 +248,7 @@ class Events:
         self.id = asset_id
         self.cso = cso
         self.requests = cso.requests
+        self.events = Events(cso, self)
         self.target_id = None
         self.product_type = None
         self.asset_id = None
@@ -428,7 +451,7 @@ class Events:
 </dd>
 <dt id="ro_py.assets.Events"><code class="flex name class">
 <span>class <span class="ident">Events</span></span>
-<span>(</span><span>cso)</span>
+<span>(</span><span>cso, asset)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -437,16 +460,35 @@ class Events:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Events:
-    def __init__(self, cso):
+    def __init__(self, cso, asset):
         self.cso = cso
+        self.asset = asset
 
-    async def bind(self, func, event, delay=15):
-        pass</code></pre>
+    def bind(self, func, event, delay=15):
+        if event == self.cso.client.events.on_asset_change:
+            return asyncio.create_task(self.on_asset_change(func, delay))
+
+    async def on_asset_change(self, func, delay):
+        await self.asset.update()
+        old_asset = copy.copy(self.asset)
+        while True:
+            await asyncio.sleep(delay)
+            await self.asset.update()
+            has_changed = False
+            for attr, value in old_asset.__dict__.items():
+                if getattr(self.asset, attr) != value:
+                    has_changed = True
+            if has_changed:
+                if asyncio.iscoroutinefunction(func):
+                    await func(old_asset, self.asset)
+                else:
+                    func(old_asset, self.asset)
+                old_asset = copy.copy(self.asset)</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.assets.Events.bind"><code class="name flex">
-<span>async def <span class="ident">bind</span></span>(<span>self, func, event, delay=15)</span>
+<span>def <span class="ident">bind</span></span>(<span>self, func, event, delay=15)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -454,8 +496,36 @@ class Events:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def bind(self, func, event, delay=15):
-    pass</code></pre>
+<pre><code class="python">def bind(self, func, event, delay=15):
+    if event == self.cso.client.events.on_asset_change:
+        return asyncio.create_task(self.on_asset_change(func, delay))</code></pre>
+</details>
+</dd>
+<dt id="ro_py.assets.Events.on_asset_change"><code class="name flex">
+<span>async def <span class="ident">on_asset_change</span></span>(<span>self, func, delay)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def on_asset_change(self, func, delay):
+    await self.asset.update()
+    old_asset = copy.copy(self.asset)
+    while True:
+        await asyncio.sleep(delay)
+        await self.asset.update()
+        has_changed = False
+        for attr, value in old_asset.__dict__.items():
+            if getattr(self.asset, attr) != value:
+                has_changed = True
+        if has_changed:
+            if asyncio.iscoroutinefunction(func):
+                await func(old_asset, self.asset)
+            else:
+                func(old_asset, self.asset)
+            old_asset = copy.copy(self.asset)</code></pre>
 </details>
 </dd>
 </dl>
@@ -530,6 +600,7 @@ class Events:
 <h4><code><a title="ro_py.assets.Events" href="#ro_py.assets.Events">Events</a></code></h4>
 <ul class="">
 <li><code><a title="ro_py.assets.Events.bind" href="#ro_py.assets.Events.bind">bind</a></code></li>
+<li><code><a title="ro_py.assets.Events.on_asset_change" href="#ro_py.assets.Events.on_asset_change">on_asset_change</a></code></li>
 </ul>
 </li>
 <li>

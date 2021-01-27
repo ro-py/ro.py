@@ -126,7 +126,7 @@ class Requests:
         if quickreturn:
             return get_request
 
-        raise status_code_error(get_request.status_code)(get_request.status_code)(f&#34;[{get_request.status_code}] {get_request_error[0][&#39;message&#39;]}&#34;)
+        raise status_code_error(get_request.status_code)(f&#34;[{get_request.status_code}] {get_request_error[0][&#39;message&#39;]}&#34;)
 
     def back_post(self, *args, **kwargs):
         kwargs[&#34;cookies&#34;] = kwargs.pop(&#34;cookies&#34;, self.session.cookies)
@@ -341,7 +341,7 @@ class Requests:
         if quickreturn:
             return get_request
 
-        raise status_code_error(get_request.status_code)(get_request.status_code)(f&#34;[{get_request.status_code}] {get_request_error[0][&#39;message&#39;]}&#34;)
+        raise status_code_error(get_request.status_code)(f&#34;[{get_request.status_code}] {get_request_error[0][&#39;message&#39;]}&#34;)
 
     def back_post(self, *args, **kwargs):
         kwargs[&#34;cookies&#34;] = kwargs.pop(&#34;cookies&#34;, self.session.cookies)
@@ -549,7 +549,7 @@ class Requests:
     if quickreturn:
         return get_request
 
-    raise status_code_error(get_request.status_code)(get_request.status_code)(f&#34;[{get_request.status_code}] {get_request_error[0][&#39;message&#39;]}&#34;)</code></pre>
+    raise status_code_error(get_request.status_code)(f&#34;[{get_request.status_code}] {get_request_error[0][&#39;message&#39;]}&#34;)</code></pre>
 </details>
 </dd>
 <dt id="ro_py.utilities.requests.Requests.get_captcha_metadata"><code class="name flex">

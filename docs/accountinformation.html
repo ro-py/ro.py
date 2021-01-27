@@ -109,11 +109,12 @@ class AccountInformation:
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
+    cso : ro_py.client.ClientSharedObject
+        ClientSharedObject.
     &#34;&#34;&#34;
-    def __init__(self, requests):
-        self.requests = requests
+    def __init__(self, cso):
+        self.cso = cso
+        self.requests = cso.requests
         self.account_information_metadata = None
         self.promotion_channels = None
 
@@ -202,15 +203,15 @@ class AccountInformation:
 <dl>
 <dt id="ro_py.accountinformation.AccountInformation"><code class="flex name class">
 <span>class <span class="ident">AccountInformation</span></span>
-<span>(</span><span>requests)</span>
+<span>(</span><span>cso)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents authenticated client account information (<a href="https://accountinformation.roblox.com/">https://accountinformation.roblox.com/</a>)
 This is only available for authenticated clients as it cannot be accessed otherwise.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>requests</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
-<dd>Requests object to use for API requests.</dd>
+<dt><strong><code>cso</code></strong> :&ensp;<code><a title="ro_py.client.ClientSharedObject" href="client.html#ro_py.client.ClientSharedObject">ClientSharedObject</a></code></dt>
+<dd>ClientSharedObject.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -223,11 +224,12 @@ This is only available for authenticated clients as it cannot be accessed otherw
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
+    cso : ro_py.client.ClientSharedObject
+        ClientSharedObject.
     &#34;&#34;&#34;
-    def __init__(self, requests):
-        self.requests = requests
+    def __init__(self, cso):
+        self.cso = cso
+        self.requests = cso.requests
         self.account_information_metadata = None
         self.promotion_channels = None
 

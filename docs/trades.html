@@ -62,7 +62,8 @@ This file houses functions and classes that pertain to Roblox trades and trading
 
 from ro_py.utilities.pages import Pages, SortOrder
 from ro_py.assets import Asset, UserAsset
-from ro_py.users import User, PartialUser
+from ro_py.users import PartialUser
+import datetime
 import iso8601
 import enum
 
@@ -77,14 +78,14 @@ def trade_page_handler(requests, this_page) -&gt; list:
 
 
 class Trade:
-    def __init__(self, requests, trade_id: int, sender: PartialUser, recieve_items, send_items, created, expiration, status: bool):
+    def __init__(self, requests, trade_id: int, sender: PartialUser, receive_items, send_items, created: datetime.datetime, expiration: datetime.datetime, status: bool):
         self.trade_id = trade_id
         self.requests = requests
         self.sender = sender
-        self.recieve_items = recieve_items
+        self.receive_items = receive_items
         self.send_items = send_items
         self.created = iso8601.parse_date(created)
-        self.experation = iso8601.parse_date(expiration)
+        self.expiration = iso8601.parse_date(expiration)
         self.status = status
 
     async def accept(self) -&gt; bool:
@@ -109,12 +110,13 @@ class Trade:
 
 
 class PartialTrade:
-    def __init__(self, requests, trade_id: int, user: PartialUser, created, expiration, status: bool):
-        self.requests = requests
+    def __init__(self, cso, trade_id: int, user: PartialUser, created: datetime.datetime, expiration: datetime.datetime, status: bool):
+        self.cso = cso
+        self.requests = cso.requests
         self.trade_id = trade_id
         self.user = user
-        self.created = iso8601.parse(created)
-        self.expiration = iso8601.parse(expiration)
+        self.created = iso8601.parse_date(created)
+        self.expiration = iso8601.parse_date(expiration)
         self.status = status
 
     async def accept(self) -&gt; bool:
@@ -148,22 +150,31 @@ class PartialTrade:
         data = expend_req.json()
 
         # generate a user class and update it
-        sender = User(self.requests, data[&#39;user&#39;][&#39;id&#39;])
+        sender = await self.cso.client.get_user(data[&#39;user&#39;][&#39;id&#39;])
         await sender.update()
 
         # load items that will be/have been sent and items that you will/have recieve(d)
-        recieve_items, send_items = [], []
+        receive_items, send_items = [], []
         for items_0 in data[&#39;offers&#39;][0][&#39;userAssets&#39;]:
             item_0 = Asset(self.requests, items_0[&#39;assetId&#39;])
             await item_0.update()
-            recieve_items.append(item_0)
+            receive_items.append(item_0)
 
         for items_1 in data[&#39;offers&#39;][1][&#39;userAssets&#39;]:
             item_1 = Asset(self.requests, items_1[&#39;assetId&#39;])
             await item_1.update()
             send_items.append(item_1)
 
-        return Trade(self.requests, self.trade_id, sender, recieve_items, send_items, data[&#39;created&#39;], data[&#39;expiration&#39;], data[&#39;status&#39;])
+        return Trade(
+            self.cso,
+            self.trade_id,
+            sender,
+            receive_items,
+            send_items,
+            data[&#39;created&#39;],
+            data[&#39;expiration&#39;],
+            data[&#39;status&#39;]
+        )
 
 
 class TradeStatusType(enum.Enum):
@@ -189,13 +200,13 @@ class TradesMetadata:
 
 class TradeRequest:
     def __init__(self):
-        self.recieve_asset = []
+        self.receive_asset = []
         &#34;&#34;&#34;Limiteds that will be recieved when the trade is accepted.&#34;&#34;&#34;
         self.send_asset = []
         &#34;&#34;&#34;Limiteds that will be sent when the trade is accepted.&#34;&#34;&#34;
         self.send_robux = 0
         &#34;&#34;&#34;Robux that will be sent when the trade is accepted.&#34;&#34;&#34;
-        self.recieve_robux = 0
+        self.receive_robux = 0
         &#34;&#34;&#34;Robux that will be recieved when the trade is accepted.&#34;&#34;&#34;
 
     def request_item(self, asset: UserAsset):
@@ -206,7 +217,7 @@ class TradeRequest:
         ----------
         asset : ro_py.assets.UserAsset
         &#34;&#34;&#34;
-        self.recieve_asset.append(asset)
+        self.receive_asset.append(asset)
 
     def send_item(self, asset: UserAsset):
         &#34;&#34;&#34;
@@ -226,7 +237,7 @@ class TradeRequest:
         ----------
         robux : int
         &#34;&#34;&#34;
-        self.recieve_robux = robux
+        self.receive_robux = robux
 
     def send_robux(self, robux: int):
         &#34;&#34;&#34;
@@ -243,14 +254,15 @@ class TradesWrapper:
     &#34;&#34;&#34;
     Represents the Roblox trades page.
     &#34;&#34;&#34;
-    def __init__(self, requests, get_self):
-        self.requests = requests
+    def __init__(self, cso, get_self):
+        self.cso = cso
+        self.requests = cso.requests
         self.get_self = get_self
         self.TradeRequest = TradeRequest
 
     async def get_trades(self, trade_status_type: TradeStatusType.Inbound, sort_order=SortOrder.Ascending, limit=10) -&gt; Pages:
-        trades = await Pages(
-            requests=self.requests,
+        trades = Pages(
+            cso=self.cso,
             url=endpoint + f&#34;/v1/trades/{trade_status_type}&#34;,
             sort_order=sort_order,
             limit=limit,
@@ -293,10 +305,10 @@ class TradesWrapper:
         for asset in trade.send_asset:
             data[&#39;offers&#39;][1][&#39;userAssetIds&#39;].append(asset.user_asset_id)
 
-        for asset in trade.recieve_asset:
+        for asset in trade.receive_asset:
             data[&#39;offers&#39;][0][&#39;userAssetIds&#39;].append(asset.user_asset_id)
 
-        data[&#39;offers&#39;][0][&#39;robux&#39;] = trade.recieve_robux
+        data[&#39;offers&#39;][0][&#39;robux&#39;] = trade.receive_robux
         data[&#39;offers&#39;][1][&#39;robux&#39;] = trade.send_robux
 
         trade_req = await self.requests.post(
@@ -337,7 +349,7 @@ class TradesWrapper:
 <dl>
 <dt id="ro_py.trades.PartialTrade"><code class="flex name class">
 <span>class <span class="ident">PartialTrade</span></span>
-<span>(</span><span>requests, trade_id: int, user: <a title="ro_py.users.PartialUser" href="users.html#ro_py.users.PartialUser">PartialUser</a>, created, expiration, status: bool)</span>
+<span>(</span><span>cso, trade_id: int, user: <a title="ro_py.users.PartialUser" href="users.html#ro_py.users.PartialUser">PartialUser</a>, created: datetime.datetime, expiration: datetime.datetime, status: bool)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -346,12 +358,13 @@ class TradesWrapper:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class PartialTrade:
-    def __init__(self, requests, trade_id: int, user: PartialUser, created, expiration, status: bool):
-        self.requests = requests
+    def __init__(self, cso, trade_id: int, user: PartialUser, created: datetime.datetime, expiration: datetime.datetime, status: bool):
+        self.cso = cso
+        self.requests = cso.requests
         self.trade_id = trade_id
         self.user = user
-        self.created = iso8601.parse(created)
-        self.expiration = iso8601.parse(expiration)
+        self.created = iso8601.parse_date(created)
+        self.expiration = iso8601.parse_date(expiration)
         self.status = status
 
     async def accept(self) -&gt; bool:
@@ -385,22 +398,31 @@ class TradesWrapper:
         data = expend_req.json()
 
         # generate a user class and update it
-        sender = User(self.requests, data[&#39;user&#39;][&#39;id&#39;])
+        sender = await self.cso.client.get_user(data[&#39;user&#39;][&#39;id&#39;])
         await sender.update()
 
         # load items that will be/have been sent and items that you will/have recieve(d)
-        recieve_items, send_items = [], []
+        receive_items, send_items = [], []
         for items_0 in data[&#39;offers&#39;][0][&#39;userAssets&#39;]:
             item_0 = Asset(self.requests, items_0[&#39;assetId&#39;])
             await item_0.update()
-            recieve_items.append(item_0)
+            receive_items.append(item_0)
 
         for items_1 in data[&#39;offers&#39;][1][&#39;userAssets&#39;]:
             item_1 = Asset(self.requests, items_1[&#39;assetId&#39;])
             await item_1.update()
             send_items.append(item_1)
 
-        return Trade(self.requests, self.trade_id, sender, recieve_items, send_items, data[&#39;created&#39;], data[&#39;expiration&#39;], data[&#39;status&#39;])</code></pre>
+        return Trade(
+            self.cso,
+            self.trade_id,
+            sender,
+            receive_items,
+            send_items,
+            data[&#39;created&#39;],
+            data[&#39;expiration&#39;],
+            data[&#39;status&#39;]
+        )</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -467,29 +489,38 @@ class TradesWrapper:
     data = expend_req.json()
 
     # generate a user class and update it
-    sender = User(self.requests, data[&#39;user&#39;][&#39;id&#39;])
+    sender = await self.cso.client.get_user(data[&#39;user&#39;][&#39;id&#39;])
     await sender.update()
 
     # load items that will be/have been sent and items that you will/have recieve(d)
-    recieve_items, send_items = [], []
+    receive_items, send_items = [], []
     for items_0 in data[&#39;offers&#39;][0][&#39;userAssets&#39;]:
         item_0 = Asset(self.requests, items_0[&#39;assetId&#39;])
         await item_0.update()
-        recieve_items.append(item_0)
+        receive_items.append(item_0)
 
     for items_1 in data[&#39;offers&#39;][1][&#39;userAssets&#39;]:
         item_1 = Asset(self.requests, items_1[&#39;assetId&#39;])
         await item_1.update()
         send_items.append(item_1)
 
-    return Trade(self.requests, self.trade_id, sender, recieve_items, send_items, data[&#39;created&#39;], data[&#39;expiration&#39;], data[&#39;status&#39;])</code></pre>
+    return Trade(
+        self.cso,
+        self.trade_id,
+        sender,
+        receive_items,
+        send_items,
+        data[&#39;created&#39;],
+        data[&#39;expiration&#39;],
+        data[&#39;status&#39;]
+    )</code></pre>
 </details>
 </dd>
 </dl>
 </dd>
 <dt id="ro_py.trades.Trade"><code class="flex name class">
 <span>class <span class="ident">Trade</span></span>
-<span>(</span><span>requests, trade_id: int, sender: <a title="ro_py.users.PartialUser" href="users.html#ro_py.users.PartialUser">PartialUser</a>, recieve_items, send_items, created, expiration, status: bool)</span>
+<span>(</span><span>requests, trade_id: int, sender: <a title="ro_py.users.PartialUser" href="users.html#ro_py.users.PartialUser">PartialUser</a>, receive_items, send_items, created: datetime.datetime, expiration: datetime.datetime, status: bool)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -498,14 +529,14 @@ class TradesWrapper:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Trade:
-    def __init__(self, requests, trade_id: int, sender: PartialUser, recieve_items, send_items, created, expiration, status: bool):
+    def __init__(self, requests, trade_id: int, sender: PartialUser, receive_items, send_items, created: datetime.datetime, expiration: datetime.datetime, status: bool):
         self.trade_id = trade_id
         self.requests = requests
         self.sender = sender
-        self.recieve_items = recieve_items
+        self.receive_items = receive_items
         self.send_items = send_items
         self.created = iso8601.parse_date(created)
-        self.experation = iso8601.parse_date(expiration)
+        self.expiration = iso8601.parse_date(expiration)
         self.status = status
 
     async def accept(self) -&gt; bool:
@@ -585,13 +616,13 @@ class TradesWrapper:
 </summary>
 <pre><code class="python">class TradeRequest:
     def __init__(self):
-        self.recieve_asset = []
+        self.receive_asset = []
         &#34;&#34;&#34;Limiteds that will be recieved when the trade is accepted.&#34;&#34;&#34;
         self.send_asset = []
         &#34;&#34;&#34;Limiteds that will be sent when the trade is accepted.&#34;&#34;&#34;
         self.send_robux = 0
         &#34;&#34;&#34;Robux that will be sent when the trade is accepted.&#34;&#34;&#34;
-        self.recieve_robux = 0
+        self.receive_robux = 0
         &#34;&#34;&#34;Robux that will be recieved when the trade is accepted.&#34;&#34;&#34;
 
     def request_item(self, asset: UserAsset):
@@ -602,7 +633,7 @@ class TradesWrapper:
         ----------
         asset : ro_py.assets.UserAsset
         &#34;&#34;&#34;
-        self.recieve_asset.append(asset)
+        self.receive_asset.append(asset)
 
     def send_item(self, asset: UserAsset):
         &#34;&#34;&#34;
@@ -622,7 +653,7 @@ class TradesWrapper:
         ----------
         robux : int
         &#34;&#34;&#34;
-        self.recieve_robux = robux
+        self.receive_robux = robux
 
     def send_robux(self, robux: int):
         &#34;&#34;&#34;
@@ -636,11 +667,11 @@ class TradesWrapper:
 </details>
 <h3>Instance variables</h3>
 <dl>
-<dt id="ro_py.trades.TradeRequest.recieve_asset"><code class="name">var <span class="ident">recieve_asset</span></code></dt>
+<dt id="ro_py.trades.TradeRequest.receive_asset"><code class="name">var <span class="ident">receive_asset</span></code></dt>
 <dd>
 <div class="desc"><p>Limiteds that will be recieved when the trade is accepted.</p></div>
 </dd>
-<dt id="ro_py.trades.TradeRequest.recieve_robux"><code class="name">var <span class="ident">recieve_robux</span></code></dt>
+<dt id="ro_py.trades.TradeRequest.receive_robux"><code class="name">var <span class="ident">receive_robux</span></code></dt>
 <dd>
 <div class="desc"><p>Robux that will be recieved when the trade is accepted.</p></div>
 </dd>
@@ -691,7 +722,7 @@ class TradesWrapper:
     ----------
     asset : ro_py.assets.UserAsset
     &#34;&#34;&#34;
-    self.recieve_asset.append(asset)</code></pre>
+    self.receive_asset.append(asset)</code></pre>
 </details>
 </dd>
 <dt id="ro_py.trades.TradeRequest.request_robux"><code class="name flex">
@@ -716,7 +747,7 @@ class TradesWrapper:
     ----------
     robux : int
     &#34;&#34;&#34;
-    self.recieve_robux = robux</code></pre>
+    self.receive_robux = robux</code></pre>
 </details>
 </dd>
 <dt id="ro_py.trades.TradeRequest.send_item"><code class="name flex">
@@ -812,7 +843,7 @@ class TradesWrapper:
 </dd>
 <dt id="ro_py.trades.TradesWrapper"><code class="flex name class">
 <span>class <span class="ident">TradesWrapper</span></span>
-<span>(</span><span>requests, get_self)</span>
+<span>(</span><span>cso, get_self)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents the Roblox trades page.</p></div>
@@ -824,14 +855,15 @@ class TradesWrapper:
     &#34;&#34;&#34;
     Represents the Roblox trades page.
     &#34;&#34;&#34;
-    def __init__(self, requests, get_self):
-        self.requests = requests
+    def __init__(self, cso, get_self):
+        self.cso = cso
+        self.requests = cso.requests
         self.get_self = get_self
         self.TradeRequest = TradeRequest
 
     async def get_trades(self, trade_status_type: TradeStatusType.Inbound, sort_order=SortOrder.Ascending, limit=10) -&gt; Pages:
-        trades = await Pages(
-            requests=self.requests,
+        trades = Pages(
+            cso=self.cso,
             url=endpoint + f&#34;/v1/trades/{trade_status_type}&#34;,
             sort_order=sort_order,
             limit=limit,
@@ -874,10 +906,10 @@ class TradesWrapper:
         for asset in trade.send_asset:
             data[&#39;offers&#39;][1][&#39;userAssetIds&#39;].append(asset.user_asset_id)
 
-        for asset in trade.recieve_asset:
+        for asset in trade.receive_asset:
             data[&#39;offers&#39;][0][&#39;userAssetIds&#39;].append(asset.user_asset_id)
 
-        data[&#39;offers&#39;][0][&#39;robux&#39;] = trade.recieve_robux
+        data[&#39;offers&#39;][0][&#39;robux&#39;] = trade.receive_robux
         data[&#39;offers&#39;][1][&#39;robux&#39;] = trade.send_robux
 
         trade_req = await self.requests.post(
@@ -899,8 +931,8 @@ class TradesWrapper:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def get_trades(self, trade_status_type: TradeStatusType.Inbound, sort_order=SortOrder.Ascending, limit=10) -&gt; Pages:
-    trades = await Pages(
-        requests=self.requests,
+    trades = Pages(
+        cso=self.cso,
         url=endpoint + f&#34;/v1/trades/{trade_status_type}&#34;,
         sort_order=sort_order,
         limit=limit,
@@ -965,10 +997,10 @@ class TradesWrapper:
     for asset in trade.send_asset:
         data[&#39;offers&#39;][1][&#39;userAssetIds&#39;].append(asset.user_asset_id)
 
-    for asset in trade.recieve_asset:
+    for asset in trade.receive_asset:
         data[&#39;offers&#39;][0][&#39;userAssetIds&#39;].append(asset.user_asset_id)
 
-    data[&#39;offers&#39;][0][&#39;robux&#39;] = trade.recieve_robux
+    data[&#39;offers&#39;][0][&#39;robux&#39;] = trade.receive_robux
     data[&#39;offers&#39;][1][&#39;robux&#39;] = trade.send_robux
 
     trade_req = await self.requests.post(
@@ -1025,8 +1057,8 @@ class TradesWrapper:
 <li>
 <h4><code><a title="ro_py.trades.TradeRequest" href="#ro_py.trades.TradeRequest">TradeRequest</a></code></h4>
 <ul class="two-column">
-<li><code><a title="ro_py.trades.TradeRequest.recieve_asset" href="#ro_py.trades.TradeRequest.recieve_asset">recieve_asset</a></code></li>
-<li><code><a title="ro_py.trades.TradeRequest.recieve_robux" href="#ro_py.trades.TradeRequest.recieve_robux">recieve_robux</a></code></li>
+<li><code><a title="ro_py.trades.TradeRequest.receive_asset" href="#ro_py.trades.TradeRequest.receive_asset">receive_asset</a></code></li>
+<li><code><a title="ro_py.trades.TradeRequest.receive_robux" href="#ro_py.trades.TradeRequest.receive_robux">receive_robux</a></code></li>
 <li><code><a title="ro_py.trades.TradeRequest.request_item" href="#ro_py.trades.TradeRequest.request_item">request_item</a></code></li>
 <li><code><a title="ro_py.trades.TradeRequest.request_robux" href="#ro_py.trades.TradeRequest.request_robux">request_robux</a></code></li>
 <li><code><a title="ro_py.trades.TradeRequest.send_asset" href="#ro_py.trades.TradeRequest.send_asset">send_asset</a></code></li>

@@ -60,7 +60,6 @@ This file houses functions and classes that pertain to Roblox universes and plac
 
 &#34;&#34;&#34;
 
-from ro_py.users import User
 from ro_py.groups import Group
 from ro_py.badges import Badge
 from ro_py.thumbnails import GameThumbnailGenerator
@@ -121,7 +120,7 @@ class Game:
         if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
             self.creator = self.cso.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
             if not self.creator:
-                self.creator = User(self.cso, game_info[&#34;creator&#34;][&#34;id&#34;])
+                self.creator = await self.cso.client.get_user(game_info[&#34;creator&#34;][&#34;id&#34;])
                 self.cso.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
                 await self.creator.update()
         elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
@@ -304,7 +303,7 @@ This class represents multiple game-related endpoints.</p></div>
         if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
             self.creator = self.cso.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
             if not self.creator:
-                self.creator = User(self.cso, game_info[&#34;creator&#34;][&#34;id&#34;])
+                self.creator = await self.cso.client.get_user(game_info[&#34;creator&#34;][&#34;id&#34;])
                 self.cso.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
                 await self.creator.update()
         elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
@@ -444,7 +443,7 @@ This will be updated soon to use the new Page object.</p></div>
     if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
         self.creator = self.cso.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
         if not self.creator:
-            self.creator = User(self.cso, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.creator = await self.cso.client.get_user(game_info[&#34;creator&#34;][&#34;id&#34;])
             self.cso.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
             await self.creator.update()
     elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:

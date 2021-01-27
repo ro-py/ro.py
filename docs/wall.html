@@ -57,20 +57,25 @@ background: #555;
 from typing import List
 from ro_py.captcha import UnsolvedCaptcha
 from ro_py.utilities.pages import Pages, SortOrder
+from ro_py.users import PartialUser
+
+
+endpoint = &#34;https://groups.roblox.com&#34;
 
 
 class WallPost:
     &#34;&#34;&#34;
-    Represents a roblox wall post.
+    Represents a Roblox wall post.
     &#34;&#34;&#34;
     def __init__(self, cso, wall_data, group):
+        self.cso = cso
         self.requests = cso.requests
         self.group = group
         self.id = wall_data[&#39;id&#39;]
         self.body = wall_data[&#39;body&#39;]
         self.created = iso8601.parse_date(wall_data[&#39;created&#39;])
         self.updated = iso8601.parse_date(wall_data[&#39;updated&#39;])
-        self.poster = User(requests, wall_data[&#39;user&#39;][&#39;userId&#39;], wall_data[&#39;user&#39;][&#39;username&#39;])
+        self.poster = PartialUser(self.cso, wall_data[&#39;user&#39;][&#39;userId&#39;], wall_data[&#39;user&#39;][&#39;username&#39;])
 
     async def delete(self):
         wall_req = await self.requests.delete(
@@ -94,13 +99,14 @@ class Wall:
 
     async def get_posts(self, sort_order=SortOrder.Ascending, limit=100):
         wall_req = Pages(
-            requests=self.cso,
+            cso=self.cso,
             url=endpoint + f&#34;/v2/groups/{self.group.id}/wall/posts&#34;,
             sort_order=sort_order,
             limit=limit,
             handler=wall_post_handler,
             handler_args=self.group
         )
+        await wall_req.get_page()
         return wall_req
 
     async def post(self, content, captcha_key=None):
@@ -170,13 +176,14 @@ class Wall:
 
     async def get_posts(self, sort_order=SortOrder.Ascending, limit=100):
         wall_req = Pages(
-            requests=self.cso,
+            cso=self.cso,
             url=endpoint + f&#34;/v2/groups/{self.group.id}/wall/posts&#34;,
             sort_order=sort_order,
             limit=limit,
             handler=wall_post_handler,
             handler_args=self.group
         )
+        await wall_req.get_page()
         return wall_req
 
     async def post(self, content, captcha_key=None):
@@ -212,13 +219,14 @@ class Wall:
 </summary>
 <pre><code class="python">async def get_posts(self, sort_order=SortOrder.Ascending, limit=100):
     wall_req = Pages(
-        requests=self.cso,
+        cso=self.cso,
         url=endpoint + f&#34;/v2/groups/{self.group.id}/wall/posts&#34;,
         sort_order=sort_order,
         limit=limit,
         handler=wall_post_handler,
         handler_args=self.group
     )
+    await wall_req.get_page()
     return wall_req</code></pre>
 </details>
 </dd>
@@ -259,23 +267,24 @@ class Wall:
 <span>(</span><span>cso, wall_data, group)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Represents a roblox wall post.</p></div>
+<div class="desc"><p>Represents a Roblox wall post.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class WallPost:
     &#34;&#34;&#34;
-    Represents a roblox wall post.
+    Represents a Roblox wall post.
     &#34;&#34;&#34;
     def __init__(self, cso, wall_data, group):
+        self.cso = cso
         self.requests = cso.requests
         self.group = group
         self.id = wall_data[&#39;id&#39;]
         self.body = wall_data[&#39;body&#39;]
         self.created = iso8601.parse_date(wall_data[&#39;created&#39;])
         self.updated = iso8601.parse_date(wall_data[&#39;updated&#39;])
-        self.poster = User(requests, wall_data[&#39;user&#39;][&#39;userId&#39;], wall_data[&#39;user&#39;][&#39;username&#39;])
+        self.poster = PartialUser(self.cso, wall_data[&#39;user&#39;][&#39;userId&#39;], wall_data[&#39;user&#39;][&#39;username&#39;])
 
     async def delete(self):
         wall_req = await self.requests.delete(

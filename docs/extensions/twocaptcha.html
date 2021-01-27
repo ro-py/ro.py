@@ -74,10 +74,8 @@ class TwoCaptcha:
         url += &#34;&amp;surl=https://roblox-api.arkoselabs.com&#34;
         url += &#34;&amp;pageurl=https://www.roblox.com&#34;
         url += &#34;&amp;json=1&#34;
-        print(url)
 
         solve_req = await requests_async.post(url)
-        print(solve_req.text)
         data = solve_req.json()
         if data[&#39;request&#39;] == &#34;ERROR_WRONG_USER_KEY&#34; or data[&#39;request&#39;] == &#34;ERROR_KEY_DOES_NOT_EXIST&#34;:
             raise IncorrectKeyError(&#34;The provided 2captcha api key was incorrect.&#34;)
@@ -90,7 +88,10 @@ class TwoCaptcha:
         solution = None
         while True:
             await asyncio.sleep(5)
-            captcha_req = await requests_async.get(endpoint + f&#34;/res.php?key={self.api_key}&amp;id={task_id}&amp;json=1&amp;action=get&#34;)
+            captcha_req = await requests_async.get(endpoint + f&#34;/res.php&#34;
+                                                              f&#34;?key={self.api_key}&#34;
+                                                              f&#34;&amp;id={task_id}&#34;
+                                                              f&#34;&amp;json=1&amp;action=get&#34;)
             captcha_data = captcha_req.json()
             if captcha_data[&#39;request&#39;] != &#34;CAPCHA_NOT_READY&#34;:
                 solution = captcha_data[&#39;request&#39;]
@@ -130,10 +131,8 @@ class TwoCaptcha:
         url += &#34;&amp;surl=https://roblox-api.arkoselabs.com&#34;
         url += &#34;&amp;pageurl=https://www.roblox.com&#34;
         url += &#34;&amp;json=1&#34;
-        print(url)
 
         solve_req = await requests_async.post(url)
-        print(solve_req.text)
         data = solve_req.json()
         if data[&#39;request&#39;] == &#34;ERROR_WRONG_USER_KEY&#34; or data[&#39;request&#39;] == &#34;ERROR_KEY_DOES_NOT_EXIST&#34;:
             raise IncorrectKeyError(&#34;The provided 2captcha api key was incorrect.&#34;)
@@ -146,7 +145,10 @@ class TwoCaptcha:
         solution = None
         while True:
             await asyncio.sleep(5)
-            captcha_req = await requests_async.get(endpoint + f&#34;/res.php?key={self.api_key}&amp;id={task_id}&amp;json=1&amp;action=get&#34;)
+            captcha_req = await requests_async.get(endpoint + f&#34;/res.php&#34;
+                                                              f&#34;?key={self.api_key}&#34;
+                                                              f&#34;&amp;id={task_id}&#34;
+                                                              f&#34;&amp;json=1&amp;action=get&#34;)
             captcha_data = captcha_req.json()
             if captcha_data[&#39;request&#39;] != &#34;CAPCHA_NOT_READY&#34;:
                 solution = captcha_data[&#39;request&#39;]
@@ -172,10 +174,8 @@ class TwoCaptcha:
     url += &#34;&amp;surl=https://roblox-api.arkoselabs.com&#34;
     url += &#34;&amp;pageurl=https://www.roblox.com&#34;
     url += &#34;&amp;json=1&#34;
-    print(url)
 
     solve_req = await requests_async.post(url)
-    print(solve_req.text)
     data = solve_req.json()
     if data[&#39;request&#39;] == &#34;ERROR_WRONG_USER_KEY&#34; or data[&#39;request&#39;] == &#34;ERROR_KEY_DOES_NOT_EXIST&#34;:
         raise IncorrectKeyError(&#34;The provided 2captcha api key was incorrect.&#34;)
@@ -188,7 +188,10 @@ class TwoCaptcha:
     solution = None
     while True:
         await asyncio.sleep(5)
-        captcha_req = await requests_async.get(endpoint + f&#34;/res.php?key={self.api_key}&amp;id={task_id}&amp;json=1&amp;action=get&#34;)
+        captcha_req = await requests_async.get(endpoint + f&#34;/res.php&#34;
+                                                          f&#34;?key={self.api_key}&#34;
+                                                          f&#34;&amp;id={task_id}&#34;
+                                                          f&#34;&amp;json=1&amp;action=get&#34;)
         captcha_data = captcha_req.json()
         if captcha_data[&#39;request&#39;] != &#34;CAPCHA_NOT_READY&#34;:
             solution = captcha_data[&#39;request&#39;]
