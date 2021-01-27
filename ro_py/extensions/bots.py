@@ -7,6 +7,8 @@ This extension houses functions that allow generation of Bot objects, which inte
 from ro_py.utilities.errors import ChatError
 from ro_py.client import Client
 from ro_py.chat import Message
+from sys import stderr
+from time import sleep
 import asyncio
 import iso8601
 
@@ -41,26 +43,19 @@ class Context:
         )
         send_message_json = send_message_req.json()
         if send_message_json["sent"]:
-            return Message(self.requests, send_message_json["messageId"], self.id)
+            return Message(self.cso, send_message_json["messageId"], self.id)
         else:
             raise ChatError(send_message_json["statusMessage"])
 
 
 class Bot(Client):
-    def __init__(self, prefix="!", auto_help=True):
+    def __init__(self, prefix="!"):
         super().__init__()
         self.prefix = prefix
         self.commands = {}
         self.events = {}
         self.evtloop = asyncio.new_event_loop()
-
-        if auto_help:
-            command_help = self._generate_help()
-
-            @self.command(a=0)
-            async def command_help_func(ctx):
-                print("HEA")
-                await ctx.send(command_help)
+        self.keepgoing = False
 
     def _generate_help(self):
         help_string = f"Prefix: {self.prefix}"
@@ -69,10 +64,13 @@ class Bot(Client):
         return help_string
 
     def run(self, token):
+        self.keepgoing = True
         self.token_login(token)
         self.notifications.on_notification = self._on_notification
         self.evtloop = self.cso.evtloop
         self.evtloop.run_until_complete(self._run())
+        while self.keepgoing:
+            sleep(1/32)
 
     async def _process_command(self, data, n_data):
         content = data["content"]
@@ -87,9 +85,13 @@ class Bot(Client):
                     notif_data=n_data
                 )
                 try:
-                    await self.commands[command](context)
+                    await self.commands[command](context, *content_split[1:])
                 except Exception as e:
-                    await context.send("Something went wrong when running this command.")
+                    if "on_error" in self.events:
+                        await self.events["on_error"](context, e)
+                    else:
+                        stderr.write("Ignoring error: " + str(e) + "\n")
+                        await context.send("Something went wrong when running this command.")
 
     async def _on_notification(self, notification):
         if notification.type == "NewMessage":
@@ -106,12 +108,20 @@ class Bot(Client):
     async def _run(self):
         await self.notifications.initialize()
 
-    def command(self, _="_", **kwargs):
+    def command(self, *args, **kwargs):
         def decorator(func):
             if isinstance(func, Command):
                 raise TypeError('Callback is already a command.')
             command = Command(func=func, **kwargs)
             self.commands[func.__name__] = command
+            return command
+
+        return decorator
+
+    def event(self, *args, **kwargs):
+        def decorator(func):
+            command = Command(func=func, **kwargs)
+            self.events[func.__name__] = command
             return command
 
         return decorator
