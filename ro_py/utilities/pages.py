@@ -66,6 +66,9 @@ class Pages:
         if cursor:
             this_parameters["cursor"] = cursor
 
+        for name, value in self.parameters.items():
+            this_parameters[name] = value
+
         page_req = await self.requests.get(
             url=self.url,
             params=this_parameters

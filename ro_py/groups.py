@@ -6,6 +6,7 @@ This file houses functions and classes that pertain to Roblox groups.
 import copy
 import iso8601
 import asyncio
+
 from ro_py.wall import Wall
 from ro_py.roles import Role
 from ro_py.users import PartialUser
@@ -157,6 +158,29 @@ class Group:
         # Create data to return.
         role = Role(self.cso, self, group_data['role'])
         member = Member(self.cso, roblox_id, "", self, role)
+        return member
+
+    async def get_member_by_username(self, name):
+        user = await self.cso.client.get_user_by_username(name)
+        member_req = await self.requests.get(
+            url=endpoint + f"/v2/users/{user.id}/groups/roles"
+        )
+        data = member_req.json()
+
+        # Find group in list.
+        group_data = None
+        for group in data['data']:
+            if group['group']['id'] == self.id:
+                group_data = group
+                break
+
+        # Check if user is in group.
+        if not group_data:
+            raise NotFound(f"The user {name} was not found in group {self.id}")
+
+        # Create data to return.
+        role = Role(self.cso, self, group_data['role'])
+        member = Member(self.cso, user.id, user.name, self, role)
         return member
 
     async def get_join_requests(self, sort_order=SortOrder.Ascending, limit=100):
@@ -368,29 +392,25 @@ class Events:
                         new_reqs.append(request)
                 old_req = current_group_reqs[0].requester.id
                 for new_req in new_reqs:
-                    if asyncio.iscoroutinefunction(func):
-                        await func(new_req)
-                    else:
-                        func(new_req)
+                    asyncio.create_task(func(new_req))
 
     async def on_wall_post(self, func: Callable, delay: int):
-        current_wall_posts = await self.group.wall.get_posts()
-        newest_wall_poster = current_wall_posts.data[0].poster.id
+        current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
+        newest_wall_post = current_wall_posts.data[0].id
         while True:
             await asyncio.sleep(delay)
-            current_wall_posts = await self.group.wall.get_posts()
+            current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
             current_wall_posts = current_wall_posts.data
-            if current_wall_posts[0].poster.id != newest_wall_poster:
+            post = current_wall_posts[0]
+            if post.id != newest_wall_post:
                 new_posts = []
                 for post in current_wall_posts:
-                    if post.poster.id != newest_wall_poster:
-                        new_posts.append(post)
-                newest_wall_poster = current_wall_posts[0].poster.id
+                    if post.id == newest_wall_post:
+                        break
+                    new_posts.append(post)
+                newest_wall_post = current_wall_posts[0].id
                 for new_post in new_posts:
-                    if asyncio.iscoroutinefunction(func):
-                        await func(new_post)
-                    else:
-                        func(new_post)
+                    asyncio.create_task(func(new_post))
 
     async def on_group_change(self, func: Callable, delay: int):
         await self.group.update()
@@ -403,8 +423,4 @@ class Events:
                 if getattr(self.group, attr) != value:
                     has_changed = True
             if has_changed:
-                if asyncio.iscoroutinefunction(func):
-                    await func(current_group, self.group)
-                else:
-                    func(current_group, self.group)
-                current_group = copy.copy(self.group)
+                asyncio.create_task(func(current_group, self.group))
