@@ -81,6 +81,7 @@ class Group:
         self.public_entry_allowed = None
         self.shout = None
         self.events = Events(cso, self)
+        self.is_locked = False
 
     async def update(self):
         """
@@ -98,7 +99,8 @@ class Group:
             self.shout = Shout(self.cso, group_info['shout'])
         else:
             self.shout = None
-        # self.is_locked = group_info["isLocked"]
+        if "isLocked" in group_info:
+            self.is_locked = group_info["isLocked"]
 
     async def update_shout(self, message):
         """
