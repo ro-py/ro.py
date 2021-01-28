@@ -65,11 +65,11 @@ pip install git+git://github.com/rbx-libdev/ro.py.git
 ```
 Known issue: wxPython sometimes has trouble building on certain devices. I put wxPython last on the requirements so Python attempts to install it last, so you can safely ignore this error as everything else should be installed.
 
-## Credits
-[@iranathan](https://github.com/iranathan) - maintainer  
-[@jmkd3v](https://github.com/jmkd3v) - maintainer  
-[@nsg-mfd](https://github.com/nsg-mfd) - helped with endpoints 
-(adding more soon)
+## Contributors
+<a href="https://github.com/rbx-libdev/ro.py/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=rbx-libdev/ro.py" />
+</a>
+
 
 ## Other Libraries
 ro.py not for you? Come check out these other libraries!
