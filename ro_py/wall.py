@@ -20,7 +20,10 @@ class WallPost:
         self.body = wall_data['body']
         self.created = iso8601.parse_date(wall_data['created'])
         self.updated = iso8601.parse_date(wall_data['updated'])
-        self.poster = PartialUser(self.cso, wall_data['user']['userId'], wall_data['user']['username'])
+        if wall_data['poster']:
+            self.poster = PartialUser(self.cso, wall_data['poster']['user']['userId'], wall_data['poster']['user']['username'])
+        else:
+            self.poster = None
 
     async def delete(self):
         wall_req = await self.requests.delete(

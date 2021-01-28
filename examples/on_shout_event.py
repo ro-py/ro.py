@@ -9,6 +9,7 @@ async def on_shout(old_shout, new_shout):
 
 async def main():
     g = await client.get_group(1)
-    await g.events.bind(on_shout, "on_shout_update")
+    g.events.bind(on_shout, "on_shout_update")
 
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.get_event_loop().run_until_complete(main())

@@ -10,6 +10,7 @@ async def on_asset_change(old, new):
 
 async def main():
     asset = await client.get_asset(3897171912)
-    await asset.events.bind(on_asset_change, client.events.on_asset_change)
+    asset.events.bind(on_asset_change, client.events.on_asset_change)
 
-asyncio.run(main())
+if __name__ == '__main__':
+    asyncio.get_event_loop().run_until_complete(main())
