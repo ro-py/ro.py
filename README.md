@@ -3,20 +3,34 @@
     <br>
 </h1>
 <h4 align="center">ro.py is a powerful Python 3 wrapper for the Roblox Web API by <a href="https://github.com/jmkd3v">@jmkd3v</a> and <a href="https://github.com/iranathan">iranathan</a>.</h4>
+
 <p align="center">
-  <a href="#information">Information</a> |
-  <a href="#requirements">Requirements</a> |
-  <a href="#disclaimer">Disclaimer</a> |
-  <a href="#documentation">Documentation</a> |
-  <a href="https://github.com/rbx-libdev/ro.py/tree/main/examples">Examples</a> |
-  <a href="#credits">Credits</a> |
-  <a href="https://github.com/rbx-libdev/ro.py/blob/main/LICENSE">License</a>
+    <a href="https://discord.gg/R5GVSyTVGv"><img src="https://img.shields.io/discord/761603917490159676?style=flat-square&logo=discord" alt="ro.py Discord"/></a>
+    <a href="https://pypi.org/project/ro-py/"><img src="https://img.shields.io/pypi/v/ro-py?style=flat-square" alt="ro.py PyPI"/></a>
+    <a href="https://pypi.org/project/ro-py/"><img src="https://img.shields.io/pypi/dm/ro-py?style=flat-square" alt="ro.py PyPI Downloads"/></a>
+    <a href="https://pypi.org/project/ro-py/"><img src="https://img.shields.io/pypi/l/ro-py?style=flat-square" alt="ro.py PyPI License"/></a>
+    <a href="https://github.com/rbx-libdev/ro.py"><img src="https://img.shields.io/github/commit-activity/w/rbx-libdev/ro.py?style=flat-square" alt="ro.py GitHub Commit Activity"/></a>
+    <a href="https://github.com/rbx-libdev/ro.py"><img src="https://img.shields.io/github/last-commit/rbx-libdev/ro.py?style=flat-square" alt="ro.py GitHub Last Commit"/></a>
+</p>
+
+<p align="center">
+    <a href="#information">Information</a> |
+    <a href="http://j-mk.ml/ro.py">Discord</a> |
+    <a href="#requirements">Requirements</a> |
+    <a href="#disclaimer">Disclaimer</a> |
+    <a href="#documentation">Documentation</a> |
+    <a href="https://github.com/rbx-libdev/ro.py/tree/main/examples">Examples</a> |
+    <a href="#credits">Credits</a> |
+    <a href="https://github.com/rbx-libdev/ro.py/blob/main/LICENSE">License</a>
 </p>
 
 ## Information
 Welcome, and thank you for using ro.py!  
 ro.py is an object oriented, asynchronous wrapper for the Roblox Web API (and other Roblox-related APIs) with many new and interesting features.  
 ro.py allows you to automate much of what you would do on the Roblox website and on other Roblox-related websites.
+
+## Update: ro.py on Discord
+I’ve set up a small ro.py Discord server. It’s obviously very tiny, but some of you can be the first people to help found the server. If you need support for the library, you can ask your questions here if you need faster support. http://j-mk.ml/ro.py
 
 ## Get Started
 If you are looking for a full tutorial on ro.py, check out [the new DevForum article!](https://devforum.roblox.com/t/use-python-to-interact-with-the-roblox-api-with-ro-py/1006465)
