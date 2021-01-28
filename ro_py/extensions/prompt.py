@@ -5,9 +5,12 @@ This extension houses functions that allow human verification prompts for intera
 """
 
 
-import wx
-import wxasync
-from wx import html2
+try:
+    import wx
+    import wxasync
+    from wx import html2
+except ModuleNotFoundError:
+    raise Exception("Please install wxPython and wxAsync from pip to use the prompt extension.")
 import pytweening
 from wx.lib.embeddedimage import PyEmbeddedImage
 

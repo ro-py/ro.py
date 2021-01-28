@@ -23,8 +23,6 @@ setup_info = {
         "httpx",
         "iso8601",
         "signalrcore",
-        "pytweening",
-        "wxPython",
-        "wxasync"
+        "pytweening"
     ]
 }
