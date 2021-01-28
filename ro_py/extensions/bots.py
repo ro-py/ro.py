@@ -63,14 +63,18 @@ class Bot(Client):
             help_string = help_string + "\n" + command + ": " + command.help[:24]
         return help_string
 
-    def run(self, token):
+    def run(self, token, background=False):
         self.keepgoing = True
         self.token_login(token)
         self.notifications.on_notification = self._on_notification
         self.evtloop = self.cso.evtloop
         self.evtloop.run_until_complete(self._run())
-        while self.keepgoing:
-            sleep(1/32)
+        if not background:
+            while self.keepgoing:
+                sleep(1/32)
+
+    def stop(self):
+        self.keepgoing = False
 
     async def _process_command(self, data, n_data):
         content = data["content"]
