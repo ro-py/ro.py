@@ -70,18 +70,31 @@ class Group:
     """
     def __init__(self, cso, group_id):
         self.cso = cso
+        """Client Shared Object"""
         self.requests = cso.requests
+        "Requests object."
         self.id = group_id
+        "Group ID."
         self.wall = Wall(self.cso, self)
+        """Wall object."""
         self.name = None
+        """Group name."""
         self.description = None
+        """Group description."""
         self.owner = None
+        """Group owner."""
         self.member_count = None
+        """Group member count."""
         self.is_builders_club_only = None
+        """True if the group is Builders Club (Premium) only. This seems to have been removed."""
         self.public_entry_allowed = None
+        """Public entry allowed (private/public group)"""
         self.shout = None
+        """Current group shout (Shout)"""
         self.events = Events(cso, self)
+        """Events object."""
         self.is_locked = False
+        """True if this is a locked group."""
 
     async def update(self):
         """
