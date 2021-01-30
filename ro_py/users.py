@@ -109,7 +109,7 @@ class PartialUser:
         groups = []
         for group in data['data']:
             group = group['group']
-            groups.append(PartialGroup(self.cso, group['id'], group['name'], group['memberCount']))
+            groups.append(PartialGroup(self.cso, group))
         return groups
 
     async def get_limiteds(self):
