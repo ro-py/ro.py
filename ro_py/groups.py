@@ -223,12 +223,22 @@ class Group:
         return pages
 
 
-class PartialGroup(Group):
+class PartialGroup:
     """
-    Represents a group with less information
+    Represents a group with less information.
+
+    Different information will be present here in different circumstances.
+    If it was generated as a game owner, it might only contain an ID and a name.
+    If it was generated from, let's say, groups/v2/users/userid/groups/roles, it'll also contain a member count.
     """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, cso, data):
+        self.cso = cso
+        self.requests = cso.requests
+        self.id = data["id"]
+        self.name = data["name"]
+        self.member_count = None
+        if "memberCount" in data:
+            self.member_count = data["memberCount"]
 
 
 class Member(PartialUser):
