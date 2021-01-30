@@ -240,6 +240,9 @@ class PartialGroup:
         if "memberCount" in data:
             self.member_count = data["memberCount"]
 
+    async def expand(self):
+        return self.cso.client.get_group(self.id)
+
 
 class Member(PartialUser):
     """
