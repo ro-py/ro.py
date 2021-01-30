@@ -60,7 +60,7 @@ def join_request_handler(cso, data, args):
 def member_handler(cso, data, args):
     members = []
     for member in data:
-        members.append()
+        members.append(member)
     return members
 
 
