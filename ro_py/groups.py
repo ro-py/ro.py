@@ -4,6 +4,8 @@ This file houses functions and classes that pertain to Roblox groups.
 
 """
 import copy
+from enum import Enum
+
 import iso8601
 import asyncio
 
@@ -48,6 +50,66 @@ class JoinRequest:
             url=endpoint + f"/v1/groups/{self.group.id}/join-requests/users/{self.requests.id}"
         )
         return accept_req.status_code == 200
+
+
+class Actions(Enum):
+    delete_post = "deletePost"
+    remove_member = "removeMember"
+    accept_join_request = "acceptJoinRequest"
+    decline_join_request = "declineJoinRequest"
+    post_shout = "postShout"
+    change_rank = "changeRank"
+    buy_ad = "buyAd"
+    send_ally_request = "sendAllyRequest"
+    create_enemy = "createEnemy"
+    accept_ally_request = "acceptAllyRequest"
+    decline_ally_request = "declineAllyRequest"
+    delete_ally = "deleteAlly"
+    add_group_place = "addGroupPlace"
+    delete_group_place = "deleteGroupPlace"
+    create_items = "createItems"
+    configure_items = "configureItems"
+    spend_group_funds = "spendGroupFunds"
+    change_owner = "changeOwner"
+    delete = "delete"
+    adjust_currency_amounts = "adjustCurrencyAmounts"
+    abandon = "abandon"
+    claim = "claim"
+    Rename = "rename"
+    change_description = "changeDescription"
+    create_group_asset = "createGroupAsset"
+    upload_group_asset = "uploadGroupAsset"
+    configure_group_asset = "configureGroupAsset"
+    revert_group_asset = "revertGroupAsset"
+    create_group_developer_product = "createGroupDeveloperProduct"
+    configure_group_game = "configureGroupGame"
+    lock = "lock"
+    unlock = "unlock"
+    create_game_pass = "createGamePass"
+    create_badge = "createBadge"
+    configure_badge = "configureBadge"
+    save_place = "savePlace"
+    publish_place = "publishPlace"
+    invite_to_clan = "inviteToClan"
+    kick_from_clan = "kickFromClan"
+    cancel_clan_invite = "cancelClanInvite"
+    buy_clan = "buyClan"
+
+
+class Action:
+    def __init__(self, cso, data, group):
+        self.group = group
+        self.actor = Member(cso, data['actor']['user']['userId'], data['actor']['user']['username'], group, Role(cso, group, data['actor']['role']))
+        self.action = data['actionType']
+        self.created = iso8601.parse_date(data['created'])
+        self.data = data['description']
+
+
+def action_handler(cso, data, args):
+    actions = []
+    for action in data:
+        actions.append(Action(cso, action, args))
+    return actions
 
 
 def join_request_handler(cso, data, args):
@@ -219,6 +281,25 @@ class Group:
             handler=member_handler,
             handler_args=self
         )
+
+        await pages.get_page()
+        return pages
+
+    async def get_audit_logs(self, action_filter: Actions = None, sort_order=SortOrder.Ascending, limit=100):
+        parameters = {}
+        if action_filter:
+            parameters['actionType'] = action_filter
+
+        pages = Pages(
+            cso=self.cso,
+            url=endpoint + f"/v1/groups/{self.id}/audit-log",
+            handler=action_handler,
+            extra_parameters=parameters,
+            handler_args=self,
+            limit=limit,
+            sort_order=sort_order
+        )
+
         await pages.get_page()
         return pages
 
@@ -263,7 +344,6 @@ class Member(PartialUser):
     """
     def __init__(self, cso, roblox_id, name, group, role):
         super().__init__(cso, roblox_id, name)
-        self.requests = cso.requests
         self.role = role
         self.group = group
 
@@ -405,6 +485,8 @@ class Events:
             return asyncio.create_task(self.on_wall_post(func, delay))
         if event == EventTypes.on_group_change:
             return asyncio.create_task(self.on_group_change(func, delay))
+        if event == EventTypes.on_audit_log:
+            return asyncio.create_task(self.on_audit_log(func, delay))
 
     async def on_join_request(self, func: Callable, delay: int):
         current_group_reqs = await self.group.get_join_requests()
@@ -452,3 +534,24 @@ class Events:
                     has_changed = True
             if has_changed:
                 asyncio.create_task(func(current_group, self.group))
+
+    """
+    async def on_audit_log(self, func: Callable, delay: int):
+        audit_log = await self.group.get_audit_logs()
+        audit_log = audit_log.data[0]
+        while True:
+            await asyncio.sleep(delay)
+            new_audit = await self.group.get_audit_logs()
+            new_audits = []
+            for audit in new_audit.data:
+                if audit.created == audit_log.created:
+                    print(audit.created, audit_log.created, audit.created == audit_log.created)
+                    break
+                else:
+                    print(audit.created, audit_log.created)
+                    new_audits.append(audit)
+            if len(new_audits) > 0:
+                audit_log = new_audit.data[0]
+                for new in new_audits:
+                    asyncio.create_task(func(new))
+    """
