@@ -9,10 +9,10 @@ try:
     import wx
     import wxasync
     from wx import html2
+    import pytweening
+    from wx.lib.embeddedimage import PyEmbeddedImage
 except ModuleNotFoundError:
-    raise Exception("Please install wxPython and wxAsync from pip to use the prompt extension.")
-import pytweening
-from wx.lib.embeddedimage import PyEmbeddedImage
+    raise Exception("Please install wxPython, wxAsync and pytweening from pip to use the prompt extension.")
 
 icon_image = PyEmbeddedImage(
     b'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1B'
