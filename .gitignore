@@ -17,3 +17,5 @@ docstemplate/
 build.*
 docsbuild.bat
 chat.py
+twocaptcha.py
+anticaptcha.py
