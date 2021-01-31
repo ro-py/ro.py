@@ -17,7 +17,3 @@ docstemplate/
 build.*
 docsbuild.bat
 chat.py
-twocaptcha.py
-anticaptcha.py
-ro_py/extensions/twocaptcha.py
-ro_py/extensions/anticaptcha.py
