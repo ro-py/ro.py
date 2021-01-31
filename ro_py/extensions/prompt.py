@@ -12,7 +12,7 @@ try:
     import pytweening
     from wx.lib.embeddedimage import PyEmbeddedImage
 except ModuleNotFoundError:
-    raise Exception("Please install wxPython, wxAsync and pytweening from pip to use the prompt extension.")
+    raise ModuleNotFoundError("Please install wxPython, wxAsync and pytweening from pip to use the prompt extension.")
 
 icon_image = PyEmbeddedImage(
     b'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1B'
