@@ -39,11 +39,16 @@ If you are looking for a full tutorial on ro.py, check out [the new DevForum art
 - httpx (for sending requests)
 - iso8601 (for parsing dates)
 - signalrcore (for recieving notifications)
-- ~~cachecontrol (for caching requests)~~
-- ~~requests-async (for sending requests, might be updated to a new lib soon)~~
-- pytweening (for UI animations for the "prompts" extension, optional)
-- wxPython (for the "prompts" extension, optional)
-- wxasync (see above)
+
+#### Previous Requirements
+- cachecontrol (for caching requests)
+- requests-async (for sending requests, might be updated to a new lib soon)
+- ~~pytweening (for animations, see below)~~
+- ~~wxPython (for the "prompts" extension, optional)~~
+- ~~wxasync (see above)~~
+
+#### Prompts Extension Requirements
+You'll need to install `wxPython`, `wxasync` and `pytweening` to use the prompts extension. If it is not present, an error will be raised. 
 
 ## Disclaimer
 We are not responsible for any malicious use of this library.  
