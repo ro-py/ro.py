@@ -119,14 +119,18 @@ class Bot(Client):
             help_string = help_string + &#34;\n&#34; + command + &#34;: &#34; + command.help[:24]
         return help_string
 
-    def run(self, token):
+    def run(self, token, background=False):
         self.keepgoing = True
         self.token_login(token)
         self.notifications.on_notification = self._on_notification
         self.evtloop = self.cso.evtloop
         self.evtloop.run_until_complete(self._run())
-        while self.keepgoing:
-            sleep(1/32)
+        if not background:
+            while self.keepgoing:
+                sleep(1/32)
+
+    def stop(self):
+        self.keepgoing = False
 
     async def _process_command(self, data, n_data):
         content = data[&#34;content&#34;]
@@ -237,14 +241,18 @@ class Command:
             help_string = help_string + &#34;\n&#34; + command + &#34;: &#34; + command.help[:24]
         return help_string
 
-    def run(self, token):
+    def run(self, token, background=False):
         self.keepgoing = True
         self.token_login(token)
         self.notifications.on_notification = self._on_notification
         self.evtloop = self.cso.evtloop
         self.evtloop.run_until_complete(self._run())
-        while self.keepgoing:
-            sleep(1/32)
+        if not background:
+            while self.keepgoing:
+                sleep(1/32)
+
+    def stop(self):
+        self.keepgoing = False
 
     async def _process_command(self, data, n_data):
         content = data[&#34;content&#34;]
@@ -345,7 +353,7 @@ class Command:
 </details>
 </dd>
 <dt id="ro_py.extensions.bots.Bot.run"><code class="name flex">
-<span>def <span class="ident">run</span></span>(<span>self, token)</span>
+<span>def <span class="ident">run</span></span>(<span>self, token, background=False)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -353,14 +361,28 @@ class Command:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def run(self, token):
+<pre><code class="python">def run(self, token, background=False):
     self.keepgoing = True
     self.token_login(token)
     self.notifications.on_notification = self._on_notification
     self.evtloop = self.cso.evtloop
     self.evtloop.run_until_complete(self._run())
-    while self.keepgoing:
-        sleep(1/32)</code></pre>
+    if not background:
+        while self.keepgoing:
+            sleep(1/32)</code></pre>
+</details>
+</dd>
+<dt id="ro_py.extensions.bots.Bot.stop"><code class="name flex">
+<span>def <span class="ident">stop</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def stop(self):
+    self.keepgoing = False</code></pre>
 </details>
 </dd>
 </dl>
@@ -528,6 +550,7 @@ def callback(self):
 <li><code><a title="ro_py.extensions.bots.Bot.command" href="#ro_py.extensions.bots.Bot.command">command</a></code></li>
 <li><code><a title="ro_py.extensions.bots.Bot.event" href="#ro_py.extensions.bots.Bot.event">event</a></code></li>
 <li><code><a title="ro_py.extensions.bots.Bot.run" href="#ro_py.extensions.bots.Bot.run">run</a></code></li>
+<li><code><a title="ro_py.extensions.bots.Bot.stop" href="#ro_py.extensions.bots.Bot.stop">stop</a></code></li>
 </ul>
 </li>
 <li>

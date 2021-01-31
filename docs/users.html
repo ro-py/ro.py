@@ -165,7 +165,7 @@ class PartialUser:
         groups = []
         for group in data[&#39;data&#39;]:
             group = group[&#39;group&#39;]
-            groups.append(PartialGroup(self.cso, group[&#39;id&#39;], group[&#39;name&#39;], group[&#39;memberCount&#39;]))
+            groups.append(PartialGroup(self.cso, group))
         return groups
 
     async def get_limiteds(self):
@@ -512,7 +512,7 @@ class Events:
         groups = []
         for group in data[&#39;data&#39;]:
             group = group[&#39;group&#39;]
-            groups.append(PartialGroup(self.cso, group[&#39;id&#39;], group[&#39;name&#39;], group[&#39;memberCount&#39;]))
+            groups.append(PartialGroup(self.cso, group))
         return groups
 
     async def get_limiteds(self):
@@ -675,7 +675,7 @@ class Events:
     groups = []
     for group in data[&#39;data&#39;]:
         group = group[&#39;group&#39;]
-        groups.append(PartialGroup(self.cso, group[&#39;id&#39;], group[&#39;name&#39;], group[&#39;memberCount&#39;]))
+        groups.append(PartialGroup(self.cso, group))
     return groups</code></pre>
 </details>
 </dd>

@@ -61,11 +61,14 @@ This extension houses functions that allow human verification prompts for intera
 &#34;&#34;&#34;
 
 
-import wx
-import wxasync
-from wx import html2
-import pytweening
-from wx.lib.embeddedimage import PyEmbeddedImage
+try:
+    import wx
+    import wxasync
+    from wx import html2
+    import pytweening
+    from wx.lib.embeddedimage import PyEmbeddedImage
+except ModuleNotFoundError:
+    raise ModuleNotFoundError(&#34;Please install wxPython, wxAsync and pytweening from pip to use the prompt extension.&#34;)
 
 icon_image = PyEmbeddedImage(
     b&#39;iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1B&#39;
