@@ -32,13 +32,38 @@ margin-bottom: .3em;
 width: 10px;
 }
 ::-webkit-scrollbar-track {
-background: #f1f1f1;
+background: #333;
 }
 ::-webkit-scrollbar-thumb {
 background: #888;
 }
 ::-webkit-scrollbar-thumb:hover {
 background: #555;
+}
+body {
+background: #212121;
+color: white;
+}
+a {
+color: #0091EA;
+}
+a:hover {
+color: #40C4FF;
+}
+.name {
+background: #424242;
+}
+.name:hover {
+background: #424242;
+}
+.ident {
+color: #1DE9B6;
+}
+.admonition {
+color: black;
+}
+* {
+border-color: #424242 !important;
 }
 </style>
 </head>
@@ -67,6 +92,12 @@ import asyncio
 import copy
 
 endpoint = &#34;https://api.roblox.com/&#34;
+
+
+class Reseller:
+    def __init__(self, user, user_asset):
+        self.user = user
+        self.user_asset = user_asset
 
 
 class Asset:
@@ -176,7 +207,17 @@ class Asset:
 class UserAsset(Asset):
     def __init__(self, requests, asset_id, user_asset_id):
         super().__init__(requests, asset_id)
+        self.requests = requests
         self.user_asset_id = user_asset_id
+
+    async def get_resellers(self):
+        r = await self.requests.get(
+            url=f&#34;https://economy.roblox.com/v1/assets/{self.id}/resellers?limit=10&#34;
+        )
+        data = r.json()
+        resellers = []
+        for reseller in data[&#39;data&#39;]:
+            resellers.append(reseller(self.cso.client.get_user(reseller[&#39;seller&#39;][&#39;id&#39;])))
 
 
 class Events:
@@ -530,6 +571,22 @@ class Events:
 </dd>
 </dl>
 </dd>
+<dt id="ro_py.assets.Reseller"><code class="flex name class">
+<span>class <span class="ident">Reseller</span></span>
+<span>(</span><span>user, user_asset)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Reseller:
+    def __init__(self, user, user_asset):
+        self.user = user
+        self.user_asset = user_asset</code></pre>
+</details>
+</dd>
 <dt id="ro_py.assets.UserAsset"><code class="flex name class">
 <span>class <span class="ident">UserAsset</span></span>
 <span>(</span><span>requests, asset_id, user_asset_id)</span>
@@ -550,12 +607,44 @@ class Events:
 <pre><code class="python">class UserAsset(Asset):
     def __init__(self, requests, asset_id, user_asset_id):
         super().__init__(requests, asset_id)
-        self.user_asset_id = user_asset_id</code></pre>
+        self.requests = requests
+        self.user_asset_id = user_asset_id
+
+    async def get_resellers(self):
+        r = await self.requests.get(
+            url=f&#34;https://economy.roblox.com/v1/assets/{self.id}/resellers?limit=10&#34;
+        )
+        data = r.json()
+        resellers = []
+        for reseller in data[&#39;data&#39;]:
+            resellers.append(reseller(self.cso.client.get_user(reseller[&#39;seller&#39;][&#39;id&#39;])))</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="ro_py.assets.Asset" href="#ro_py.assets.Asset">Asset</a></li>
 </ul>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.assets.UserAsset.get_resellers"><code class="name flex">
+<span>async def <span class="ident">get_resellers</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_resellers(self):
+    r = await self.requests.get(
+        url=f&#34;https://economy.roblox.com/v1/assets/{self.id}/resellers?limit=10&#34;
+    )
+    data = r.json()
+    resellers = []
+    for reseller in data[&#39;data&#39;]:
+        resellers.append(reseller(self.cso.client.get_user(reseller[&#39;seller&#39;][&#39;id&#39;])))</code></pre>
+</details>
+</dd>
+</dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
 <li><code><b><a title="ro_py.assets.Asset" href="#ro_py.assets.Asset">Asset</a></b></code>:
@@ -604,7 +693,13 @@ class Events:
 </ul>
 </li>
 <li>
+<h4><code><a title="ro_py.assets.Reseller" href="#ro_py.assets.Reseller">Reseller</a></code></h4>
+</li>
+<li>
 <h4><code><a title="ro_py.assets.UserAsset" href="#ro_py.assets.UserAsset">UserAsset</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.assets.UserAsset.get_resellers" href="#ro_py.assets.UserAsset.get_resellers">get_resellers</a></code></li>
+</ul>
 </li>
 </ul>
 </li>

@@ -32,13 +32,38 @@ margin-bottom: .3em;
 width: 10px;
 }
 ::-webkit-scrollbar-track {
-background: #f1f1f1;
+background: #333;
 }
 ::-webkit-scrollbar-thumb {
 background: #888;
 }
 ::-webkit-scrollbar-thumb:hover {
 background: #555;
+}
+body {
+background: #212121;
+color: white;
+}
+a {
+color: #0091EA;
+}
+a:hover {
+color: #40C4FF;
+}
+.name {
+background: #424242;
+}
+.name:hover {
+background: #424242;
+}
+.ident {
+color: #1DE9B6;
+}
+.admonition {
+color: black;
+}
+* {
+border-color: #424242 !important;
 }
 </style>
 </head>
@@ -202,7 +227,7 @@ class Client:
         data = self_req.json()
         return PartialUser(self.cso, data[&#39;UserId&#39;], data[&#39;Username&#39;])
 
-    async def get_user(self, user_id):
+    async def get_user(self, user_id, expand=True):
         &#34;&#34;&#34;
         Gets a Roblox user.
 
@@ -214,12 +239,13 @@ class Client:
         user = self.cso.cache.get(CacheType.Users, user_id)
         if not user:
             user = PartialUser(self.cso, user_id)
-            expanded = await user.expand()
-            self.cso.cache.set(CacheType.Users, user_id, expanded)
-            return expanded
+            if expand:
+                expanded = await user.expand()
+                self.cso.cache.set(CacheType.Users, user_id, expanded)
+                return expanded
         return user
 
-    async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False):
+    async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False, expand=True):
         &#34;&#34;&#34;
         Gets a Roblox user by their username..
 
@@ -242,7 +268,7 @@ class Client:
         username_data = username_req.json()
         if len(username_data[&#34;data&#34;]) &gt; 0:
             user_id = username_req.json()[&#34;data&#34;][0][&#34;id&#34;]  # TODO: make this a partialuser
-            return await self.get_user(user_id)
+            return await self.get_user(user_id, expand=expand)
         else:
             raise UserDoesNotExistError
 
@@ -470,7 +496,7 @@ class Client:
         data = self_req.json()
         return PartialUser(self.cso, data[&#39;UserId&#39;], data[&#39;Username&#39;])
 
-    async def get_user(self, user_id):
+    async def get_user(self, user_id, expand=True):
         &#34;&#34;&#34;
         Gets a Roblox user.
 
@@ -482,12 +508,13 @@ class Client:
         user = self.cso.cache.get(CacheType.Users, user_id)
         if not user:
             user = PartialUser(self.cso, user_id)
-            expanded = await user.expand()
-            self.cso.cache.set(CacheType.Users, user_id, expanded)
-            return expanded
+            if expand:
+                expanded = await user.expand()
+                self.cso.cache.set(CacheType.Users, user_id, expanded)
+                return expanded
         return user
 
-    async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False):
+    async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False, expand=True):
         &#34;&#34;&#34;
         Gets a Roblox user by their username..
 
@@ -510,7 +537,7 @@ class Client:
         username_data = username_req.json()
         if len(username_data[&#34;data&#34;]) &gt; 0:
             user_id = username_req.json()[&#34;data&#34;][0][&#34;id&#34;]  # TODO: make this a partialuser
-            return await self.get_user(user_id)
+            return await self.get_user(user_id, expand=expand)
         else:
             raise UserDoesNotExistError
 
@@ -828,7 +855,7 @@ class Client:
 </details>
 </dd>
 <dt id="ro_py.client.Client.get_user"><code class="name flex">
-<span>async def <span class="ident">get_user</span></span>(<span>self, user_id)</span>
+<span>async def <span class="ident">get_user</span></span>(<span>self, user_id, expand=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets a Roblox user.</p>
@@ -841,7 +868,7 @@ class Client:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def get_user(self, user_id):
+<pre><code class="python">async def get_user(self, user_id, expand=True):
     &#34;&#34;&#34;
     Gets a Roblox user.
 
@@ -853,14 +880,15 @@ class Client:
     user = self.cso.cache.get(CacheType.Users, user_id)
     if not user:
         user = PartialUser(self.cso, user_id)
-        expanded = await user.expand()
-        self.cso.cache.set(CacheType.Users, user_id, expanded)
-        return expanded
+        if expand:
+            expanded = await user.expand()
+            self.cso.cache.set(CacheType.Users, user_id, expanded)
+            return expanded
     return user</code></pre>
 </details>
 </dd>
 <dt id="ro_py.client.Client.get_user_by_username"><code class="name flex">
-<span>async def <span class="ident">get_user_by_username</span></span>(<span>self, user_name: str, exclude_banned_users: bool = False)</span>
+<span>async def <span class="ident">get_user_by_username</span></span>(<span>self, user_name: str, exclude_banned_users: bool = False, expand=True)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets a Roblox user by their username..</p>
@@ -875,7 +903,7 @@ class Client:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False):
+<pre><code class="python">async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False, expand=True):
     &#34;&#34;&#34;
     Gets a Roblox user by their username..
 
@@ -898,7 +926,7 @@ class Client:
     username_data = username_req.json()
     if len(username_data[&#34;data&#34;]) &gt; 0:
         user_id = username_req.json()[&#34;data&#34;][0][&#34;id&#34;]  # TODO: make this a partialuser
-        return await self.get_user(user_id)
+        return await self.get_user(user_id, expand=expand)
     else:
         raise UserDoesNotExistError</code></pre>
 </details>

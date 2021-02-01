@@ -32,13 +32,38 @@ margin-bottom: .3em;
 width: 10px;
 }
 ::-webkit-scrollbar-track {
-background: #f1f1f1;
+background: #333;
 }
 ::-webkit-scrollbar-thumb {
 background: #888;
 }
 ::-webkit-scrollbar-thumb:hover {
 background: #555;
+}
+body {
+background: #212121;
+color: white;
+}
+a {
+color: #0091EA;
+}
+a:hover {
+color: #40C4FF;
+}
+.name {
+background: #424242;
+}
+.name:hover {
+background: #424242;
+}
+.ident {
+color: #1DE9B6;
+}
+.admonition {
+color: black;
+}
+* {
+border-color: #424242 !important;
 }
 </style>
 </head>
@@ -60,6 +85,8 @@ This file houses functions and classes that pertain to Roblox groups.
 
 &#34;&#34;&#34;
 import copy
+from enum import Enum
+
 import iso8601
 import asyncio
 
@@ -104,6 +131,66 @@ class JoinRequest:
             url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requests.id}&#34;
         )
         return accept_req.status_code == 200
+
+
+class Actions(Enum):
+    delete_post = &#34;deletePost&#34;
+    remove_member = &#34;removeMember&#34;
+    accept_join_request = &#34;acceptJoinRequest&#34;
+    decline_join_request = &#34;declineJoinRequest&#34;
+    post_shout = &#34;postShout&#34;
+    change_rank = &#34;changeRank&#34;
+    buy_ad = &#34;buyAd&#34;
+    send_ally_request = &#34;sendAllyRequest&#34;
+    create_enemy = &#34;createEnemy&#34;
+    accept_ally_request = &#34;acceptAllyRequest&#34;
+    decline_ally_request = &#34;declineAllyRequest&#34;
+    delete_ally = &#34;deleteAlly&#34;
+    add_group_place = &#34;addGroupPlace&#34;
+    delete_group_place = &#34;deleteGroupPlace&#34;
+    create_items = &#34;createItems&#34;
+    configure_items = &#34;configureItems&#34;
+    spend_group_funds = &#34;spendGroupFunds&#34;
+    change_owner = &#34;changeOwner&#34;
+    delete = &#34;delete&#34;
+    adjust_currency_amounts = &#34;adjustCurrencyAmounts&#34;
+    abandon = &#34;abandon&#34;
+    claim = &#34;claim&#34;
+    Rename = &#34;rename&#34;
+    change_description = &#34;changeDescription&#34;
+    create_group_asset = &#34;createGroupAsset&#34;
+    upload_group_asset = &#34;uploadGroupAsset&#34;
+    configure_group_asset = &#34;configureGroupAsset&#34;
+    revert_group_asset = &#34;revertGroupAsset&#34;
+    create_group_developer_product = &#34;createGroupDeveloperProduct&#34;
+    configure_group_game = &#34;configureGroupGame&#34;
+    lock = &#34;lock&#34;
+    unlock = &#34;unlock&#34;
+    create_game_pass = &#34;createGamePass&#34;
+    create_badge = &#34;createBadge&#34;
+    configure_badge = &#34;configureBadge&#34;
+    save_place = &#34;savePlace&#34;
+    publish_place = &#34;publishPlace&#34;
+    invite_to_clan = &#34;inviteToClan&#34;
+    kick_from_clan = &#34;kickFromClan&#34;
+    cancel_clan_invite = &#34;cancelClanInvite&#34;
+    buy_clan = &#34;buyClan&#34;
+
+
+class Action:
+    def __init__(self, cso, data, group):
+        self.group = group
+        self.actor = Member(cso, data[&#39;actor&#39;][&#39;user&#39;][&#39;userId&#39;], data[&#39;actor&#39;][&#39;user&#39;][&#39;username&#39;], group, Role(cso, group, data[&#39;actor&#39;][&#39;role&#39;]))
+        self.action = data[&#39;actionType&#39;]
+        self.created = iso8601.parse_date(data[&#39;created&#39;])
+        self.data = data[&#39;description&#39;]
+
+
+def action_handler(cso, data, args):
+    actions = []
+    for action in data:
+        actions.append(Action(cso, action, args))
+    return actions
 
 
 def join_request_handler(cso, data, args):
@@ -275,6 +362,25 @@ class Group:
             handler=member_handler,
             handler_args=self
         )
+
+        await pages.get_page()
+        return pages
+
+    async def get_audit_logs(self, action_filter: Actions = None, sort_order=SortOrder.Ascending, limit=100):
+        parameters = {}
+        if action_filter:
+            parameters[&#39;actionType&#39;] = action_filter
+
+        pages = Pages(
+            cso=self.cso,
+            url=endpoint + f&#34;/v1/groups/{self.id}/audit-log&#34;,
+            handler=action_handler,
+            extra_parameters=parameters,
+            handler_args=self,
+            limit=limit,
+            sort_order=sort_order
+        )
+
         await pages.get_page()
         return pages
 
@@ -319,7 +425,6 @@ class Member(PartialUser):
     &#34;&#34;&#34;
     def __init__(self, cso, roblox_id, name, group, role):
         super().__init__(cso, roblox_id, name)
-        self.requests = cso.requests
         self.role = role
         self.group = group
 
@@ -461,6 +566,8 @@ class Events:
             return asyncio.create_task(self.on_wall_post(func, delay))
         if event == EventTypes.on_group_change:
             return asyncio.create_task(self.on_group_change(func, delay))
+        if event == EventTypes.on_audit_log:
+            return asyncio.create_task(self.on_audit_log(func, delay))
 
     async def on_join_request(self, func: Callable, delay: int):
         current_group_reqs = await self.group.get_join_requests()
@@ -507,7 +614,28 @@ class Events:
                 if getattr(self.group, attr) != value:
                     has_changed = True
             if has_changed:
-                asyncio.create_task(func(current_group, self.group))</code></pre>
+                asyncio.create_task(func(current_group, self.group))
+
+    &#34;&#34;&#34;
+    async def on_audit_log(self, func: Callable, delay: int):
+        audit_log = await self.group.get_audit_logs()
+        audit_log = audit_log.data[0]
+        while True:
+            await asyncio.sleep(delay)
+            new_audit = await self.group.get_audit_logs()
+            new_audits = []
+            for audit in new_audit.data:
+                if audit.created == audit_log.created:
+                    print(audit.created, audit_log.created, audit.created == audit_log.created)
+                    break
+                else:
+                    print(audit.created, audit_log.created)
+                    new_audits.append(audit)
+            if len(new_audits) &gt; 0:
+                audit_log = new_audit.data[0]
+                for new in new_audits:
+                    asyncio.create_task(func(new))
+    &#34;&#34;&#34;</code></pre>
 </details>
 </section>
 <section>
@@ -517,6 +645,22 @@ class Events:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
+<dt id="ro_py.groups.action_handler"><code class="name flex">
+<span>def <span class="ident">action_handler</span></span>(<span>cso, data, args)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def action_handler(cso, data, args):
+    actions = []
+    for action in data:
+        actions.append(Action(cso, action, args))
+    return actions</code></pre>
+</details>
+</dd>
 <dt id="ro_py.groups.join_request_handler"><code class="name flex">
 <span>def <span class="ident">join_request_handler</span></span>(<span>cso, data, args)</span>
 </code></dt>
@@ -554,6 +698,250 @@ class Events:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="ro_py.groups.Action"><code class="flex name class">
+<span>class <span class="ident">Action</span></span>
+<span>(</span><span>cso, data, group)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Action:
+    def __init__(self, cso, data, group):
+        self.group = group
+        self.actor = Member(cso, data[&#39;actor&#39;][&#39;user&#39;][&#39;userId&#39;], data[&#39;actor&#39;][&#39;user&#39;][&#39;username&#39;], group, Role(cso, group, data[&#39;actor&#39;][&#39;role&#39;]))
+        self.action = data[&#39;actionType&#39;]
+        self.created = iso8601.parse_date(data[&#39;created&#39;])
+        self.data = data[&#39;description&#39;]</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Actions"><code class="flex name class">
+<span>class <span class="ident">Actions</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Actions(Enum):
+    delete_post = &#34;deletePost&#34;
+    remove_member = &#34;removeMember&#34;
+    accept_join_request = &#34;acceptJoinRequest&#34;
+    decline_join_request = &#34;declineJoinRequest&#34;
+    post_shout = &#34;postShout&#34;
+    change_rank = &#34;changeRank&#34;
+    buy_ad = &#34;buyAd&#34;
+    send_ally_request = &#34;sendAllyRequest&#34;
+    create_enemy = &#34;createEnemy&#34;
+    accept_ally_request = &#34;acceptAllyRequest&#34;
+    decline_ally_request = &#34;declineAllyRequest&#34;
+    delete_ally = &#34;deleteAlly&#34;
+    add_group_place = &#34;addGroupPlace&#34;
+    delete_group_place = &#34;deleteGroupPlace&#34;
+    create_items = &#34;createItems&#34;
+    configure_items = &#34;configureItems&#34;
+    spend_group_funds = &#34;spendGroupFunds&#34;
+    change_owner = &#34;changeOwner&#34;
+    delete = &#34;delete&#34;
+    adjust_currency_amounts = &#34;adjustCurrencyAmounts&#34;
+    abandon = &#34;abandon&#34;
+    claim = &#34;claim&#34;
+    Rename = &#34;rename&#34;
+    change_description = &#34;changeDescription&#34;
+    create_group_asset = &#34;createGroupAsset&#34;
+    upload_group_asset = &#34;uploadGroupAsset&#34;
+    configure_group_asset = &#34;configureGroupAsset&#34;
+    revert_group_asset = &#34;revertGroupAsset&#34;
+    create_group_developer_product = &#34;createGroupDeveloperProduct&#34;
+    configure_group_game = &#34;configureGroupGame&#34;
+    lock = &#34;lock&#34;
+    unlock = &#34;unlock&#34;
+    create_game_pass = &#34;createGamePass&#34;
+    create_badge = &#34;createBadge&#34;
+    configure_badge = &#34;configureBadge&#34;
+    save_place = &#34;savePlace&#34;
+    publish_place = &#34;publishPlace&#34;
+    invite_to_clan = &#34;inviteToClan&#34;
+    kick_from_clan = &#34;kickFromClan&#34;
+    cancel_clan_invite = &#34;cancelClanInvite&#34;
+    buy_clan = &#34;buyClan&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="ro_py.groups.Actions.Rename"><code class="name">var <span class="ident">Rename</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.abandon"><code class="name">var <span class="ident">abandon</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.accept_ally_request"><code class="name">var <span class="ident">accept_ally_request</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.accept_join_request"><code class="name">var <span class="ident">accept_join_request</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.add_group_place"><code class="name">var <span class="ident">add_group_place</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.adjust_currency_amounts"><code class="name">var <span class="ident">adjust_currency_amounts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.buy_ad"><code class="name">var <span class="ident">buy_ad</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.buy_clan"><code class="name">var <span class="ident">buy_clan</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.cancel_clan_invite"><code class="name">var <span class="ident">cancel_clan_invite</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.change_description"><code class="name">var <span class="ident">change_description</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.change_owner"><code class="name">var <span class="ident">change_owner</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.change_rank"><code class="name">var <span class="ident">change_rank</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.claim"><code class="name">var <span class="ident">claim</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.configure_badge"><code class="name">var <span class="ident">configure_badge</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.configure_group_asset"><code class="name">var <span class="ident">configure_group_asset</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.configure_group_game"><code class="name">var <span class="ident">configure_group_game</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.configure_items"><code class="name">var <span class="ident">configure_items</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.create_badge"><code class="name">var <span class="ident">create_badge</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.create_enemy"><code class="name">var <span class="ident">create_enemy</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.create_game_pass"><code class="name">var <span class="ident">create_game_pass</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.create_group_asset"><code class="name">var <span class="ident">create_group_asset</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.create_group_developer_product"><code class="name">var <span class="ident">create_group_developer_product</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.create_items"><code class="name">var <span class="ident">create_items</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.decline_ally_request"><code class="name">var <span class="ident">decline_ally_request</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.decline_join_request"><code class="name">var <span class="ident">decline_join_request</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.delete"><code class="name">var <span class="ident">delete</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.delete_ally"><code class="name">var <span class="ident">delete_ally</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.delete_group_place"><code class="name">var <span class="ident">delete_group_place</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.delete_post"><code class="name">var <span class="ident">delete_post</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.invite_to_clan"><code class="name">var <span class="ident">invite_to_clan</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.kick_from_clan"><code class="name">var <span class="ident">kick_from_clan</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.lock"><code class="name">var <span class="ident">lock</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.post_shout"><code class="name">var <span class="ident">post_shout</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.publish_place"><code class="name">var <span class="ident">publish_place</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.remove_member"><code class="name">var <span class="ident">remove_member</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.revert_group_asset"><code class="name">var <span class="ident">revert_group_asset</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.save_place"><code class="name">var <span class="ident">save_place</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.send_ally_request"><code class="name">var <span class="ident">send_ally_request</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.spend_group_funds"><code class="name">var <span class="ident">spend_group_funds</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.unlock"><code class="name">var <span class="ident">unlock</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.upload_group_asset"><code class="name">var <span class="ident">upload_group_asset</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
 <dt id="ro_py.groups.Events"><code class="flex name class">
 <span>class <span class="ident">Events</span></span>
 <span>(</span><span>cso, group)</span>
@@ -588,6 +976,8 @@ class Events:
             return asyncio.create_task(self.on_wall_post(func, delay))
         if event == EventTypes.on_group_change:
             return asyncio.create_task(self.on_group_change(func, delay))
+        if event == EventTypes.on_audit_log:
+            return asyncio.create_task(self.on_audit_log(func, delay))
 
     async def on_join_request(self, func: Callable, delay: int):
         current_group_reqs = await self.group.get_join_requests()
@@ -634,7 +1024,28 @@ class Events:
                 if getattr(self.group, attr) != value:
                     has_changed = True
             if has_changed:
-                asyncio.create_task(func(current_group, self.group))</code></pre>
+                asyncio.create_task(func(current_group, self.group))
+
+    &#34;&#34;&#34;
+    async def on_audit_log(self, func: Callable, delay: int):
+        audit_log = await self.group.get_audit_logs()
+        audit_log = audit_log.data[0]
+        while True:
+            await asyncio.sleep(delay)
+            new_audit = await self.group.get_audit_logs()
+            new_audits = []
+            for audit in new_audit.data:
+                if audit.created == audit_log.created:
+                    print(audit.created, audit_log.created, audit.created == audit_log.created)
+                    break
+                else:
+                    print(audit.created, audit_log.created)
+                    new_audits.append(audit)
+            if len(new_audits) &gt; 0:
+                audit_log = new_audit.data[0]
+                for new in new_audits:
+                    asyncio.create_task(func(new))
+    &#34;&#34;&#34;</code></pre>
 </details>
 <h3>Methods</h3>
 <dl>
@@ -674,7 +1085,9 @@ class Events:
     if event == EventTypes.on_wall_post:
         return asyncio.create_task(self.on_wall_post(func, delay))
     if event == EventTypes.on_group_change:
-        return asyncio.create_task(self.on_group_change(func, delay))</code></pre>
+        return asyncio.create_task(self.on_group_change(func, delay))
+    if event == EventTypes.on_audit_log:
+        return asyncio.create_task(self.on_audit_log(func, delay))</code></pre>
 </details>
 </dd>
 <dt id="ro_py.groups.Events.on_group_change"><code class="name flex">
@@ -921,6 +1334,25 @@ class Events:
             handler=member_handler,
             handler_args=self
         )
+
+        await pages.get_page()
+        return pages
+
+    async def get_audit_logs(self, action_filter: Actions = None, sort_order=SortOrder.Ascending, limit=100):
+        parameters = {}
+        if action_filter:
+            parameters[&#39;actionType&#39;] = action_filter
+
+        pages = Pages(
+            cso=self.cso,
+            url=endpoint + f&#34;/v1/groups/{self.id}/audit-log&#34;,
+            handler=action_handler,
+            extra_parameters=parameters,
+            handler_args=self,
+            limit=limit,
+            sort_order=sort_order
+        )
+
         await pages.get_page()
         return pages</code></pre>
 </details>
@@ -981,6 +1413,34 @@ class Events:
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="ro_py.groups.Group.get_audit_logs"><code class="name flex">
+<span>async def <span class="ident">get_audit_logs</span></span>(<span>self, action_filter: <a title="ro_py.groups.Actions" href="#ro_py.groups.Actions">Actions</a> = None, sort_order=SortOrder.Ascending, limit=100)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_audit_logs(self, action_filter: Actions = None, sort_order=SortOrder.Ascending, limit=100):
+    parameters = {}
+    if action_filter:
+        parameters[&#39;actionType&#39;] = action_filter
+
+    pages = Pages(
+        cso=self.cso,
+        url=endpoint + f&#34;/v1/groups/{self.id}/audit-log&#34;,
+        handler=action_handler,
+        extra_parameters=parameters,
+        handler_args=self,
+        limit=limit,
+        sort_order=sort_order
+    )
+
+    await pages.get_page()
+    return pages</code></pre>
+</details>
+</dd>
 <dt id="ro_py.groups.Group.get_join_requests"><code class="name flex">
 <span>async def <span class="ident">get_join_requests</span></span>(<span>self, sort_order=SortOrder.Ascending, limit=100)</span>
 </code></dt>
@@ -1087,6 +1547,7 @@ class Events:
         handler=member_handler,
         handler_args=self
     )
+
     await pages.get_page()
     return pages</code></pre>
 </details>
@@ -1301,7 +1762,6 @@ class Events:
     &#34;&#34;&#34;
     def __init__(self, cso, roblox_id, name, group, role):
         super().__init__(cso, roblox_id, name)
-        self.requests = cso.requests
         self.role = role
         self.group = group
 
@@ -1759,12 +2219,62 @@ If it was generated from, let's say, groups/v2/users/userid/groups/roles, it'll 
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
+<li><code><a title="ro_py.groups.action_handler" href="#ro_py.groups.action_handler">action_handler</a></code></li>
 <li><code><a title="ro_py.groups.join_request_handler" href="#ro_py.groups.join_request_handler">join_request_handler</a></code></li>
 <li><code><a title="ro_py.groups.member_handler" href="#ro_py.groups.member_handler">member_handler</a></code></li>
 </ul>
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="ro_py.groups.Action" href="#ro_py.groups.Action">Action</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.groups.Actions" href="#ro_py.groups.Actions">Actions</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.groups.Actions.Rename" href="#ro_py.groups.Actions.Rename">Rename</a></code></li>
+<li><code><a title="ro_py.groups.Actions.abandon" href="#ro_py.groups.Actions.abandon">abandon</a></code></li>
+<li><code><a title="ro_py.groups.Actions.accept_ally_request" href="#ro_py.groups.Actions.accept_ally_request">accept_ally_request</a></code></li>
+<li><code><a title="ro_py.groups.Actions.accept_join_request" href="#ro_py.groups.Actions.accept_join_request">accept_join_request</a></code></li>
+<li><code><a title="ro_py.groups.Actions.add_group_place" href="#ro_py.groups.Actions.add_group_place">add_group_place</a></code></li>
+<li><code><a title="ro_py.groups.Actions.adjust_currency_amounts" href="#ro_py.groups.Actions.adjust_currency_amounts">adjust_currency_amounts</a></code></li>
+<li><code><a title="ro_py.groups.Actions.buy_ad" href="#ro_py.groups.Actions.buy_ad">buy_ad</a></code></li>
+<li><code><a title="ro_py.groups.Actions.buy_clan" href="#ro_py.groups.Actions.buy_clan">buy_clan</a></code></li>
+<li><code><a title="ro_py.groups.Actions.cancel_clan_invite" href="#ro_py.groups.Actions.cancel_clan_invite">cancel_clan_invite</a></code></li>
+<li><code><a title="ro_py.groups.Actions.change_description" href="#ro_py.groups.Actions.change_description">change_description</a></code></li>
+<li><code><a title="ro_py.groups.Actions.change_owner" href="#ro_py.groups.Actions.change_owner">change_owner</a></code></li>
+<li><code><a title="ro_py.groups.Actions.change_rank" href="#ro_py.groups.Actions.change_rank">change_rank</a></code></li>
+<li><code><a title="ro_py.groups.Actions.claim" href="#ro_py.groups.Actions.claim">claim</a></code></li>
+<li><code><a title="ro_py.groups.Actions.configure_badge" href="#ro_py.groups.Actions.configure_badge">configure_badge</a></code></li>
+<li><code><a title="ro_py.groups.Actions.configure_group_asset" href="#ro_py.groups.Actions.configure_group_asset">configure_group_asset</a></code></li>
+<li><code><a title="ro_py.groups.Actions.configure_group_game" href="#ro_py.groups.Actions.configure_group_game">configure_group_game</a></code></li>
+<li><code><a title="ro_py.groups.Actions.configure_items" href="#ro_py.groups.Actions.configure_items">configure_items</a></code></li>
+<li><code><a title="ro_py.groups.Actions.create_badge" href="#ro_py.groups.Actions.create_badge">create_badge</a></code></li>
+<li><code><a title="ro_py.groups.Actions.create_enemy" href="#ro_py.groups.Actions.create_enemy">create_enemy</a></code></li>
+<li><code><a title="ro_py.groups.Actions.create_game_pass" href="#ro_py.groups.Actions.create_game_pass">create_game_pass</a></code></li>
+<li><code><a title="ro_py.groups.Actions.create_group_asset" href="#ro_py.groups.Actions.create_group_asset">create_group_asset</a></code></li>
+<li><code><a title="ro_py.groups.Actions.create_group_developer_product" href="#ro_py.groups.Actions.create_group_developer_product">create_group_developer_product</a></code></li>
+<li><code><a title="ro_py.groups.Actions.create_items" href="#ro_py.groups.Actions.create_items">create_items</a></code></li>
+<li><code><a title="ro_py.groups.Actions.decline_ally_request" href="#ro_py.groups.Actions.decline_ally_request">decline_ally_request</a></code></li>
+<li><code><a title="ro_py.groups.Actions.decline_join_request" href="#ro_py.groups.Actions.decline_join_request">decline_join_request</a></code></li>
+<li><code><a title="ro_py.groups.Actions.delete" href="#ro_py.groups.Actions.delete">delete</a></code></li>
+<li><code><a title="ro_py.groups.Actions.delete_ally" href="#ro_py.groups.Actions.delete_ally">delete_ally</a></code></li>
+<li><code><a title="ro_py.groups.Actions.delete_group_place" href="#ro_py.groups.Actions.delete_group_place">delete_group_place</a></code></li>
+<li><code><a title="ro_py.groups.Actions.delete_post" href="#ro_py.groups.Actions.delete_post">delete_post</a></code></li>
+<li><code><a title="ro_py.groups.Actions.invite_to_clan" href="#ro_py.groups.Actions.invite_to_clan">invite_to_clan</a></code></li>
+<li><code><a title="ro_py.groups.Actions.kick_from_clan" href="#ro_py.groups.Actions.kick_from_clan">kick_from_clan</a></code></li>
+<li><code><a title="ro_py.groups.Actions.lock" href="#ro_py.groups.Actions.lock">lock</a></code></li>
+<li><code><a title="ro_py.groups.Actions.post_shout" href="#ro_py.groups.Actions.post_shout">post_shout</a></code></li>
+<li><code><a title="ro_py.groups.Actions.publish_place" href="#ro_py.groups.Actions.publish_place">publish_place</a></code></li>
+<li><code><a title="ro_py.groups.Actions.remove_member" href="#ro_py.groups.Actions.remove_member">remove_member</a></code></li>
+<li><code><a title="ro_py.groups.Actions.revert_group_asset" href="#ro_py.groups.Actions.revert_group_asset">revert_group_asset</a></code></li>
+<li><code><a title="ro_py.groups.Actions.save_place" href="#ro_py.groups.Actions.save_place">save_place</a></code></li>
+<li><code><a title="ro_py.groups.Actions.send_ally_request" href="#ro_py.groups.Actions.send_ally_request">send_ally_request</a></code></li>
+<li><code><a title="ro_py.groups.Actions.spend_group_funds" href="#ro_py.groups.Actions.spend_group_funds">spend_group_funds</a></code></li>
+<li><code><a title="ro_py.groups.Actions.unlock" href="#ro_py.groups.Actions.unlock">unlock</a></code></li>
+<li><code><a title="ro_py.groups.Actions.upload_group_asset" href="#ro_py.groups.Actions.upload_group_asset">upload_group_asset</a></code></li>
+</ul>
+</li>
 <li>
 <h4><code><a title="ro_py.groups.Events" href="#ro_py.groups.Events">Events</a></code></h4>
 <ul class="">
@@ -1780,6 +2290,7 @@ If it was generated from, let's say, groups/v2/users/userid/groups/roles, it'll 
 <li><code><a title="ro_py.groups.Group.cso" href="#ro_py.groups.Group.cso">cso</a></code></li>
 <li><code><a title="ro_py.groups.Group.description" href="#ro_py.groups.Group.description">description</a></code></li>
 <li><code><a title="ro_py.groups.Group.events" href="#ro_py.groups.Group.events">events</a></code></li>
+<li><code><a title="ro_py.groups.Group.get_audit_logs" href="#ro_py.groups.Group.get_audit_logs">get_audit_logs</a></code></li>
 <li><code><a title="ro_py.groups.Group.get_join_requests" href="#ro_py.groups.Group.get_join_requests">get_join_requests</a></code></li>
 <li><code><a title="ro_py.groups.Group.get_member_by_id" href="#ro_py.groups.Group.get_member_by_id">get_member_by_id</a></code></li>
 <li><code><a title="ro_py.groups.Group.get_member_by_username" href="#ro_py.groups.Group.get_member_by_username">get_member_by_username</a></code></li>
