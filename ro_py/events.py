@@ -8,3 +8,4 @@ class EventTypes(enum.Enum):
     on_asset_change = "on_asset_change"
     on_user_change = "on_user_change"
     on_audit_log = "on_audit_log"
+    on_trade_request = "on_trade_request"

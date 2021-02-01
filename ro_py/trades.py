@@ -3,18 +3,21 @@
 This file houses functions and classes that pertain to Roblox trades and trading.
 
 """
+from typing import Callable
 
 from ro_py.utilities.pages import Pages, SortOrder
 from ro_py.assets import Asset, UserAsset
 from ro_py.users import PartialUser
+from ro_py.events import EventTypes
 import datetime
 import iso8601
+import asyncio
 import enum
 
 endpoint = "https://trades.roblox.com"
 
 
-def trade_page_handler(requests, this_page) -> list:
+def trade_page_handler(requests, this_page, args) -> list:
     trades_out = []
     for raw_trade in this_page:
         trades_out.append(PartialTrade(requests, raw_trade["id"], PartialUser(requests, raw_trade["user"]['id'], raw_trade['user']['name']), raw_trade['created'], raw_trade['expiration'], raw_trade['status']))
@@ -202,9 +205,10 @@ class TradesWrapper:
         self.cso = cso
         self.requests = cso.requests
         self.get_self = get_self
+        self.events = Events(cso)
         self.TradeRequest = TradeRequest
 
-    async def get_trades(self, trade_status_type: TradeStatusType.Inbound, sort_order=SortOrder.Ascending, limit=10) -> Pages:
+    async def get_trades(self, trade_status_type=TradeStatusType.Inbound.value, sort_order=SortOrder.Ascending, limit=10) -> Pages:
         trades = Pages(
             cso=self.cso,
             url=endpoint + f"/v1/trades/{trade_status_type}",
@@ -212,6 +216,7 @@ class TradesWrapper:
             limit=limit,
             handler=trade_page_handler
         )
+        await trades.get_page()
         return trades
 
     async def send_trade(self, roblox_id, trade):
@@ -261,3 +266,26 @@ class TradesWrapper:
         )
 
         return trade_req.status == 200
+
+
+class Events:
+    def __init__(self, cso):
+        self.cso = cso
+
+    def bind(self, event: EventTypes, func: Callable, delay=15):
+        if event == EventTypes.on_trade_request:
+            return asyncio.create_task(self.on_trade_request(func, delay))
+
+    async def on_trade_request(self, func: Callable, delay: int):
+        old_trades = await self.cso.client.trade.get_trades()
+        while True:
+            await asyncio.sleep(delay)
+            new_trades = await self.cso.client.trade.get_trades()
+            new_trade = []
+            for trade in new_trades.data:
+                if trade.created == old_trades.data[0].created:
+                    break
+                new_trade.append(trade)
+            old_trades = new_trades
+            for trade in new_trade:
+                asyncio.create_task(func(trade))
