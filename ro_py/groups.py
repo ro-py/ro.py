@@ -447,7 +447,7 @@ class Member(PartialUser):
         roles = await self.group.get_roles()
         rank_role = None
         for role in roles:
-            if role.role == role_num:
+            if role.id == role_num:
                 rank_role = role
                 break
         if not rank_role:
