@@ -64,7 +64,7 @@ You can install ro.py from pip:
 ```
 pip install ro-py
 ```
-If you want the latest bleeding-edge version, clone from git:
+If you want the latest bleeding-edge version, clone from git (you'll need [git-scm](https://git-scm.com/downloads) installed):
 ```
 pip install git+git://github.com/rbx-libdev/ro.py.git
 ```
