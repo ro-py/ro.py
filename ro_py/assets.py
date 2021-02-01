@@ -13,6 +13,12 @@ import copy
 endpoint = "https://api.roblox.com/"
 
 
+class Reseller:
+    def __init__(self, user, user_asset):
+        self.user = user
+        self.user_asset = user_asset
+
+
 class Asset:
     """
     Represents an asset.
@@ -120,7 +126,17 @@ class Asset:
 class UserAsset(Asset):
     def __init__(self, requests, asset_id, user_asset_id):
         super().__init__(requests, asset_id)
+        self.requests = requests
         self.user_asset_id = user_asset_id
+
+    async def get_resellers(self):
+        r = await self.requests.get(
+            url=f"https://economy.roblox.com/v1/assets/{self.id}/resellers?limit=10"
+        )
+        data = r.json()
+        resellers = []
+        for reseller in data['data']:
+            resellers.append(reseller(self.cso.client.get_user(reseller['seller']['id'])))
 
 
 class Events:
