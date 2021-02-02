@@ -382,7 +382,7 @@ class Member(PartialUser):
         role_counter = -1
         for group_role in roles:
             role_counter += 1
-            if group_role.id == self.role.id:
+            if group_role.rank == self.role.id:
                 break
         if not roles:
             raise NotFound(f"User {self.id} is not in group {self.group.id}")
@@ -447,7 +447,7 @@ class Member(PartialUser):
         roles = await self.group.get_roles()
         rank_role = None
         for role in roles:
-            if role.id == role_num:
+            if role.rank == role_num:
                 rank_role = role
                 break
         if not rank_role:
