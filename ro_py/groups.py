@@ -41,13 +41,13 @@ class JoinRequest:
 
     async def accept(self):
         accept_req = await self.requests.post(
-            url=endpoint + f"/v1/groups/{self.group.id}/join-requests/users/{self.requests.id}"
+            url=endpoint + f"/v1/groups/{self.group.id}/join-requests/users/{self.requester.id}"
         )
         return accept_req.status_code == 200
 
     async def decline(self):
         accept_req = await self.requests.delete(
-            url=endpoint + f"/v1/groups/{self.group.id}/join-requests/users/{self.requests.id}"
+            url=endpoint + f"/v1/groups/{self.group.id}/join-requests/users/{self.requester.id}"
         )
         return accept_req.status_code == 200
 
