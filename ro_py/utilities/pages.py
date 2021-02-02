@@ -78,7 +78,7 @@ class Pages:
             data=page_req.json(),
             handler=self.handler,
             handler_args=self.handler_args
-        ).data
+        )
 
     async def previous(self):
         """
