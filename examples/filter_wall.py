@@ -8,7 +8,7 @@ client = Client("COOKIE")
 
 async def on_wall_post(post):
     for word in swear_words:
-        if word in post.body:
+        if word in post.body.lower():
             await post.delete()
 
 
