@@ -4,6 +4,7 @@ This file houses functions and classes that pertain to game-awarded badges.
 
 """
 
+from ro_py.utilities.clientobject import ClientObject
 
 endpoint = "https://badges.roblox.com/"
 

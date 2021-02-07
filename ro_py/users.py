@@ -8,6 +8,7 @@ from typing import List, Callable
 from ro_py.events import EventTypes
 from ro_py.robloxbadges import RobloxBadge
 from ro_py.thumbnails import UserThumbnailGenerator
+from ro_py.utilities.clientobject import ClientObject
 from ro_py.utilities.pages import Pages
 from ro_py.assets import UserAsset
 import iso8601
