@@ -4,6 +4,7 @@ This file houses functions and classes that pertain to game-awarded badges.
 
 """
 
+
 endpoint = "https://badges.roblox.com/"
 
 

@@ -22,13 +22,6 @@ from ro_py.captcha import UnsolvedLoginCaptcha
 import asyncio
 
 
-class ClientObject:
-    """
-    Every object that is grabbable with client.get_x inherits this object.
-    """
-    pass
-
-
 class ClientSharedObject:
     """
     This object is shared across most instances and classes for a particular client.
