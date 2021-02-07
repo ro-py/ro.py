@@ -21,7 +21,7 @@ class Reseller:
         self.user_asset = user_asset
 
 
-class Asset:
+class Asset(ClientObject):
     """
     Represents an asset.
 

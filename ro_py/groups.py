@@ -128,7 +128,7 @@ def member_handler(cso, data, args):
     return members
 
 
-class Group:
+class Group(ClientObject):
     """
     Represents a group.
     """

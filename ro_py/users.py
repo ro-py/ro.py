@@ -136,7 +136,7 @@ class PartialUser:
         return status_req.json()["status"]
 
 
-class User(PartialUser):
+class User(PartialUser, ClientObject):
     """
     Represents a Roblox user and their profile.
     Can be initialized with either a user ID or a username.

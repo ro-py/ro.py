@@ -26,7 +26,7 @@ class Votes:
         self.down_votes = votes_data["downVotes"]
 
 
-class Game:
+class Game(ClientObject):
     """
     Represents a Roblox game universe.
     This class represents multiple game-related endpoints.
