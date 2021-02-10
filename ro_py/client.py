@@ -284,3 +284,9 @@ class Client:
             self.cso.cache.set(CacheType.Assets, badge_id, badge)
             await badge.update()
         return badge
+
+    async def get_friend_requests(self):
+        friend_req = await self.requests.get(
+            url="https://friends.roblox.com/v1/user/friend-requests/count"
+        )
+        return friend_req.json()["count"]
