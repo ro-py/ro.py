@@ -3,6 +3,8 @@
 This file houses functions and classes that pertain to Roblox users and profiles.
 
 """
+
+from __future__ import annotations  # Hacky fix for annotations on get_friends
 import copy
 from typing import List, Callable
 from ro_py.events import EventTypes
@@ -87,18 +89,16 @@ class PartialUser:
         followings_count = followings_count_req.json()["count"]
         return followings_count
 
-    async def get_friends(self):
+    async def get_friends(self) -> List[Friend]:
         """
         Gets the user's friends.
-        :return: A list of User instances.
+        :return: List of Friend
         """
         friends_req = await self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/friends")
         friends_raw = friends_req.json()["data"]
         friends_list = []
         for friend_raw in friends_raw:
-            friends_list.append(
-                await self.cso.client.get_user(friend_raw["id"])
-            )
+            friends_list.append(Friend(self.cso, friend_raw))
         return friends_list
 
     async def get_groups(self):
@@ -134,6 +134,17 @@ class PartialUser:
         """
         status_req = await self.requests.get(endpoint + f"v1/users/{self.id}/status")
         return status_req.json()["status"]
+
+
+class Friend(PartialUser):
+    def __init__(self, cso, data):
+        super().__init__(cso, data["id"], data["name"])
+        self.is_online = data["isOnline"]
+        self.is_deleted = data["isDeleted"]
+        self.description = data["description"]
+        self.created = iso8601.parse_date(data["created"])
+        self.is_banned = data["isBanned"]
+        self.display_name = data["displayName"]
 
 
 class User(PartialUser, ClientObject):
