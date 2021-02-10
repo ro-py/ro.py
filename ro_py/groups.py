@@ -3,6 +3,7 @@
 This file houses functions and classes that pertain to Roblox groups.
 
 """
+
 import copy
 from enum import Enum
 
@@ -16,6 +17,7 @@ from ro_py.events import EventTypes
 from typing import Tuple, Callable
 from ro_py.utilities.errors import NotFound
 from ro_py.utilities.pages import Pages, SortOrder
+from ro_py.utilities.clientobject import ClientObject
 
 endpoint = "https://groups.roblox.com"
 
@@ -126,7 +128,7 @@ def member_handler(cso, data, args):
     return members
 
 
-class Group:
+class Group(ClientObject):
     """
     Represents a group.
     """

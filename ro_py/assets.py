@@ -3,6 +3,8 @@
 This file houses functions and classes that pertain to Roblox assets.
 
 """
+
+from ro_py.utilities.clientobject import ClientObject
 from ro_py.utilities.errors import NotLimitedError
 from ro_py.economy import LimitedResaleData
 from ro_py.utilities.asset_type import asset_types
@@ -19,7 +21,7 @@ class Reseller:
         self.user_asset = user_asset
 
 
-class Asset:
+class Asset(ClientObject):
     """
     Represents an asset.
 

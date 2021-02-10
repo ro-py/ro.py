@@ -4,6 +4,7 @@ This file houses functions and classes that pertain to Roblox universes and plac
 
 """
 
+from ro_py.utilities.clientobject import ClientObject
 from ro_py.groups import Group
 from ro_py.badges import Badge
 from ro_py.thumbnails import GameThumbnailGenerator
@@ -25,7 +26,7 @@ class Votes:
         self.down_votes = votes_data["downVotes"]
 
 
-class Game:
+class Game(ClientObject):
     """
     Represents a Roblox game universe.
     This class represents multiple game-related endpoints.

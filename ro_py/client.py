@@ -154,6 +154,8 @@ class Client:
         ----------
         user_id
             ID of the user to generate the object from.
+        expand : bool
+            Whether to automatically expand the data returned by the endpoint into Users.s
         """
         user = self.cso.cache.get(CacheType.Users, user_id)
         if not user:
@@ -174,6 +176,8 @@ class Client:
             Name of the user to generate the object from.
         exclude_banned_users : bool
             Whether to exclude banned users in the request.
+        expand : bool
+            Whether to automatically expand the data returned by the endpoint into Users.
         """
         username_req = await self.requests.post(
             url="https://users.roblox.com/v1/usernames/users",
