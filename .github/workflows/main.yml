@@ -17,7 +17,13 @@ jobs:
 
       - name: Install dependencies and build docs
         run: |
+          echo Installing pip, setuptools, wheel
           sudo python3 -m pip install --upgrade pip setuptools wheel
+          echo Installing PDOC
           sudo python3 -m pip install --upgrade pdoc3 
+          echo Installing WX
+          sudo python3 -m pip install --upgrade wxPython wxAsync pytweening
+          
+          echo Installing  ro.py deps
           sudo python3 setup.py install
           sudo python3 -m pdoc --html --template-dir docstemplate --output-dir udocs ro_py
