@@ -4,7 +4,6 @@ This file houses functions and classes that pertain to Roblox users and profiles
 
 """
 
-from __future__ import annotations  # Hacky fix for annotations on get_friends
 import copy
 from typing import List, Callable
 from ro_py.events import EventTypes
@@ -89,7 +88,7 @@ class PartialUser:
         followings_count = followings_count_req.json()["count"]
         return followings_count
 
-    async def get_friends(self) -> List[Friend]:
+    async def get_friends(self):
         """
         Gets the user's friends.
         :return: List of Friend
