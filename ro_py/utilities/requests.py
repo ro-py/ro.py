@@ -1,5 +1,4 @@
 from ro_py.utilities.errors import ApiError, c_errors
-from ro_py.captcha import CaptchaMetadata
 from json.decoder import JSONDecodeError
 import requests
 import httpx
@@ -118,10 +117,3 @@ class Requests:
 
         self.session.cookies = post_request.cookies
         return post_request
-
-    async def get_captcha_metadata(self):
-        captcha_meta_req = await self.get(
-            url="https://apis.roblox.com/captcha/v1/metadata"
-        )
-        captcha_meta_raw = captcha_meta_req.json()
-        return CaptchaMetadata(captcha_meta_raw)

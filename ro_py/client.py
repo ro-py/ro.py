@@ -9,32 +9,17 @@ from ro_py.groups import Group
 from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
+from ro_py.users import PartialUser
 from ro_py.events import EventTypes
 from ro_py.trades import TradesWrapper
-from ro_py.users import PartialUser
-from ro_py.utilities.requests import Requests
+from ro_py.captcha import CaptchaMetadata
+from ro_py.utilities.cache import CacheType
+from ro_py.captcha import UnsolvedLoginCaptcha
 from ro_py.accountsettings import AccountSettings
-from ro_py.utilities.cache import Cache, CacheType
 from ro_py.notifications import NotificationReceiver
 from ro_py.accountinformation import AccountInformation
+from ro_py.utilities.clientobject import ClientSharedObject
 from ro_py.utilities.errors import UserDoesNotExistError, InvalidPlaceIDError
-from ro_py.captcha import UnsolvedLoginCaptcha
-import asyncio
-
-
-class ClientSharedObject:
-    """
-    This object is shared across most instances and classes for a particular client.
-    """
-    def __init__(self, client):
-        self.client = client
-        """Client (parent) of this object."""
-        self.cache = Cache()
-        """Cache object to keep objects that don't need to be recreated."""
-        self.requests = Requests()
-        """Reqests object for all web requests."""
-        self.evtloop = asyncio.new_event_loop()
-        """Event loop for certain things."""
 
 
 class Client:
@@ -290,3 +275,10 @@ class Client:
             url="https://friends.roblox.com/v1/user/friend-requests/count"
         )
         return friend_req.json()["count"]
+
+    async def get_captcha_metadata(self):
+        captcha_meta_req = await self.requests.get(
+            url="https://apis.roblox.com/captcha/v1/metadata"
+        )
+        captcha_meta_raw = captcha_meta_req.json()
+        return CaptchaMetadata(captcha_meta_raw)
