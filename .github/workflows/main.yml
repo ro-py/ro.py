@@ -24,7 +24,7 @@ jobs:
           echo Installing ro.py deps
           sudo python3 setup.py install
           echo Building docs
-          python3 -m pdoc --html --template-dir docstemplate --output-dir udocs ro_py
+          python3 -m pdoc --html --template-dir docstemplate --output-dir docsActionTest ro_py
           ls
           echo hey
           ls udocs
