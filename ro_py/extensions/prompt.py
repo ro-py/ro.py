@@ -5,6 +5,7 @@ This extension houses functions that allow human verification prompts for intera
 """
 
 
+import sys
 try:
     import wx
     import wxasync
@@ -13,7 +14,7 @@ try:
     from wx.lib.embeddedimage import PyEmbeddedImage
 except ModuleNotFoundError:
     print("Please install wxPython, wxAsync and pytweening from pip to use the prompt extension.")
-    exit()
+    sys.exit()
 
 icon_image = PyEmbeddedImage(
     b'iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAAAXNSR0IArs4c6QAAAARnQU1B'
