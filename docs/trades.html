@@ -84,18 +84,21 @@ border-color: #424242 !important;
 This file houses functions and classes that pertain to Roblox trades and trading.
 
 &#34;&#34;&#34;
+from typing import Callable
 
 from ro_py.utilities.pages import Pages, SortOrder
 from ro_py.assets import Asset, UserAsset
 from ro_py.users import PartialUser
+from ro_py.events import EventTypes
 import datetime
 import iso8601
+import asyncio
 import enum
 
 endpoint = &#34;https://trades.roblox.com&#34;
 
 
-def trade_page_handler(requests, this_page) -&gt; list:
+def trade_page_handler(requests, this_page, args) -&gt; list:
     trades_out = []
     for raw_trade in this_page:
         trades_out.append(PartialTrade(requests, raw_trade[&#34;id&#34;], PartialUser(requests, raw_trade[&#34;user&#34;][&#39;id&#39;], raw_trade[&#39;user&#39;][&#39;name&#39;]), raw_trade[&#39;created&#39;], raw_trade[&#39;expiration&#39;], raw_trade[&#39;status&#39;]))
@@ -283,9 +286,10 @@ class TradesWrapper:
         self.cso = cso
         self.requests = cso.requests
         self.get_self = get_self
+        self.events = Events(cso)
         self.TradeRequest = TradeRequest
 
-    async def get_trades(self, trade_status_type: TradeStatusType.Inbound, sort_order=SortOrder.Ascending, limit=10) -&gt; Pages:
+    async def get_trades(self, trade_status_type=TradeStatusType.Inbound.value, sort_order=SortOrder.Ascending, limit=10) -&gt; Pages:
         trades = Pages(
             cso=self.cso,
             url=endpoint + f&#34;/v1/trades/{trade_status_type}&#34;,
@@ -293,6 +297,7 @@ class TradesWrapper:
             limit=limit,
             handler=trade_page_handler
         )
+        await trades.get_page()
         return trades
 
     async def send_trade(self, roblox_id, trade):
@@ -341,7 +346,30 @@ class TradesWrapper:
             data=data
         )
 
-        return trade_req.status == 200</code></pre>
+        return trade_req.status == 200
+
+
+class Events:
+    def __init__(self, cso):
+        self.cso = cso
+
+    def bind(self, event: EventTypes, func: Callable, delay=15):
+        if event == EventTypes.on_trade_request:
+            return asyncio.create_task(self.on_trade_request(func, delay))
+
+    async def on_trade_request(self, func: Callable, delay: int):
+        old_trades = await self.cso.client.trade.get_trades()
+        while True:
+            await asyncio.sleep(delay)
+            new_trades = await self.cso.client.trade.get_trades()
+            new_trade = []
+            for trade in new_trades.data:
+                if trade.created == old_trades.data[0].created:
+                    break
+                new_trade.append(trade)
+            old_trades = new_trades
+            for trade in new_trade:
+                asyncio.create_task(func(trade))</code></pre>
 </details>
 </section>
 <section>
@@ -352,7 +380,7 @@ class TradesWrapper:
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
 <dt id="ro_py.trades.trade_page_handler"><code class="name flex">
-<span>def <span class="ident">trade_page_handler</span></span>(<span>requests, this_page) ‑> list</span>
+<span>def <span class="ident">trade_page_handler</span></span>(<span>requests, this_page, args) ‑> list</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -360,7 +388,7 @@ class TradesWrapper:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def trade_page_handler(requests, this_page) -&gt; list:
+<pre><code class="python">def trade_page_handler(requests, this_page, args) -&gt; list:
     trades_out = []
     for raw_trade in this_page:
         trades_out.append(PartialTrade(requests, raw_trade[&#34;id&#34;], PartialUser(requests, raw_trade[&#34;user&#34;][&#39;id&#39;], raw_trade[&#39;user&#39;][&#39;name&#39;]), raw_trade[&#39;created&#39;], raw_trade[&#39;expiration&#39;], raw_trade[&#39;status&#39;]))
@@ -372,6 +400,80 @@ class TradesWrapper:
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="ro_py.trades.Events"><code class="flex name class">
+<span>class <span class="ident">Events</span></span>
+<span>(</span><span>cso)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Events:
+    def __init__(self, cso):
+        self.cso = cso
+
+    def bind(self, event: EventTypes, func: Callable, delay=15):
+        if event == EventTypes.on_trade_request:
+            return asyncio.create_task(self.on_trade_request(func, delay))
+
+    async def on_trade_request(self, func: Callable, delay: int):
+        old_trades = await self.cso.client.trade.get_trades()
+        while True:
+            await asyncio.sleep(delay)
+            new_trades = await self.cso.client.trade.get_trades()
+            new_trade = []
+            for trade in new_trades.data:
+                if trade.created == old_trades.data[0].created:
+                    break
+                new_trade.append(trade)
+            old_trades = new_trades
+            for trade in new_trade:
+                asyncio.create_task(func(trade))</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.trades.Events.bind"><code class="name flex">
+<span>def <span class="ident">bind</span></span>(<span>self, event: <a title="ro_py.events.EventTypes" href="events.html#ro_py.events.EventTypes">EventTypes</a>, func: Callable, delay=15)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bind(self, event: EventTypes, func: Callable, delay=15):
+    if event == EventTypes.on_trade_request:
+        return asyncio.create_task(self.on_trade_request(func, delay))</code></pre>
+</details>
+</dd>
+<dt id="ro_py.trades.Events.on_trade_request"><code class="name flex">
+<span>async def <span class="ident">on_trade_request</span></span>(<span>self, func: Callable, delay: int)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def on_trade_request(self, func: Callable, delay: int):
+    old_trades = await self.cso.client.trade.get_trades()
+    while True:
+        await asyncio.sleep(delay)
+        new_trades = await self.cso.client.trade.get_trades()
+        new_trade = []
+        for trade in new_trades.data:
+            if trade.created == old_trades.data[0].created:
+                break
+            new_trade.append(trade)
+        old_trades = new_trades
+        for trade in new_trade:
+            asyncio.create_task(func(trade))</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
 <dt id="ro_py.trades.PartialTrade"><code class="flex name class">
 <span>class <span class="ident">PartialTrade</span></span>
 <span>(</span><span>cso, trade_id: int, user: <a title="ro_py.users.PartialUser" href="users.html#ro_py.users.PartialUser">PartialUser</a>, created: datetime.datetime, expiration: datetime.datetime, status: bool)</span>
@@ -884,9 +986,10 @@ class TradesWrapper:
         self.cso = cso
         self.requests = cso.requests
         self.get_self = get_self
+        self.events = Events(cso)
         self.TradeRequest = TradeRequest
 
-    async def get_trades(self, trade_status_type: TradeStatusType.Inbound, sort_order=SortOrder.Ascending, limit=10) -&gt; Pages:
+    async def get_trades(self, trade_status_type=TradeStatusType.Inbound.value, sort_order=SortOrder.Ascending, limit=10) -&gt; Pages:
         trades = Pages(
             cso=self.cso,
             url=endpoint + f&#34;/v1/trades/{trade_status_type}&#34;,
@@ -894,6 +997,7 @@ class TradesWrapper:
             limit=limit,
             handler=trade_page_handler
         )
+        await trades.get_page()
         return trades
 
     async def send_trade(self, roblox_id, trade):
@@ -947,7 +1051,7 @@ class TradesWrapper:
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.trades.TradesWrapper.get_trades"><code class="name flex">
-<span>async def <span class="ident">get_trades</span></span>(<span>self, trade_status_type: <<a title="ro_py.trades.TradeStatusType.Inbound" href="#ro_py.trades.TradeStatusType.Inbound">TradeStatusType.Inbound</a>: 'Inbound'>, sort_order=SortOrder.Ascending, limit=10) ‑> <a title="ro_py.utilities.pages.Pages" href="utilities/pages.html#ro_py.utilities.pages.Pages">Pages</a></span>
+<span>async def <span class="ident">get_trades</span></span>(<span>self, trade_status_type='Inbound', sort_order=SortOrder.Ascending, limit=10) ‑> <a title="ro_py.utilities.pages.Pages" href="utilities/pages.html#ro_py.utilities.pages.Pages">Pages</a></span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -955,7 +1059,7 @@ class TradesWrapper:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def get_trades(self, trade_status_type: TradeStatusType.Inbound, sort_order=SortOrder.Ascending, limit=10) -&gt; Pages:
+<pre><code class="python">async def get_trades(self, trade_status_type=TradeStatusType.Inbound.value, sort_order=SortOrder.Ascending, limit=10) -&gt; Pages:
     trades = Pages(
         cso=self.cso,
         url=endpoint + f&#34;/v1/trades/{trade_status_type}&#34;,
@@ -963,6 +1067,7 @@ class TradesWrapper:
         limit=limit,
         handler=trade_page_handler
     )
+    await trades.get_page()
     return trades</code></pre>
 </details>
 </dd>
@@ -1064,6 +1169,13 @@ class TradesWrapper:
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="ro_py.trades.Events" href="#ro_py.trades.Events">Events</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.trades.Events.bind" href="#ro_py.trades.Events.bind">bind</a></code></li>
+<li><code><a title="ro_py.trades.Events.on_trade_request" href="#ro_py.trades.Events.on_trade_request">on_trade_request</a></code></li>
+</ul>
+</li>
 <li>
 <h4><code><a title="ro_py.trades.PartialTrade" href="#ro_py.trades.PartialTrade">PartialTrade</a></code></h4>
 <ul class="">

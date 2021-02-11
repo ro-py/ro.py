@@ -89,48 +89,48 @@ This file houses custom exceptions unique to this module.
 &#34;&#34;&#34;
 
 
-# The following are HTTP generic errors used by requests.py
+# The following are HTTP generic errors used by utilities/requests.py
 class ApiError(Exception):
     &#34;&#34;&#34;Called in requests when an API request fails with an error code that doesn&#39;t have an independent error.&#34;&#34;&#34;
     pass
 
 
-class BadRequest(Exception):
+class BadRequest(ApiError):
     &#34;&#34;&#34;400 HTTP error&#34;&#34;&#34;
     pass
 
 
-class Unauthorized(Exception):
+class Unauthorized(ApiError):
     &#34;&#34;&#34;401 HTTP error&#34;&#34;&#34;
     pass
 
 
-class Forbidden(Exception):
+class Forbidden(ApiError):
     &#34;&#34;&#34;403 HTTP error&#34;&#34;&#34;
     pass
 
 
-class NotFound(Exception):
+class NotFound(ApiError):
     &#34;&#34;&#34;404 HTTP error (also used for other things)&#34;&#34;&#34;
     pass
 
 
-class Conflict(Exception):
+class Conflict(ApiError):
     &#34;&#34;&#34;409 HTTP error&#34;&#34;&#34;
     pass
 
 
-class TooManyRequests(Exception):
+class TooManyRequests(ApiError):
     &#34;&#34;&#34;429 HTTP error&#34;&#34;&#34;
     pass
 
 
-class InternalServerError(Exception):
+class InternalServerError(ApiError):
     &#34;&#34;&#34;500 HTTP error&#34;&#34;&#34;
     pass
 
 
-class BadGateway(Exception):
+class BadGateway(ApiError):
     &#34;&#34;&#34;502 HTTP error&#34;&#34;&#34;
     pass
 
@@ -226,6 +226,17 @@ c_errors = {
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.errors.BadGateway" href="#ro_py.utilities.errors.BadGateway">BadGateway</a></li>
+<li><a title="ro_py.utilities.errors.BadRequest" href="#ro_py.utilities.errors.BadRequest">BadRequest</a></li>
+<li><a title="ro_py.utilities.errors.Conflict" href="#ro_py.utilities.errors.Conflict">Conflict</a></li>
+<li><a title="ro_py.utilities.errors.Forbidden" href="#ro_py.utilities.errors.Forbidden">Forbidden</a></li>
+<li><a title="ro_py.utilities.errors.InternalServerError" href="#ro_py.utilities.errors.InternalServerError">InternalServerError</a></li>
+<li><a title="ro_py.utilities.errors.NotFound" href="#ro_py.utilities.errors.NotFound">NotFound</a></li>
+<li><a title="ro_py.utilities.errors.TooManyRequests" href="#ro_py.utilities.errors.TooManyRequests">TooManyRequests</a></li>
+<li><a title="ro_py.utilities.errors.Unauthorized" href="#ro_py.utilities.errors.Unauthorized">Unauthorized</a></li>
+</ul>
 </dd>
 <dt id="ro_py.utilities.errors.BadGateway"><code class="flex name class">
 <span>class <span class="ident">BadGateway</span></span>
@@ -237,12 +248,13 @@ c_errors = {
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class BadGateway(Exception):
+<pre><code class="python">class BadGateway(ApiError):
     &#34;&#34;&#34;502 HTTP error&#34;&#34;&#34;
     pass</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
@@ -257,12 +269,13 @@ c_errors = {
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class BadRequest(Exception):
+<pre><code class="python">class BadRequest(ApiError):
     &#34;&#34;&#34;400 HTTP error&#34;&#34;&#34;
     pass</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
@@ -296,12 +309,13 @@ c_errors = {
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Conflict(Exception):
+<pre><code class="python">class Conflict(ApiError):
     &#34;&#34;&#34;409 HTTP error&#34;&#34;&#34;
     pass</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
@@ -316,12 +330,13 @@ c_errors = {
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Forbidden(Exception):
+<pre><code class="python">class Forbidden(ApiError):
     &#34;&#34;&#34;403 HTTP error&#34;&#34;&#34;
     pass</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
@@ -395,12 +410,13 @@ c_errors = {
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class InternalServerError(Exception):
+<pre><code class="python">class InternalServerError(ApiError):
     &#34;&#34;&#34;500 HTTP error&#34;&#34;&#34;
     pass</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
@@ -513,12 +529,13 @@ c_errors = {
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class NotFound(Exception):
+<pre><code class="python">class NotFound(ApiError):
     &#34;&#34;&#34;404 HTTP error (also used for other things)&#34;&#34;&#34;
     pass</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
@@ -553,12 +570,13 @@ c_errors = {
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class TooManyRequests(Exception):
+<pre><code class="python">class TooManyRequests(ApiError):
     &#34;&#34;&#34;429 HTTP error&#34;&#34;&#34;
     pass</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
@@ -573,12 +591,13 @@ c_errors = {
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Unauthorized(Exception):
+<pre><code class="python">class Unauthorized(ApiError):
     &#34;&#34;&#34;401 HTTP error&#34;&#34;&#34;
     pass</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>

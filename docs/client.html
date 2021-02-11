@@ -90,32 +90,17 @@ from ro_py.groups import Group
 from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
+from ro_py.users import PartialUser
 from ro_py.events import EventTypes
 from ro_py.trades import TradesWrapper
-from ro_py.users import PartialUser
-from ro_py.utilities.requests import Requests
+from ro_py.captcha import CaptchaMetadata
+from ro_py.utilities.cache import CacheType
+from ro_py.captcha import UnsolvedLoginCaptcha
 from ro_py.accountsettings import AccountSettings
-from ro_py.utilities.cache import Cache, CacheType
 from ro_py.notifications import NotificationReceiver
 from ro_py.accountinformation import AccountInformation
+from ro_py.utilities.clientobject import ClientSharedObject
 from ro_py.utilities.errors import UserDoesNotExistError, InvalidPlaceIDError
-from ro_py.captcha import UnsolvedLoginCaptcha
-import asyncio
-
-
-class ClientSharedObject:
-    &#34;&#34;&#34;
-    This object is shared across most instances and classes for a particular client.
-    &#34;&#34;&#34;
-    def __init__(self, client):
-        self.client = client
-        &#34;&#34;&#34;Client (parent) of this object.&#34;&#34;&#34;
-        self.cache = Cache()
-        &#34;&#34;&#34;Cache object to keep objects that don&#39;t need to be recreated.&#34;&#34;&#34;
-        self.requests = Requests()
-        &#34;&#34;&#34;Reqests object for all web requests.&#34;&#34;&#34;
-        self.evtloop = asyncio.new_event_loop()
-        &#34;&#34;&#34;Event loop for certain things.&#34;&#34;&#34;
 
 
 class Client:
@@ -235,6 +220,8 @@ class Client:
         ----------
         user_id
             ID of the user to generate the object from.
+        expand : bool
+            Whether to automatically expand the data returned by the endpoint into Users.s
         &#34;&#34;&#34;
         user = self.cso.cache.get(CacheType.Users, user_id)
         if not user:
@@ -255,6 +242,8 @@ class Client:
             Name of the user to generate the object from.
         exclude_banned_users : bool
             Whether to exclude banned users in the request.
+        expand : bool
+            Whether to automatically expand the data returned by the endpoint into Users.
         &#34;&#34;&#34;
         username_req = await self.requests.post(
             url=&#34;https://users.roblox.com/v1/usernames/users&#34;,
@@ -360,7 +349,20 @@ class Client:
             badge = Badge(self.cso, badge_id)
             self.cso.cache.set(CacheType.Assets, badge_id, badge)
             await badge.update()
-        return badge</code></pre>
+        return badge
+
+    async def get_friend_requests(self):
+        friend_req = await self.requests.get(
+            url=&#34;https://friends.roblox.com/v1/user/friend-requests/count&#34;
+        )
+        return friend_req.json()[&#34;count&#34;]
+
+    async def get_captcha_metadata(self):
+        captcha_meta_req = await self.requests.get(
+            url=&#34;https://apis.roblox.com/captcha/v1/metadata&#34;
+        )
+        captcha_meta_raw = captcha_meta_req.json()
+        return CaptchaMetadata(captcha_meta_raw)</code></pre>
 </details>
 </section>
 <section>
@@ -504,6 +506,8 @@ class Client:
         ----------
         user_id
             ID of the user to generate the object from.
+        expand : bool
+            Whether to automatically expand the data returned by the endpoint into Users.s
         &#34;&#34;&#34;
         user = self.cso.cache.get(CacheType.Users, user_id)
         if not user:
@@ -524,6 +528,8 @@ class Client:
             Name of the user to generate the object from.
         exclude_banned_users : bool
             Whether to exclude banned users in the request.
+        expand : bool
+            Whether to automatically expand the data returned by the endpoint into Users.
         &#34;&#34;&#34;
         username_req = await self.requests.post(
             url=&#34;https://users.roblox.com/v1/usernames/users&#34;,
@@ -629,7 +635,20 @@ class Client:
             badge = Badge(self.cso, badge_id)
             self.cso.cache.set(CacheType.Assets, badge_id, badge)
             await badge.update()
-        return badge</code></pre>
+        return badge
+
+    async def get_friend_requests(self):
+        friend_req = await self.requests.get(
+            url=&#34;https://friends.roblox.com/v1/user/friend-requests/count&#34;
+        )
+        return friend_req.json()[&#34;count&#34;]
+
+    async def get_captcha_metadata(self):
+        captcha_meta_req = await self.requests.get(
+            url=&#34;https://apis.roblox.com/captcha/v1/metadata&#34;
+        )
+        captcha_meta_raw = captcha_meta_req.json()
+        return CaptchaMetadata(captcha_meta_raw)</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -732,6 +751,39 @@ class Client:
         self.cso.cache.set(CacheType.Assets, badge_id, badge)
         await badge.update()
     return badge</code></pre>
+</details>
+</dd>
+<dt id="ro_py.client.Client.get_captcha_metadata"><code class="name flex">
+<span>async def <span class="ident">get_captcha_metadata</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_captcha_metadata(self):
+    captcha_meta_req = await self.requests.get(
+        url=&#34;https://apis.roblox.com/captcha/v1/metadata&#34;
+    )
+    captcha_meta_raw = captcha_meta_req.json()
+    return CaptchaMetadata(captcha_meta_raw)</code></pre>
+</details>
+</dd>
+<dt id="ro_py.client.Client.get_friend_requests"><code class="name flex">
+<span>async def <span class="ident">get_friend_requests</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_friend_requests(self):
+    friend_req = await self.requests.get(
+        url=&#34;https://friends.roblox.com/v1/user/friend-requests/count&#34;
+    )
+    return friend_req.json()[&#34;count&#34;]</code></pre>
 </details>
 </dd>
 <dt id="ro_py.client.Client.get_game_by_place_id"><code class="name flex">
@@ -863,6 +915,8 @@ class Client:
 <dl>
 <dt><strong><code>user_id</code></strong></dt>
 <dd>ID of the user to generate the object from.</dd>
+<dt><strong><code>expand</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether to automatically expand the data returned by the endpoint into Users.s</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -876,6 +930,8 @@ class Client:
     ----------
     user_id
         ID of the user to generate the object from.
+    expand : bool
+        Whether to automatically expand the data returned by the endpoint into Users.s
     &#34;&#34;&#34;
     user = self.cso.cache.get(CacheType.Users, user_id)
     if not user:
@@ -898,6 +954,8 @@ class Client:
 <dd>Name of the user to generate the object from.</dd>
 <dt><strong><code>exclude_banned_users</code></strong> :&ensp;<code>bool</code></dt>
 <dd>Whether to exclude banned users in the request.</dd>
+<dt><strong><code>expand</code></strong> :&ensp;<code>bool</code></dt>
+<dd>Whether to automatically expand the data returned by the endpoint into Users.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -913,6 +971,8 @@ class Client:
         Name of the user to generate the object from.
     exclude_banned_users : bool
         Whether to exclude banned users in the request.
+    expand : bool
+        Whether to automatically expand the data returned by the endpoint into Users.
     &#34;&#34;&#34;
     username_req = await self.requests.post(
         url=&#34;https://users.roblox.com/v1/usernames/users&#34;,
@@ -1043,50 +1103,6 @@ class Client:
 </dd>
 </dl>
 </dd>
-<dt id="ro_py.client.ClientSharedObject"><code class="flex name class">
-<span>class <span class="ident">ClientSharedObject</span></span>
-<span>(</span><span>client)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>This object is shared across most instances and classes for a particular client.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class ClientSharedObject:
-    &#34;&#34;&#34;
-    This object is shared across most instances and classes for a particular client.
-    &#34;&#34;&#34;
-    def __init__(self, client):
-        self.client = client
-        &#34;&#34;&#34;Client (parent) of this object.&#34;&#34;&#34;
-        self.cache = Cache()
-        &#34;&#34;&#34;Cache object to keep objects that don&#39;t need to be recreated.&#34;&#34;&#34;
-        self.requests = Requests()
-        &#34;&#34;&#34;Reqests object for all web requests.&#34;&#34;&#34;
-        self.evtloop = asyncio.new_event_loop()
-        &#34;&#34;&#34;Event loop for certain things.&#34;&#34;&#34;</code></pre>
-</details>
-<h3>Instance variables</h3>
-<dl>
-<dt id="ro_py.client.ClientSharedObject.cache"><code class="name">var <span class="ident">cache</span></code></dt>
-<dd>
-<div class="desc"><p>Cache object to keep objects that don't need to be recreated.</p></div>
-</dd>
-<dt id="ro_py.client.ClientSharedObject.client"><code class="name">var <span class="ident">client</span></code></dt>
-<dd>
-<div class="desc"><p>Client (parent) of this object.</p></div>
-</dd>
-<dt id="ro_py.client.ClientSharedObject.evtloop"><code class="name">var <span class="ident">evtloop</span></code></dt>
-<dd>
-<div class="desc"><p>Event loop for certain things.</p></div>
-</dd>
-<dt id="ro_py.client.ClientSharedObject.requests"><code class="name">var <span class="ident">requests</span></code></dt>
-<dd>
-<div class="desc"><p>Reqests object for all web requests.</p></div>
-</dd>
-</dl>
-</dd>
 </dl>
 </section>
 </article>
@@ -1118,6 +1134,8 @@ class Client:
 <li><code><a title="ro_py.client.Client.events" href="#ro_py.client.Client.events">events</a></code></li>
 <li><code><a title="ro_py.client.Client.get_asset" href="#ro_py.client.Client.get_asset">get_asset</a></code></li>
 <li><code><a title="ro_py.client.Client.get_badge" href="#ro_py.client.Client.get_badge">get_badge</a></code></li>
+<li><code><a title="ro_py.client.Client.get_captcha_metadata" href="#ro_py.client.Client.get_captcha_metadata">get_captcha_metadata</a></code></li>
+<li><code><a title="ro_py.client.Client.get_friend_requests" href="#ro_py.client.Client.get_friend_requests">get_friend_requests</a></code></li>
 <li><code><a title="ro_py.client.Client.get_game_by_place_id" href="#ro_py.client.Client.get_game_by_place_id">get_game_by_place_id</a></code></li>
 <li><code><a title="ro_py.client.Client.get_game_by_universe_id" href="#ro_py.client.Client.get_game_by_universe_id">get_game_by_universe_id</a></code></li>
 <li><code><a title="ro_py.client.Client.get_group" href="#ro_py.client.Client.get_group">get_group</a></code></li>
@@ -1129,15 +1147,6 @@ class Client:
 <li><code><a title="ro_py.client.Client.token_login" href="#ro_py.client.Client.token_login">token_login</a></code></li>
 <li><code><a title="ro_py.client.Client.trade" href="#ro_py.client.Client.trade">trade</a></code></li>
 <li><code><a title="ro_py.client.Client.user_login" href="#ro_py.client.Client.user_login">user_login</a></code></li>
-</ul>
-</li>
-<li>
-<h4><code><a title="ro_py.client.ClientSharedObject" href="#ro_py.client.ClientSharedObject">ClientSharedObject</a></code></h4>
-<ul class="">
-<li><code><a title="ro_py.client.ClientSharedObject.cache" href="#ro_py.client.ClientSharedObject.cache">cache</a></code></li>
-<li><code><a title="ro_py.client.ClientSharedObject.client" href="#ro_py.client.ClientSharedObject.client">client</a></code></li>
-<li><code><a title="ro_py.client.ClientSharedObject.evtloop" href="#ro_py.client.ClientSharedObject.evtloop">evtloop</a></code></li>
-<li><code><a title="ro_py.client.ClientSharedObject.requests" href="#ro_py.client.ClientSharedObject.requests">requests</a></code></li>
 </ul>
 </li>
 </ul>

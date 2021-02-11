@@ -85,6 +85,7 @@ This file houses functions and classes that pertain to Roblox universes and plac
 
 &#34;&#34;&#34;
 
+from ro_py.utilities.clientobject import ClientObject
 from ro_py.groups import Group
 from ro_py.badges import Badge
 from ro_py.thumbnails import GameThumbnailGenerator
@@ -106,7 +107,7 @@ class Votes:
         self.down_votes = votes_data[&#34;downVotes&#34;]
 
 
-class Game:
+class Game(ClientObject):
     &#34;&#34;&#34;
     Represents a Roblox game universe.
     This class represents multiple game-related endpoints.
@@ -289,7 +290,7 @@ This class represents multiple game-related endpoints.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Game:
+<pre><code class="python">class Game(ClientObject):
     &#34;&#34;&#34;
     Represents a Roblox game universe.
     This class represents multiple game-related endpoints.
@@ -379,6 +380,10 @@ This class represents multiple game-related endpoints.</p></div>
             badges.append(Badge(self.cso, badge[&#34;id&#34;]))
         return badges</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.clientobject.ClientObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientObject">ClientObject</a></li>
+</ul>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.games.Game.get_badges"><code class="name flex">

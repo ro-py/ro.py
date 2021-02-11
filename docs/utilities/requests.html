@@ -79,7 +79,6 @@ border-color: #424242 !important;
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">from ro_py.utilities.errors import ApiError, c_errors
-from ro_py.captcha import CaptchaMetadata
 from json.decoder import JSONDecodeError
 import requests
 import httpx
@@ -122,36 +121,69 @@ class Requests:
         self.session.headers[&#34;User-Agent&#34;] = &#34;Roblox/WinInet&#34;
         self.session.headers[&#34;Referer&#34;] = &#34;www.roblox.com&#34;  # Possibly useful for some things
 
+    async def request(self, method, *args, **kwargs):
+        quickreturn = kwargs.pop(&#34;quickreturn&#34;, False)
+        doxcsrf = kwargs.pop(&#34;doxcsrf&#34;, True)
+        this_request = await self.session.request(method, *args, **kwargs)
+
+        method = method.lower()
+
+        if doxcsrf and ((method == &#34;post&#34;) or (method == &#34;put&#34;) or (method == &#34;patch&#34;) or (method == &#34;delete&#34;)):
+            if &#34;X-CSRF-TOKEN&#34; in this_request.headers:
+                self.session.headers[&#39;X-CSRF-TOKEN&#39;] = this_request.headers[&#34;X-CSRF-TOKEN&#34;]
+                if this_request.status_code == 403:  # Request failed, send it again
+                    this_request = await self.session.post(*args, **kwargs)
+
+        if kwargs.pop(&#34;stream&#34;, False):
+            # Skip request checking and just get on with it.
+            return this_request
+
+        try:
+            this_request_json = this_request.json()
+        except JSONDecodeError:
+            return this_request
+
+        if isinstance(this_request_json, dict):
+            try:
+                get_request_error = this_request_json[&#34;errors&#34;]
+            except KeyError:
+                return this_request
+        else:
+            return this_request
+
+        if quickreturn:
+            return this_request
+
+        request_exception = status_code_error(this_request.status_code)
+        raise request_exception(f&#34;[{this_request.status_code}] {get_request_error[0][&#39;message&#39;]}&#34;)
+
     async def get(self, *args, **kwargs):
         &#34;&#34;&#34;
         Essentially identical to requests_async.Session.get.
         &#34;&#34;&#34;
 
-        quickreturn = kwargs.pop(&#34;quickreturn&#34;, False)
+        return await self.request(&#34;GET&#34;, *args, **kwargs)
 
-        get_request = await self.session.get(*args, **kwargs)
+    async def post(self, *args, **kwargs):
+        &#34;&#34;&#34;
+        Essentially identical to requests_async.Session.post.
+        &#34;&#34;&#34;
 
-        if kwargs.pop(&#34;stream&#34;, False):
-            # Skip request checking and just get on with it.
-            return get_request
+        return await self.request(&#34;post&#34;, *args, **kwargs)
 
-        try:
-            get_request_json = get_request.json()
-        except JSONDecodeError:
-            return get_request
+    async def patch(self, *args, **kwargs):
+        &#34;&#34;&#34;
+        Essentially identical to requests_async.Session.patch.
+        &#34;&#34;&#34;
 
-        if isinstance(get_request_json, dict):
-            try:
-                get_request_error = get_request_json[&#34;errors&#34;]
-            except KeyError:
-                return get_request
-        else:
-            return get_request
+        return await self.request(&#34;patch&#34;, *args, **kwargs)
 
-        if quickreturn:
-            return get_request
+    async def delete(self, *args, **kwargs):
+        &#34;&#34;&#34;
+        Essentially identical to requests_async.Session.delete.
+        &#34;&#34;&#34;
 
-        raise status_code_error(get_request.status_code)(f&#34;[{get_request.status_code}] {get_request_error[0][&#39;message&#39;]}&#34;)
+        return await self.request(&#34;delete&#34;, *args, **kwargs)
 
     def back_post(self, *args, **kwargs):
         kwargs[&#34;cookies&#34;] = kwargs.pop(&#34;cookies&#34;, self.session.cookies)
@@ -164,96 +196,7 @@ class Requests:
             post_request = requests.post(*args, **kwargs)
 
         self.session.cookies = post_request.cookies
-        return post_request
-
-    async def post(self, *args, **kwargs):
-        &#34;&#34;&#34;
-        Essentially identical to requests_async.Session.post.
-        &#34;&#34;&#34;
-
-        quickreturn = kwargs.pop(&#34;quickreturn&#34;, False)
-        doxcsrf = kwargs.pop(&#34;doxcsrf&#34;, True)
-
-        post_request = await self.session.post(*args, **kwargs)
-
-        if doxcsrf:
-            if post_request.status_code == 403:
-                if &#34;X-CSRF-TOKEN&#34; in post_request.headers:
-                    self.session.headers[&#39;X-CSRF-TOKEN&#39;] = post_request.headers[&#34;X-CSRF-TOKEN&#34;]
-                    post_request = await self.session.post(*args, **kwargs)
-
-        try:
-            post_request_json = post_request.json()
-        except JSONDecodeError:
-            return post_request
-
-        if isinstance(post_request_json, dict):
-            try:
-                post_request_error = post_request_json[&#34;errors&#34;]
-            except KeyError:
-                return post_request
-        else:
-            return post_request
-
-        if quickreturn:
-            return post_request
-
-        raise status_code_error(post_request.status_code)(f&#34;[{post_request.status_code}] {post_request_error[0][&#39;message&#39;]}&#34;)
-
-    async def patch(self, *args, **kwargs):
-        &#34;&#34;&#34;
-        Essentially identical to requests_async.Session.patch.
-        &#34;&#34;&#34;
-
-        patch_request = await self.session.patch(*args, **kwargs)
-
-        if patch_request.status_code == 403:
-            if &#34;X-CSRF-TOKEN&#34; in patch_request.headers:
-                self.session.headers[&#39;X-CSRF-TOKEN&#39;] = patch_request.headers[&#34;X-CSRF-TOKEN&#34;]
-                patch_request = await self.session.patch(*args, **kwargs)
-
-        patch_request_json = patch_request.json()
-
-        if isinstance(patch_request_json, dict):
-            try:
-                patch_request_error = patch_request_json[&#34;errors&#34;]
-            except KeyError:
-                return patch_request
-        else:
-            return patch_request
-
-        raise status_code_error(patch_request.status_code)(f&#34;[{patch_request.status_code}] {patch_request_error[0][&#39;message&#39;]}&#34;)
-
-    async def delete(self, *args, **kwargs):
-        &#34;&#34;&#34;
-        Essentially identical to requests_async.Session.delete.
-        &#34;&#34;&#34;
-
-        delete_request = await self.session.delete(*args, **kwargs)
-
-        if delete_request.status_code == 403:
-            if &#34;X-CSRF-TOKEN&#34; in delete_request.headers:
-                self.session.headers[&#39;X-CSRF-TOKEN&#39;] = delete_request.headers[&#34;X-CSRF-TOKEN&#34;]
-                delete_request = await self.session.delete(*args, **kwargs)
-
-        delete_request_json = delete_request.json()
-
-        if isinstance(delete_request_json, dict):
-            try:
-                delete_request_error = delete_request_json[&#34;errors&#34;]
-            except KeyError:
-                return delete_request
-        else:
-            return delete_request
-
-        raise status_code_error(delete_request.status_code)(f&#34;[{delete_request.status_code}] {delete_request_error[0][&#39;message&#39;]}&#34;)
-
-    async def get_captcha_metadata(self):
-        captcha_meta_req = await self.get(
-            url=&#34;https://apis.roblox.com/captcha/v1/metadata&#34;
-        )
-        captcha_meta_raw = captcha_meta_req.json()
-        return CaptchaMetadata(captcha_meta_raw)</code></pre>
+        return post_request</code></pre>
 </details>
 </section>
 <section>
@@ -337,36 +280,69 @@ class Requests:
         self.session.headers[&#34;User-Agent&#34;] = &#34;Roblox/WinInet&#34;
         self.session.headers[&#34;Referer&#34;] = &#34;www.roblox.com&#34;  # Possibly useful for some things
 
+    async def request(self, method, *args, **kwargs):
+        quickreturn = kwargs.pop(&#34;quickreturn&#34;, False)
+        doxcsrf = kwargs.pop(&#34;doxcsrf&#34;, True)
+        this_request = await self.session.request(method, *args, **kwargs)
+
+        method = method.lower()
+
+        if doxcsrf and ((method == &#34;post&#34;) or (method == &#34;put&#34;) or (method == &#34;patch&#34;) or (method == &#34;delete&#34;)):
+            if &#34;X-CSRF-TOKEN&#34; in this_request.headers:
+                self.session.headers[&#39;X-CSRF-TOKEN&#39;] = this_request.headers[&#34;X-CSRF-TOKEN&#34;]
+                if this_request.status_code == 403:  # Request failed, send it again
+                    this_request = await self.session.post(*args, **kwargs)
+
+        if kwargs.pop(&#34;stream&#34;, False):
+            # Skip request checking and just get on with it.
+            return this_request
+
+        try:
+            this_request_json = this_request.json()
+        except JSONDecodeError:
+            return this_request
+
+        if isinstance(this_request_json, dict):
+            try:
+                get_request_error = this_request_json[&#34;errors&#34;]
+            except KeyError:
+                return this_request
+        else:
+            return this_request
+
+        if quickreturn:
+            return this_request
+
+        request_exception = status_code_error(this_request.status_code)
+        raise request_exception(f&#34;[{this_request.status_code}] {get_request_error[0][&#39;message&#39;]}&#34;)
+
     async def get(self, *args, **kwargs):
         &#34;&#34;&#34;
         Essentially identical to requests_async.Session.get.
         &#34;&#34;&#34;
 
-        quickreturn = kwargs.pop(&#34;quickreturn&#34;, False)
+        return await self.request(&#34;GET&#34;, *args, **kwargs)
 
-        get_request = await self.session.get(*args, **kwargs)
+    async def post(self, *args, **kwargs):
+        &#34;&#34;&#34;
+        Essentially identical to requests_async.Session.post.
+        &#34;&#34;&#34;
 
-        if kwargs.pop(&#34;stream&#34;, False):
-            # Skip request checking and just get on with it.
-            return get_request
+        return await self.request(&#34;post&#34;, *args, **kwargs)
 
-        try:
-            get_request_json = get_request.json()
-        except JSONDecodeError:
-            return get_request
+    async def patch(self, *args, **kwargs):
+        &#34;&#34;&#34;
+        Essentially identical to requests_async.Session.patch.
+        &#34;&#34;&#34;
 
-        if isinstance(get_request_json, dict):
-            try:
-                get_request_error = get_request_json[&#34;errors&#34;]
-            except KeyError:
-                return get_request
-        else:
-            return get_request
+        return await self.request(&#34;patch&#34;, *args, **kwargs)
 
-        if quickreturn:
-            return get_request
+    async def delete(self, *args, **kwargs):
+        &#34;&#34;&#34;
+        Essentially identical to requests_async.Session.delete.
+        &#34;&#34;&#34;
 
-        raise status_code_error(get_request.status_code)(f&#34;[{get_request.status_code}] {get_request_error[0][&#39;message&#39;]}&#34;)
+        return await self.request(&#34;delete&#34;, *args, **kwargs)
 
     def back_post(self, *args, **kwargs):
         kwargs[&#34;cookies&#34;] = kwargs.pop(&#34;cookies&#34;, self.session.cookies)
@@ -379,96 +355,7 @@ class Requests:
             post_request = requests.post(*args, **kwargs)
 
         self.session.cookies = post_request.cookies
-        return post_request
-
-    async def post(self, *args, **kwargs):
-        &#34;&#34;&#34;
-        Essentially identical to requests_async.Session.post.
-        &#34;&#34;&#34;
-
-        quickreturn = kwargs.pop(&#34;quickreturn&#34;, False)
-        doxcsrf = kwargs.pop(&#34;doxcsrf&#34;, True)
-
-        post_request = await self.session.post(*args, **kwargs)
-
-        if doxcsrf:
-            if post_request.status_code == 403:
-                if &#34;X-CSRF-TOKEN&#34; in post_request.headers:
-                    self.session.headers[&#39;X-CSRF-TOKEN&#39;] = post_request.headers[&#34;X-CSRF-TOKEN&#34;]
-                    post_request = await self.session.post(*args, **kwargs)
-
-        try:
-            post_request_json = post_request.json()
-        except JSONDecodeError:
-            return post_request
-
-        if isinstance(post_request_json, dict):
-            try:
-                post_request_error = post_request_json[&#34;errors&#34;]
-            except KeyError:
-                return post_request
-        else:
-            return post_request
-
-        if quickreturn:
-            return post_request
-
-        raise status_code_error(post_request.status_code)(f&#34;[{post_request.status_code}] {post_request_error[0][&#39;message&#39;]}&#34;)
-
-    async def patch(self, *args, **kwargs):
-        &#34;&#34;&#34;
-        Essentially identical to requests_async.Session.patch.
-        &#34;&#34;&#34;
-
-        patch_request = await self.session.patch(*args, **kwargs)
-
-        if patch_request.status_code == 403:
-            if &#34;X-CSRF-TOKEN&#34; in patch_request.headers:
-                self.session.headers[&#39;X-CSRF-TOKEN&#39;] = patch_request.headers[&#34;X-CSRF-TOKEN&#34;]
-                patch_request = await self.session.patch(*args, **kwargs)
-
-        patch_request_json = patch_request.json()
-
-        if isinstance(patch_request_json, dict):
-            try:
-                patch_request_error = patch_request_json[&#34;errors&#34;]
-            except KeyError:
-                return patch_request
-        else:
-            return patch_request
-
-        raise status_code_error(patch_request.status_code)(f&#34;[{patch_request.status_code}] {patch_request_error[0][&#39;message&#39;]}&#34;)
-
-    async def delete(self, *args, **kwargs):
-        &#34;&#34;&#34;
-        Essentially identical to requests_async.Session.delete.
-        &#34;&#34;&#34;
-
-        delete_request = await self.session.delete(*args, **kwargs)
-
-        if delete_request.status_code == 403:
-            if &#34;X-CSRF-TOKEN&#34; in delete_request.headers:
-                self.session.headers[&#39;X-CSRF-TOKEN&#39;] = delete_request.headers[&#34;X-CSRF-TOKEN&#34;]
-                delete_request = await self.session.delete(*args, **kwargs)
-
-        delete_request_json = delete_request.json()
-
-        if isinstance(delete_request_json, dict):
-            try:
-                delete_request_error = delete_request_json[&#34;errors&#34;]
-            except KeyError:
-                return delete_request
-        else:
-            return delete_request
-
-        raise status_code_error(delete_request.status_code)(f&#34;[{delete_request.status_code}] {delete_request_error[0][&#39;message&#39;]}&#34;)
-
-    async def get_captcha_metadata(self):
-        captcha_meta_req = await self.get(
-            url=&#34;https://apis.roblox.com/captcha/v1/metadata&#34;
-        )
-        captcha_meta_raw = captcha_meta_req.json()
-        return CaptchaMetadata(captcha_meta_raw)</code></pre>
+        return post_request</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
@@ -516,24 +403,7 @@ class Requests:
     Essentially identical to requests_async.Session.delete.
     &#34;&#34;&#34;
 
-    delete_request = await self.session.delete(*args, **kwargs)
-
-    if delete_request.status_code == 403:
-        if &#34;X-CSRF-TOKEN&#34; in delete_request.headers:
-            self.session.headers[&#39;X-CSRF-TOKEN&#39;] = delete_request.headers[&#34;X-CSRF-TOKEN&#34;]
-            delete_request = await self.session.delete(*args, **kwargs)
-
-    delete_request_json = delete_request.json()
-
-    if isinstance(delete_request_json, dict):
-        try:
-            delete_request_error = delete_request_json[&#34;errors&#34;]
-        except KeyError:
-            return delete_request
-    else:
-        return delete_request
-
-    raise status_code_error(delete_request.status_code)(f&#34;[{delete_request.status_code}] {delete_request_error[0][&#39;message&#39;]}&#34;)</code></pre>
+    return await self.request(&#34;delete&#34;, *args, **kwargs)</code></pre>
 </details>
 </dd>
 <dt id="ro_py.utilities.requests.Requests.get"><code class="name flex">
@@ -550,48 +420,7 @@ class Requests:
     Essentially identical to requests_async.Session.get.
     &#34;&#34;&#34;
 
-    quickreturn = kwargs.pop(&#34;quickreturn&#34;, False)
-
-    get_request = await self.session.get(*args, **kwargs)
-
-    if kwargs.pop(&#34;stream&#34;, False):
-        # Skip request checking and just get on with it.
-        return get_request
-
-    try:
-        get_request_json = get_request.json()
-    except JSONDecodeError:
-        return get_request
-
-    if isinstance(get_request_json, dict):
-        try:
-            get_request_error = get_request_json[&#34;errors&#34;]
-        except KeyError:
-            return get_request
-    else:
-        return get_request
-
-    if quickreturn:
-        return get_request
-
-    raise status_code_error(get_request.status_code)(f&#34;[{get_request.status_code}] {get_request_error[0][&#39;message&#39;]}&#34;)</code></pre>
-</details>
-</dd>
-<dt id="ro_py.utilities.requests.Requests.get_captcha_metadata"><code class="name flex">
-<span>async def <span class="ident">get_captcha_metadata</span></span>(<span>self)</span>
-</code></dt>
-<dd>
-<div class="desc"></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">async def get_captcha_metadata(self):
-    captcha_meta_req = await self.get(
-        url=&#34;https://apis.roblox.com/captcha/v1/metadata&#34;
-    )
-    captcha_meta_raw = captcha_meta_req.json()
-    return CaptchaMetadata(captcha_meta_raw)</code></pre>
+    return await self.request(&#34;GET&#34;, *args, **kwargs)</code></pre>
 </details>
 </dd>
 <dt id="ro_py.utilities.requests.Requests.patch"><code class="name flex">
@@ -608,24 +437,7 @@ class Requests:
     Essentially identical to requests_async.Session.patch.
     &#34;&#34;&#34;
 
-    patch_request = await self.session.patch(*args, **kwargs)
-
-    if patch_request.status_code == 403:
-        if &#34;X-CSRF-TOKEN&#34; in patch_request.headers:
-            self.session.headers[&#39;X-CSRF-TOKEN&#39;] = patch_request.headers[&#34;X-CSRF-TOKEN&#34;]
-            patch_request = await self.session.patch(*args, **kwargs)
-
-    patch_request_json = patch_request.json()
-
-    if isinstance(patch_request_json, dict):
-        try:
-            patch_request_error = patch_request_json[&#34;errors&#34;]
-        except KeyError:
-            return patch_request
-    else:
-        return patch_request
-
-    raise status_code_error(patch_request.status_code)(f&#34;[{patch_request.status_code}] {patch_request_error[0][&#39;message&#39;]}&#34;)</code></pre>
+    return await self.request(&#34;patch&#34;, *args, **kwargs)</code></pre>
 </details>
 </dd>
 <dt id="ro_py.utilities.requests.Requests.post"><code class="name flex">
@@ -642,34 +454,53 @@ class Requests:
     Essentially identical to requests_async.Session.post.
     &#34;&#34;&#34;
 
+    return await self.request(&#34;post&#34;, *args, **kwargs)</code></pre>
+</details>
+</dd>
+<dt id="ro_py.utilities.requests.Requests.request"><code class="name flex">
+<span>async def <span class="ident">request</span></span>(<span>self, method, *args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def request(self, method, *args, **kwargs):
     quickreturn = kwargs.pop(&#34;quickreturn&#34;, False)
     doxcsrf = kwargs.pop(&#34;doxcsrf&#34;, True)
+    this_request = await self.session.request(method, *args, **kwargs)
 
-    post_request = await self.session.post(*args, **kwargs)
+    method = method.lower()
 
-    if doxcsrf:
-        if post_request.status_code == 403:
-            if &#34;X-CSRF-TOKEN&#34; in post_request.headers:
-                self.session.headers[&#39;X-CSRF-TOKEN&#39;] = post_request.headers[&#34;X-CSRF-TOKEN&#34;]
-                post_request = await self.session.post(*args, **kwargs)
+    if doxcsrf and ((method == &#34;post&#34;) or (method == &#34;put&#34;) or (method == &#34;patch&#34;) or (method == &#34;delete&#34;)):
+        if &#34;X-CSRF-TOKEN&#34; in this_request.headers:
+            self.session.headers[&#39;X-CSRF-TOKEN&#39;] = this_request.headers[&#34;X-CSRF-TOKEN&#34;]
+            if this_request.status_code == 403:  # Request failed, send it again
+                this_request = await self.session.post(*args, **kwargs)
+
+    if kwargs.pop(&#34;stream&#34;, False):
+        # Skip request checking and just get on with it.
+        return this_request
 
     try:
-        post_request_json = post_request.json()
+        this_request_json = this_request.json()
     except JSONDecodeError:
-        return post_request
+        return this_request
 
-    if isinstance(post_request_json, dict):
+    if isinstance(this_request_json, dict):
         try:
-            post_request_error = post_request_json[&#34;errors&#34;]
+            get_request_error = this_request_json[&#34;errors&#34;]
         except KeyError:
-            return post_request
+            return this_request
     else:
-        return post_request
+        return this_request
 
     if quickreturn:
-        return post_request
+        return this_request
 
-    raise status_code_error(post_request.status_code)(f&#34;[{post_request.status_code}] {post_request_error[0][&#39;message&#39;]}&#34;)</code></pre>
+    request_exception = status_code_error(this_request.status_code)
+    raise request_exception(f&#34;[{this_request.status_code}] {get_request_error[0][&#39;message&#39;]}&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -705,13 +536,13 @@ class Requests:
 </li>
 <li>
 <h4><code><a title="ro_py.utilities.requests.Requests" href="#ro_py.utilities.requests.Requests">Requests</a></code></h4>
-<ul class="">
+<ul class="two-column">
 <li><code><a title="ro_py.utilities.requests.Requests.back_post" href="#ro_py.utilities.requests.Requests.back_post">back_post</a></code></li>
 <li><code><a title="ro_py.utilities.requests.Requests.delete" href="#ro_py.utilities.requests.Requests.delete">delete</a></code></li>
 <li><code><a title="ro_py.utilities.requests.Requests.get" href="#ro_py.utilities.requests.Requests.get">get</a></code></li>
-<li><code><a title="ro_py.utilities.requests.Requests.get_captcha_metadata" href="#ro_py.utilities.requests.Requests.get_captcha_metadata">get_captcha_metadata</a></code></li>
 <li><code><a title="ro_py.utilities.requests.Requests.patch" href="#ro_py.utilities.requests.Requests.patch">patch</a></code></li>
 <li><code><a title="ro_py.utilities.requests.Requests.post" href="#ro_py.utilities.requests.Requests.post">post</a></code></li>
+<li><code><a title="ro_py.utilities.requests.Requests.request" href="#ro_py.utilities.requests.Requests.request">request</a></code></li>
 <li><code><a title="ro_py.utilities.requests.Requests.session" href="#ro_py.utilities.requests.Requests.session">session</a></code></li>
 </ul>
 </li>

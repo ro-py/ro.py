@@ -84,11 +84,13 @@ border-color: #424242 !important;
 This file houses functions and classes that pertain to Roblox users and profiles.
 
 &#34;&#34;&#34;
+
 import copy
 from typing import List, Callable
 from ro_py.events import EventTypes
 from ro_py.robloxbadges import RobloxBadge
 from ro_py.thumbnails import UserThumbnailGenerator
+from ro_py.utilities.clientobject import ClientObject
 from ro_py.utilities.pages import Pages
 from ro_py.assets import UserAsset
 import iso8601
@@ -170,15 +172,13 @@ class PartialUser:
     async def get_friends(self):
         &#34;&#34;&#34;
         Gets the user&#39;s friends.
-        :return: A list of User instances.
+        :return: List of Friend
         &#34;&#34;&#34;
         friends_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends&#34;)
         friends_raw = friends_req.json()[&#34;data&#34;]
         friends_list = []
         for friend_raw in friends_raw:
-            friends_list.append(
-                await self.cso.client.get_user(friend_raw[&#34;id&#34;])
-            )
+            friends_list.append(Friend(self.cso, friend_raw))
         return friends_list
 
     async def get_groups(self):
@@ -216,7 +216,18 @@ class PartialUser:
         return status_req.json()[&#34;status&#34;]
 
 
-class User(PartialUser):
+class Friend(PartialUser):
+    def __init__(self, cso, data):
+        super().__init__(cso, data[&#34;id&#34;], data[&#34;name&#34;])
+        self.is_online = data[&#34;isOnline&#34;]
+        self.is_deleted = data[&#34;isDeleted&#34;]
+        self.description = data[&#34;description&#34;]
+        self.created = iso8601.parse_date(data[&#34;created&#34;])
+        self.is_banned = data[&#34;isBanned&#34;]
+        self.display_name = data[&#34;displayName&#34;]
+
+
+class User(PartialUser, ClientObject):
     &#34;&#34;&#34;
     Represents a Roblox user and their profile.
     Can be initialized with either a user ID or a username.
@@ -441,6 +452,46 @@ class Events:
 </dd>
 </dl>
 </dd>
+<dt id="ro_py.users.Friend"><code class="flex name class">
+<span>class <span class="ident">Friend</span></span>
+<span>(</span><span>cso, data)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Friend(PartialUser):
+    def __init__(self, cso, data):
+        super().__init__(cso, data[&#34;id&#34;], data[&#34;name&#34;])
+        self.is_online = data[&#34;isOnline&#34;]
+        self.is_deleted = data[&#34;isDeleted&#34;]
+        self.description = data[&#34;description&#34;]
+        self.created = iso8601.parse_date(data[&#34;created&#34;])
+        self.is_banned = data[&#34;isBanned&#34;]
+        self.display_name = data[&#34;displayName&#34;]</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.users.PartialUser" href="#ro_py.users.PartialUser">PartialUser</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="ro_py.users.PartialUser" href="#ro_py.users.PartialUser">PartialUser</a></b></code>:
+<ul class="hlist">
+<li><code><a title="ro_py.users.PartialUser.expand" href="#ro_py.users.PartialUser.expand">expand</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.get_followers_count" href="#ro_py.users.PartialUser.get_followers_count">get_followers_count</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.get_followings_count" href="#ro_py.users.PartialUser.get_followings_count">get_followings_count</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.get_friends" href="#ro_py.users.PartialUser.get_friends">get_friends</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.get_friends_count" href="#ro_py.users.PartialUser.get_friends_count">get_friends_count</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.get_limiteds" href="#ro_py.users.PartialUser.get_limiteds">get_limiteds</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.get_roblox_badges" href="#ro_py.users.PartialUser.get_roblox_badges">get_roblox_badges</a></code></li>
+<li><code><a title="ro_py.users.PartialUser.get_status" href="#ro_py.users.PartialUser.get_status">get_status</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
 <dt id="ro_py.users.PartialUser"><code class="flex name class">
 <span>class <span class="ident">PartialUser</span></span>
 <span>(</span><span>cso, roblox_id, roblox_name=None)</span>
@@ -517,15 +568,13 @@ class Events:
     async def get_friends(self):
         &#34;&#34;&#34;
         Gets the user&#39;s friends.
-        :return: A list of User instances.
+        :return: List of Friend
         &#34;&#34;&#34;
         friends_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends&#34;)
         friends_raw = friends_req.json()[&#34;data&#34;]
         friends_list = []
         for friend_raw in friends_raw:
-            friends_list.append(
-                await self.cso.client.get_user(friend_raw[&#34;id&#34;])
-            )
+            friends_list.append(Friend(self.cso, friend_raw))
         return friends_list
 
     async def get_groups(self):
@@ -565,6 +614,7 @@ class Events:
 <h3>Subclasses</h3>
 <ul class="hlist">
 <li><a title="ro_py.groups.Member" href="groups.html#ro_py.groups.Member">Member</a></li>
+<li><a title="ro_py.users.Friend" href="#ro_py.users.Friend">Friend</a></li>
 <li><a title="ro_py.users.User" href="#ro_py.users.User">User</a></li>
 </ul>
 <h3>Methods</h3>
@@ -642,7 +692,7 @@ class Events:
 </code></dt>
 <dd>
 <div class="desc"><p>Gets the user's friends.
-:return: A list of User instances.</p></div>
+:return: List of Friend</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
@@ -650,15 +700,13 @@ class Events:
 <pre><code class="python">async def get_friends(self):
     &#34;&#34;&#34;
     Gets the user&#39;s friends.
-    :return: A list of User instances.
+    :return: List of Friend
     &#34;&#34;&#34;
     friends_req = await self.requests.get(f&#34;https://friends.roblox.com/v1/users/{self.id}/friends&#34;)
     friends_raw = friends_req.json()[&#34;data&#34;]
     friends_list = []
     for friend_raw in friends_raw:
-        friends_list.append(
-            await self.cso.client.get_user(friend_raw[&#34;id&#34;])
-        )
+        friends_list.append(Friend(self.cso, friend_raw))
     return friends_list</code></pre>
 </details>
 </dd>
@@ -786,7 +834,7 @@ class Events:
 Can be initialized with either a user ID or a username.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>cso</code></strong> :&ensp;<code><a title="ro_py.client.ClientSharedObject" href="client.html#ro_py.client.ClientSharedObject">ClientSharedObject</a></code></dt>
+<dt><strong><code>cso</code></strong> :&ensp;<code>ro_py.client.ClientSharedObject</code></dt>
 <dd>ClientSharedObject.</dd>
 <dt><strong><code>roblox_id</code></strong> :&ensp;<code>int</code></dt>
 <dd>The id of a user.</dd>
@@ -801,7 +849,7 @@ Can be initialized with either a user ID or a username.</p>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class User(PartialUser):
+<pre><code class="python">class User(PartialUser, ClientObject):
     &#34;&#34;&#34;
     Represents a Roblox user and their profile.
     Can be initialized with either a user ID or a username.
@@ -848,6 +896,7 @@ Can be initialized with either a user ID or a username.</p>
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="ro_py.users.PartialUser" href="#ro_py.users.PartialUser">PartialUser</a></li>
+<li><a title="ro_py.utilities.clientobject.ClientObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientObject">ClientObject</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
@@ -925,6 +974,9 @@ Can be initialized with either a user ID or a username.</p>
 <li><code><a title="ro_py.users.Events.bind" href="#ro_py.users.Events.bind">bind</a></code></li>
 <li><code><a title="ro_py.users.Events.on_user_change" href="#ro_py.users.Events.on_user_change">on_user_change</a></code></li>
 </ul>
+</li>
+<li>
+<h4><code><a title="ro_py.users.Friend" href="#ro_py.users.Friend">Friend</a></code></h4>
 </li>
 <li>
 <h4><code><a title="ro_py.users.PartialUser" href="#ro_py.users.PartialUser">PartialUser</a></code></h4>

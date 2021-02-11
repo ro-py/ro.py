@@ -84,6 +84,8 @@ border-color: #424242 !important;
 This file houses functions and classes that pertain to Roblox assets.
 
 &#34;&#34;&#34;
+
+from ro_py.utilities.clientobject import ClientObject
 from ro_py.utilities.errors import NotLimitedError
 from ro_py.economy import LimitedResaleData
 from ro_py.utilities.asset_type import asset_types
@@ -100,7 +102,7 @@ class Reseller:
         self.user_asset = user_asset
 
 
-class Asset:
+class Asset(ClientObject):
     &#34;&#34;&#34;
     Represents an asset.
 
@@ -273,7 +275,7 @@ class Events:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Asset:
+<pre><code class="python">class Asset(ClientObject):
     &#34;&#34;&#34;
     Represents an asset.
 
@@ -376,6 +378,10 @@ class Events:
         else:
             raise NotLimitedError(&#34;You can only read this information on limited items.&#34;)</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.clientobject.ClientObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientObject">ClientObject</a></li>
+</ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
 <li><a title="ro_py.assets.UserAsset" href="#ro_py.assets.UserAsset">UserAsset</a></li>
@@ -622,6 +628,7 @@ class Events:
 <h3>Ancestors</h3>
 <ul class="hlist">
 <li><a title="ro_py.assets.Asset" href="#ro_py.assets.Asset">Asset</a></li>
+<li><a title="ro_py.utilities.clientobject.ClientObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientObject">ClientObject</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>

@@ -85,6 +85,8 @@ This file houses functions and classes that pertain to game-awarded badges.
 
 &#34;&#34;&#34;
 
+from ro_py.utilities.clientobject import ClientObject
+
 endpoint = &#34;https://badges.roblox.com/&#34;
 
 
@@ -98,7 +100,7 @@ class BadgeStatistics:
         self.win_rate_percentage = win_rate_percentage
 
 
-class Badge:
+class Badge(ClientObject):
     &#34;&#34;&#34;
     Represents a game-awarded badge.
 
@@ -165,7 +167,7 @@ class Badge:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Badge:
+<pre><code class="python">class Badge(ClientObject):
     &#34;&#34;&#34;
     Represents a game-awarded badge.
 
@@ -205,6 +207,10 @@ class Badge:
             statistics_info[&#34;winRatePercentage&#34;]
         )</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.clientobject.ClientObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientObject">ClientObject</a></li>
+</ul>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.badges.Badge.update"><code class="name flex">

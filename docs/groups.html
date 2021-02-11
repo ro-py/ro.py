@@ -84,6 +84,7 @@ border-color: #424242 !important;
 This file houses functions and classes that pertain to Roblox groups.
 
 &#34;&#34;&#34;
+
 import copy
 from enum import Enum
 
@@ -97,6 +98,7 @@ from ro_py.events import EventTypes
 from typing import Tuple, Callable
 from ro_py.utilities.errors import NotFound
 from ro_py.utilities.pages import Pages, SortOrder
+from ro_py.utilities.clientobject import ClientObject
 
 endpoint = &#34;https://groups.roblox.com&#34;
 
@@ -122,13 +124,13 @@ class JoinRequest:
 
     async def accept(self):
         accept_req = await self.requests.post(
-            url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requests.id}&#34;
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requester.id}&#34;
         )
         return accept_req.status_code == 200
 
     async def decline(self):
         accept_req = await self.requests.delete(
-            url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requests.id}&#34;
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requester.id}&#34;
         )
         return accept_req.status_code == 200
 
@@ -207,7 +209,7 @@ def member_handler(cso, data, args):
     return members
 
 
-class Group:
+class Group(ClientObject):
     &#34;&#34;&#34;
     Represents a group.
     &#34;&#34;&#34;
@@ -463,7 +465,7 @@ class Member(PartialUser):
         role_counter = -1
         for group_role in roles:
             role_counter += 1
-            if group_role.id == self.role.id:
+            if group_role.rank == self.role.rank:
                 break
         if not roles:
             raise NotFound(f&#34;User {self.id} is not in group {self.group.id}&#34;)
@@ -528,7 +530,7 @@ class Member(PartialUser):
         roles = await self.group.get_roles()
         rank_role = None
         for role in roles:
-            if role.role == role_num:
+            if role.rank == role_num:
                 rank_role = role
                 break
         if not rank_role:
@@ -1179,7 +1181,7 @@ class Events:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Group:
+<pre><code class="python">class Group(ClientObject):
     &#34;&#34;&#34;
     Represents a group.
     &#34;&#34;&#34;
@@ -1356,6 +1358,10 @@ class Events:
         await pages.get_page()
         return pages</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.clientobject.ClientObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientObject">ClientObject</a></li>
+</ul>
 <h3>Instance variables</h3>
 <dl>
 <dt id="ro_py.groups.Group.cso"><code class="name">var <span class="ident">cso</span></code></dt>
@@ -1674,13 +1680,13 @@ class Events:
 
     async def accept(self):
         accept_req = await self.requests.post(
-            url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requests.id}&#34;
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requester.id}&#34;
         )
         return accept_req.status_code == 200
 
     async def decline(self):
         accept_req = await self.requests.delete(
-            url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requests.id}&#34;
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requester.id}&#34;
         )
         return accept_req.status_code == 200</code></pre>
 </details>
@@ -1697,7 +1703,7 @@ class Events:
 </summary>
 <pre><code class="python">async def accept(self):
     accept_req = await self.requests.post(
-        url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requests.id}&#34;
+        url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requester.id}&#34;
     )
     return accept_req.status_code == 200</code></pre>
 </details>
@@ -1713,7 +1719,7 @@ class Events:
 </summary>
 <pre><code class="python">async def decline(self):
     accept_req = await self.requests.delete(
-        url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requests.id}&#34;
+        url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requester.id}&#34;
     )
     return accept_req.status_code == 200</code></pre>
 </details>
@@ -1800,7 +1806,7 @@ class Events:
         role_counter = -1
         for group_role in roles:
             role_counter += 1
-            if group_role.id == self.role.id:
+            if group_role.rank == self.role.rank:
                 break
         if not roles:
             raise NotFound(f&#34;User {self.id} is not in group {self.group.id}&#34;)
@@ -1865,7 +1871,7 @@ class Events:
         roles = await self.group.get_roles()
         rank_role = None
         for role in roles:
-            if role.role == role_num:
+            if role.rank == role_num:
                 rank_role = role
                 break
         if not rank_role:
@@ -1917,7 +1923,7 @@ If num is -1 the users role will go down by 1.</p>
     role_counter = -1
     for group_role in roles:
         role_counter += 1
-        if group_role.id == self.role.id:
+        if group_role.rank == self.role.rank:
             break
     if not roles:
         raise NotFound(f&#34;User {self.id} is not in group {self.group.id}&#34;)
@@ -2068,7 +2074,7 @@ If num is -1 the users role will go down by 1.</p>
     roles = await self.group.get_roles()
     rank_role = None
     for role in roles:
-        if role.role == role_num:
+        if role.rank == role_num:
             rank_role = role
             break
     if not rank_role:
