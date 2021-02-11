@@ -7,48 +7,48 @@ This file houses custom exceptions unique to this module.
 """
 
 
-# The following are HTTP generic errors used by requests.py
+# The following are HTTP generic errors used by utilities/requests.py
 class ApiError(Exception):
     """Called in requests when an API request fails with an error code that doesn't have an independent error."""
     pass
 
 
-class BadRequest(Exception):
+class BadRequest(ApiError):
     """400 HTTP error"""
     pass
 
 
-class Unauthorized(Exception):
+class Unauthorized(ApiError):
     """401 HTTP error"""
     pass
 
 
-class Forbidden(Exception):
+class Forbidden(ApiError):
     """403 HTTP error"""
     pass
 
 
-class NotFound(Exception):
+class NotFound(ApiError):
     """404 HTTP error (also used for other things)"""
     pass
 
 
-class Conflict(Exception):
+class Conflict(ApiError):
     """409 HTTP error"""
     pass
 
 
-class TooManyRequests(Exception):
+class TooManyRequests(ApiError):
     """429 HTTP error"""
     pass
 
 
-class InternalServerError(Exception):
+class InternalServerError(ApiError):
     """500 HTTP error"""
     pass
 
 
-class BadGateway(Exception):
+class BadGateway(ApiError):
     """502 HTTP error"""
     pass
 
