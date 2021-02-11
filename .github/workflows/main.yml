@@ -1,0 +1,23 @@
+name: docsbuild
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Install dependencies and build docs
+        run: |
+          sudo python3 -m pip install --upgrade pip setuptools wheel
+          sudo python3 -m pip install --upgrade pdoc3 
+          sudo python3 setup.py install
+          sudo python3 -m pdoc --html --template-dir docstemplate --output-dir udocs ro_py
