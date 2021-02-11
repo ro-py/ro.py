@@ -25,3 +25,6 @@ jobs:
           sudo python3 setup.py install
           echo Building docs
           sudo python3 -m pdoc --html --template-dir docstemplate --output-dir udocs ro_py
+          ls
+          echo hey
+          ls udocs
