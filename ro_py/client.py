@@ -282,3 +282,8 @@ class Client:
         )
         captcha_meta_raw = captcha_meta_req.json()
         return CaptchaMetadata(captcha_meta_raw)
+
+    async def secure_sign_out(self):
+        await self.requests.post(
+            url="https://www.roblox.com/authentication/signoutfromallsessionsandreauthenticate"
+        )
