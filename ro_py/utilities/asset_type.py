@@ -38,6 +38,9 @@ class AssetTypes(IntEnum):
 
     GamePass = 34
     Plugin = 38
+
+    Game = 39  # This isn't documented as far as I know, but this is the ID that is returned for game universes
+
     MeshPart = 40
 
     HairAccessory = 41
