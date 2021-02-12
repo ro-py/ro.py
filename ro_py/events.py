@@ -1,3 +1,10 @@
+"""
+
+This file houses functions and classes that pertain to events and event handling with ro.py. Most methods that have
+events actually don't reference content here, this doesn't contain much at the moment.
+
+"""
+
 import enum
 
 
