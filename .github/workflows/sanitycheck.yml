@@ -5,7 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'ro_py/**'
-      - 'tests/**
+      - 'tests/**'
 
   workflow_dispatch:
 
