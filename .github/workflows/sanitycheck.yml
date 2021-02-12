@@ -1,0 +1,21 @@
+name: Sanity Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Run a multi-line script
+        run: |
+          python3 setup.py install
+          python3 /tests/sanitycheck.py
