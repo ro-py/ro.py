@@ -77,7 +77,7 @@ class Asset(ClientObject):
         self.name = asset_info["Name"]
         self.description = asset_info["Description"]
         self.asset_type_id = asset_info["AssetTypeId"]
-        for key, value in AssetTypes.member_map_.items():
+        for key, value in AssetTypes._member_map_.items():
             if value == self.asset_type_id:
                 self.asset_type_name = key
 
