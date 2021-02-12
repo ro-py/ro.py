@@ -3,8 +3,9 @@ name: Sanity Check
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    paths:
+      - 'ro_py/**'
+      - 'tests/**
 
   workflow_dispatch:
 
