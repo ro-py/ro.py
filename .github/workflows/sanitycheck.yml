@@ -17,6 +17,6 @@ jobs:
       
       - name: Run a multi-line script
         run: |
-          python3 -m pip install setuptools
-          python3 setup.py install
+          sudo python3 -m pip install setuptools
+          sudo python3 setup.py install
           python3 /tests/sanitycheck.py
