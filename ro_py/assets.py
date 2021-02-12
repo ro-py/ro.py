@@ -7,7 +7,7 @@ This file houses functions and classes that pertain to Roblox assets.
 from ro_py.utilities.clientobject import ClientObject
 from ro_py.utilities.errors import NotLimitedError
 from ro_py.economy import LimitedResaleData
-from ro_py.utilities.asset_type import asset_types
+from ro_py.utilities.asset_type import AssetTypes
 import iso8601
 import asyncio
 import copy
@@ -27,8 +27,8 @@ class Asset(ClientObject):
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
+    cso : ro_py.utilities.clientobject.ClientSharedObject
+        CSO
     asset_id
         ID of the asset.
     """
@@ -76,7 +76,10 @@ class Asset(ClientObject):
         self.name = asset_info["Name"]
         self.description = asset_info["Description"]
         self.asset_type_id = asset_info["AssetTypeId"]
-        self.asset_type_name = asset_types[self.asset_type_id]
+        for key, value in AssetTypes.member_map_.items():
+            if value == self.asset_type_id:
+                self.asset_type_name = key
+
         # if asset_info["Creator"]["CreatorType"] == "User":
         #    self.creator = User(self.requests, asset_info["Creator"]["Id"])
         # if asset_info["Creator"]["CreatorType"] == "Group":
