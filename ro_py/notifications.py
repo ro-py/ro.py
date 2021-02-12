@@ -16,6 +16,27 @@ from urllib.parse import quote
 import json
 
 
+class UnreadNotifications:
+    def __init__(self, data):
+        self.count = data["unreadNotifications"]
+        """Amount of unread notifications."""
+        self.status_message = data["statusMessage"]
+        """Status message."""
+
+
+class RealtimeNotificationSettings:
+    def __init__(self, data):
+        self.primary_domain = data["primaryDomain"]
+        self.fallback_domain = data["fallbackDomain"]
+
+
+class NotificationSettings:
+    def __init__(self, data):
+        self.notification_band_settings = data["notificationBandSettings"]
+        self.opted_out_notification_source_types = data["optedOutNotificationSourceTypes"]
+        self.opted_out_receiver_destination_types = data["optedOutReceiverDestinationTypes"]
+
+
 class Notification:
     """
     Represents a Roblox notification as you would see in the notifications menu on the top of the Roblox web client.
@@ -65,6 +86,12 @@ class NotificationReceiver:
         self.negotiate_request = None
         self.wss_url = None
         self.connection = None
+
+    async def get_unread_notifications(self):
+        unread_req = await self.requests.get(
+            url="https://notifications.roblox.com/v2/stream-notifications/unread-count"
+        )
+        return UnreadNotifications(unread_req.json())
 
     async def initialize(self):
         self.negotiate_request = await self.requests.get(
