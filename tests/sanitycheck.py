@@ -9,7 +9,7 @@ def i(name, thisobj):
     return True
 
 
-async def main():
+async def client_test():
     user = await client.get_user(2067807455)
     i("id", user)
     i("name", user)
@@ -65,6 +65,11 @@ async def main():
     await game.get_badges()
 
     print("Finished test.")
+
+
+async def main():
+    await client_test()
+
 
 if __name__ == '__main__':
     asyncio.get_event_loop().run_until_complete(main())
