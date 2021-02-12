@@ -10,7 +10,7 @@ def i(name, thisobj):
 
 
 async def main():
-    user = await client.get_user(968108160)
+    user = await client.get_user(2067807455)
     i("id", user)
     i("name", user)
     i("description", user)
