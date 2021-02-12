@@ -271,12 +271,19 @@ class Client:
         return badge
 
     async def get_friend_requests(self):
+        """
+        Gets the amount of friend requests the client has.
+        """
         friend_req = await self.requests.get(
             url="https://friends.roblox.com/v1/user/friend-requests/count"
         )
         return friend_req.json()["count"]
 
     async def get_captcha_metadata(self):
+        """
+        Grabs captcha metadata, which contains public keys. You can pass these to the prompt extension for GUI captcha
+        solving,
+        """
         captcha_meta_req = await self.requests.get(
             url="https://apis.roblox.com/captcha/v1/metadata"
         )
@@ -284,6 +291,18 @@ class Client:
         return CaptchaMetadata(captcha_meta_raw)
 
     async def secure_sign_out(self):
+        """
+        Sends a Secure Sign Out (SSO) request. This invalidates all session tokens and generates a new one.
+
+        In the past, it was believed that Roblox would invalidate sessions automatically. This is not the case.
+        On the server, sessions are never invalidated unless a logout request is sent. In the browser, cookies expire
+        after 30 years.
+
+        Other Roblox API wrappers used to use SSO requests as a way to stop cookies from being invalidated, because
+        they would generate a new session token, and suggested that the user would "refresh their cookie" fairly
+        frequently as to avoid this. This isn't something you'll actually need to do, so this is left here as an
+        optional feature.
+        """
         await self.requests.post(
             url="https://www.roblox.com/authentication/signoutfromallsessionsandreauthenticate"
         )
