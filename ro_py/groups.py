@@ -133,6 +133,7 @@ class Group(ClientObject):
     Represents a group.
     """
     def __init__(self, cso, group_id):
+        super().__init__()
         self.cso = cso
         """Client Shared Object"""
         self.requests = cso.requests

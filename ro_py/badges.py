@@ -31,6 +31,7 @@ class Badge(ClientObject):
         ID of the badge.
     """
     def __init__(self, cso, badge_id):
+        super().__init__()
         self.id = badge_id
         self.cso = cso
         self.requests = cso.requests

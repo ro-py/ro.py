@@ -32,6 +32,7 @@ class Game(ClientObject):
     This class represents multiple game-related endpoints.
     """
     def __init__(self, cso, universe_id):
+        super().__init__()
         self.id = universe_id
         self.cso = cso
         self.requests = cso.requests

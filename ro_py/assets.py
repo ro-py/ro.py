@@ -34,6 +34,7 @@ class Asset(ClientObject):
     """
 
     def __init__(self, cso, asset_id):
+        super().__init__()
         self.id = asset_id
         self.cso = cso
         self.requests = cso.requests
