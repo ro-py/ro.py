@@ -7,13 +7,6 @@ class ClientObject:
     """
     Every object that is grabbable with client.get_x inherits this object.
     """
-    def __init__(self):
-        self.id = None
-        self.cso = None
-        self.requests = None
-
-    async def to_asset(self):
-        return await self.cso.client.get_asset(self.id)
 
     async def update(self):
         pass
