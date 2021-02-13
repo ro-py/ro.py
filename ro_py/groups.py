@@ -217,10 +217,10 @@ class Group(ClientObject):
             roles.append(Role(self.cso, self, role))
         return roles
 
-    async def get_member_by_id(self, roblox_id):
+    async def get_member_by_id(self, user_id):
         # Get list of group user is in.
         member_req = await self.requests.get(
-            url=endpoint + f"/v2/users/{roblox_id}/groups/roles"
+            url=endpoint + f"/v2/users/{user_id}/groups/roles"
         )
         data = member_req.json()
 
@@ -233,11 +233,11 @@ class Group(ClientObject):
 
         # Check if user is in group.
         if not group_data:
-            raise NotFound(f"The user {roblox_id} was not found in group {self.id}")
+            raise NotFound(f"The user {user_id} was not found in group {self.id}")
 
         # Create data to return.
         role = Role(self.cso, self, group_data['role'])
-        member = Member(self.cso, roblox_id, "", self, role)
+        member = Member(self.cso, user_id, "", self, role)
         return member
 
     async def get_member_by_username(self, name):

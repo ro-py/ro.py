@@ -26,8 +26,8 @@ class Badge(ClientObject, BaseAsset):
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
+    cso : ro_py.utilities.clientobject.ClientSharedObject
+        ClientSharedObject.
     badge_id
         ID of the badge.
     """
