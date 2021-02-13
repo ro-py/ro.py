@@ -15,6 +15,8 @@ class AssetTypes(IntEnum):
     Audio = 3
     Mesh = 4
     Lua = 5
+    HTML = 6
+    Text = 7
     Hat = 8
     Place = 9
     Model = 10
@@ -23,12 +25,16 @@ class AssetTypes(IntEnum):
     Pants = 12
 
     Decal = 13
+    Avatar = 16
     Head = 17
     Face = 18
     Gear = 19
     Badge = 21
+    GroupEmblem = 22
     Animation = 24
 
+    Arms = 25
+    Legs = 26
     Torso = 27
     RightArm = 28
     LeftArm = 29
@@ -36,11 +42,13 @@ class AssetTypes(IntEnum):
     RightLeg = 31
     Package = 32
 
+    YouTubeVideo = 33
     GamePass = 34
+    App = 45
+    Code = 37
     Plugin = 38
 
-    Game = 39  # This isn't documented as far as I know, but this is the ID that is returned for game universes
-
+    SolidModel = 39  # Fixed
     MeshPart = 40
 
     HairAccessory = 41
@@ -60,9 +68,11 @@ class AssetTypes(IntEnum):
     SwimAniation = 54
     WalkAnimation = 55
     PoseAnimation = 56
-
     EarAccessory = 57
     EyeAccessory = 58
 
+    LocalizationTableManifest = 59
+    LocalizationTableTranslation = 60
     EmoteAnimation = 61
     Video = 62
+    TexturePack = 63
