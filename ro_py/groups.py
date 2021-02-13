@@ -41,16 +41,20 @@ class Shout:
     def __str__(self):
         return self.body
 
-    async def __call__(self, message, replace=True):
+    async def __call__(self, message):
         """
         Updates the shout of the group.
+        Please note that doing so will completely delete this Shout object and return a new Shout object.
+        The parent group's shout parameter will also be updated accordingly.
 
         Parameters
         ----------
         message : str
             Message that will overwrite the current shout of a group.
-        replace : bool
-            Whether to replace the shout with the new information returned from the server.
+
+        Returns
+        -------
+        ro_py.groups.Shout
 
         """
         shout_req = await self.requests.patch(
@@ -60,6 +64,7 @@ class Shout:
             }
         )
         self.group.shout = Shout(self.cso, self.group, shout_req.json())
+        return self.group.shout
 
 
 class JoinRequest:
