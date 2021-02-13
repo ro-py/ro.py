@@ -52,7 +52,7 @@ class Requests:
             if "X-CSRF-TOKEN" in this_request.headers:
                 self.session.headers['X-CSRF-TOKEN'] = this_request.headers["X-CSRF-TOKEN"]
                 if this_request.status_code == 403:  # Request failed, send it again
-                    this_request = await self.session.post(*args, **kwargs)
+                    this_request = await self.session.request(method, *args, **kwargs)
 
         if kwargs.pop("stream", False):
             # Skip request checking and just get on with it.
