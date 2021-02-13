@@ -5,6 +5,7 @@ This file houses functions and classes that pertain to game-awarded badges.
 """
 
 from ro_py.utilities.clientobject import ClientObject
+from ro_py.utilities.baseasset import BaseAsset
 
 endpoint = "https://badges.roblox.com/"
 
@@ -19,7 +20,7 @@ class BadgeStatistics:
         self.win_rate_percentage = win_rate_percentage
 
 
-class Badge(ClientObject):
+class Badge(ClientObject, BaseAsset):
     """
     Represents a game-awarded badge.
 
@@ -31,7 +32,8 @@ class Badge(ClientObject):
         ID of the badge.
     """
     def __init__(self, cso, badge_id):
-        super().__init__()
+        ClientObject.__init__(self)
+        BaseAsset.__init__(self)
         self.id = badge_id
         self.cso = cso
         self.requests = cso.requests

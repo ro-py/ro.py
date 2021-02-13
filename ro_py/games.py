@@ -5,6 +5,7 @@ This file houses functions and classes that pertain to Roblox universes and plac
 """
 
 from ro_py.utilities.clientobject import ClientObject
+from ro_py.utilities.baseasset import BaseAsset
 from ro_py.groups import Group
 from ro_py.badges import Badge
 from ro_py.thumbnails import GameThumbnailGenerator
@@ -118,8 +119,9 @@ class Game(ClientObject):
         return badges
 
 
-class Place:
+class Place(ClientObject, BaseAsset):
     def __init__(self, requests, id):
+        super().__init__()
         self.requests = requests
         self.id = id
         pass
