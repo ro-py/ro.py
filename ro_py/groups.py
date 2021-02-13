@@ -26,12 +26,40 @@ class Shout:
     """
     Represents a group shout.
     """
-    def __init__(self, cso, shout_data):
+    def __init__(self, cso, group, shout_data):
         self.cso = cso
+        self.requests = cso.requests
+        self.group = group
         self.data = shout_data
         self.body = shout_data["body"]
+        self.created = iso8601.parse_date(shout_data["created"])
+        self.updated = iso8601.parse_date(shout_data["created"])
+
         # TODO: Make this a PartialUser
         self.poster = None
+
+    def __str__(self):
+        return self.body
+
+    async def __call__(self, message, replace=True):
+        """
+        Updates the shout of the group.
+
+        Parameters
+        ----------
+        message : str
+            Message that will overwrite the current shout of a group.
+        replace : bool
+            Whether to replace the shout with the new information returned from the server.
+
+        """
+        shout_req = await self.requests.patch(
+            url=endpoint + f"/v1/groups/{self.group.id}/status",
+            data={
+                "message": message
+            }
+        )
+        self.group.shout = Shout(self.cso, self.group, shout_req.json())
 
 
 class JoinRequest:
@@ -174,7 +202,7 @@ class Group(ClientObject):
         self.is_builders_club_only = group_info["isBuildersClubOnly"]
         self.public_entry_allowed = group_info["publicEntryAllowed"]
         if group_info.get('shout'):
-            self.shout = Shout(self.cso, group_info['shout'])
+            self.shout = Shout(self.cso, self, group_info['shout'])
         else:
             self.shout = None
         if "isLocked" in group_info:
@@ -183,6 +211,7 @@ class Group(ClientObject):
     async def update_shout(self, message):
         """
         Updates the shout of the group.
+        DEPRECATED: Just call group.shout()
 
         Parameters
         ----------
@@ -193,13 +222,7 @@ class Group(ClientObject):
         -------
         int
         """
-        shout_req = await self.requests.patch(
-            url=endpoint + f"/v1/groups/{self.id}/status",
-            data={
-                "message": message
-            }
-        )
-        return shout_req.status_code == 200
+        return await self.shout(message)
 
     async def get_roles(self):
         """
