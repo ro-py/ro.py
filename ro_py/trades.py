@@ -64,7 +64,9 @@ class PartialTrade:
         self.trade_id = data['id']
         self.user = PartialUser(cso, data['user']['id'], data['user']['name'])
         self.created = iso8601.parse_date(data['created'])
-        self.expiration = iso8601.parse_date(data['expiration'])
+        self.expiration = None
+        if "expiration" in data:
+            self.expiration = iso8601.parse_date(data['expiration'])
         self.status = data['status']
 
     async def accept(self) -> bool:
