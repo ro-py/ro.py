@@ -31,7 +31,6 @@ class Trade:
         self.trade_id = data['id']
         self.sender = sender
         self.created = iso8601.parse_date(data['created'])
-        self.expiration = iso8601.parse_date(data['expiration'])
         self.status = data['status']
         self.send_items = send_items
         self.receive_items = receive_items
