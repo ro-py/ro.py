@@ -3,11 +3,11 @@
 This file houses functions and classes that pertain to Roblox trades and trading.
 
 """
-from typing import Callable
+from typing import Callable, List
 
 from ro_py.utilities.pages import Pages, SortOrder
 from ro_py.assets import Asset, UserAsset
-from ro_py.users import PartialUser
+from ro_py.users import PartialUser, User
 from ro_py.events import EventTypes
 import datetime
 import iso8601
@@ -20,20 +20,21 @@ endpoint = "https://trades.roblox.com"
 def trade_page_handler(requests, this_page, args) -> list:
     trades_out = []
     for raw_trade in this_page:
-        trades_out.append(PartialTrade(requests, raw_trade["id"], PartialUser(requests, raw_trade["user"]['id'], raw_trade['user']['name']), raw_trade['created'], raw_trade['expiration'], raw_trade['status']))
+        trades_out.append(PartialTrade(requests, raw_trade))
     return trades_out
 
 
 class Trade:
-    def __init__(self, requests, trade_id: int, sender: PartialUser, receive_items, send_items, created: datetime.datetime, expiration: datetime.datetime, status: bool):
-        self.trade_id = trade_id
-        self.requests = requests
+    def __init__(self, cso, data, sender: User, send_items: List[Asset], receive_items: List[Asset]):
+        self.cso = cso
+        self.requests = cso.requests
+        self.trade_id = data['id']
         self.sender = sender
-        self.receive_items = receive_items
+        self.created = iso8601.parse_date(data['created'])
+        self.expiration = iso8601.parse_date(data['expiration'])
+        self.status = data['status']
         self.send_items = send_items
-        self.created = iso8601.parse_date(created)
-        self.expiration = iso8601.parse_date(expiration)
-        self.status = status
+        self.receive_items = receive_items
 
     async def accept(self) -> bool:
         """
@@ -57,14 +58,14 @@ class Trade:
 
 
 class PartialTrade:
-    def __init__(self, cso, trade_id: int, user: PartialUser, created: datetime.datetime, expiration: datetime.datetime, status: bool):
+    def __init__(self, cso, data):
         self.cso = cso
         self.requests = cso.requests
-        self.trade_id = trade_id
-        self.user = user
-        self.created = iso8601.parse_date(created)
-        self.expiration = iso8601.parse_date(expiration)
-        self.status = status
+        self.trade_id = data['id']
+        self.user = PartialUser(cso, data['user']['id'], data['user']['name'])
+        self.created = iso8601.parse_date(data['created'])
+        self.expiration = iso8601.parse_date(data['expiration'])
+        self.status = data['status']
 
     async def accept(self) -> bool:
         """
@@ -100,27 +101,24 @@ class PartialTrade:
         sender = await self.cso.client.get_user(data['user']['id'])
         await sender.update()
 
-        # load items that will be/have been sent and items that you will/have recieve(d)
+        # load items that will be/have been sent and items that you will/have receive(d)
         receive_items, send_items = [], []
         for items_0 in data['offers'][0]['userAssets']:
-            item_0 = Asset(self.requests, items_0['assetId'])
+            item_0 = Asset(self.cso, items_0['assetId'])
             await item_0.update()
             receive_items.append(item_0)
 
         for items_1 in data['offers'][1]['userAssets']:
-            item_1 = Asset(self.requests, items_1['assetId'])
+            item_1 = Asset(self.cso, items_1['assetId'])
             await item_1.update()
             send_items.append(item_1)
 
         return Trade(
             self.cso,
-            self.trade_id,
+            data,
             sender,
-            receive_items,
             send_items,
-            data['created'],
-            data['expiration'],
-            data['status']
+            receive_items
         )
 
 
@@ -201,10 +199,9 @@ class TradesWrapper:
     """
     Represents the Roblox trades page.
     """
-    def __init__(self, cso, get_self):
+    def __init__(self, cso):
         self.cso = cso
         self.requests = cso.requests
-        self.get_self = get_self
         self.events = Events(cso)
         self.TradeRequest = TradeRequest
 
@@ -234,7 +231,7 @@ class TradesWrapper:
         -------
         int
         """
-        me = await self.get_self()
+        me = await self.cso.client.get_self()
 
         data = {
             "offers": [
