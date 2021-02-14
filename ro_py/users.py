@@ -146,6 +146,23 @@ class Friend(PartialUser):
         self.display_name = data["displayName"]
 
 
+class FriendRequest(Friend):
+    def __init__(self, cso, data):
+        super(FriendRequest, self).__init__(cso, data)
+
+    async def accept(self):
+        accept_req = await self.cso.post(
+            url=f"https://friends.roblox.com/v1/users/{self.id}/accept-friend-request"
+        )
+        return accept_req.status == 200
+
+    async def decline(self):
+        accept_req = await self.cso.post(
+            url=f"https://friends.roblox.com/v1/users/{self.id}/decline-friend-request"
+        )
+        return accept_req.status == 200
+
+
 class User(PartialUser, ClientObject):
     """
     Represents a Roblox user and their profile.

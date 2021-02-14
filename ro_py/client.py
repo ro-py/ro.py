@@ -9,17 +9,25 @@ from ro_py.groups import Group
 from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
-from ro_py.users import PartialUser
 from ro_py.events import EventTypes
 from ro_py.trades import TradesWrapper
 from ro_py.captcha import CaptchaMetadata
 from ro_py.utilities.cache import CacheType
 from ro_py.captcha import UnsolvedLoginCaptcha
 from ro_py.accountsettings import AccountSettings
+from ro_py.utilities.pages import Pages, SortOrder
+from ro_py.users import PartialUser, FriendRequest
 from ro_py.notifications import NotificationReceiver
 from ro_py.accountinformation import AccountInformation
 from ro_py.utilities.clientobject import ClientSharedObject
 from ro_py.utilities.errors import UserDoesNotExistError, InvalidPlaceIDError
+
+
+def friend_handler(cso, data, args):
+    friends = []
+    for friend in data:
+        friends.append(FriendRequest(cso, friend))
+    return friends
 
 
 class Client:
@@ -52,6 +60,22 @@ class Client:
 
         if token:
             self.token_login(token)
+
+    async def filter_text(self, text):
+        """
+        Filters text.
+
+        Parameters
+        ----------
+        text : str
+            Text that will be filtered.
+        """
+        filter_req = await self.requests.post(
+            url="https://develop.roblox.com/v1/gameUpdateNotifications/filter",
+            data=f'"{text}"'
+        )
+        data = filter_req.json()
+        return data['filteredGameUpdateText']
 
     # Grab objects
     async def get_self(self):
@@ -200,14 +224,19 @@ class Client:
             await badge.update()
         return badge
 
-    async def get_friend_requests(self):
+    async def get_friend_requests(self, sort_order=SortOrder.Ascending, limit=100):
         """
-        Gets the amount of friend requests the client has.
+        Gets friend requests the client has.
         """
-        friend_req = await self.requests.get(
-            url="https://friends.roblox.com/v1/user/friend-requests/count"
+        friends = Pages(
+            cso=self.cso,
+            url="https://friends.roblox.com/v1/my/friends/requests",
+            handler=friend_handler,
+            sort_order=sort_order,
+            limit=limit
         )
-        return friend_req.json()["count"]
+        await friends.get_page()
+        return friends
 
     async def get_captcha_metadata(self):
         """
@@ -303,7 +332,7 @@ class Client:
 
         Other Roblox API wrappers used to use SSO requests as a way to stop cookies from being invalidated, because
         they would generate a new session token, and suggested that the user would "refresh their cookie" fairly
-        frequently as to avoid this. This isn't something you'll actually need to do, so this is left here as an
+        frequently as to avoid this. This isn't something you'll actually need to do, therefore this is left here as an
         optional feature.
         """
         await self.requests.post(
