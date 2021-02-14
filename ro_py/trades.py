@@ -31,7 +31,6 @@ class Trade:
         self.trade_id = data['id']
         self.sender = sender
         self.created = iso8601.parse_date(data['created'])
-        self.expiration = iso8601.parse_date(data['expiration'])
         self.status = data['status']
         self.send_items = send_items
         self.receive_items = receive_items
@@ -64,7 +63,9 @@ class PartialTrade:
         self.trade_id = data['id']
         self.user = PartialUser(cso, data['user']['id'], data['user']['name'])
         self.created = iso8601.parse_date(data['created'])
-        self.expiration = iso8601.parse_date(data['expiration'])
+        self.expiration = None
+        if "expiration" in data:
+            self.expiration = iso8601.parse_date(data['expiration'])
         self.status = data['status']
 
     async def accept(self) -> bool:
@@ -205,10 +206,10 @@ class TradesWrapper:
         self.events = Events(cso)
         self.TradeRequest = TradeRequest
 
-    async def get_trades(self, trade_status_type=TradeStatusType.Inbound.value, sort_order=SortOrder.Ascending, limit=10) -> Pages:
+    async def get_trades(self, trade_status_type=TradeStatusType.Inbound, sort_order=SortOrder.Ascending, limit=10) -> Pages:
         trades = Pages(
             cso=self.cso,
-            url=endpoint + f"/v1/trades/{trade_status_type}",
+            url=endpoint + f"/v1/trades/{trade_status_type.value}",
             sort_order=sort_order,
             limit=limit,
             handler=trade_page_handler
