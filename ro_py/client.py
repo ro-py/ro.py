@@ -264,7 +264,7 @@ class Client:
         self.accountinformation = AccountInformation(self.cso)
         self.accountsettings = AccountSettings(self.cso)
         self.chat = ChatWrapper(self.cso)
-        self.trade = TradesWrapper(self.cso, self.get_self)
+        self.trade = TradesWrapper(self.cso)
         self.notifications = NotificationReceiver(self.cso)
 
     async def user_login(self, username, password, token=None):
