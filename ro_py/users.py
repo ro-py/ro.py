@@ -120,11 +120,13 @@ class PartialUser:
         -------
         list
         """
-        return Pages(
+        limiteds = Pages(
             cso=self.cso,
             url=f"https://inventory.roblox.com/v1/users/{self.id}/assets/collectibles?cursor=&limit=100&sortOrder=Desc",
             handler=limited_handler
         )
+        await limiteds.get_page()
+        return limiteds
 
     async def get_status(self):
         """
