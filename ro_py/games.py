@@ -45,6 +45,8 @@ class Game(ClientObject):
         self.price = None
         self.allowed_gear_genres = None
         self.allowed_gear_categories = None
+        self.playing = None
+        self.visits = None
         self.max_players = None
         self.studio_access_to_apis_allowed = None
         self.create_vip_servers_allowed = None
@@ -80,6 +82,8 @@ class Game(ClientObject):
         self.price = game_info["price"]
         self.allowed_gear_genres = game_info["allowedGearGenres"]
         self.allowed_gear_categories = game_info["allowedGearCategories"]
+        self.playing = game_info["playing"]
+        self.visits = game_info["visits"]
         self.max_players = game_info["maxPlayers"]
         self.studio_access_to_apis_allowed = game_info["studioAccessToApisAllowed"]
         self.create_vip_servers_allowed = game_info["createVipServersAllowed"]
