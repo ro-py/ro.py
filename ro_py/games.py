@@ -5,12 +5,13 @@ This file houses functions and classes that pertain to Roblox universes and plac
 """
 
 from ro_py.utilities.clientobject import ClientObject
-from ro_py.utilities.baseasset import BaseAsset
-from ro_py.groups import Group
-from ro_py.badges import Badge
 from ro_py.thumbnails import GameThumbnailGenerator
 from ro_py.utilities.errors import GameJoinError
+from ro_py.utilities.baseasset import BaseAsset
 from ro_py.utilities.cache import CacheType
+from ro_py.users import PartialUser
+from ro_py.groups import Group
+from ro_py.badges import Badge
 import subprocess
 import json
 import os
@@ -38,8 +39,8 @@ class Game(ClientObject):
         self.cso = cso
         self.requests = cso.requests
         self.name = None
+        self.root_place_id = None
         self.description = None
-        self.root_place = None
         self.creator = None
         self.price = None
         self.allowed_gear_genres = None
@@ -62,8 +63,8 @@ class Game(ClientObject):
         game_info = game_info_req.json()
         game_info = game_info["data"][0]
         self.name = game_info["name"]
+        self.root_place_id = game_info["rootPlaceId"]
         self.description = game_info["description"]
-        self.root_place = Place(self.cso, game_info["rootPlaceId"])
         if game_info["creator"]["type"] == "User":
             self.creator = self.cso.cache.get(CacheType.Users, game_info["creator"]["id"])
             if not self.creator:
@@ -82,6 +83,11 @@ class Game(ClientObject):
         self.max_players = game_info["maxPlayers"]
         self.studio_access_to_apis_allowed = game_info["studioAccessToApisAllowed"]
         self.create_vip_servers_allowed = game_info["createVipServersAllowed"]
+
+    async def get_root_place(self):
+        root_place = Place(self.cso, self.root_place_id, self)
+        await root_place.update()
+        return root_place
 
     async def get_votes(self):
         """
@@ -120,12 +126,35 @@ class Game(ClientObject):
 
 
 class Place(ClientObject, BaseAsset):
-    def __init__(self, cso, id):
+    def __init__(self, cso, place_id, universe):
         super().__init__()
         self.cso = cso
         self.requests = cso.requests
-        self.id = id
-        pass
+        self.id = place_id
+        self.universe = universe
+        self.name = None
+        self.description = None
+        self.url = None
+        self.creator = None
+        self.is_playable = None
+        self.reason_prohibited = None
+        self.price = None
+
+    async def update(self):
+        place_req = await self.requests.get(
+            url="https://games.roblox.com/v1/games/multiget-place-details",
+            params={
+                "placeIds": self.id
+            }
+        )
+        place_data = place_req.json()[0]
+        self.name = place_data["name"]
+        self.description = place_data["description"]
+        self.url = place_data["url"]
+        self.creator = PartialUser(self.cso, place_data["builderId"], place_data["builder"])
+        self.is_playable = place_data["isPlayable"]
+        self.reason_prohibited = place_data["reasonProhibited"]
+        self.price = place_data["price"]
 
     async def join(self, launchtime=1609186776825, rloc="en_us", gloc="en_us",
                    negotiate_url="https://www.roblox.com/Login/Negotiate.ashx"):
@@ -191,4 +220,3 @@ class Place(ClientObject, BaseAsset):
             stderr=subprocess.PIPE
         )
         return join_process.stdout, join_process.stderr
-
