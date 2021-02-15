@@ -62,11 +62,11 @@ The docs are generated from docstrings in the code using pdoc3.
 ## Installation
 You can install ro.py from pip:
 ```
-pip install ro-py
+pip3 install ro-py
 ```
 If you want the latest bleeding-edge version, clone from git (you'll need [git-scm](https://git-scm.com/downloads) installed):
 ```
-pip install git+git://github.com/rbx-libdev/ro.py.git
+pip3 install git+git://github.com/rbx-libdev/ro.py.git
 ```
 Known issue: wxPython sometimes has trouble building on certain devices. I put wxPython last on the requirements so Python attempts to install it last, so you can safely ignore this error as everything else should be installed.
 
