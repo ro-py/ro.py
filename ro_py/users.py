@@ -31,6 +31,7 @@ class PartialUser:
         self.requests = cso.requests
         self.id = roblox_id
         self.name = roblox_name
+        self.profile_url = f"https://www.roblox.com/users/{self.id}/profile"
 
     async def expand(self):
         """

@@ -63,7 +63,7 @@ class Game(ClientObject):
         game_info = game_info["data"][0]
         self.name = game_info["name"]
         self.description = game_info["description"]
-        self.root_place = Place(self.requests, game_info["rootPlaceId"])
+        self.root_place = Place(self.cso, game_info["rootPlaceId"])
         if game_info["creator"]["type"] == "User":
             self.creator = self.cso.cache.get(CacheType.Users, game_info["creator"]["id"])
             if not self.creator:
@@ -120,9 +120,10 @@ class Game(ClientObject):
 
 
 class Place(ClientObject, BaseAsset):
-    def __init__(self, requests, id):
+    def __init__(self, cso, id):
         super().__init__()
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
         self.id = id
         pass
 
