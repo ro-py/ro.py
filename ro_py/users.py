@@ -5,17 +5,18 @@ This file houses functions and classes that pertain to Roblox users and profiles
 """
 
 import copy
+import iso8601
+import asyncio
 from typing import List, Callable
+from ro_py.assets import UserAsset
 from ro_py.events import EventTypes
+from ro_py.utilities.pages import Pages
 from ro_py.robloxbadges import RobloxBadge
 from ro_py.thumbnails import UserThumbnailGenerator
 from ro_py.utilities.clientobject import ClientObject
-from ro_py.utilities.pages import Pages
-from ro_py.assets import UserAsset
-import iso8601
-import asyncio
 
-endpoint = "https://users.roblox.com/"
+from ro_py.utilities.url import url
+endpoint = url("users")
 
 
 def limited_handler(requests, data, args):

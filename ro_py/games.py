@@ -16,7 +16,8 @@ import subprocess
 import json
 import os
 
-endpoint = "https://games.roblox.com/"
+from ro_py.utilities.url import url
+endpoint = url("games")
 
 
 class Votes:

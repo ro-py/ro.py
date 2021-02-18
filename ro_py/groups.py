@@ -19,7 +19,8 @@ from ro_py.utilities.errors import NotFound
 from ro_py.utilities.pages import Pages, SortOrder
 from ro_py.utilities.clientobject import ClientObject
 
-endpoint = "https://groups.roblox.com"
+from ro_py.utilities.url import url
+endpoint = url("groups")
 
 
 class Shout:

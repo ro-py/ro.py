@@ -4,8 +4,8 @@ from ro_py.captcha import UnsolvedCaptcha
 from ro_py.utilities.pages import Pages, SortOrder
 from ro_py.users import PartialUser
 
-
-endpoint = "https://groups.roblox.com"
+from ro_py.utilities.url import url
+endpoint = url("groups")
 
 
 class WallPost:

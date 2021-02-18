@@ -9,12 +9,12 @@ from ro_py.utilities.pages import Pages, SortOrder
 from ro_py.assets import Asset, UserAsset
 from ro_py.users import PartialUser, User
 from ro_py.events import EventTypes
-import datetime
 import iso8601
 import asyncio
 import enum
 
-endpoint = "https://trades.roblox.com"
+from ro_py.utilities.url import url
+endpoint = url("trades")
 
 
 def trade_page_handler(requests, this_page, args) -> list:
