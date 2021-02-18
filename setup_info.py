@@ -18,6 +18,12 @@ setup_info = {
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ],
+    "project_urls": {
+        "Discord": "https://discord.gg/RJdW3gt9Ru",
+        "Issue Tracker": "https://github.com/rbx-libdev/ro.py/issues",
+        "GitHub": "https://github.com/rbx-libdev/ro.py/",
+        "Examples": "https://github.com/rbx-libdev/ro.py/tree/main/examples"
+    },
     "python_requires": '>=3.6',
     "install_requires": [
         "httpx",
