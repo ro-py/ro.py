@@ -1,4 +1,4 @@
-root_site = "sitetest1.roblox.com"
+root_site = "roblox.com"
 
 
 def url(path="www"):
