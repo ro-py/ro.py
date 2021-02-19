@@ -51,7 +51,7 @@ async def client_test():
     group = await client.get_group(1)
     await group.update()
     await group.get_roles()
-    await group.get_member_by_id(1179762)
+    # await group.get_member_by_id(1179762)
 
     asset = await client.get_asset(5832204472)
     await asset.update()
