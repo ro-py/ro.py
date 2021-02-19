@@ -26,27 +26,30 @@ def limited_handler(requests, data, args):
     return assets
 
 
-class PartialUser:
-    def __init__(self, cso, roblox_id, roblox_name=None):
+class BaseUser:
+    def __init__(self, cso, user_id):
         self.cso = cso
         self.requests = cso.requests
-        self.id = roblox_id
-        self.name = roblox_name
+        self.id = user_id
         self.profile_url = f"https://www.roblox.com/users/{self.id}/profile"
 
     async def expand(self):
         """
-        Updates some class values.
-        :return: Nothing
+        Expands into a full User object.
+
+        Returns
+        ------
+        ro_py.users.User
         """
-        user_info_req = await self.requests.get(endpoint + f"v1/users/{self.id}")
-        user_info = user_info_req.json()
-        return User(self.cso, self.id, user_info)
+        return await self.cso.client.get_user(self.id)
 
     async def get_roblox_badges(self) -> List[RobloxBadge]:
         """
         Gets the user's roblox badges.
-        :return: A list of RobloxBadge instances
+
+        Returns
+        -------
+        List[ro_py.robloxbadges.RobloxBadge]
         """
         roblox_badges_req = await self.requests.get(
             f"https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges")
@@ -58,7 +61,10 @@ class PartialUser:
     async def get_friends_count(self) -> int:
         """
         Gets the user's friends count.
-        :return: An integer
+
+        Returns
+        -------
+        int
         """
         friends_count_req = await self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/friends/count")
         friends_count = friends_count_req.json()["count"]
@@ -67,7 +73,10 @@ class PartialUser:
     async def get_followers_count(self) -> int:
         """
         Gets the user's followers count.
-        :return: An integer
+
+        Returns
+        -------
+        int
         """
         followers_count_req = await self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/followers/count")
         followers_count = followers_count_req.json()["count"]
@@ -76,7 +85,10 @@ class PartialUser:
     async def get_followings_count(self) -> int:
         """
         Gets the user's followings count.
-        :return: An integer
+
+        Returns
+        -------
+        int
         """
         followings_count_req = await self.requests.get(
             f"https://friends.roblox.com/v1/users/{self.id}/followings/count")
@@ -86,7 +98,10 @@ class PartialUser:
     async def get_friends(self):
         """
         Gets the user's friends.
-        :return: List of Friend
+
+        Returns
+        -------
+        List[ro_py.users.Friend]
         """
         friends_req = await self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/friends")
         friends_raw = friends_req.json()["data"]
@@ -96,6 +111,13 @@ class PartialUser:
         return friends_list
 
     async def get_groups(self):
+        """
+        Gets the user's groups.
+
+        Returns
+        -------
+        List[ro_py.groups.PartialGroup]
+        """
         from ro_py.groups import PartialGroup
         member_req = await self.requests.get(
             url=f"https://groups.roblox.com/v2/users/{self.id}/groups/roles"
@@ -113,40 +135,43 @@ class PartialUser:
 
         Returns
         -------
-        list
+        bababooey
         """
-        limiteds = Pages(
+        return Pages(
             cso=self.cso,
             url=f"https://inventory.roblox.com/v1/users/{self.id}/assets/collectibles?cursor=&limit=100&sortOrder=Desc",
             handler=limited_handler
         )
-        await limiteds.get_page()
-        return limiteds
 
     async def get_status(self):
         """
         Gets the user's status.
-        :return: A string
+
+        Returns
+        -------
+        str
         """
         status_req = await self.requests.get(endpoint + f"v1/users/{self.id}/status")
         return status_req.json()["status"]
 
 
+class PartialUser(BaseUser):
+    def __init__(self, cso, data):
+        self.id = data.get("id") or data.get("Id") or data.get("userId") or data.get("user_id") or data.get("UserId")
+        super().__init__(cso, self.id)
+        self.name = data.get("name") or data.get("Name") or data.get("Username") or data.get("username")
+        self.display_name = data.get("displayName") or data.get("DisplayName") or data.get("display_name")
+
+
 class Friend(PartialUser):
     def __init__(self, cso, data):
-        super().__init__(cso, data["id"], data["name"])
+        super().__init__(cso, data)
         self.is_online = data["isOnline"]
         self.is_deleted = data["isDeleted"]
         self.description = data["description"]
         self.created = iso8601.parse_date(data["created"])
         self.is_banned = data["isBanned"]
         self.display_name = data["displayName"]
-
-    async def remove_friend(self):
-        remove_req = await self.requests.post(
-            url=f"https://friends.roblox.com/v1/users/{self.id}/unfriend",
-        )
-        return remove_req.status == 200
 
 
 class FriendRequest(Friend):
@@ -166,35 +191,31 @@ class FriendRequest(Friend):
         return accept_req.status == 200
 
 
-class User(PartialUser, ClientObject):
+class User(BaseUser, ClientObject):
     """
     Represents a Roblox user and their profile.
     Can be initialized with either a user ID or a username.
+
+    I'm in so much pain
 
     Parameters
     ----------
     cso : ro_py.client.ClientSharedObject
             ClientSharedObject.
-    roblox_id : int
+    user_id : int
             The id of a user.
-    roblox_name : str
-            The name of the user.
-    description : str
-            The description of the user.
-    created : any
-            Time the user was created.
     """
 
-    def __init__(self, cso, roblox_id, data):
-        super().__init__(cso, roblox_id, data['name'])
+    def __init__(self, cso, user_id):
+        super().__init__(cso, user_id)
         self.cso = cso
-        self.id = roblox_id
-        self.name = data['name']
-        self.description = data['description']
-        self.created = iso8601.parse_date(data["created"])
-        self.is_banned = data["isBanned"]
-        self.display_name = data['displayName']
-        self.thumbnails = UserThumbnailGenerator(cso, roblox_id)
+        self.id = user_id
+        self.name = None
+        self.description = None
+        self.created = None
+        self.is_banned = None
+        self.display_name = None
+        self.thumbnails = UserThumbnailGenerator(cso, user_id)
 
     async def update(self):
         """
@@ -208,7 +229,6 @@ class User(PartialUser, ClientObject):
         self.is_banned = user_info["isBanned"]
         self.name = user_info["name"]
         self.display_name = user_info["displayName"]
-        return self
         # has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
         # self.has_premium = has_premium_req
 
