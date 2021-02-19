@@ -16,9 +16,9 @@ from ro_py.utilities.cache import CacheType
 from ro_py.captcha import UnsolvedLoginCaptcha
 from ro_py.accountsettings import AccountSettings
 from ro_py.utilities.pages import Pages, SortOrder
-from ro_py.users import PartialUser, FriendRequest
 from ro_py.notifications import NotificationReceiver
 from ro_py.accountinformation import AccountInformation
+from ro_py.users import PartialUser, FriendRequest, User
 from ro_py.utilities.clientobject import ClientSharedObject
 from ro_py.utilities.errors import UserDoesNotExistError, InvalidPlaceIDError
 
@@ -83,7 +83,7 @@ class Client:
             url="https://roblox.com/my/profile"
         )
         data = self_req.json()
-        return PartialUser(self.cso, data['UserId'], data['Username'])
+        return PartialUser(self.cso, data)
 
     async def get_user(self, user_id, expand=True):
         """
@@ -94,15 +94,12 @@ class Client:
         user_id
             ID of the user to generate the object from.
         expand : bool
-            Whether to automatically expand the data returned by the endpoint into Users.s
+            Whether to automatically expand the data returned by the endpoint into Users.
         """
         user = self.cso.cache.get(CacheType.Users, user_id)
         if not user:
-            user = PartialUser(self.cso, user_id)
-            if expand:
-                expanded = await user.expand()
-                self.cso.cache.set(CacheType.Users, user_id, expanded)
-                return expanded
+            user = User(self.cso, user_id)
+            self.cso.cache.set(CacheType.Users, user_id, user)
         return user
 
     async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False, expand=True):
