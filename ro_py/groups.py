@@ -136,6 +136,7 @@ class Actions(Enum):
 #     def __init__(self, cso, data, group):
 #         self.group = group
 #         self.actor = Member(cso, data['actor'])
+#         self.action = data['actionType']
 #         self.created = iso8601.parse_date(data['created'])
 #         self.data = data['description']
 
