@@ -135,7 +135,7 @@ class Actions(Enum):
 class Action:
     def __init__(self, cso, data, group):
         self.group = group
-        self.actor = Member(cso, data['actor'])
+        self.actor = Member(cso, data['actor']['user']['userId'], data['actor']['user']['username'], group, Role(cso, group, data['actor']['role']))
         self.action = data['actionType']
         self.created = iso8601.parse_date(data['created'])
         self.data = data['description']
@@ -365,9 +365,17 @@ class Member(PartialUser):
     ----------
     cso : ro_py.utilities.requests.Requests
             Requests object to use for API requests.
+    roblox_id : int
+            The id of a user.
+    name : str
+            The name of the user.
+    group : ro_py.groups.Group
+            The group the user is in.
+    role : ro_py.roles.Role
+            The role the user has is the group.
     """
-    def __init__(self, cso, data):
-        super().__init__(cso, data)
+    def __init__(self, cso, roblox_id, name, group, role):
+        super().__init__(cso, roblox_id, name)
         self.role = role
         self.group = group
 
