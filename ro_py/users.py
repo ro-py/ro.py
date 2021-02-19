@@ -27,12 +27,11 @@ def limited_handler(requests, data, args):
 
 
 class PartialUser:
-    def __init__(self, cso, data):
+    def __init__(self, cso, roblox_id, roblox_name=None):
         self.cso = cso
         self.requests = cso.requests
-        self.id = data.get("id") or data.get("Id") or data.get("user_id") or data.get("UserId") or data.get("TargetId")
-        self.name = data.get("name") or data.get("Name") or data.get("username") or data.get("Username")
-        self.display_name = data.get("displayName") or data.get("DisplayName")
+        self.id = roblox_id
+        self.name = roblox_name
         self.profile_url = f"https://www.roblox.com/users/{self.id}/profile"
 
     async def expand(self):
