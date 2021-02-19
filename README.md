@@ -33,12 +33,31 @@ ro.py allows you to automate much of what you would do on the Roblox website and
 I’ve set up a small ro.py Discord server. It’s obviously very tiny, but some of you can be the first people to help found the server. If you need support for the library, you can ask your questions here if you need faster support. http://j-mk.ml/ro.py
 
 ## Get Started
+To begin, first import the client, which is the most essential part of ro.py, and initialize it like so:
+```py
+from ro_py import Client
+client = Client()
+```
+Next, import `asyncio` at the top of your file:
+```py
+import asyncio
+```
+Next, create an async method `main()` and run it with asyncio:
+```py
+async def main():
+	# keep this empty for the next step!
+
+asyncio.get_event_loop().run_until_complete(main())
+```
+Next, read the [documentation for the Client](https://ro.py.jmksite.dev/client.html) to grab objects and interact with the API.
+
 If you are looking for a full tutorial on ro.py, check out [the new DevForum article!](https://devforum.roblox.com/t/use-python-to-interact-with-the-roblox-api-with-ro-py/1006465)
 
 ## Requirements
 - httpx (for sending requests)
 - iso8601 (for parsing dates)
 - signalrcore (for recieving notifications)
+- lxml (for parsing documentation, might be made optional soon)
 
 #### Previous Requirements
 - cachecontrol (for caching requests)

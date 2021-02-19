@@ -12,7 +12,8 @@ import iso8601
 import asyncio
 import copy
 
-endpoint = "https://api.roblox.com/"
+from ro_py.utilities.url import url
+endpoint = url("api")
 
 
 class Reseller:

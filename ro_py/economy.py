@@ -4,7 +4,8 @@ This file houses functions and classes that pertain to the Roblox economy endpoi
 
 """
 
-endpoint = "https://economy.roblox.com/"
+from ro_py.utilities.url import url
+endpoint = url("economy")
 
 
 class Currency:

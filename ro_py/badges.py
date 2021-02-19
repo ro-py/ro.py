@@ -7,7 +7,8 @@ This file houses functions and classes that pertain to game-awarded badges.
 from ro_py.utilities.clientobject import ClientObject
 from ro_py.utilities.baseasset import BaseAsset
 
-endpoint = "https://badges.roblox.com/"
+from ro_py.utilities.url import url
+endpoint = url("badges")
 
 
 class BadgeStatistics:

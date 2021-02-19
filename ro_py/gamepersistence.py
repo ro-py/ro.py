@@ -8,7 +8,8 @@ from urllib.parse import quote
 from math import floor
 import re
 
-endpoint = "http://gamepersistence.roblox.com/"
+from ro_py.utilities.url import url
+endpoint = url("gamepersistence")
 
 
 class DataStore:

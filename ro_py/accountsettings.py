@@ -6,7 +6,8 @@ This file houses functions and classes that pertain to Roblox client settings.
 
 import enum
 
-endpoint = "https://accountsettings.roblox.com/"
+from ro_py.utilities.url import url
+endpoint = url("accountsettings")
 
 
 class PrivacyLevel(enum.Enum):
