@@ -12,7 +12,7 @@ import asyncio
 
 from ro_py.wall import Wall
 from ro_py.roles import Role
-from ro_py.users import PartialUser
+from ro_py.users import PartialUser, BaseUser
 from ro_py.events import EventTypes
 from typing import Tuple, Callable
 from ro_py.utilities.errors import NotFound
@@ -72,7 +72,7 @@ class JoinRequest:
     def __init__(self, cso, data, group):
         self.requests = cso.requests
         self.group = group
-        self.requester = PartialUser(cso, data['requester']['userId'], data['requester']['username'])
+        self.requester = PartialUser(cso, data['requester'])
         self.created = iso8601.parse_date(data['created'])
 
     async def accept(self):
@@ -132,20 +132,20 @@ class Actions(Enum):
     buy_clan = "buyClan"
 
 
-# class Action:
-#     def __init__(self, cso, data, group):
-#         self.group = group
-#         self.actor = Member(cso, data['actor'])
-#         self.action = data['actionType']
-#         self.created = iso8601.parse_date(data['created'])
-#         self.data = data['description']
+class Action:
+    def __init__(self, cso, data, group):
+        self.group = group
+        self.actor = Member(cso, data['actor']['user']['userId'], data['actor']['user']['username'], group, Role(cso, group, data['actor']['role']))
+        self.action = data['actionType']
+        self.created = iso8601.parse_date(data['created'])
+        self.data = data['description']
 
 
-# def action_handler(cso, data, args):
-#     actions = []
-#     for action in data:
-#         actions.append(Action(cso, action, args))
-#     return actions
+def action_handler(cso, data, args):
+    actions = []
+    for action in data:
+        actions.append(Action(cso, action, args))
+    return actions
 
 
 def join_request_handler(cso, data, args):
@@ -246,51 +246,51 @@ class Group(ClientObject):
             roles.append(Role(self.cso, self, role))
         return roles
 
-    # async def get_member_by_id(self, user_id):
-    #     # Get list of group user is in.
-    #     member_req = await self.requests.get(
-    #         url=endpoint + f"/v2/users/{user_id}/groups/roles"
-    #     )
-    #     data = member_req.json()
-    #
-    #     # Find group in list.
-    #     group_data = None
-    #     for group in data['data']:
-    #         if group['group']['id'] == self.id:
-    #             group_data = group
-    #             break
-    #
-    #     # Check if user is in group.
-    #     if not group_data:
-    #         raise NotFound(f"The user {user_id} was not found in group {self.id}")
-    #
-    #     # Create data to return.
-    #     role = Role(self.cso, self, group_data['role'])
-    #     member = Member(self.cso, user_id, "", self, role)
-    #     return member
+    async def get_member_by_id(self, user_id):
+        # Get list of group user is in.
+        member_req = await self.requests.get(
+            url=endpoint + f"/v2/users/{user_id}/groups/roles"
+        )
+        data = member_req.json()
 
-    # async def get_member_by_username(self, name):
-    #     user = await self.cso.client.get_user_by_username(name)
-    #     member_req = await self.requests.get(
-    #         url=endpoint + f"/v2/users/{user.id}/groups/roles"
-    #     )
-    #     data = member_req.json()
-    #
-    #     # Find group in list.
-    #     group_data = None
-    #     for group in data['data']:
-    #         if group['group']['id'] == self.id:
-    #             group_data = group
-    #             break
-    #
-    #     # Check if user is in group.
-    #     if not group_data:
-    #         raise NotFound(f"The user {name} was not found in group {self.id}")
-    #
-    #     # Create data to return.
-    #     role = Role(self.cso, self, group_data['role'])
-    #     member = Member(self.cso, user.id, user.name, self, role)
-    #     return member
+        # Find group in list.
+        group_data = None
+        for group in data['data']:
+            if group['group']['id'] == self.id:
+                group_data = group
+                break
+
+        # Check if user is in group.
+        if not group_data:
+            raise NotFound(f"The user {user_id} was not found in group {self.id}")
+
+        # Create data to return.
+        role = Role(self.cso, self, group_data['role'])
+        member = Member(self.cso, user_id, "", self, role)
+        return member
+
+    async def get_member_by_username(self, name):
+        user = await self.cso.client.get_user_by_username(name)
+        member_req = await self.requests.get(
+            url=endpoint + f"/v2/users/{user.id}/groups/roles"
+        )
+        data = member_req.json()
+
+        # Find group in list.
+        group_data = None
+        for group in data['data']:
+            if group['group']['id'] == self.id:
+                group_data = group
+                break
+
+        # Check if user is in group.
+        if not group_data:
+            raise NotFound(f"The user {name} was not found in group {self.id}")
+
+        # Create data to return.
+        role = Role(self.cso, self, group_data['role'])
+        member = Member(self.cso, user.id, user.name, self, role)
+        return member
 
     async def get_join_requests(self, sort_order=SortOrder.Ascending, limit=100):
         pages = Pages(
@@ -317,23 +317,23 @@ class Group(ClientObject):
         await pages.get_page()
         return pages
 
-    # async def get_audit_logs(self, action_filter: Actions = None, sort_order=SortOrder.Ascending, limit=100):
-    #     parameters = {}
-    #     if action_filter:
-    #         parameters['actionType'] = action_filter
-    #
-    #     pages = Pages(
-    #         cso=self.cso,
-    #         url=endpoint + f"/v1/groups/{self.id}/audit-log",
-    #         handler=action_handler,
-    #         extra_parameters=parameters,
-    #         handler_args=self,
-    #         limit=limit,
-    #         sort_order=sort_order
-    #     )
-    #
-    #     await pages.get_page()
-    #     return pages
+    async def get_audit_logs(self, action_filter: Actions = None, sort_order=SortOrder.Ascending, limit=100):
+        parameters = {}
+        if action_filter:
+            parameters['actionType'] = action_filter
+
+        pages = Pages(
+            cso=self.cso,
+            url=endpoint + f"/v1/groups/{self.id}/audit-log",
+            handler=action_handler,
+            extra_parameters=parameters,
+            handler_args=self,
+            limit=limit,
+            sort_order=sort_order
+        )
+
+        await pages.get_page()
+        return pages
 
 
 class PartialGroup:
@@ -357,132 +357,141 @@ class PartialGroup:
         return self.cso.client.get_group(self.id)
 
 
-# class Member(PartialUser):
-#     """
-#     Represents a user in a group.
-#
-#     Parameters
-#     ----------
-#     cso : ro_py.utilities.requests.Requests
-#             Requests object to use for API requests.
-#     """
-#     def __init__(self, cso, data):
-#         super().__init__(cso, data)
-#         self.role = role
-#         self.group = group
-#
-#     async def update_role(self):
-#         """
-#         Updates the role information of the user.
-#
-#         Returns
-#         -------
-#         ro_py.roles.Role
-#         """
-#         member_req = await self.requests.get(
-#             url=endpoint + f"/v2/users/{self.id}/groups/roles"
-#         )
-#         data = member_req.json()
-#         for role in data['data']:
-#             if role['group']['id'] == self.group.id:
-#                 self.role = Role(self.cso, self.group, role['role'])
-#                 break
-#         return self.role
-#
-#     async def change_rank(self, num) -> Tuple[Role, Role]:
-#         """
-#         Changes the users rank specified by a number.
-#         If num is 1 the users role will go up by 1.
-#         If num is -1 the users role will go down by 1.
-#
-#         Parameters
-#         ----------
-#         num : int
-#                 How much to change the rank by.
-#         """
-#         await self.update_role()
-#         roles = await self.group.get_roles()
-#         old_role = copy.copy(self.role)
-#         role_counter = -1
-#         for group_role in roles:
-#             role_counter += 1
-#             if group_role.rank == self.role.rank:
-#                 break
-#         if not roles:
-#             raise NotFound(f"User {self.id} is not in group {self.group.id}")
-#         await self.setrank(roles[role_counter + num].id)
-#         self.role = roles[role_counter + num].id
-#         return old_role, roles[role_counter + num]
-#
-#     async def promote(self):
-#         """
-#         Promotes the user.
-#
-#         Returns
-#         -------
-#         int
-#         """
-#         return await self.change_rank(1)
-#
-#     async def demote(self):
-#         """
-#         Demotes the user.
-#
-#         Returns
-#         -------
-#         int
-#         """
-#         return await self.change_rank(-1)
-#
-#     async def setrank(self, rank):
-#         """
-#         Sets the users role to specified role using rank id.
-#
-#         Parameters
-#         ----------
-#         rank : int
-#                 Rank id
-#
-#         Returns
-#         -------
-#         bool
-#         """
-#         rank_request = await self.requests.patch(
-#             url=endpoint + f"/v1/groups/{self.group.id}/users/{self.id}",
-#             data={
-#                 "roleId": rank
-#             }
-#         )
-#         return rank_request.status_code == 200
-#
-#     async def setrole(self, role_num):
-#         """
-#          Sets the users role to specified role using role number (1-255).
-#
-#          Parameters
-#          ----------
-#          role_num : int
-#                 Role number (1-255)
-#
-#          Returns
-#          -------
-#          bool
-#          """
-#         roles = await self.group.get_roles()
-#         rank_role = None
-#         for role in roles:
-#             if role.rank == role_num:
-#                 rank_role = role
-#                 break
-#         if not rank_role:
-#             raise NotFound(f"Role {role_num} not found")
-#         return await self.setrank(rank_role.id)
-#
-#     async def exile(self):
-#         exile_req = await self.requests.delete(
-#             url=endpoint + f"/v1/groups/{self.group.id}/users/{self.id}"
-#         )
-#         return exile_req.status_code == 200
+class Member(BaseUser):
+    """
+    Represents a user in a group.
+
+    Parameters
+    ----------
+    cso : ro_py.utilities.requests.Requests
+            Requests object to use for API requests.
+    user_id : int
+            The id of a user.
+    name : str
+            The name of the user.
+    group : ro_py.groups.Group
+            The group the user is in.
+    role : ro_py.roles.Role
+            The role the user has is the group.
+    """
+    def __init__(self, cso, user_id, name, group, role):
+        super().__init__(cso, user_id)
+        self.name = name
+        self.role = role
+        self.group = group
+
+    async def update_role(self):
+        """
+        Updates the role information of the user.
+
+        Returns
+        -------
+        ro_py.roles.Role
+        """
+        member_req = await self.requests.get(
+            url=endpoint + f"/v2/users/{self.id}/groups/roles"
+        )
+        data = member_req.json()
+        for role in data['data']:
+            if role['group']['id'] == self.group.id:
+                self.role = Role(self.cso, self.group, role['role'])
+                break
+        return self.role
+
+    async def change_rank(self, num) -> Tuple[Role, Role]:
+        """
+        Changes the users rank specified by a number.
+        If num is 1 the users role will go up by 1.
+        If num is -1 the users role will go down by 1.
+
+        Parameters
+        ----------
+        num : int
+                How much to change the rank by.
+        """
+        await self.update_role()
+        roles = await self.group.get_roles()
+        old_role = copy.copy(self.role)
+        role_counter = -1
+        for group_role in roles:
+            role_counter += 1
+            if group_role.rank == self.role.rank:
+                break
+        if not roles:
+            raise NotFound(f"User {self.id} is not in group {self.group.id}")
+        await self.setrank(roles[role_counter + num].id)
+        self.role = roles[role_counter + num].id
+        return old_role, roles[role_counter + num]
+
+    async def promote(self):
+        """
+        Promotes the user.
+
+        Returns
+        -------
+        int
+        """
+        return await self.change_rank(1)
+
+    async def demote(self):
+        """
+        Demotes the user.
+
+        Returns
+        -------
+        int
+        """
+        return await self.change_rank(-1)
+
+    async def setrank(self, rank):
+        """
+        Sets the users role to specified role using rank id.
+
+        Parameters
+        ----------
+        rank : int
+                Rank id
+
+        Returns
+        -------
+        bool
+        """
+        rank_request = await self.requests.patch(
+            url=endpoint + f"/v1/groups/{self.group.id}/users/{self.id}",
+            data={
+                "roleId": rank
+            }
+        )
+        return rank_request.status_code == 200
+
+    async def setrole(self, role_num):
+        """
+         Sets the users role to specified role using role number (1-255).
+
+         Parameters
+         ----------
+         role_num : int
+                Role number (1-255)
+
+         Returns
+         -------
+         bool
+         """
+        roles = await self.group.get_roles()
+        rank_role = None
+        for role in roles:
+            if role.rank == role_num:
+                rank_role = role
+                break
+        if not rank_role:
+            raise NotFound(f"Role {role_num} not found")
+        return await self.setrank(rank_role.id)
+
+    async def exile(self):
+        exile_req = await self.requests.delete(
+            url=endpoint + f"/v1/groups/{self.group.id}/users/{self.id}"
+        )
+        return exile_req.status_code == 200
 
 
 class Events:
