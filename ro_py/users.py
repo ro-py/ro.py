@@ -26,7 +26,7 @@ def limited_handler(requests, data, args):
     return assets
 
 
-class UserBase:
+class BaseUser:
     def __init__(self, cso, user_id):
         self.cso = cso
         self.requests = cso.requests
@@ -41,16 +41,7 @@ class UserBase:
         ------
         ro_py.users.User
         """
-        user_info_req = await self.requests.get(endpoint + f"v1/users/{self.id}")
-        user_info = user_info_req.json()
-        description = user_info["description"]
-        created = iso8601.parse_date(user_info["created"])
-        is_banned = user_info["isBanned"]
-        name = user_info["name"]
-        display_name = user_info["displayName"]
-        # has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
-        # self.has_premium = has_premium_req
-        return User(self.cso, self.id, name, description, created, is_banned, display_name)
+        return await self.cso.client.get_user(self.id)
 
     async def get_roblox_badges(self) -> List[RobloxBadge]:
         """
@@ -164,15 +155,17 @@ class UserBase:
         return status_req.json()["status"]
 
 
-class PartialUser(UserBase):
-    def __init__(self, cso, user_id, username=None):
-        super().__init__(cso, user_id)
-        self.name = username
+class PartialUser(BaseUser):
+    def __init__(self, cso, data):
+        self.id = data.get("id") or data.get("Id") or data.get("userId") or data.get("user_id") or data.get("UserId")
+        super().__init__(cso, self.id)
+        self.name = data.get("name") or data.get("Name") or data.get("Username") or data.get("username")
+        self.display_name = data.get("displayName") or data.get("DisplayName") or data.get("display_name")
 
 
 class Friend(PartialUser):
     def __init__(self, cso, data):
-        super().__init__(cso, data["id"], data["name"])
+        super().__init__(cso, data)
         self.is_online = data["isOnline"]
         self.is_deleted = data["isDeleted"]
         self.description = data["description"]
@@ -198,35 +191,31 @@ class FriendRequest(Friend):
         return accept_req.status == 200
 
 
-class User(PartialUser, ClientObject):
+class User(BaseUser, ClientObject):
     """
     Represents a Roblox user and their profile.
     Can be initialized with either a user ID or a username.
+
+    I'm in so much pain
 
     Parameters
     ----------
     cso : ro_py.client.ClientSharedObject
             ClientSharedObject.
-    roblox_id : int
+    user_id : int
             The id of a user.
-    roblox_name : str
-            The name of the user.
-    description : str
-            The description of the user.
-    created : any
-            Time the user was created.
     """
 
-    def __init__(self, cso, roblox_id, roblox_name, description, created, banned, display_name):
-        super().__init__(cso, roblox_id, roblox_name)
+    def __init__(self, cso, user_id):
+        super().__init__(cso, user_id)
         self.cso = cso
-        self.id = roblox_id
-        self.name = roblox_name
-        self.description = description
-        self.created = created
-        self.is_banned = banned
-        self.display_name = display_name
-        self.thumbnails = UserThumbnailGenerator(cso, roblox_id)
+        self.id = user_id
+        self.name = None
+        self.description = None
+        self.created = None
+        self.is_banned = None
+        self.display_name = None
+        self.thumbnails = UserThumbnailGenerator(cso, user_id)
 
     async def update(self):
         """
@@ -240,7 +229,6 @@ class User(PartialUser, ClientObject):
         self.is_banned = user_info["isBanned"]
         self.name = user_info["name"]
         self.display_name = user_info["displayName"]
-        return self
         # has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
         # self.has_premium = has_premium_req
 
