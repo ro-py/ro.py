@@ -41,14 +41,7 @@ class PartialUser:
         """
         user_info_req = await self.requests.get(endpoint + f"v1/users/{self.id}")
         user_info = user_info_req.json()
-        description = user_info["description"]
-        created = iso8601.parse_date(user_info["created"])
-        is_banned = user_info["isBanned"]
-        name = user_info["name"]
-        display_name = user_info["displayName"]
-        # has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
-        # self.has_premium = has_premium_req
-        return User(self.cso, self.id, name, description, created, is_banned, display_name)
+        return User(self.cso, self.id, user_info)
 
     async def get_roblox_badges(self) -> List[RobloxBadge]:
         """
@@ -149,6 +142,12 @@ class Friend(PartialUser):
         self.is_banned = data["isBanned"]
         self.display_name = data["displayName"]
 
+    async def remove_friend(self):
+        remove_req = await self.requests.post(
+            url=f"https://friends.roblox.com/v1/users/{self.id}/unfriend",
+        )
+        return remove_req.status == 200
+
 
 class FriendRequest(Friend):
     def __init__(self, cso, data):
@@ -186,15 +185,15 @@ class User(PartialUser, ClientObject):
             Time the user was created.
     """
 
-    def __init__(self, cso, roblox_id, roblox_name, description, created, banned, display_name):
-        super().__init__(cso, roblox_id, roblox_name)
+    def __init__(self, cso, roblox_id, data):
+        super().__init__(cso, roblox_id, data['name'])
         self.cso = cso
         self.id = roblox_id
-        self.name = roblox_name
-        self.description = description
-        self.created = created
-        self.is_banned = banned
-        self.display_name = display_name
+        self.name = data['name']
+        self.description = data['description']
+        self.created = iso8601.parse_date(data["created"])
+        self.is_banned = data["isBanned"]
+        self.display_name = data['displayName']
         self.thumbnails = UserThumbnailGenerator(cso, roblox_id)
 
     async def update(self):
