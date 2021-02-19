@@ -26,18 +26,20 @@ def limited_handler(requests, data, args):
     return assets
 
 
-class PartialUser:
-    def __init__(self, cso, roblox_id, roblox_name=None):
+class UserBase:
+    def __init__(self, cso, user_id):
         self.cso = cso
         self.requests = cso.requests
-        self.id = roblox_id
-        self.name = roblox_name
+        self.id = user_id
         self.profile_url = f"https://www.roblox.com/users/{self.id}/profile"
 
     async def expand(self):
         """
-        Updates some class values.
-        :return: Nothing
+        Expands into a full User object.
+
+        Returns
+        ------
+        ro_py.users.User
         """
         user_info_req = await self.requests.get(endpoint + f"v1/users/{self.id}")
         user_info = user_info_req.json()
@@ -53,7 +55,10 @@ class PartialUser:
     async def get_roblox_badges(self) -> List[RobloxBadge]:
         """
         Gets the user's roblox badges.
-        :return: A list of RobloxBadge instances
+
+        Returns
+        -------
+        List[ro_py.robloxbadges.RobloxBadge]
         """
         roblox_badges_req = await self.requests.get(
             f"https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges")
@@ -65,7 +70,10 @@ class PartialUser:
     async def get_friends_count(self) -> int:
         """
         Gets the user's friends count.
-        :return: An integer
+
+        Returns
+        -------
+        int
         """
         friends_count_req = await self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/friends/count")
         friends_count = friends_count_req.json()["count"]
@@ -74,7 +82,10 @@ class PartialUser:
     async def get_followers_count(self) -> int:
         """
         Gets the user's followers count.
-        :return: An integer
+
+        Returns
+        -------
+        int
         """
         followers_count_req = await self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/followers/count")
         followers_count = followers_count_req.json()["count"]
@@ -83,7 +94,10 @@ class PartialUser:
     async def get_followings_count(self) -> int:
         """
         Gets the user's followings count.
-        :return: An integer
+
+        Returns
+        -------
+        int
         """
         followings_count_req = await self.requests.get(
             f"https://friends.roblox.com/v1/users/{self.id}/followings/count")
@@ -93,7 +107,10 @@ class PartialUser:
     async def get_friends(self):
         """
         Gets the user's friends.
-        :return: List of Friend
+
+        Returns
+        -------
+        List[ro_py.users.Friend]
         """
         friends_req = await self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/friends")
         friends_raw = friends_req.json()["data"]
@@ -103,6 +120,13 @@ class PartialUser:
         return friends_list
 
     async def get_groups(self):
+        """
+        Gets the user's groups.
+
+        Returns
+        -------
+        List[ro_py.groups.PartialGroup]
+        """
         from ro_py.groups import PartialGroup
         member_req = await self.requests.get(
             url=f"https://groups.roblox.com/v2/users/{self.id}/groups/roles"
@@ -120,7 +144,7 @@ class PartialUser:
 
         Returns
         -------
-        list
+        bababooey
         """
         return Pages(
             cso=self.cso,
@@ -131,10 +155,19 @@ class PartialUser:
     async def get_status(self):
         """
         Gets the user's status.
-        :return: A string
+
+        Returns
+        -------
+        str
         """
         status_req = await self.requests.get(endpoint + f"v1/users/{self.id}/status")
         return status_req.json()["status"]
+
+
+class PartialUser(UserBase):
+    def __init__(self, cso, user_id, username=None):
+        super().__init__(cso, user_id)
+        self.name = username
 
 
 class Friend(PartialUser):
