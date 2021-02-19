@@ -12,7 +12,7 @@ import asyncio
 
 from ro_py.wall import Wall
 from ro_py.roles import Role
-from ro_py.users import PartialUser
+from ro_py.users import PartialUser, BaseUser
 from ro_py.events import EventTypes
 from typing import Tuple, Callable
 from ro_py.utilities.errors import NotFound
@@ -72,7 +72,7 @@ class JoinRequest:
     def __init__(self, cso, data, group):
         self.requests = cso.requests
         self.group = group
-        self.requester = PartialUser(cso, data['requester']['userId'], data['requester']['username'])
+        self.requester = PartialUser(cso, data['requester'])
         self.created = iso8601.parse_date(data['created'])
 
     async def accept(self):
@@ -357,7 +357,7 @@ class PartialGroup:
         return self.cso.client.get_group(self.id)
 
 
-class Member(PartialUser):
+class Member(BaseUser):
     """
     Represents a user in a group.
 
@@ -365,7 +365,7 @@ class Member(PartialUser):
     ----------
     cso : ro_py.utilities.requests.Requests
             Requests object to use for API requests.
-    roblox_id : int
+    user_id : int
             The id of a user.
     name : str
             The name of the user.
@@ -374,8 +374,9 @@ class Member(PartialUser):
     role : ro_py.roles.Role
             The role the user has is the group.
     """
-    def __init__(self, cso, roblox_id, name, group, role):
-        super().__init__(cso, roblox_id, name)
+    def __init__(self, cso, user_id, name, group, role):
+        super().__init__(cso, user_id)
+        self.name = name
         self.role = role
         self.group = group
 
