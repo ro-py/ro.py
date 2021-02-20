@@ -518,8 +518,6 @@ class Events:
             return asyncio.create_task(self.on_wall_post(func, delay))
         if event == EventTypes.on_group_change:
             return asyncio.create_task(self.on_group_change(func, delay))
-        if event == EventTypes.on_audit_log:
-            return asyncio.create_task(self.on_audit_log(func, delay))
 
     async def on_join_request(self, func: Callable, delay: int):
         current_group_reqs = await self.group.get_join_requests()
