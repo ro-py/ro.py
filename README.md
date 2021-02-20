@@ -5,7 +5,7 @@
 <h4 align="center">ro.py is a powerful Python 3 wrapper for the Roblox Web API by <a href="https://github.com/jmkd3v">@jmkd3v</a> and <a href="https://github.com/iranathan">@iranathan</a>.</h4>
 
 <p align="center">
-    <a href="https://j-mk.ml/ro.py"><img src="https://img.shields.io/discord/761603917490159676?style=flat-square&logo=discord" alt="ro.py Discord"/></a>
+    <a href="https://jmk.gg/ro.py"><img src="https://img.shields.io/discord/761603917490159676?style=flat-square&logo=discord" alt="ro.py Discord"/></a>
     <a href="https://pypi.org/project/ro-py/"><img src="https://img.shields.io/pypi/v/ro-py?style=flat-square" alt="ro.py PyPI"/></a>
     <a href="https://pypi.org/project/ro-py/"><img src="https://img.shields.io/pypi/dm/ro-py?style=flat-square" alt="ro.py PyPI Downloads"/></a>
     <a href="https://pypi.org/project/ro-py/"><img src="https://img.shields.io/pypi/l/ro-py?style=flat-square" alt="ro.py PyPI License"/></a>
