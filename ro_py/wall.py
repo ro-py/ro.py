@@ -1,8 +1,8 @@
 import iso8601
 from typing import List
 from ro_py.captcha import UnsolvedCaptcha
+from ro_py.bases.baseuser import PartialUser
 from ro_py.utilities.pages import Pages, SortOrder
-from ro_py.users import PartialUser
 
 from ro_py.utilities.url import url
 endpoint = url("groups")
@@ -21,7 +21,7 @@ class WallPost:
         self.created = iso8601.parse_date(wall_data['created'])
         self.updated = iso8601.parse_date(wall_data['updated'])
         if wall_data['poster']:
-            self.poster = PartialUser(self.cso, wall_data['poster']['user']['userId'], wall_data['poster']['user']['username'])
+            self.poster = PartialUser(self.cso, wall_data['poster']['user'])
         else:
             self.poster = None
 

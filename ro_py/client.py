@@ -5,20 +5,22 @@ This file houses functions and classes that represent the core Roblox web client
 """
 
 from ro_py.games import Game
+from ro_py.users import User
 from ro_py.groups import Group
 from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
 from ro_py.events import EventTypes
 from ro_py.trades import TradesWrapper
+from ro_py.friends import FriendRequest
 from ro_py.captcha import CaptchaMetadata
 from ro_py.utilities.cache import CacheType
+from ro_py.bases.baseuser import PartialUser
 from ro_py.captcha import UnsolvedLoginCaptcha
 from ro_py.accountsettings import AccountSettings
 from ro_py.utilities.pages import Pages, SortOrder
 from ro_py.notifications import NotificationReceiver
 from ro_py.accountinformation import AccountInformation
-from ro_py.users import User, PartialUser, FriendRequest
 from ro_py.utilities.clientobject import ClientSharedObject
 from ro_py.utilities.errors import UserDoesNotExistError, InvalidPlaceIDError
 
