@@ -1,8 +1,8 @@
 import iso8601
 from typing import List
 from ro_py.captcha import UnsolvedCaptcha
+from ro_py.bases.baseuser import PartialUser
 from ro_py.utilities.pages import Pages, SortOrder
-from ro_py.users import PartialUser
 
 from ro_py.utilities.url import url
 endpoint = url("groups")

@@ -7,9 +7,9 @@ This file houses functions and classes that pertain to Roblox universes and plac
 from ro_py.utilities.clientobject import ClientObject
 from ro_py.thumbnails import GameThumbnailGenerator
 from ro_py.utilities.errors import GameJoinError
-from ro_py.utilities.baseasset import BaseAsset
+from ro_py.bases.baseuser import PartialUser
+from ro_py.bases.baseasset import BaseAsset
 from ro_py.utilities.cache import CacheType
-from ro_py.users import PartialUser
 from ro_py.groups import Group
 from ro_py.badges import Badge
 import subprocess

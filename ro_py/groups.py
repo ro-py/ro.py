@@ -12,10 +12,11 @@ import asyncio
 
 from ro_py.wall import Wall
 from ro_py.roles import Role
-from ro_py.users import PartialUser, BaseUser
-from ro_py.events import EventTypes
+from ro_py.users import BaseUser
 from typing import Tuple, Callable
+from ro_py.events import EventTypes
 from ro_py.utilities.errors import NotFound
+from ro_py.bases.baseuser import PartialUser
 from ro_py.utilities.pages import Pages, SortOrder
 from ro_py.utilities.clientobject import ClientObject
 
