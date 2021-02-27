@@ -7,6 +7,7 @@ This file houses functions and classes that pertain to Roblox users and profiles
 import copy
 import iso8601
 import asyncio
+from ro_py.badges import Badge
 from typing import List, Callable
 from ro_py.assets import UserAsset
 from ro_py.events import EventTypes
@@ -153,6 +154,32 @@ class BaseUser:
         """
         status_req = await self.requests.get(endpoint + f"v1/users/{self.id}/status")
         return status_req.json()["status"]
+
+    async def has_badge(self, badge: Badge):
+        """
+        Checks if a user was awarded a badge and grabs the time that they were awarded it.
+        Functionally identical to ro_py.badges.Badge.owned_by.
+
+        Parameters
+        ----------
+        badge: ro_py.badges.Badge
+            Badge to check ownership of.
+
+        Returns
+        -------
+        tuple[bool, datetime.datetime]
+        """
+        has_badge_req = await self.requests.get(
+            url=url("badges") + f"v1/users/{self.id}/badges/awarded-dates",
+            params={
+                "badgeIds": badge.id
+            }
+        )
+        has_badge_data = has_badge_req.json()["data"]
+        if len(has_badge_data) >= 1:
+            return True, iso8601.parse_date(has_badge_data[0]["awardedDate"])
+        else:
+            return False, None
 
 
 class PartialUser(BaseUser):

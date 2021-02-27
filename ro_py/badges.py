@@ -62,3 +62,19 @@ class Badge(ClientObject, BaseAsset):
             statistics_info["awardedCount"],
             statistics_info["winRatePercentage"]
         )
+
+    async def owned_by(self, user):
+        """
+        Checks if a user was awarded this badge and grabs the time that they were awarded it.
+        Functionally identical to ro_py.users.User.has_badge.
+
+        Parameters
+        ----------
+        user: ro_py.users.BaseUser
+            User to check badge ownership.
+
+        Returns
+        -------
+        tuple[bool, datetime.datetime]
+        """
+        return await user.has_badge(self)
