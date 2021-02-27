@@ -6,6 +6,7 @@ This file houses functions and classes that pertain to Roblox trades and trading
 from typing import Callable, List
 
 from ro_py.utilities.pages import Pages, SortOrder
+from ro_py.bases.basetrade import PartialTrade
 from ro_py.assets import Asset, UserAsset
 from ro_py.events import EventTypes
 from ro_py.users import User

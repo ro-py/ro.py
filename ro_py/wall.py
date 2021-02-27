@@ -21,7 +21,7 @@ class WallPost:
         self.created = iso8601.parse_date(wall_data['created'])
         self.updated = iso8601.parse_date(wall_data['updated'])
         if wall_data['poster']:
-            self.poster = PartialUser(self.cso, wall_data['poster']['user']['userId'], wall_data['poster']['user']['username'])
+            self.poster = PartialUser(self.cso, wall_data['poster']['user'])
         else:
             self.poster = None
 
