@@ -5,8 +5,8 @@ from ro_py.bases.baseuser import PartialUser
 class Friend(PartialUser):
     def __init__(self, cso, data):
         super().__init__(cso, data)
-        self.is_online = data["isOnline"]
-        self.is_deleted = data["isDeleted"]
+        self.is_online = data.get('isOnline')
+        self.is_deleted = data.get('isDeleted')
         self.description = data["description"]
         self.created = iso8601.parse_date(data["created"])
         self.is_banned = data["isBanned"]

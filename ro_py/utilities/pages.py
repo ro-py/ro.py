@@ -11,23 +11,36 @@ class SortOrder(enum.Enum):
 
 
 class Page:
-    """
-    Represents a single page from a Pages object.
-    """
-    def __init__(self, requests, data, handler=None, handler_args=None):
-        self.previous_page_cursor = data["previousPageCursor"]
-        """Cursor to navigate to the previous page."""
-        self.next_page_cursor = data["nextPageCursor"]
-        """Cursor to navigate to the next page."""
+        """
+        Represents a single page from a Pages object.
+        """
 
-        self.data = data["data"]
-        """Raw data from this page."""
+        def __init__(self, cso, data, pages, handler=None, handler_args=None):
+            self.cso = cso
+            """Client shared object."""
+            self.previous_page_cursor = data["previousPageCursor"]
+            """Cursor to navigate to the previous page."""
+            self.next_page_cursor = data["nextPageCursor"]
+            """Cursor to navigate to the next page."""
+            self.data = data["data"]
+            """Raw data from this page."""
+            self.pages = pages
+            """Pages object for iteration."""
 
-        if handler:
-            self.data = handler(requests, self.data, handler_args)
+            self.handler = handler
+            self.handler_args = handler_args
+            if handler:
+                self.data = handler(self.cso, self.data, handler_args)
 
-    def __getitem__(self, key):
-        return self.data[key]
+        def update(self, data):
+            self.previous_page_cursor = data["previousPageCursor"]
+            self.next_page_cursor = data["nextPageCursor"]
+            self.data = data["data"]
+            if self.handler:
+                self.data = self.handler(self.cso, data["data"], self.handler_args)
+
+        def __getitem__(self, key):
+            return self.data[key]
 
 
 class Pages:
@@ -60,6 +73,21 @@ class Pages:
         """Current page number."""
         self.handler_args = handler_args
         self.data = None
+        self.i = 0
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        if self.i == len(self.data.data):
+            if not self.data.next_page_cursor:
+                self.i = 0
+                raise StopAsyncIteration
+            await self.next()
+            self.i = 0
+        data = self.data.data[self.i]
+        self.i += 1
+        return data
 
     async def get_page(self, cursor=None):
         """
@@ -76,9 +104,13 @@ class Pages:
             url=self.url,
             params=this_parameters
         )
+        if self.data:
+            self.data.update(page_req.json())
+            return
         self.data = Page(
-            requests=self.cso,
+            cso=self.cso,
             data=page_req.json(),
+            pages=self,
             handler=self.handler,
             handler_args=self.handler_args
         )
