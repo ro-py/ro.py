@@ -1,6 +1,7 @@
 import asyncio
 from ro_py.utilities.cache import Cache
 from ro_py.utilities.requests import Requests
+from ro_py.events import Event, EventHandler
 
 
 class ClientObject:
@@ -25,3 +26,4 @@ class ClientSharedObject:
         """Reqests object for all web requests."""
         self.evtloop = asyncio.new_event_loop()
         """Event loop for certain things."""
+        self.event_handler = EventHandler()

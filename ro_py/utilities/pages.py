@@ -26,6 +26,9 @@ class Page:
         if handler:
             self.data = handler(requests, self.data, handler_args)
 
+    def __getitem__(self, key):
+        return self.data[key]
+
 
 class Pages:
     """

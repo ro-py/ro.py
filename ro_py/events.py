@@ -22,18 +22,17 @@ class EventTypes(enum.Enum):
 
 
 class Event:
-    def __init__(self, event_id: str, func: Callable, event_type: EventTypes, arguments: Tuple = (), delay: int = 15):
-        self.event_id = event_id
+    def __init__(self, func: Callable, event_type: EventTypes, arguments: Tuple = (), delay: int = 15):
         self.function = func
         self.event_type = event_type
         self.arguments = arguments
         self.delay = delay
         self.next_run = time.time() + delay
 
-    def edit(self, arguments: Tuple = None, event_id: str = None, delay: int = None):
+    def edit(self, arguments: Tuple = None, delay: int = None, func: Callable = None):
         self.arguments = arguments if arguments else self.arguments
-        self.event_id = event_id if event_id else self.event_id
         self.delay = delay if delay else self.delay
+        self.function = func if func else self.function
 
 
 class EventHandler:
@@ -50,6 +49,9 @@ class EventHandler:
             text += f"\n{event.event_id}:\n   Next run: {event.next_run}\n   Times run per minute: {60 / event.delay}"
         print(text)
 
+    async def stop_event(self, event: Event):
+        self.events.remove(event)
+
     async def listen(self):
         if not self.running:
             self.running = True
@@ -58,5 +60,7 @@ class EventHandler:
                 await asyncio.sleep(1)
                 for event in self.events:
                     if event.next_run <= time.time():
+                        if not isinstance(event.arguments[-1], Event):
+                            event.arguments = (*event.arguments, event)
                         asyncio.create_task(event.function(*event.arguments))
                         event.next_run = time.time() + event.delay

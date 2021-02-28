@@ -12,6 +12,7 @@ import asyncio
 
 from ro_py.wall import Wall
 from ro_py.roles import Role
+from ro_py.events import Event
 from ro_py.users import BaseUser
 from typing import Tuple, Callable
 from ro_py.events import EventTypes
@@ -35,7 +36,7 @@ class Shout:
         self.data = shout_data
         self.body = shout_data["body"]
         self.created = iso8601.parse_date(shout_data["created"])
-        self.updated = iso8601.parse_date(shout_data["created"])
+        self.updated = iso8601.parse_date(shout_data["updated"])
 
         # TODO: Make this a PartialUser
         self.poster = None
@@ -500,7 +501,7 @@ class Events:
         self.cso = cso
         self.group = group
 
-    def bind(self, func: Callable, event: EventTypes, delay: int = 15):
+    async def bind(self, func: Callable, event: EventTypes, delay: int = 15):
         """
         Binds a function to an event.
 
@@ -514,58 +515,92 @@ class Events:
                 How many seconds between each poll.
         """
         if event == EventTypes.on_join_request:
-            return asyncio.create_task(self.on_join_request(func, delay))
+            event = Event(self.on_join_request, EventTypes.on_join_request, (func, None), delay)
+            self.cso.event_handler.add_event(event)
         if event == EventTypes.on_wall_post:
-            return asyncio.create_task(self.on_wall_post(func, delay))
+            event = Event(self.on_wall_post, EventTypes.on_wall_post, (func, None), delay)
+            self.cso.event_handler.add_event(event)
         if event == EventTypes.on_group_change:
-            return asyncio.create_task(self.on_group_change(func, delay))
+            event = Event(self.on_group_change, EventTypes.on_group_change, (func, None), delay)
+            self.cso.event_handler.add_event(event)
+        await self.cso.event_handler.listen()
 
-    async def on_join_request(self, func: Callable, delay: int):
-        current_group_reqs = await self.group.get_join_requests()
-        old_req = current_group_reqs.data.requester.id
-        while True:
-            await asyncio.sleep(delay)
+    async def on_join_request(self, func: Callable, old_req, event: Event):
+        if not old_req:
             current_group_reqs = await self.group.get_join_requests()
-            current_group_reqs = current_group_reqs.data
-            if current_group_reqs[0].requester.id != old_req:
-                new_reqs = []
-                for request in current_group_reqs:
-                    if request.requester.id != old_req:
-                        new_reqs.append(request)
-                old_req = current_group_reqs[0].requester.id
-                for new_req in new_reqs:
-                    asyncio.create_task(func(new_req))
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_group_reqs.data[0].requester.id
+            return event.edit(arguments=tuple(old_arguments))
 
-    async def on_wall_post(self, func: Callable, delay: int):
-        current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
-        newest_wall_post = current_wall_posts.data[0].id
-        while True:
-            await asyncio.sleep(delay)
+        current_group_reqs = await self.group.get_join_requests()
+        current_group_reqs = current_group_reqs.data
+
+        if current_group_reqs[0].requester.id != old_req:
+            new_reqs = []
+
+            for request in current_group_reqs:
+                if request.requester.id == old_req:
+                    break
+                new_reqs.append(request)
+
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_group_reqs[0].requester.id
+            event.edit(arguments=tuple(old_arguments))
+
+            for new_req in new_reqs:
+                asyncio.create_task(func(new_req))
+
+    async def on_wall_post(self, func: Callable, newest_wall_post, event: Event):
+        if not newest_wall_post:
             current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
-            current_wall_posts = current_wall_posts.data
-            post = current_wall_posts[0]
-            if post.id != newest_wall_post:
-                new_posts = []
-                for post in current_wall_posts:
-                    if post.id == newest_wall_post:
-                        break
-                    new_posts.append(post)
-                newest_wall_post = current_wall_posts[0].id
-                for new_post in new_posts:
-                    asyncio.create_task(func(new_post))
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_wall_posts.data[0].id
+            return event.edit(arguments=tuple(old_arguments))
 
-    async def on_group_change(self, func: Callable, delay: int):
-        await self.group.update()
-        current_group = copy.copy(self.group)
-        while True:
-            await asyncio.sleep(delay)
+        current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
+        current_wall_posts = current_wall_posts.data
+
+        post = current_wall_posts[0]
+        if post.id != newest_wall_post:
+            new_posts = []
+
+            for post in current_wall_posts:
+                if post.id == newest_wall_post:
+                    break
+                new_posts.append(post)
+
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_wall_posts[0].id
+            event.edit(arguments=tuple(old_arguments))
+
+            for new_post in new_posts:
+                asyncio.create_task(func(new_post))
+
+    async def on_group_change(self, func: Callable, current_group, event: Event):
+        if not current_group:
             await self.group.update()
-            has_changed = False
-            for attr, value in current_group.__dict__.items():
-                if getattr(self.group, attr) != value:
+            old_arguments = list(event.arguments)
+            old_arguments[1] = copy.copy(self.group)
+            return event.edit(arguments=tuple(old_arguments))
+
+        await self.group.update()
+
+        has_changed = False
+        for attr, value in current_group.__dict__.items():
+            other_value = getattr(self.group, attr)
+            if attr == "shout":
+                if str(value) != str(other_value):
                     has_changed = True
-            if has_changed:
-                asyncio.create_task(func(current_group, self.group))
+                else:
+                    continue
+            if other_value != value:
+                has_changed = True
+
+        if has_changed:
+            old_arguments = list(event.arguments)
+            old_arguments[1] = copy.copy(self.group)
+            event.edit(arguments=tuple(old_arguments))
+            asyncio.create_task(func(current_group, self.group))
 
     """
     async def on_audit_log(self, func: Callable, delay: int):
