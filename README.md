@@ -71,7 +71,7 @@ You'll need to install `wxPython`, `wxasync` and `pytweening` to use the prompts
 
 ## Disclaimer
 We are not responsible for any malicious use of this library.  
-If you use this library in a way that violates the [Roblox Terms of Use](https://en.help.roblox.com/hc/en-us/articles/115004647846-Roblox-Terms-of-Use) your account may be punished.
+If you use this library in a way that violates the [Roblox Terms of Use](https://en.help.roblox.com/hc/en-us/articles/115004647846-Roblox-Terms-of-Use) your account may be punished.  
 If you use code from ro.py in your own library, please credit us! We're working our hardest to deliver this library, and crediting us is the best way to help support the project. 
 
 ## Documentation
