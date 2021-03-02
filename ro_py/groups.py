@@ -501,7 +501,7 @@ class Events:
         self.cso = cso
         self.group = group
 
-    async def bind(self, func: Callable, event: EventTypes, delay: int = 15):
+    def bind(self, func: Callable, event: EventTypes, delay: int = 15):
         """
         Binds a function to an event.
 
@@ -523,7 +523,7 @@ class Events:
         if event == EventTypes.on_group_change:
             event = Event(self.on_group_change, EventTypes.on_group_change, (func, None), delay)
             self.cso.event_handler.add_event(event)
-        await self.cso.event_handler.listen()
+        asyncio.create_task(self.cso.event_handler.listen())
 
     async def on_join_request(self, func: Callable, old_req, event: Event):
         if not old_req:
@@ -586,6 +586,7 @@ class Events:
         await self.group.update()
 
         has_changed = False
+
         for attr, value in current_group.__dict__.items():
             other_value = getattr(self.group, attr)
             if attr == "shout":

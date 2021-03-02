@@ -8,7 +8,7 @@ import copy
 import iso8601
 import asyncio
 from typing import Callable
-from ro_py.events import EventTypes
+from ro_py.events import EventTypes, Event
 from ro_py.bases.baseuser import BaseUser
 from ro_py.thumbnails import UserThumbnailGenerator
 from ro_py.utilities.clientobject import ClientObject
@@ -41,6 +41,7 @@ class User(BaseUser, ClientObject):
         self.created = None
         self.is_banned = None
         self.display_name = None
+        self.events = Events(cso, self)
         self.thumbnails = UserThumbnailGenerator(cso, user_id)
 
     async def update(self):
@@ -64,7 +65,7 @@ class Events:
         self.cso = cso
         self.user = user
 
-    def bind(self, func: Callable, event: str, delay: int = 15):
+    def bind(self, func: Callable, event_type: str, delay: int = 15):
         """
         Binds an event to the provided function.
 
@@ -72,26 +73,31 @@ class Events:
         ----------
         func : function
                 Function that will be called when the event fires.
-        event : ro_py.events.EventTypes
+        event_type : ro_py.events.EventTypes
                 The name of the event.
         delay : int
                 How many seconds between requests.
         """
-        if event == EventTypes.on_user_change:
-            return asyncio.create_task(self.on_user_change(func, delay))
+        if event_type == EventTypes.on_user_change:
+            event = Event(self.on_user_change, EventTypes.on_group_change, (func, None), delay)
+            self.cso.event_handler.add_event(event)
 
-    async def on_user_change(self, func: Callable, delay: int):
-        old_user = copy.copy(await self.user.update())
-        while True:
-            await asyncio.sleep(delay)
-            new_user = await self.user.update()
-            has_changed = False
-            for attr, value in old_user.__dict__.items():
-                if getattr(new_user, attr) != value:
-                    has_changed = True
-            if has_changed:
-                if asyncio.iscoroutinefunction(func):
-                    await func(old_user, new_user)
-                else:
-                    func(old_user, new_user)
-                old_user = copy.copy(new_user)
+    async def on_user_change(self, func: Callable, old_user, event: Event):
+        if not old_user:
+            old_user = copy.copy(await self.user.update())
+            old_arguments = list(event.arguments)
+            old_arguments[1] = old_user
+            return event.edit(arguments=tuple(old_arguments))
+
+        new_user = await self.user.update()
+        has_changed = False
+
+        for attr, value in old_user.__dict__.items():
+            if getattr(new_user, attr) != value:
+                has_changed = True
+
+        if has_changed:
+            old_arguments = list(event.arguments)
+            old_arguments[1] = new_user
+            event.edit(arguments=tuple(old_arguments))
+            return asyncio.create_task(func(old_user, new_user))
