@@ -15,7 +15,7 @@
 
 <p align="center">
     <a href="#information">Information</a> |
-    <a href="http://j-mk.ml/ro.py">Discord</a> |
+    <a href="http://jmk.gg/ro.py">Discord</a> |
     <a href="#requirements">Requirements</a> |
     <a href="#disclaimer">Disclaimer</a> |
     <a href="#documentation">Documentation</a> |
