@@ -17,7 +17,7 @@
 
 <p align="center">
     <a href="https://github.com/rbx-libdev/ro.py#information">Information</a> |
-    <a href="http://j-mk.ml/ro.py">Discord</a> |
+    <a href="http://jmk.gg/ro.py">Discord</a> |
     <a href="https://github.com/rbx-libdev/ro.py#requirements">Requirements</a> |
     <a href="https://github.com/rbx-libdev/ro.py#disclaimer">Disclaimer</a> |
     <a href="https://github.com/rbx-libdev/ro.py#documentation">Documentation</a> |
