@@ -88,7 +88,8 @@ This file houses functions and classes that pertain to Roblox authenticated user
 from datetime import datetime
 from ro_py.gender import RobloxGender
 
-endpoint = &#34;https://accountinformation.roblox.com/&#34;
+from ro_py.utilities.url import url
+endpoint = url(&#34;accountinformation&#34;)
 
 
 class AccountInformationMetadata:

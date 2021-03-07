@@ -86,16 +86,19 @@ This file houses functions and classes that pertain to Roblox universes and plac
 &#34;&#34;&#34;
 
 from ro_py.utilities.clientobject import ClientObject
-from ro_py.groups import Group
-from ro_py.badges import Badge
 from ro_py.thumbnails import GameThumbnailGenerator
 from ro_py.utilities.errors import GameJoinError
+from ro_py.bases.baseuser import PartialUser
+from ro_py.bases.baseasset import BaseAsset
 from ro_py.utilities.cache import CacheType
+from ro_py.groups import Group
+from ro_py.badges import Badge
 import subprocess
 import json
 import os
 
-endpoint = &#34;https://games.roblox.com/&#34;
+from ro_py.utilities.url import url
+endpoint = url(&#34;games&#34;)
 
 
 class Votes:
@@ -113,16 +116,19 @@ class Game(ClientObject):
     This class represents multiple game-related endpoints.
     &#34;&#34;&#34;
     def __init__(self, cso, universe_id):
+        super().__init__()
         self.id = universe_id
         self.cso = cso
         self.requests = cso.requests
         self.name = None
+        self.root_place_id = None
         self.description = None
-        self.root_place = None
         self.creator = None
         self.price = None
         self.allowed_gear_genres = None
         self.allowed_gear_categories = None
+        self.playing = None
+        self.visits = None
         self.max_players = None
         self.studio_access_to_apis_allowed = None
         self.create_vip_servers_allowed = None
@@ -141,8 +147,8 @@ class Game(ClientObject):
         game_info = game_info_req.json()
         game_info = game_info[&#34;data&#34;][0]
         self.name = game_info[&#34;name&#34;]
+        self.root_place_id = game_info[&#34;rootPlaceId&#34;]
         self.description = game_info[&#34;description&#34;]
-        self.root_place = Place(self.requests, game_info[&#34;rootPlaceId&#34;])
         if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
             self.creator = self.cso.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
             if not self.creator:
@@ -158,9 +164,16 @@ class Game(ClientObject):
         self.price = game_info[&#34;price&#34;]
         self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
         self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
+        self.playing = game_info[&#34;playing&#34;]
+        self.visits = game_info[&#34;visits&#34;]
         self.max_players = game_info[&#34;maxPlayers&#34;]
         self.studio_access_to_apis_allowed = game_info[&#34;studioAccessToApisAllowed&#34;]
         self.create_vip_servers_allowed = game_info[&#34;createVipServersAllowed&#34;]
+
+    async def get_root_place(self):
+        root_place = Place(self.cso, self.root_place_id, self)
+        await root_place.update()
+        return root_place
 
     async def get_votes(self):
         &#34;&#34;&#34;
@@ -198,11 +211,36 @@ class Game(ClientObject):
         return badges
 
 
-class Place:
-    def __init__(self, requests, id):
-        self.requests = requests
-        self.id = id
-        pass
+class Place(ClientObject, BaseAsset):
+    def __init__(self, cso, place_id, universe):
+        super().__init__()
+        self.cso = cso
+        self.requests = cso.requests
+        self.id = place_id
+        self.universe = universe
+        self.name = None
+        self.description = None
+        self.url = None
+        self.creator = None
+        self.is_playable = None
+        self.reason_prohibited = None
+        self.price = None
+
+    async def update(self):
+        place_req = await self.requests.get(
+            url=&#34;https://games.roblox.com/v1/games/multiget-place-details&#34;,
+            params={
+                &#34;placeIds&#34;: self.id
+            }
+        )
+        place_data = place_req.json()[0]
+        self.name = place_data[&#34;name&#34;]
+        self.description = place_data[&#34;description&#34;]
+        self.url = place_data[&#34;url&#34;]
+        self.creator = PartialUser(self.cso, place_data[&#34;builderId&#34;], place_data[&#34;builder&#34;])
+        self.is_playable = place_data[&#34;isPlayable&#34;]
+        self.reason_prohibited = place_data[&#34;reasonProhibited&#34;]
+        self.price = place_data[&#34;price&#34;]
 
     async def join(self, launchtime=1609186776825, rloc=&#34;en_us&#34;, gloc=&#34;en_us&#34;,
                    negotiate_url=&#34;https://www.roblox.com/Login/Negotiate.ashx&#34;):
@@ -296,16 +334,19 @@ This class represents multiple game-related endpoints.</p></div>
     This class represents multiple game-related endpoints.
     &#34;&#34;&#34;
     def __init__(self, cso, universe_id):
+        super().__init__()
         self.id = universe_id
         self.cso = cso
         self.requests = cso.requests
         self.name = None
+        self.root_place_id = None
         self.description = None
-        self.root_place = None
         self.creator = None
         self.price = None
         self.allowed_gear_genres = None
         self.allowed_gear_categories = None
+        self.playing = None
+        self.visits = None
         self.max_players = None
         self.studio_access_to_apis_allowed = None
         self.create_vip_servers_allowed = None
@@ -324,8 +365,8 @@ This class represents multiple game-related endpoints.</p></div>
         game_info = game_info_req.json()
         game_info = game_info[&#34;data&#34;][0]
         self.name = game_info[&#34;name&#34;]
+        self.root_place_id = game_info[&#34;rootPlaceId&#34;]
         self.description = game_info[&#34;description&#34;]
-        self.root_place = Place(self.requests, game_info[&#34;rootPlaceId&#34;])
         if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
             self.creator = self.cso.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
             if not self.creator:
@@ -341,9 +382,16 @@ This class represents multiple game-related endpoints.</p></div>
         self.price = game_info[&#34;price&#34;]
         self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
         self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
+        self.playing = game_info[&#34;playing&#34;]
+        self.visits = game_info[&#34;visits&#34;]
         self.max_players = game_info[&#34;maxPlayers&#34;]
         self.studio_access_to_apis_allowed = game_info[&#34;studioAccessToApisAllowed&#34;]
         self.create_vip_servers_allowed = game_info[&#34;createVipServersAllowed&#34;]
+
+    async def get_root_place(self):
+        root_place = Place(self.cso, self.root_place_id, self)
+        await root_place.update()
+        return root_place
 
     async def get_votes(self):
         &#34;&#34;&#34;
@@ -415,6 +463,21 @@ This will be updated soon to use the new Page object.</p></div>
     return badges</code></pre>
 </details>
 </dd>
+<dt id="ro_py.games.Game.get_root_place"><code class="name flex">
+<span>async def <span class="ident">get_root_place</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_root_place(self):
+    root_place = Place(self.cso, self.root_place_id, self)
+    await root_place.update()
+    return root_place</code></pre>
+</details>
+</dd>
 <dt id="ro_py.games.Game.get_votes"><code class="name flex">
 <span>async def <span class="ident">get_votes</span></span>(<span>self)</span>
 </code></dt>
@@ -468,8 +531,8 @@ This will be updated soon to use the new Page object.</p></div>
     game_info = game_info_req.json()
     game_info = game_info[&#34;data&#34;][0]
     self.name = game_info[&#34;name&#34;]
+    self.root_place_id = game_info[&#34;rootPlaceId&#34;]
     self.description = game_info[&#34;description&#34;]
-    self.root_place = Place(self.requests, game_info[&#34;rootPlaceId&#34;])
     if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
         self.creator = self.cso.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
         if not self.creator:
@@ -485,6 +548,8 @@ This will be updated soon to use the new Page object.</p></div>
     self.price = game_info[&#34;price&#34;]
     self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
     self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
+    self.playing = game_info[&#34;playing&#34;]
+    self.visits = game_info[&#34;visits&#34;]
     self.max_players = game_info[&#34;maxPlayers&#34;]
     self.studio_access_to_apis_allowed = game_info[&#34;studioAccessToApisAllowed&#34;]
     self.create_vip_servers_allowed = game_info[&#34;createVipServersAllowed&#34;]</code></pre>
@@ -494,19 +559,44 @@ This will be updated soon to use the new Page object.</p></div>
 </dd>
 <dt id="ro_py.games.Place"><code class="flex name class">
 <span>class <span class="ident">Place</span></span>
-<span>(</span><span>requests, id)</span>
+<span>(</span><span>cso, place_id, universe)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Every object that is grabbable with client.get_x inherits this object.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Place:
-    def __init__(self, requests, id):
-        self.requests = requests
-        self.id = id
-        pass
+<pre><code class="python">class Place(ClientObject, BaseAsset):
+    def __init__(self, cso, place_id, universe):
+        super().__init__()
+        self.cso = cso
+        self.requests = cso.requests
+        self.id = place_id
+        self.universe = universe
+        self.name = None
+        self.description = None
+        self.url = None
+        self.creator = None
+        self.is_playable = None
+        self.reason_prohibited = None
+        self.price = None
+
+    async def update(self):
+        place_req = await self.requests.get(
+            url=&#34;https://games.roblox.com/v1/games/multiget-place-details&#34;,
+            params={
+                &#34;placeIds&#34;: self.id
+            }
+        )
+        place_data = place_req.json()[0]
+        self.name = place_data[&#34;name&#34;]
+        self.description = place_data[&#34;description&#34;]
+        self.url = place_data[&#34;url&#34;]
+        self.creator = PartialUser(self.cso, place_data[&#34;builderId&#34;], place_data[&#34;builder&#34;])
+        self.is_playable = place_data[&#34;isPlayable&#34;]
+        self.reason_prohibited = place_data[&#34;reasonProhibited&#34;]
+        self.price = place_data[&#34;price&#34;]
 
     async def join(self, launchtime=1609186776825, rloc=&#34;en_us&#34;, gloc=&#34;en_us&#34;,
                    negotiate_url=&#34;https://www.roblox.com/Login/Negotiate.ashx&#34;):
@@ -573,6 +663,11 @@ This will be updated soon to use the new Page object.</p></div>
         )
         return join_process.stdout, join_process.stderr</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.clientobject.ClientObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientObject">ClientObject</a></li>
+<li><a title="ro_py.bases.baseasset.BaseAsset" href="bases/baseasset.html#ro_py.bases.baseasset.BaseAsset">BaseAsset</a></li>
+</ul>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.games.Place.join"><code class="name flex">
@@ -659,6 +754,32 @@ if you are banned from Roblox due to malicious use of our library.</p>
     return join_process.stdout, join_process.stderr</code></pre>
 </details>
 </dd>
+<dt id="ro_py.games.Place.update"><code class="name flex">
+<span>async def <span class="ident">update</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def update(self):
+    place_req = await self.requests.get(
+        url=&#34;https://games.roblox.com/v1/games/multiget-place-details&#34;,
+        params={
+            &#34;placeIds&#34;: self.id
+        }
+    )
+    place_data = place_req.json()[0]
+    self.name = place_data[&#34;name&#34;]
+    self.description = place_data[&#34;description&#34;]
+    self.url = place_data[&#34;url&#34;]
+    self.creator = PartialUser(self.cso, place_data[&#34;builderId&#34;], place_data[&#34;builder&#34;])
+    self.is_playable = place_data[&#34;isPlayable&#34;]
+    self.reason_prohibited = place_data[&#34;reasonProhibited&#34;]
+    self.price = place_data[&#34;price&#34;]</code></pre>
+</details>
+</dd>
 </dl>
 </dd>
 <dt id="ro_py.games.Votes"><code class="flex name class">
@@ -705,6 +826,7 @@ if you are banned from Roblox due to malicious use of our library.</p>
 <h4><code><a title="ro_py.games.Game" href="#ro_py.games.Game">Game</a></code></h4>
 <ul class="">
 <li><code><a title="ro_py.games.Game.get_badges" href="#ro_py.games.Game.get_badges">get_badges</a></code></li>
+<li><code><a title="ro_py.games.Game.get_root_place" href="#ro_py.games.Game.get_root_place">get_root_place</a></code></li>
 <li><code><a title="ro_py.games.Game.get_votes" href="#ro_py.games.Game.get_votes">get_votes</a></code></li>
 <li><code><a title="ro_py.games.Game.update" href="#ro_py.games.Game.update">update</a></code></li>
 </ul>
@@ -713,6 +835,7 @@ if you are banned from Roblox due to malicious use of our library.</p>
 <h4><code><a title="ro_py.games.Place" href="#ro_py.games.Place">Place</a></code></h4>
 <ul class="">
 <li><code><a title="ro_py.games.Place.join" href="#ro_py.games.Place.join">join</a></code></li>
+<li><code><a title="ro_py.games.Place.update" href="#ro_py.games.Place.update">update</a></code></li>
 </ul>
 </li>
 <li>

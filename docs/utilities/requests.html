@@ -132,7 +132,7 @@ class Requests:
             if &#34;X-CSRF-TOKEN&#34; in this_request.headers:
                 self.session.headers[&#39;X-CSRF-TOKEN&#39;] = this_request.headers[&#34;X-CSRF-TOKEN&#34;]
                 if this_request.status_code == 403:  # Request failed, send it again
-                    this_request = await self.session.post(*args, **kwargs)
+                    this_request = await self.session.request(method, *args, **kwargs)
 
         if kwargs.pop(&#34;stream&#34;, False):
             # Skip request checking and just get on with it.
@@ -291,7 +291,7 @@ class Requests:
             if &#34;X-CSRF-TOKEN&#34; in this_request.headers:
                 self.session.headers[&#39;X-CSRF-TOKEN&#39;] = this_request.headers[&#34;X-CSRF-TOKEN&#34;]
                 if this_request.status_code == 403:  # Request failed, send it again
-                    this_request = await self.session.post(*args, **kwargs)
+                    this_request = await self.session.request(method, *args, **kwargs)
 
         if kwargs.pop(&#34;stream&#34;, False):
             # Skip request checking and just get on with it.
@@ -477,7 +477,7 @@ class Requests:
         if &#34;X-CSRF-TOKEN&#34; in this_request.headers:
             self.session.headers[&#39;X-CSRF-TOKEN&#39;] = this_request.headers[&#34;X-CSRF-TOKEN&#34;]
             if this_request.status_code == 403:  # Request failed, send it again
-                this_request = await self.session.post(*args, **kwargs)
+                this_request = await self.session.request(method, *args, **kwargs)
 
     if kwargs.pop(&#34;stream&#34;, False):
         # Skip request checking and just get on with it.

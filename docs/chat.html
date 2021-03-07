@@ -86,9 +86,10 @@ This file houses functions and classes that pertain to chatting and messaging.
 &#34;&#34;&#34;
 
 from ro_py.utilities.errors import ChatError
-from ro_py.users import PartialUser
+from ro_py.bases.baseuser import PartialUser
 
-endpoint = &#34;https://chat.roblox.com/&#34;
+from ro_py.utilities.url import url
+endpoint = url(&#34;chat&#34;)
 
 
 class ChatSettings:

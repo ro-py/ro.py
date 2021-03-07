@@ -81,11 +81,11 @@ border-color: #424242 !important;
 <pre><code class="python">import iso8601
 from typing import List
 from ro_py.captcha import UnsolvedCaptcha
+from ro_py.bases.baseuser import PartialUser
 from ro_py.utilities.pages import Pages, SortOrder
-from ro_py.users import PartialUser
 
-
-endpoint = &#34;https://groups.roblox.com&#34;
+from ro_py.utilities.url import url
+endpoint = url(&#34;groups&#34;)
 
 
 class WallPost:
@@ -101,7 +101,7 @@ class WallPost:
         self.created = iso8601.parse_date(wall_data[&#39;created&#39;])
         self.updated = iso8601.parse_date(wall_data[&#39;updated&#39;])
         if wall_data[&#39;poster&#39;]:
-            self.poster = PartialUser(self.cso, wall_data[&#39;poster&#39;][&#39;user&#39;][&#39;userId&#39;], wall_data[&#39;poster&#39;][&#39;user&#39;][&#39;username&#39;])
+            self.poster = PartialUser(self.cso, wall_data[&#39;poster&#39;][&#39;user&#39;])
         else:
             self.poster = None
 
@@ -313,7 +313,7 @@ class Wall:
         self.created = iso8601.parse_date(wall_data[&#39;created&#39;])
         self.updated = iso8601.parse_date(wall_data[&#39;updated&#39;])
         if wall_data[&#39;poster&#39;]:
-            self.poster = PartialUser(self.cso, wall_data[&#39;poster&#39;][&#39;user&#39;][&#39;userId&#39;], wall_data[&#39;poster&#39;][&#39;user&#39;][&#39;username&#39;])
+            self.poster = PartialUser(self.cso, wall_data[&#39;poster&#39;][&#39;user&#39;])
         else:
             self.poster = None
 

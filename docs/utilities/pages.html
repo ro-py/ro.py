@@ -91,20 +91,36 @@ class SortOrder(enum.Enum):
 
 
 class Page:
-    &#34;&#34;&#34;
-    Represents a single page from a Pages object.
-    &#34;&#34;&#34;
-    def __init__(self, requests, data, handler=None, handler_args=None):
-        self.previous_page_cursor = data[&#34;previousPageCursor&#34;]
-        &#34;&#34;&#34;Cursor to navigate to the previous page.&#34;&#34;&#34;
-        self.next_page_cursor = data[&#34;nextPageCursor&#34;]
-        &#34;&#34;&#34;Cursor to navigate to the next page.&#34;&#34;&#34;
+        &#34;&#34;&#34;
+        Represents a single page from a Pages object.
+        &#34;&#34;&#34;
 
-        self.data = data[&#34;data&#34;]
-        &#34;&#34;&#34;Raw data from this page.&#34;&#34;&#34;
+        def __init__(self, cso, data, pages, handler=None, handler_args=None):
+            self.cso = cso
+            &#34;&#34;&#34;Client shared object.&#34;&#34;&#34;
+            self.previous_page_cursor = data[&#34;previousPageCursor&#34;]
+            &#34;&#34;&#34;Cursor to navigate to the previous page.&#34;&#34;&#34;
+            self.next_page_cursor = data[&#34;nextPageCursor&#34;]
+            &#34;&#34;&#34;Cursor to navigate to the next page.&#34;&#34;&#34;
+            self.data = data[&#34;data&#34;]
+            &#34;&#34;&#34;Raw data from this page.&#34;&#34;&#34;
+            self.pages = pages
+            &#34;&#34;&#34;Pages object for iteration.&#34;&#34;&#34;
 
-        if handler:
-            self.data = handler(requests, self.data, handler_args)
+            self.handler = handler
+            self.handler_args = handler_args
+            if handler:
+                self.data = handler(self.cso, self.data, handler_args)
+
+        def update(self, data):
+            self.previous_page_cursor = data[&#34;previousPageCursor&#34;]
+            self.next_page_cursor = data[&#34;nextPageCursor&#34;]
+            self.data = data[&#34;data&#34;]
+            if self.handler:
+                self.data = self.handler(self.cso, data[&#34;data&#34;], self.handler_args)
+
+        def __getitem__(self, key):
+            return self.data[key]
 
 
 class Pages:
@@ -137,6 +153,21 @@ class Pages:
         &#34;&#34;&#34;Current page number.&#34;&#34;&#34;
         self.handler_args = handler_args
         self.data = None
+        self.i = 0
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        if self.i == len(self.data.data):
+            if not self.data.next_page_cursor:
+                self.i = 0
+                raise StopAsyncIteration
+            await self.next()
+            self.i = 0
+        data = self.data.data[self.i]
+        self.i += 1
+        return data
 
     async def get_page(self, cursor=None):
         &#34;&#34;&#34;
@@ -153,9 +184,13 @@ class Pages:
             url=self.url,
             params=this_parameters
         )
+        if self.data:
+            self.data.update(page_req.json())
+            return
         self.data = Page(
-            requests=self.cso,
+            cso=self.cso,
             data=page_req.json(),
+            pages=self,
             handler=self.handler,
             handler_args=self.handler_args
         )
@@ -190,7 +225,7 @@ class Pages:
 <dl>
 <dt id="ro_py.utilities.pages.Page"><code class="flex name class">
 <span>class <span class="ident">Page</span></span>
-<span>(</span><span>requests, data, handler=None, handler_args=None)</span>
+<span>(</span><span>cso, data, pages, handler=None, handler_args=None)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a single page from a Pages object.</p></div>
@@ -199,23 +234,43 @@ class Pages:
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class Page:
-    &#34;&#34;&#34;
-    Represents a single page from a Pages object.
-    &#34;&#34;&#34;
-    def __init__(self, requests, data, handler=None, handler_args=None):
-        self.previous_page_cursor = data[&#34;previousPageCursor&#34;]
-        &#34;&#34;&#34;Cursor to navigate to the previous page.&#34;&#34;&#34;
-        self.next_page_cursor = data[&#34;nextPageCursor&#34;]
-        &#34;&#34;&#34;Cursor to navigate to the next page.&#34;&#34;&#34;
+        &#34;&#34;&#34;
+        Represents a single page from a Pages object.
+        &#34;&#34;&#34;
 
-        self.data = data[&#34;data&#34;]
-        &#34;&#34;&#34;Raw data from this page.&#34;&#34;&#34;
+        def __init__(self, cso, data, pages, handler=None, handler_args=None):
+            self.cso = cso
+            &#34;&#34;&#34;Client shared object.&#34;&#34;&#34;
+            self.previous_page_cursor = data[&#34;previousPageCursor&#34;]
+            &#34;&#34;&#34;Cursor to navigate to the previous page.&#34;&#34;&#34;
+            self.next_page_cursor = data[&#34;nextPageCursor&#34;]
+            &#34;&#34;&#34;Cursor to navigate to the next page.&#34;&#34;&#34;
+            self.data = data[&#34;data&#34;]
+            &#34;&#34;&#34;Raw data from this page.&#34;&#34;&#34;
+            self.pages = pages
+            &#34;&#34;&#34;Pages object for iteration.&#34;&#34;&#34;
 
-        if handler:
-            self.data = handler(requests, self.data, handler_args)</code></pre>
+            self.handler = handler
+            self.handler_args = handler_args
+            if handler:
+                self.data = handler(self.cso, self.data, handler_args)
+
+        def update(self, data):
+            self.previous_page_cursor = data[&#34;previousPageCursor&#34;]
+            self.next_page_cursor = data[&#34;nextPageCursor&#34;]
+            self.data = data[&#34;data&#34;]
+            if self.handler:
+                self.data = self.handler(self.cso, data[&#34;data&#34;], self.handler_args)
+
+        def __getitem__(self, key):
+            return self.data[key]</code></pre>
 </details>
 <h3>Instance variables</h3>
 <dl>
+<dt id="ro_py.utilities.pages.Page.cso"><code class="name">var <span class="ident">cso</span></code></dt>
+<dd>
+<div class="desc"><p>Client shared object.</p></div>
+</dd>
 <dt id="ro_py.utilities.pages.Page.data"><code class="name">var <span class="ident">data</span></code></dt>
 <dd>
 <div class="desc"><p>Raw data from this page.</p></div>
@@ -224,9 +279,33 @@ class Pages:
 <dd>
 <div class="desc"><p>Cursor to navigate to the next page.</p></div>
 </dd>
+<dt id="ro_py.utilities.pages.Page.pages"><code class="name">var <span class="ident">pages</span></code></dt>
+<dd>
+<div class="desc"><p>Pages object for iteration.</p></div>
+</dd>
 <dt id="ro_py.utilities.pages.Page.previous_page_cursor"><code class="name">var <span class="ident">previous_page_cursor</span></code></dt>
 <dd>
 <div class="desc"><p>Cursor to navigate to the previous page.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.utilities.pages.Page.update"><code class="name flex">
+<span>def <span class="ident">update</span></span>(<span>self, data)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update(self, data):
+    self.previous_page_cursor = data[&#34;previousPageCursor&#34;]
+    self.next_page_cursor = data[&#34;nextPageCursor&#34;]
+    self.data = data[&#34;data&#34;]
+    if self.handler:
+        self.data = self.handler(self.cso, data[&#34;data&#34;], self.handler_args)</code></pre>
+</details>
 </dd>
 </dl>
 </dd>
@@ -276,6 +355,21 @@ cache the pages yourself if speed is required.</p>
         &#34;&#34;&#34;Current page number.&#34;&#34;&#34;
         self.handler_args = handler_args
         self.data = None
+        self.i = 0
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        if self.i == len(self.data.data):
+            if not self.data.next_page_cursor:
+                self.i = 0
+                raise StopAsyncIteration
+            await self.next()
+            self.i = 0
+        data = self.data.data[self.i]
+        self.i += 1
+        return data
 
     async def get_page(self, cursor=None):
         &#34;&#34;&#34;
@@ -292,9 +386,13 @@ cache the pages yourself if speed is required.</p>
             url=self.url,
             params=this_parameters
         )
+        if self.data:
+            self.data.update(page_req.json())
+            return
         self.data = Page(
-            requests=self.cso,
+            cso=self.cso,
             data=page_req.json(),
+            pages=self,
             handler=self.handler,
             handler_args=self.handler_args
         )
@@ -366,9 +464,13 @@ cache the pages yourself if speed is required.</p>
         url=self.url,
         params=this_parameters
     )
+    if self.data:
+        self.data.update(page_req.json())
+        return
     self.data = Page(
-        requests=self.cso,
+        cso=self.cso,
         data=page_req.json(),
+        pages=self,
         handler=self.handler,
         handler_args=self.handler_args
     )</code></pre>
@@ -471,9 +573,12 @@ cache the pages yourself if speed is required.</p>
 <li>
 <h4><code><a title="ro_py.utilities.pages.Page" href="#ro_py.utilities.pages.Page">Page</a></code></h4>
 <ul class="">
+<li><code><a title="ro_py.utilities.pages.Page.cso" href="#ro_py.utilities.pages.Page.cso">cso</a></code></li>
 <li><code><a title="ro_py.utilities.pages.Page.data" href="#ro_py.utilities.pages.Page.data">data</a></code></li>
 <li><code><a title="ro_py.utilities.pages.Page.next_page_cursor" href="#ro_py.utilities.pages.Page.next_page_cursor">next_page_cursor</a></code></li>
+<li><code><a title="ro_py.utilities.pages.Page.pages" href="#ro_py.utilities.pages.Page.pages">pages</a></code></li>
 <li><code><a title="ro_py.utilities.pages.Page.previous_page_cursor" href="#ro_py.utilities.pages.Page.previous_page_cursor">previous_page_cursor</a></code></li>
+<li><code><a title="ro_py.utilities.pages.Page.update" href="#ro_py.utilities.pages.Page.update">update</a></code></li>
 </ul>
 </li>
 <li>
