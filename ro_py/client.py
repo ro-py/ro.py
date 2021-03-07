@@ -19,7 +19,7 @@ from ro_py.bases.baseuser import PartialUser
 from ro_py.captcha import UnsolvedLoginCaptcha
 from ro_py.accountsettings import AccountSettings
 from ro_py.utilities.pages import Pages, SortOrder
-from ro_py.notifications import NotificationReceiver
+# from ro_py.notifications import NotificationReceiver
 from ro_py.accountinformation import AccountInformation
 from ro_py.utilities.clientobject import ClientSharedObject
 from ro_py.utilities.errors import UserDoesNotExistError, InvalidPlaceIDError
@@ -113,8 +113,6 @@ class Client:
             Name of the user to generate the object from.
         exclude_banned_users : bool
             Whether to exclude banned users in the request.
-        expand : bool
-            Whether to automatically expand the data returned by the endpoint into Users.
         """
         username_req = await self.requests.post(
             url="https://users.roblox.com/v1/usernames/users",
@@ -263,7 +261,8 @@ class Client:
         self.accountsettings = AccountSettings(self.cso)
         self.chat = ChatWrapper(self.cso)
         self.trade = TradesWrapper(self.cso)
-        self.notifications = NotificationReceiver(self.cso)
+        # self.notifications = NotificationReceiver(self.cso)
+        self.notifications = None
 
     async def user_login(self, username, password, token=None):
         """
