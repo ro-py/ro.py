@@ -9,8 +9,10 @@ build/
 dist/
 dist_old/
 ro_py.egg-info/
-tests/
+jmkdev_tests/
 ro_py_old/
 other/
-build.bat
+udocs/
+build.*
+docsbuild.bat
 chat.py

@@ -5,12 +5,11 @@ This file contains classes and functions related to Roblox roles.
 """
 
 
-import enum
+from ro_py.utilities.url import url
+endpoint = url("groups")
 
-endpoint = "https://groups.roblox.com"
 
-
-class RolePermissions(enum.Enum):
+class RolePermissions:
     """
     Represents role permissions.
     """
@@ -65,7 +64,6 @@ def get_rp_names(rp):
 class Role:
     """
     Represents a role
-    This is only available for authenticated clients as it cannot be accessed otherwise.
 
     Parameters
     ----------
@@ -76,8 +74,9 @@ class Role:
     role_data : dict
             Dictionary containing role information.
     """
-    def __init__(self, requests, group, role_data):
-        self.requests = requests
+    def __init__(self, cso, group, role_data):
+        self.cso = cso
+        self.requests = cso.requests
         self.group = group
         self.id = role_data['id']
         self.name = role_data['name']

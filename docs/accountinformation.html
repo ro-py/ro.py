@@ -14,6 +14,58 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #333;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+body {
+background: #212121;
+color: white;
+}
+a {
+color: #0091EA;
+}
+a:hover {
+color: #40C4FF;
+}
+.name {
+background: #424242;
+}
+.name:hover {
+background: #424242;
+}
+.ident {
+color: #1DE9B6;
+}
+.admonition {
+color: black;
+}
+* {
+border-color: #424242 !important;
+}
+</style>
 </head>
 <body>
 <main>
@@ -36,7 +88,8 @@ This file houses functions and classes that pertain to Roblox authenticated user
 from datetime import datetime
 from ro_py.gender import RobloxGender
 
-endpoint = &#34;https://accountinformation.roblox.com/&#34;
+from ro_py.utilities.url import url
+endpoint = url(&#34;accountinformation&#34;)
 
 
 class AccountInformationMetadata:
@@ -82,11 +135,12 @@ class AccountInformation:
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
+    cso : ro_py.client.ClientSharedObject
+        ClientSharedObject.
     &#34;&#34;&#34;
-    def __init__(self, requests):
-        self.requests = requests
+    def __init__(self, cso):
+        self.cso = cso
+        self.requests = cso.requests
         self.account_information_metadata = None
         self.promotion_channels = None
 
@@ -175,15 +229,15 @@ class AccountInformation:
 <dl>
 <dt id="ro_py.accountinformation.AccountInformation"><code class="flex name class">
 <span>class <span class="ident">AccountInformation</span></span>
-<span>(</span><span>requests)</span>
+<span>(</span><span>cso)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents authenticated client account information (<a href="https://accountinformation.roblox.com/">https://accountinformation.roblox.com/</a>)
 This is only available for authenticated clients as it cannot be accessed otherwise.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>requests</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
-<dd>Requests object to use for API requests.</dd>
+<dt><strong><code>cso</code></strong> :&ensp;<code>ro_py.client.ClientSharedObject</code></dt>
+<dd>ClientSharedObject.</dd>
 </dl></div>
 <details class="source">
 <summary>
@@ -196,11 +250,12 @@ This is only available for authenticated clients as it cannot be accessed otherw
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
+    cso : ro_py.client.ClientSharedObject
+        ClientSharedObject.
     &#34;&#34;&#34;
-    def __init__(self, requests):
-        self.requests = requests
+    def __init__(self, cso):
+        self.cso = cso
+        self.requests = cso.requests
         self.account_information_metadata = None
         self.promotion_channels = None
 
@@ -534,6 +589,11 @@ This is only available for authenticated clients as it cannot be accessed otherw
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>

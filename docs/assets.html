@@ -14,6 +14,58 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #333;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+body {
+background: #212121;
+color: white;
+}
+a {
+color: #0091EA;
+}
+a:hover {
+color: #40C4FF;
+}
+.name {
+background: #424242;
+}
+.name:hover {
+background: #424242;
+}
+.ident {
+color: #1DE9B6;
+}
+.admonition {
+color: black;
+}
+* {
+border-color: #424242 !important;
+}
+</style>
 </head>
 <body>
 <main>
@@ -33,30 +85,42 @@ This file houses functions and classes that pertain to Roblox assets.
 
 &#34;&#34;&#34;
 
-from ro_py.users import User
-from ro_py.groups import Group
+from ro_py.utilities.clientobject import ClientObject
 from ro_py.utilities.errors import NotLimitedError
 from ro_py.economy import LimitedResaleData
-from ro_py.utilities.asset_type import asset_types
+from ro_py.utilities.asset_type import AssetTypes
 import iso8601
+import asyncio
+import copy
 
-endpoint = &#34;https://api.roblox.com/&#34;
+from ro_py.utilities.url import url
+endpoint = url(&#34;api&#34;)
 
 
-class Asset:
+class Reseller:
+    def __init__(self, user, user_asset):
+        self.user = user
+        self.user_asset = user_asset
+
+
+class Asset(ClientObject):
     &#34;&#34;&#34;
     Represents an asset.
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
+    cso : ro_py.utilities.clientobject.ClientSharedObject
+        CSO
     asset_id
         ID of the asset.
     &#34;&#34;&#34;
-    def __init__(self, requests, asset_id):
+
+    def __init__(self, cso, asset_id):
+        super().__init__()
         self.id = asset_id
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
+        self.events = Events(cso, self)
         self.target_id = None
         self.product_type = None
         self.asset_id = None
@@ -95,11 +159,14 @@ class Asset:
         self.name = asset_info[&#34;Name&#34;]
         self.description = asset_info[&#34;Description&#34;]
         self.asset_type_id = asset_info[&#34;AssetTypeId&#34;]
-        self.asset_type_name = asset_types[self.asset_type_id]
-        if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;User&#34;:
-            self.creator = User(self.requests, asset_info[&#34;Creator&#34;][&#34;Id&#34;])
-        elif asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;Group&#34;:
-            self.creator = Group(self.requests, asset_info[&#34;Creator&#34;][&#34;CreatorTargetId&#34;])
+        for key, value in AssetTypes._member_map_.items():
+            if value == self.asset_type_id:
+                self.asset_type_name = key
+
+        # if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;User&#34;:
+        #    self.creator = User(self.requests, asset_info[&#34;Creator&#34;][&#34;Id&#34;])
+        # if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;Group&#34;:
+        #    self.creator = Group(self.requests, asset_info[&#34;Creator&#34;][&#34;CreatorTargetId&#34;])
         self.created = iso8601.parse_date(asset_info[&#34;Created&#34;])
         self.updated = iso8601.parse_date(asset_info[&#34;Updated&#34;])
         self.price = asset_info[&#34;PriceInRobux&#34;]
@@ -137,10 +204,54 @@ class Asset:
         LimitedResaleData
         &#34;&#34;&#34;
         if self.is_limited:
-            resale_data_req = await self.requests.get(f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
+            resale_data_req = await self.requests.get(
+                f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
             return LimitedResaleData(resale_data_req.json())
         else:
-            raise NotLimitedError(&#34;You can only read this information on limited items.&#34;)</code></pre>
+            raise NotLimitedError(&#34;You can only read this information on limited items.&#34;)
+
+
+class UserAsset(Asset):
+    def __init__(self, requests, asset_id, user_asset_id):
+        super().__init__(requests, asset_id)
+        self.requests = requests
+        self.user_asset_id = user_asset_id
+
+    async def get_resellers(self):
+        r = await self.requests.get(
+            url=f&#34;https://economy.roblox.com/v1/assets/{self.id}/resellers?limit=10&#34;
+        )
+        data = r.json()
+        resellers = []
+        for reseller in data[&#39;data&#39;]:
+            resellers.append(reseller(self.cso.client.get_user(reseller[&#39;seller&#39;][&#39;id&#39;])))
+
+
+class Events:
+    def __init__(self, cso, asset):
+        self.cso = cso
+        self.asset = asset
+
+    def bind(self, func, event, delay=15):
+        if event == self.cso.client.events.on_asset_change:
+            return asyncio.create_task(self.on_asset_change(func, delay))
+
+    async def on_asset_change(self, func, delay):
+        await self.asset.update()
+        old_asset = copy.copy(self.asset)
+        while True:
+            await asyncio.sleep(delay)
+            await self.asset.update()
+            has_changed = False
+            for attr, value in old_asset.__dict__.items():
+                if getattr(self.asset, attr) != value:
+                    has_changed = True
+            if has_changed:
+                if asyncio.iscoroutinefunction(func):
+                    await func(old_asset, self.asset)
+                else:
+                    func(old_asset, self.asset)
+                old_asset = copy.copy(self.asset)</code></pre>
 </details>
 </section>
 <section>
@@ -154,14 +265,14 @@ class Asset:
 <dl>
 <dt id="ro_py.assets.Asset"><code class="flex name class">
 <span>class <span class="ident">Asset</span></span>
-<span>(</span><span>requests, asset_id)</span>
+<span>(</span><span>cso, asset_id)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents an asset.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>requests</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
-<dd>Requests object to use for API requests.</dd>
+<dt><strong><code>cso</code></strong> :&ensp;<code><a title="ro_py.utilities.clientobject.ClientSharedObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientSharedObject">ClientSharedObject</a></code></dt>
+<dd>CSO</dd>
 <dt><strong><code>asset_id</code></strong></dt>
 <dd>ID of the asset.</dd>
 </dl></div>
@@ -169,20 +280,24 @@ class Asset:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Asset:
+<pre><code class="python">class Asset(ClientObject):
     &#34;&#34;&#34;
     Represents an asset.
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
+    cso : ro_py.utilities.clientobject.ClientSharedObject
+        CSO
     asset_id
         ID of the asset.
     &#34;&#34;&#34;
-    def __init__(self, requests, asset_id):
+
+    def __init__(self, cso, asset_id):
+        super().__init__()
         self.id = asset_id
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
+        self.events = Events(cso, self)
         self.target_id = None
         self.product_type = None
         self.asset_id = None
@@ -221,11 +336,14 @@ class Asset:
         self.name = asset_info[&#34;Name&#34;]
         self.description = asset_info[&#34;Description&#34;]
         self.asset_type_id = asset_info[&#34;AssetTypeId&#34;]
-        self.asset_type_name = asset_types[self.asset_type_id]
-        if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;User&#34;:
-            self.creator = User(self.requests, asset_info[&#34;Creator&#34;][&#34;Id&#34;])
-        elif asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;Group&#34;:
-            self.creator = Group(self.requests, asset_info[&#34;Creator&#34;][&#34;CreatorTargetId&#34;])
+        for key, value in AssetTypes._member_map_.items():
+            if value == self.asset_type_id:
+                self.asset_type_name = key
+
+        # if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;User&#34;:
+        #    self.creator = User(self.requests, asset_info[&#34;Creator&#34;][&#34;Id&#34;])
+        # if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;Group&#34;:
+        #    self.creator = Group(self.requests, asset_info[&#34;Creator&#34;][&#34;CreatorTargetId&#34;])
         self.created = iso8601.parse_date(asset_info[&#34;Created&#34;])
         self.updated = iso8601.parse_date(asset_info[&#34;Updated&#34;])
         self.price = asset_info[&#34;PriceInRobux&#34;]
@@ -263,11 +381,20 @@ class Asset:
         LimitedResaleData
         &#34;&#34;&#34;
         if self.is_limited:
-            resale_data_req = await self.requests.get(f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
+            resale_data_req = await self.requests.get(
+                f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
             return LimitedResaleData(resale_data_req.json())
         else:
             raise NotLimitedError(&#34;You can only read this information on limited items.&#34;)</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.clientobject.ClientObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientObject">ClientObject</a></li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="ro_py.assets.UserAsset" href="#ro_py.assets.UserAsset">UserAsset</a></li>
+</ul>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.assets.Asset.get_limited_resale_data"><code class="name flex">
@@ -293,7 +420,8 @@ class Asset:
     LimitedResaleData
     &#34;&#34;&#34;
     if self.is_limited:
-        resale_data_req = await self.requests.get(f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
+        resale_data_req = await self.requests.get(
+            f&#34;https://economy.roblox.com/v1/assets/{self.asset_id}/resale-data&#34;)
         return LimitedResaleData(resale_data_req.json())
     else:
         raise NotLimitedError(&#34;You can only read this information on limited items.&#34;)</code></pre>
@@ -358,11 +486,14 @@ class Asset:
     self.name = asset_info[&#34;Name&#34;]
     self.description = asset_info[&#34;Description&#34;]
     self.asset_type_id = asset_info[&#34;AssetTypeId&#34;]
-    self.asset_type_name = asset_types[self.asset_type_id]
-    if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;User&#34;:
-        self.creator = User(self.requests, asset_info[&#34;Creator&#34;][&#34;Id&#34;])
-    elif asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;Group&#34;:
-        self.creator = Group(self.requests, asset_info[&#34;Creator&#34;][&#34;CreatorTargetId&#34;])
+    for key, value in AssetTypes._member_map_.items():
+        if value == self.asset_type_id:
+            self.asset_type_name = key
+
+    # if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;User&#34;:
+    #    self.creator = User(self.requests, asset_info[&#34;Creator&#34;][&#34;Id&#34;])
+    # if asset_info[&#34;Creator&#34;][&#34;CreatorType&#34;] == &#34;Group&#34;:
+    #    self.creator = Group(self.requests, asset_info[&#34;Creator&#34;][&#34;CreatorTargetId&#34;])
     self.created = iso8601.parse_date(asset_info[&#34;Created&#34;])
     self.updated = iso8601.parse_date(asset_info[&#34;Updated&#34;])
     self.price = asset_info[&#34;PriceInRobux&#34;]
@@ -377,10 +508,182 @@ class Asset:
 </dd>
 </dl>
 </dd>
+<dt id="ro_py.assets.Events"><code class="flex name class">
+<span>class <span class="ident">Events</span></span>
+<span>(</span><span>cso, asset)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Events:
+    def __init__(self, cso, asset):
+        self.cso = cso
+        self.asset = asset
+
+    def bind(self, func, event, delay=15):
+        if event == self.cso.client.events.on_asset_change:
+            return asyncio.create_task(self.on_asset_change(func, delay))
+
+    async def on_asset_change(self, func, delay):
+        await self.asset.update()
+        old_asset = copy.copy(self.asset)
+        while True:
+            await asyncio.sleep(delay)
+            await self.asset.update()
+            has_changed = False
+            for attr, value in old_asset.__dict__.items():
+                if getattr(self.asset, attr) != value:
+                    has_changed = True
+            if has_changed:
+                if asyncio.iscoroutinefunction(func):
+                    await func(old_asset, self.asset)
+                else:
+                    func(old_asset, self.asset)
+                old_asset = copy.copy(self.asset)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.assets.Events.bind"><code class="name flex">
+<span>def <span class="ident">bind</span></span>(<span>self, func, event, delay=15)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def bind(self, func, event, delay=15):
+    if event == self.cso.client.events.on_asset_change:
+        return asyncio.create_task(self.on_asset_change(func, delay))</code></pre>
+</details>
+</dd>
+<dt id="ro_py.assets.Events.on_asset_change"><code class="name flex">
+<span>async def <span class="ident">on_asset_change</span></span>(<span>self, func, delay)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def on_asset_change(self, func, delay):
+    await self.asset.update()
+    old_asset = copy.copy(self.asset)
+    while True:
+        await asyncio.sleep(delay)
+        await self.asset.update()
+        has_changed = False
+        for attr, value in old_asset.__dict__.items():
+            if getattr(self.asset, attr) != value:
+                has_changed = True
+        if has_changed:
+            if asyncio.iscoroutinefunction(func):
+                await func(old_asset, self.asset)
+            else:
+                func(old_asset, self.asset)
+            old_asset = copy.copy(self.asset)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="ro_py.assets.Reseller"><code class="flex name class">
+<span>class <span class="ident">Reseller</span></span>
+<span>(</span><span>user, user_asset)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Reseller:
+    def __init__(self, user, user_asset):
+        self.user = user
+        self.user_asset = user_asset</code></pre>
+</details>
+</dd>
+<dt id="ro_py.assets.UserAsset"><code class="flex name class">
+<span>class <span class="ident">UserAsset</span></span>
+<span>(</span><span>requests, asset_id, user_asset_id)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents an asset.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>cso</code></strong> :&ensp;<code><a title="ro_py.utilities.clientobject.ClientSharedObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientSharedObject">ClientSharedObject</a></code></dt>
+<dd>CSO</dd>
+<dt><strong><code>asset_id</code></strong></dt>
+<dd>ID of the asset.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UserAsset(Asset):
+    def __init__(self, requests, asset_id, user_asset_id):
+        super().__init__(requests, asset_id)
+        self.requests = requests
+        self.user_asset_id = user_asset_id
+
+    async def get_resellers(self):
+        r = await self.requests.get(
+            url=f&#34;https://economy.roblox.com/v1/assets/{self.id}/resellers?limit=10&#34;
+        )
+        data = r.json()
+        resellers = []
+        for reseller in data[&#39;data&#39;]:
+            resellers.append(reseller(self.cso.client.get_user(reseller[&#39;seller&#39;][&#39;id&#39;])))</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.assets.Asset" href="#ro_py.assets.Asset">Asset</a></li>
+<li><a title="ro_py.utilities.clientobject.ClientObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientObject">ClientObject</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.assets.UserAsset.get_resellers"><code class="name flex">
+<span>async def <span class="ident">get_resellers</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_resellers(self):
+    r = await self.requests.get(
+        url=f&#34;https://economy.roblox.com/v1/assets/{self.id}/resellers?limit=10&#34;
+    )
+    data = r.json()
+    resellers = []
+    for reseller in data[&#39;data&#39;]:
+        resellers.append(reseller(self.cso.client.get_user(reseller[&#39;seller&#39;][&#39;id&#39;])))</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="ro_py.assets.Asset" href="#ro_py.assets.Asset">Asset</a></b></code>:
+<ul class="hlist">
+<li><code><a title="ro_py.assets.Asset.get_limited_resale_data" href="#ro_py.assets.Asset.get_limited_resale_data">get_limited_resale_data</a></code></li>
+<li><code><a title="ro_py.assets.Asset.get_remaining" href="#ro_py.assets.Asset.get_remaining">get_remaining</a></code></li>
+<li><code><a title="ro_py.assets.Asset.update" href="#ro_py.assets.Asset.update">update</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
 </dl>
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>
@@ -399,6 +702,22 @@ class Asset:
 <li><code><a title="ro_py.assets.Asset.get_limited_resale_data" href="#ro_py.assets.Asset.get_limited_resale_data">get_limited_resale_data</a></code></li>
 <li><code><a title="ro_py.assets.Asset.get_remaining" href="#ro_py.assets.Asset.get_remaining">get_remaining</a></code></li>
 <li><code><a title="ro_py.assets.Asset.update" href="#ro_py.assets.Asset.update">update</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.assets.Events" href="#ro_py.assets.Events">Events</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.assets.Events.bind" href="#ro_py.assets.Events.bind">bind</a></code></li>
+<li><code><a title="ro_py.assets.Events.on_asset_change" href="#ro_py.assets.Events.on_asset_change">on_asset_change</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.assets.Reseller" href="#ro_py.assets.Reseller">Reseller</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.assets.UserAsset" href="#ro_py.assets.UserAsset">UserAsset</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.assets.UserAsset.get_resellers" href="#ro_py.assets.UserAsset.get_resellers">get_resellers</a></code></li>
 </ul>
 </li>
 </ul>

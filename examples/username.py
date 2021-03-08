@@ -1,3 +1,13 @@
+"""
+
+ro.py
+Username Example
+
+This example loads a User from their username.
+
+"""
+
+
 from ro_py.client import Client
 import asyncio
 

@@ -7,7 +7,8 @@ This file houses functions and classes that pertain to Roblox authenticated user
 from datetime import datetime
 from ro_py.gender import RobloxGender
 
-endpoint = "https://accountinformation.roblox.com/"
+from ro_py.utilities.url import url
+endpoint = url("accountinformation")
 
 
 class AccountInformationMetadata:
@@ -53,11 +54,12 @@ class AccountInformation:
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
+    cso : ro_py.client.ClientSharedObject
+        ClientSharedObject.
     """
-    def __init__(self, requests):
-        self.requests = requests
+    def __init__(self, cso):
+        self.cso = cso
+        self.requests = cso.requests
         self.account_information_metadata = None
         self.promotion_channels = None
 

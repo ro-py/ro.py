@@ -14,6 +14,58 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #333;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+body {
+background: #212121;
+color: white;
+}
+a {
+color: #0091EA;
+}
+a:hover {
+color: #40C4FF;
+}
+.name {
+background: #424242;
+}
+.name:hover {
+background: #424242;
+}
+.ident {
+color: #1DE9B6;
+}
+.admonition {
+color: black;
+}
+* {
+border-color: #424242 !important;
+}
+</style>
 </head>
 <body>
 <main>
@@ -33,11 +85,20 @@ This file houses functions and classes that pertain to Roblox universes and plac
 
 &#34;&#34;&#34;
 
-from ro_py.users import User
+from ro_py.utilities.clientobject import ClientObject
+from ro_py.thumbnails import GameThumbnailGenerator
+from ro_py.utilities.errors import GameJoinError
+from ro_py.bases.baseuser import PartialUser
+from ro_py.bases.baseasset import BaseAsset
+from ro_py.utilities.cache import CacheType
 from ro_py.groups import Group
 from ro_py.badges import Badge
+import subprocess
+import json
+import os
 
-endpoint = &#34;https://games.roblox.com/&#34;
+from ro_py.utilities.url import url
+endpoint = url(&#34;games&#34;)
 
 
 class Votes:
@@ -49,23 +110,29 @@ class Votes:
         self.down_votes = votes_data[&#34;downVotes&#34;]
 
 
-class Game:
+class Game(ClientObject):
     &#34;&#34;&#34;
     Represents a Roblox game universe.
     This class represents multiple game-related endpoints.
     &#34;&#34;&#34;
-    def __init__(self, requests, universe_id):
+    def __init__(self, cso, universe_id):
+        super().__init__()
         self.id = universe_id
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
         self.name = None
+        self.root_place_id = None
         self.description = None
         self.creator = None
         self.price = None
         self.allowed_gear_genres = None
         self.allowed_gear_categories = None
+        self.playing = None
+        self.visits = None
         self.max_players = None
         self.studio_access_to_apis_allowed = None
         self.create_vip_servers_allowed = None
+        self.thumbnails = GameThumbnailGenerator(self.requests, self.id)
 
     async def update(self):
         &#34;&#34;&#34;
@@ -80,21 +147,39 @@ class Game:
         game_info = game_info_req.json()
         game_info = game_info[&#34;data&#34;][0]
         self.name = game_info[&#34;name&#34;]
+        self.root_place_id = game_info[&#34;rootPlaceId&#34;]
         self.description = game_info[&#34;description&#34;]
         if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
-            self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.creator = self.cso.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
+            if not self.creator:
+                self.creator = await self.cso.client.get_user(game_info[&#34;creator&#34;][&#34;id&#34;])
+                self.cso.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+                await self.creator.update()
         elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
-            self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.creator = self.cso.cache.get(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;])
+            if not self.creator:
+                self.creator = Group(self.cso, game_info[&#34;creator&#34;][&#34;id&#34;])
+                self.cso.cache.set(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+                await self.creator.update()
         self.price = game_info[&#34;price&#34;]
         self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
         self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
+        self.playing = game_info[&#34;playing&#34;]
+        self.visits = game_info[&#34;visits&#34;]
         self.max_players = game_info[&#34;maxPlayers&#34;]
         self.studio_access_to_apis_allowed = game_info[&#34;studioAccessToApisAllowed&#34;]
         self.create_vip_servers_allowed = game_info[&#34;createVipServersAllowed&#34;]
 
+    async def get_root_place(self):
+        root_place = Place(self.cso, self.root_place_id, self)
+        await root_place.update()
+        return root_place
+
     async def get_votes(self):
         &#34;&#34;&#34;
-        :return: An instance of Votes
+        Returns
+        -------
+        ro_py.games.Votes
         &#34;&#34;&#34;
         votes_info_req = await self.requests.get(
             url=endpoint + &#34;v1/games/votes&#34;,
@@ -122,35 +207,105 @@ class Game:
         badges_data = badges_req.json()[&#34;data&#34;]
         badges = []
         for badge in badges_data:
-            badges.append(Badge(self.requests, badge[&#34;id&#34;]))
+            badges.append(Badge(self.cso, badge[&#34;id&#34;]))
         return badges
 
 
-&#34;&#34;&#34;
-def place_id_to_universe_id(place_id):
-    \&#34;&#34;&#34;
-    Returns the containing universe ID of a place ID.
-    :param place_id: Place ID
-    :return: Universe ID
-    \&#34;&#34;&#34;
-    universe_id_req = self.requests.get(
-        url=&#34;https://api.roblox.com/universes/get-universe-containing-place&#34;,
-        params={
-            &#34;placeId&#34;: place_id
-        }
-    )
-    universe_id = universe_id_req.json()[&#34;UniverseId&#34;]
-    return universe_id
+class Place(ClientObject, BaseAsset):
+    def __init__(self, cso, place_id, universe):
+        super().__init__()
+        self.cso = cso
+        self.requests = cso.requests
+        self.id = place_id
+        self.universe = universe
+        self.name = None
+        self.description = None
+        self.url = None
+        self.creator = None
+        self.is_playable = None
+        self.reason_prohibited = None
+        self.price = None
 
+    async def update(self):
+        place_req = await self.requests.get(
+            url=&#34;https://games.roblox.com/v1/games/multiget-place-details&#34;,
+            params={
+                &#34;placeIds&#34;: self.id
+            }
+        )
+        place_data = place_req.json()[0]
+        self.name = place_data[&#34;name&#34;]
+        self.description = place_data[&#34;description&#34;]
+        self.url = place_data[&#34;url&#34;]
+        self.creator = PartialUser(self.cso, place_data[&#34;builderId&#34;], place_data[&#34;builder&#34;])
+        self.is_playable = place_data[&#34;isPlayable&#34;]
+        self.reason_prohibited = place_data[&#34;reasonProhibited&#34;]
+        self.price = place_data[&#34;price&#34;]
 
-def game_from_place_id(place_id):
-    \&#34;&#34;&#34;
-    Generates an instance of Game with a place ID instead of a game ID.
-    :param place_id: Place ID
-    :return: Instace of Game
-    \&#34;&#34;&#34;
-    return Game(self.requests, place_id_to_universe_id(place_id))
-&#34;&#34;&#34;</code></pre>
+    async def join(self, launchtime=1609186776825, rloc=&#34;en_us&#34;, gloc=&#34;en_us&#34;,
+                   negotiate_url=&#34;https://www.roblox.com/Login/Negotiate.ashx&#34;):
+        &#34;&#34;&#34;
+        Joins the place.
+        This currently only works on Windows since it looks in AppData for the executable.
+
+        .. warning::
+            Please *do not* use this part of ro.py maliciously. We&#39;ve spent lots of time
+            working on ro.py as a resource for building interactive Roblox programs, and
+            we would hate to see it be used as a malicious tool.
+            We do not condone any use of ro.py as an exploit and we are not responsible
+            if you are banned from Roblox due to malicious use of our library.
+        &#34;&#34;&#34;
+        local_app_data = os.getenv(&#39;LocalAppData&#39;)
+        roblox_appdata_path = local_app_data + &#34;\\Roblox&#34;
+        roblox_launcher = None
+
+        app_storage = roblox_appdata_path + &#34;\\LocalStorage&#34;
+        app_versions = roblox_appdata_path + &#34;\\Versions&#34;
+
+        with open(app_storage + &#34;\\appStorage.json&#34;) as app_storage_file:
+            app_storage_data = json.load(app_storage_file)
+        browser_tracker_id = app_storage_data[&#34;BrowserTrackerId&#34;]
+
+        for directory in os.listdir(app_versions):
+            dir_path = app_versions + &#34;\\&#34; + directory
+            if os.path.isdir(dir_path):
+                if os.path.isfile(dir_path + &#34;\\&#34; + &#34;RobloxPlayerBeta.exe&#34;):
+                    roblox_launcher = dir_path + &#34;\\&#34; + &#34;RobloxPlayerBeta.exe&#34;
+
+        if not roblox_launcher:
+            raise GameJoinError(&#34;Couldn&#39;t find RobloxPlayerBeta.exe.&#34;)
+
+        ticket_req = self.requests.back_post(url=&#34;https://auth.roblox.com/v1/authentication-ticket/&#34;)
+        auth_ticket = ticket_req.headers[&#34;rbx-authentication-ticket&#34;]
+
+        launch_url = &#34;https://assetgame.roblox.com/game/PlaceLauncher.ashx&#34; \
+                     &#34;?request=RequestGame&#34; \
+                     f&#34;&amp;browserTrackerId={browser_tracker_id}&#34; \
+                     f&#34;&amp;placeId={self.id}&#34; \
+                     &#34;&amp;isPlayTogetherGame=false&#34;
+        join_parameters = [
+            roblox_launcher,
+            &#34;--play&#34;,
+            &#34;-a&#34;,
+            negotiate_url,
+            &#34;-t&#34;,
+            auth_ticket,
+            &#34;-j&#34;,
+            launch_url,
+            &#34;-b&#34;,
+            browser_tracker_id,
+            &#34;--launchtime=&#34; + str(launchtime),
+            &#34;--rloc&#34;,
+            rloc,
+            &#34;--gloc&#34;,
+            gloc
+        ]
+        join_process = subprocess.run(
+            args=join_parameters,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        return join_process.stdout, join_process.stderr</code></pre>
 </details>
 </section>
 <section>
@@ -164,7 +319,7 @@ def game_from_place_id(place_id):
 <dl>
 <dt id="ro_py.games.Game"><code class="flex name class">
 <span>class <span class="ident">Game</span></span>
-<span>(</span><span>requests, universe_id)</span>
+<span>(</span><span>cso, universe_id)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a Roblox game universe.
@@ -173,23 +328,29 @@ This class represents multiple game-related endpoints.</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Game:
+<pre><code class="python">class Game(ClientObject):
     &#34;&#34;&#34;
     Represents a Roblox game universe.
     This class represents multiple game-related endpoints.
     &#34;&#34;&#34;
-    def __init__(self, requests, universe_id):
+    def __init__(self, cso, universe_id):
+        super().__init__()
         self.id = universe_id
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
         self.name = None
+        self.root_place_id = None
         self.description = None
         self.creator = None
         self.price = None
         self.allowed_gear_genres = None
         self.allowed_gear_categories = None
+        self.playing = None
+        self.visits = None
         self.max_players = None
         self.studio_access_to_apis_allowed = None
         self.create_vip_servers_allowed = None
+        self.thumbnails = GameThumbnailGenerator(self.requests, self.id)
 
     async def update(self):
         &#34;&#34;&#34;
@@ -204,21 +365,39 @@ This class represents multiple game-related endpoints.</p></div>
         game_info = game_info_req.json()
         game_info = game_info[&#34;data&#34;][0]
         self.name = game_info[&#34;name&#34;]
+        self.root_place_id = game_info[&#34;rootPlaceId&#34;]
         self.description = game_info[&#34;description&#34;]
         if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
-            self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.creator = self.cso.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
+            if not self.creator:
+                self.creator = await self.cso.client.get_user(game_info[&#34;creator&#34;][&#34;id&#34;])
+                self.cso.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+                await self.creator.update()
         elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
-            self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.creator = self.cso.cache.get(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;])
+            if not self.creator:
+                self.creator = Group(self.cso, game_info[&#34;creator&#34;][&#34;id&#34;])
+                self.cso.cache.set(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+                await self.creator.update()
         self.price = game_info[&#34;price&#34;]
         self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
         self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
+        self.playing = game_info[&#34;playing&#34;]
+        self.visits = game_info[&#34;visits&#34;]
         self.max_players = game_info[&#34;maxPlayers&#34;]
         self.studio_access_to_apis_allowed = game_info[&#34;studioAccessToApisAllowed&#34;]
         self.create_vip_servers_allowed = game_info[&#34;createVipServersAllowed&#34;]
 
+    async def get_root_place(self):
+        root_place = Place(self.cso, self.root_place_id, self)
+        await root_place.update()
+        return root_place
+
     async def get_votes(self):
         &#34;&#34;&#34;
-        :return: An instance of Votes
+        Returns
+        -------
+        ro_py.games.Votes
         &#34;&#34;&#34;
         votes_info_req = await self.requests.get(
             url=endpoint + &#34;v1/games/votes&#34;,
@@ -246,9 +425,13 @@ This class represents multiple game-related endpoints.</p></div>
         badges_data = badges_req.json()[&#34;data&#34;]
         badges = []
         for badge in badges_data:
-            badges.append(Badge(self.requests, badge[&#34;id&#34;]))
+            badges.append(Badge(self.cso, badge[&#34;id&#34;]))
         return badges</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.clientobject.ClientObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientObject">ClientObject</a></li>
+</ul>
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.games.Game.get_badges"><code class="name flex">
@@ -276,22 +459,43 @@ This will be updated soon to use the new Page object.</p></div>
     badges_data = badges_req.json()[&#34;data&#34;]
     badges = []
     for badge in badges_data:
-        badges.append(Badge(self.requests, badge[&#34;id&#34;]))
+        badges.append(Badge(self.cso, badge[&#34;id&#34;]))
     return badges</code></pre>
+</details>
+</dd>
+<dt id="ro_py.games.Game.get_root_place"><code class="name flex">
+<span>async def <span class="ident">get_root_place</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_root_place(self):
+    root_place = Place(self.cso, self.root_place_id, self)
+    await root_place.update()
+    return root_place</code></pre>
 </details>
 </dd>
 <dt id="ro_py.games.Game.get_votes"><code class="name flex">
 <span>async def <span class="ident">get_votes</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>:return: An instance of Votes</p></div>
+<div class="desc"><h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="ro_py.games.Votes" href="#ro_py.games.Votes">Votes</a></code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def get_votes(self):
     &#34;&#34;&#34;
-    :return: An instance of Votes
+    Returns
+    -------
+    ro_py.games.Votes
     &#34;&#34;&#34;
     votes_info_req = await self.requests.get(
         url=endpoint + &#34;v1/games/votes&#34;,
@@ -327,17 +531,253 @@ This will be updated soon to use the new Page object.</p></div>
     game_info = game_info_req.json()
     game_info = game_info[&#34;data&#34;][0]
     self.name = game_info[&#34;name&#34;]
+    self.root_place_id = game_info[&#34;rootPlaceId&#34;]
     self.description = game_info[&#34;description&#34;]
     if game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;User&#34;:
-        self.creator = User(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+        self.creator = self.cso.cache.get(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;])
+        if not self.creator:
+            self.creator = await self.cso.client.get_user(game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.cso.cache.set(CacheType.Users, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+            await self.creator.update()
     elif game_info[&#34;creator&#34;][&#34;type&#34;] == &#34;Group&#34;:
-        self.creator = Group(self.requests, game_info[&#34;creator&#34;][&#34;id&#34;])
+        self.creator = self.cso.cache.get(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;])
+        if not self.creator:
+            self.creator = Group(self.cso, game_info[&#34;creator&#34;][&#34;id&#34;])
+            self.cso.cache.set(CacheType.Groups, game_info[&#34;creator&#34;][&#34;id&#34;], self.creator)
+            await self.creator.update()
     self.price = game_info[&#34;price&#34;]
     self.allowed_gear_genres = game_info[&#34;allowedGearGenres&#34;]
     self.allowed_gear_categories = game_info[&#34;allowedGearCategories&#34;]
+    self.playing = game_info[&#34;playing&#34;]
+    self.visits = game_info[&#34;visits&#34;]
     self.max_players = game_info[&#34;maxPlayers&#34;]
     self.studio_access_to_apis_allowed = game_info[&#34;studioAccessToApisAllowed&#34;]
     self.create_vip_servers_allowed = game_info[&#34;createVipServersAllowed&#34;]</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="ro_py.games.Place"><code class="flex name class">
+<span>class <span class="ident">Place</span></span>
+<span>(</span><span>cso, place_id, universe)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Every object that is grabbable with client.get_x inherits this object.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Place(ClientObject, BaseAsset):
+    def __init__(self, cso, place_id, universe):
+        super().__init__()
+        self.cso = cso
+        self.requests = cso.requests
+        self.id = place_id
+        self.universe = universe
+        self.name = None
+        self.description = None
+        self.url = None
+        self.creator = None
+        self.is_playable = None
+        self.reason_prohibited = None
+        self.price = None
+
+    async def update(self):
+        place_req = await self.requests.get(
+            url=&#34;https://games.roblox.com/v1/games/multiget-place-details&#34;,
+            params={
+                &#34;placeIds&#34;: self.id
+            }
+        )
+        place_data = place_req.json()[0]
+        self.name = place_data[&#34;name&#34;]
+        self.description = place_data[&#34;description&#34;]
+        self.url = place_data[&#34;url&#34;]
+        self.creator = PartialUser(self.cso, place_data[&#34;builderId&#34;], place_data[&#34;builder&#34;])
+        self.is_playable = place_data[&#34;isPlayable&#34;]
+        self.reason_prohibited = place_data[&#34;reasonProhibited&#34;]
+        self.price = place_data[&#34;price&#34;]
+
+    async def join(self, launchtime=1609186776825, rloc=&#34;en_us&#34;, gloc=&#34;en_us&#34;,
+                   negotiate_url=&#34;https://www.roblox.com/Login/Negotiate.ashx&#34;):
+        &#34;&#34;&#34;
+        Joins the place.
+        This currently only works on Windows since it looks in AppData for the executable.
+
+        .. warning::
+            Please *do not* use this part of ro.py maliciously. We&#39;ve spent lots of time
+            working on ro.py as a resource for building interactive Roblox programs, and
+            we would hate to see it be used as a malicious tool.
+            We do not condone any use of ro.py as an exploit and we are not responsible
+            if you are banned from Roblox due to malicious use of our library.
+        &#34;&#34;&#34;
+        local_app_data = os.getenv(&#39;LocalAppData&#39;)
+        roblox_appdata_path = local_app_data + &#34;\\Roblox&#34;
+        roblox_launcher = None
+
+        app_storage = roblox_appdata_path + &#34;\\LocalStorage&#34;
+        app_versions = roblox_appdata_path + &#34;\\Versions&#34;
+
+        with open(app_storage + &#34;\\appStorage.json&#34;) as app_storage_file:
+            app_storage_data = json.load(app_storage_file)
+        browser_tracker_id = app_storage_data[&#34;BrowserTrackerId&#34;]
+
+        for directory in os.listdir(app_versions):
+            dir_path = app_versions + &#34;\\&#34; + directory
+            if os.path.isdir(dir_path):
+                if os.path.isfile(dir_path + &#34;\\&#34; + &#34;RobloxPlayerBeta.exe&#34;):
+                    roblox_launcher = dir_path + &#34;\\&#34; + &#34;RobloxPlayerBeta.exe&#34;
+
+        if not roblox_launcher:
+            raise GameJoinError(&#34;Couldn&#39;t find RobloxPlayerBeta.exe.&#34;)
+
+        ticket_req = self.requests.back_post(url=&#34;https://auth.roblox.com/v1/authentication-ticket/&#34;)
+        auth_ticket = ticket_req.headers[&#34;rbx-authentication-ticket&#34;]
+
+        launch_url = &#34;https://assetgame.roblox.com/game/PlaceLauncher.ashx&#34; \
+                     &#34;?request=RequestGame&#34; \
+                     f&#34;&amp;browserTrackerId={browser_tracker_id}&#34; \
+                     f&#34;&amp;placeId={self.id}&#34; \
+                     &#34;&amp;isPlayTogetherGame=false&#34;
+        join_parameters = [
+            roblox_launcher,
+            &#34;--play&#34;,
+            &#34;-a&#34;,
+            negotiate_url,
+            &#34;-t&#34;,
+            auth_ticket,
+            &#34;-j&#34;,
+            launch_url,
+            &#34;-b&#34;,
+            browser_tracker_id,
+            &#34;--launchtime=&#34; + str(launchtime),
+            &#34;--rloc&#34;,
+            rloc,
+            &#34;--gloc&#34;,
+            gloc
+        ]
+        join_process = subprocess.run(
+            args=join_parameters,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
+        return join_process.stdout, join_process.stderr</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.clientobject.ClientObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientObject">ClientObject</a></li>
+<li><a title="ro_py.bases.baseasset.BaseAsset" href="bases/baseasset.html#ro_py.bases.baseasset.BaseAsset">BaseAsset</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.games.Place.join"><code class="name flex">
+<span>async def <span class="ident">join</span></span>(<span>self, launchtime=1609186776825, rloc='en_us', gloc='en_us', negotiate_url='https://www.roblox.com/Login/Negotiate.ashx')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Joins the place.
+This currently only works on Windows since it looks in AppData for the executable.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Please <em>do not</em> use this part of ro.py maliciously. We've spent lots of time
+working on ro.py as a resource for building interactive Roblox programs, and
+we would hate to see it be used as a malicious tool.
+We do not condone any use of ro.py as an exploit and we are not responsible
+if you are banned from Roblox due to malicious use of our library.</p>
+</div></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def join(self, launchtime=1609186776825, rloc=&#34;en_us&#34;, gloc=&#34;en_us&#34;,
+               negotiate_url=&#34;https://www.roblox.com/Login/Negotiate.ashx&#34;):
+    &#34;&#34;&#34;
+    Joins the place.
+    This currently only works on Windows since it looks in AppData for the executable.
+
+    .. warning::
+        Please *do not* use this part of ro.py maliciously. We&#39;ve spent lots of time
+        working on ro.py as a resource for building interactive Roblox programs, and
+        we would hate to see it be used as a malicious tool.
+        We do not condone any use of ro.py as an exploit and we are not responsible
+        if you are banned from Roblox due to malicious use of our library.
+    &#34;&#34;&#34;
+    local_app_data = os.getenv(&#39;LocalAppData&#39;)
+    roblox_appdata_path = local_app_data + &#34;\\Roblox&#34;
+    roblox_launcher = None
+
+    app_storage = roblox_appdata_path + &#34;\\LocalStorage&#34;
+    app_versions = roblox_appdata_path + &#34;\\Versions&#34;
+
+    with open(app_storage + &#34;\\appStorage.json&#34;) as app_storage_file:
+        app_storage_data = json.load(app_storage_file)
+    browser_tracker_id = app_storage_data[&#34;BrowserTrackerId&#34;]
+
+    for directory in os.listdir(app_versions):
+        dir_path = app_versions + &#34;\\&#34; + directory
+        if os.path.isdir(dir_path):
+            if os.path.isfile(dir_path + &#34;\\&#34; + &#34;RobloxPlayerBeta.exe&#34;):
+                roblox_launcher = dir_path + &#34;\\&#34; + &#34;RobloxPlayerBeta.exe&#34;
+
+    if not roblox_launcher:
+        raise GameJoinError(&#34;Couldn&#39;t find RobloxPlayerBeta.exe.&#34;)
+
+    ticket_req = self.requests.back_post(url=&#34;https://auth.roblox.com/v1/authentication-ticket/&#34;)
+    auth_ticket = ticket_req.headers[&#34;rbx-authentication-ticket&#34;]
+
+    launch_url = &#34;https://assetgame.roblox.com/game/PlaceLauncher.ashx&#34; \
+                 &#34;?request=RequestGame&#34; \
+                 f&#34;&amp;browserTrackerId={browser_tracker_id}&#34; \
+                 f&#34;&amp;placeId={self.id}&#34; \
+                 &#34;&amp;isPlayTogetherGame=false&#34;
+    join_parameters = [
+        roblox_launcher,
+        &#34;--play&#34;,
+        &#34;-a&#34;,
+        negotiate_url,
+        &#34;-t&#34;,
+        auth_ticket,
+        &#34;-j&#34;,
+        launch_url,
+        &#34;-b&#34;,
+        browser_tracker_id,
+        &#34;--launchtime=&#34; + str(launchtime),
+        &#34;--rloc&#34;,
+        rloc,
+        &#34;--gloc&#34;,
+        gloc
+    ]
+    join_process = subprocess.run(
+        args=join_parameters,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    return join_process.stdout, join_process.stderr</code></pre>
+</details>
+</dd>
+<dt id="ro_py.games.Place.update"><code class="name flex">
+<span>async def <span class="ident">update</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def update(self):
+    place_req = await self.requests.get(
+        url=&#34;https://games.roblox.com/v1/games/multiget-place-details&#34;,
+        params={
+            &#34;placeIds&#34;: self.id
+        }
+    )
+    place_data = place_req.json()[0]
+    self.name = place_data[&#34;name&#34;]
+    self.description = place_data[&#34;description&#34;]
+    self.url = place_data[&#34;url&#34;]
+    self.creator = PartialUser(self.cso, place_data[&#34;builderId&#34;], place_data[&#34;builder&#34;])
+    self.is_playable = place_data[&#34;isPlayable&#34;]
+    self.reason_prohibited = place_data[&#34;reasonProhibited&#34;]
+    self.price = place_data[&#34;price&#34;]</code></pre>
 </details>
 </dd>
 </dl>
@@ -365,6 +805,11 @@ This will be updated soon to use the new Page object.</p></div>
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>
@@ -381,8 +826,16 @@ This will be updated soon to use the new Page object.</p></div>
 <h4><code><a title="ro_py.games.Game" href="#ro_py.games.Game">Game</a></code></h4>
 <ul class="">
 <li><code><a title="ro_py.games.Game.get_badges" href="#ro_py.games.Game.get_badges">get_badges</a></code></li>
+<li><code><a title="ro_py.games.Game.get_root_place" href="#ro_py.games.Game.get_root_place">get_root_place</a></code></li>
 <li><code><a title="ro_py.games.Game.get_votes" href="#ro_py.games.Game.get_votes">get_votes</a></code></li>
 <li><code><a title="ro_py.games.Game.update" href="#ro_py.games.Game.update">update</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.games.Place" href="#ro_py.games.Place">Place</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.games.Place.join" href="#ro_py.games.Place.join">join</a></code></li>
+<li><code><a title="ro_py.games.Place.update" href="#ro_py.games.Place.update">update</a></code></li>
 </ul>
 </li>
 <li>

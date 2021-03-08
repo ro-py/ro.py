@@ -14,6 +14,58 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #333;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+body {
+background: #212121;
+color: white;
+}
+a {
+color: #0091EA;
+}
+a:hover {
+color: #40C4FF;
+}
+.name {
+background: #424242;
+}
+.name:hover {
+background: #424242;
+}
+.ident {
+color: #1DE9B6;
+}
+.admonition {
+color: black;
+}
+* {
+border-color: #424242 !important;
+}
+</style>
 </head>
 <body>
 <main>
@@ -33,7 +85,11 @@ This file houses functions and classes that pertain to game-awarded badges.
 
 &#34;&#34;&#34;
 
-endpoint = &#34;https://badges.roblox.com/&#34;
+from ro_py.utilities.clientobject import ClientObject
+from ro_py.bases.baseasset import BaseAsset
+
+from ro_py.utilities.url import url
+endpoint = url(&#34;badges&#34;)
 
 
 class BadgeStatistics:
@@ -46,20 +102,23 @@ class BadgeStatistics:
         self.win_rate_percentage = win_rate_percentage
 
 
-class Badge:
+class Badge(ClientObject, BaseAsset):
     &#34;&#34;&#34;
     Represents a game-awarded badge.
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
+    cso : ro_py.utilities.clientobject.ClientSharedObject
+        ClientSharedObject.
     badge_id
         ID of the badge.
     &#34;&#34;&#34;
-    def __init__(self, requests, badge_id):
+    def __init__(self, cso, badge_id):
+        ClientObject.__init__(self)
+        BaseAsset.__init__(self)
         self.id = badge_id
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
         self.name = None
         self.description = None
         self.display_name = None
@@ -83,7 +142,23 @@ class Badge:
             statistics_info[&#34;pastDayAwardedCount&#34;],
             statistics_info[&#34;awardedCount&#34;],
             statistics_info[&#34;winRatePercentage&#34;]
-        )</code></pre>
+        )
+
+    async def owned_by(self, user):
+        &#34;&#34;&#34;
+        Checks if a user was awarded this badge and grabs the time that they were awarded it.
+        Functionally identical to ro_py.users.User.has_badge.
+
+        Parameters
+        ----------
+        user: ro_py.users.BaseUser
+            User to check badge ownership.
+
+        Returns
+        -------
+        tuple[bool, datetime.datetime]
+        &#34;&#34;&#34;
+        return await user.has_badge(self)</code></pre>
 </details>
 </section>
 <section>
@@ -97,14 +172,14 @@ class Badge:
 <dl>
 <dt id="ro_py.badges.Badge"><code class="flex name class">
 <span>class <span class="ident">Badge</span></span>
-<span>(</span><span>requests, badge_id)</span>
+<span>(</span><span>cso, badge_id)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a game-awarded badge.</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
-<dt><strong><code>requests</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
-<dd>Requests object to use for API requests.</dd>
+<dt><strong><code>cso</code></strong> :&ensp;<code><a title="ro_py.utilities.clientobject.ClientSharedObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientSharedObject">ClientSharedObject</a></code></dt>
+<dd>ClientSharedObject.</dd>
 <dt><strong><code>badge_id</code></strong></dt>
 <dd>ID of the badge.</dd>
 </dl></div>
@@ -112,20 +187,23 @@ class Badge:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Badge:
+<pre><code class="python">class Badge(ClientObject, BaseAsset):
     &#34;&#34;&#34;
     Represents a game-awarded badge.
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
+    cso : ro_py.utilities.clientobject.ClientSharedObject
+        ClientSharedObject.
     badge_id
         ID of the badge.
     &#34;&#34;&#34;
-    def __init__(self, requests, badge_id):
+    def __init__(self, cso, badge_id):
+        ClientObject.__init__(self)
+        BaseAsset.__init__(self)
         self.id = badge_id
-        self.requests = requests
+        self.cso = cso
+        self.requests = cso.requests
         self.name = None
         self.description = None
         self.display_name = None
@@ -149,10 +227,68 @@ class Badge:
             statistics_info[&#34;pastDayAwardedCount&#34;],
             statistics_info[&#34;awardedCount&#34;],
             statistics_info[&#34;winRatePercentage&#34;]
-        )</code></pre>
+        )
+
+    async def owned_by(self, user):
+        &#34;&#34;&#34;
+        Checks if a user was awarded this badge and grabs the time that they were awarded it.
+        Functionally identical to ro_py.users.User.has_badge.
+
+        Parameters
+        ----------
+        user: ro_py.users.BaseUser
+            User to check badge ownership.
+
+        Returns
+        -------
+        tuple[bool, datetime.datetime]
+        &#34;&#34;&#34;
+        return await user.has_badge(self)</code></pre>
 </details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.clientobject.ClientObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientObject">ClientObject</a></li>
+<li><a title="ro_py.bases.baseasset.BaseAsset" href="bases/baseasset.html#ro_py.bases.baseasset.BaseAsset">BaseAsset</a></li>
+</ul>
 <h3>Methods</h3>
 <dl>
+<dt id="ro_py.badges.Badge.owned_by"><code class="name flex">
+<span>async def <span class="ident">owned_by</span></span>(<span>self, user)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Checks if a user was awarded this badge and grabs the time that they were awarded it.
+Functionally identical to ro_py.users.User.has_badge.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>user</code></strong> :&ensp;<code>ro_py.users.BaseUser</code></dt>
+<dd>User to check badge ownership.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tuple[bool, datetime.datetime]</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def owned_by(self, user):
+    &#34;&#34;&#34;
+    Checks if a user was awarded this badge and grabs the time that they were awarded it.
+    Functionally identical to ro_py.users.User.has_badge.
+
+    Parameters
+    ----------
+    user: ro_py.users.BaseUser
+        User to check badge ownership.
+
+    Returns
+    -------
+    tuple[bool, datetime.datetime]
+    &#34;&#34;&#34;
+    return await user.has_badge(self)</code></pre>
+</details>
+</dd>
 <dt id="ro_py.badges.Badge.update"><code class="name flex">
 <span>async def <span class="ident">update</span></span>(<span>self)</span>
 </code></dt>
@@ -207,6 +343,11 @@ class Badge:
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>
@@ -222,6 +363,7 @@ class Badge:
 <li>
 <h4><code><a title="ro_py.badges.Badge" href="#ro_py.badges.Badge">Badge</a></code></h4>
 <ul class="">
+<li><code><a title="ro_py.badges.Badge.owned_by" href="#ro_py.badges.Badge.owned_by">owned_by</a></code></li>
 <li><code><a title="ro_py.badges.Badge.update" href="#ro_py.badges.Badge.update">update</a></code></li>
 </ul>
 </li>

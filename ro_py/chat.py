@@ -5,9 +5,10 @@ This file houses functions and classes that pertain to chatting and messaging.
 """
 
 from ro_py.utilities.errors import ChatError
-from ro_py.users import User
+from ro_py.bases.baseuser import PartialUser
 
-endpoint = "https://chat.roblox.com/"
+from ro_py.utilities.url import url
+endpoint = url("chat")
 
 
 class ChatSettings:
@@ -17,12 +18,13 @@ class ChatSettings:
 
 
 class ConversationTyping:
-    def __init__(self, requests, conversation_id):
-        self.requests = requests
+    def __init__(self, cso, conversation_id):
+        self.cso = cso
+        self.requests = cso.requests
         self.id = conversation_id
 
-    def __enter__(self):
-        self.requests.post(
+    async def __aenter__(self):
+        await self.requests.post(
             url=endpoint + "v2/update-user-typing-status",
             data={
                 "conversationId": self.id,
@@ -30,8 +32,8 @@ class ConversationTyping:
             }
         )
 
-    def __exit__(self, *args, **kwargs):
-        self.requests.post(
+    async def __aexit__(self, *args, **kwargs):
+        await self.requests.post(
             url=endpoint + "v2/update-user-typing-status",
             data={
                 "conversationId": self.id,
@@ -41,27 +43,36 @@ class ConversationTyping:
 
 
 class Conversation:
-    def __init__(self, requests, conversation_id=None, raw=False, raw_data=None):
-        self.requests = requests
+    def __init__(self, cso, conversation_id=None, raw=False, raw_data=None):
+        self.cso = cso
+        self.requests = cso.requests
+        self.raw = raw
+        self.id = None
+        self.title = None
+        self.initiator = None
+        self.type = None
+        self.typing = ConversationTyping(self.cso, conversation_id)
 
-        if raw:
+        if self.raw:
             data = raw_data
             self.id = data["id"]
-        else:
-            self.id = conversation_id
-            conversation_req = requests.get(
-                url="https://chat.roblox.com/v2/get-conversations",
-                params={
-                    "conversationIds": self.id
-                }
-            )
-            data = conversation_req.json()[0]
+            self.title = data["title"]
+            self.initiator = data["initiator"]["targetId"]
+            self.type = data["conversationType"]
+            self.typing = ConversationTyping(self.cso, conversation_id)
 
+    async def update(self):
+        conversation_req = await self.requests.get(
+            url="https://chat.roblox.com/v2/get-conversations",
+            params={
+                "conversationIds": self.id
+            }
+        )
+        data = conversation_req.json()[0]
+        self.id = data["id"]
         self.title = data["title"]
-        self.initiator = User(self.requests, data["initiator"]["targetId"])
+        self.initiator = await self.cso.client.get_user(data["initiator"]["targetId"])
         self.type = data["conversationType"]
-
-        self.typing = ConversationTyping(self.requests, conversation_id)
 
     async def get_message(self, message_id):
         return Message(self.requests, message_id, self.id)
@@ -87,15 +98,16 @@ class Message:
 
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-        Requests object to use for API requests.
+    cso : ro_py.client.ClientSharedObject
+        ClientSharedObject.
     message_id
         ID of the message.
     conversation_id
         ID of the conversation that contains the message.
     """
-    def __init__(self, requests, message_id, conversation_id):
-        self.requests = requests
+    def __init__(self, cso, message_id, conversation_id):
+        self.cso = cso
+        self.requests = cso.requests
         self.id = message_id
         self.conversation_id = conversation_id
 
@@ -118,7 +130,7 @@ class Message:
 
         message_json = message_req.json()[0]
         self.content = message_json["content"]
-        self.sender = User(self.requests, message_json["senderTargetId"])
+        self.sender = PartialUser(self.cso, message_json["senderTargetId"])
         self.read = message_json["read"]
 
 
@@ -127,8 +139,9 @@ class ChatWrapper:
     Represents the Roblox chat client. It essentially mirrors the functionality of the chat window at the bottom right
     of the Roblox web client.
     """
-    def __init__(self, requests):
-        self.requests = requests
+    def __init__(self, cso):
+        self.cso = cso
+        self.requests = cso.requests
 
     async def get_conversation(self, conversation_id):
         """
@@ -157,7 +170,7 @@ class ChatWrapper:
         conversations = []
         for conversation_raw in conversations_json:
             conversations.append(Conversation(
-                requests=self.requests,
+                cso=self.cso,
                 raw=True,
                 raw_data=conversation_raw
             ))

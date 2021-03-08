@@ -4,34 +4,44 @@ This file houses functions and classes that pertain to Roblox users and profiles
 
 """
 
-from ro_py.robloxbadges import RobloxBadge
+import copy
 import iso8601
+import asyncio
+from typing import Callable
+from ro_py.events import EventTypes
+from ro_py.bases.baseuser import BaseUser
+from ro_py.thumbnails import UserThumbnailGenerator
+from ro_py.utilities.clientobject import ClientObject
 
-endpoint = "https://users.roblox.com/"
+from ro_py.utilities.url import url
+endpoint = url("users")
 
 
-class User:
+class User(BaseUser, ClientObject):
     """
     Represents a Roblox user and their profile.
     Can be initialized with either a user ID or a username.
 
+    I'm in so much pain
+
     Parameters
     ----------
-    requests : ro_py.utilities.requests.Requests
-            Requests object to use for API requests.
-    roblox_id : int
+    cso : ro_py.client.ClientSharedObject
+            ClientSharedObject.
+    user_id : int
             The id of a user.
-    name : str
-            The name of the user.
     """
-    def __init__(self, requests, roblox_id, name=None):
-        self.requests = requests
-        self.id = roblox_id
+
+    def __init__(self, cso, user_id):
+        super().__init__(cso, user_id)
+        self.cso = cso
+        self.id = user_id
+        self.name = None
         self.description = None
         self.created = None
         self.is_banned = None
-        self.name = name
         self.display_name = None
+        self.thumbnails = UserThumbnailGenerator(cso, user_id)
 
     async def update(self):
         """
@@ -47,71 +57,41 @@ class User:
         self.display_name = user_info["displayName"]
         # has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
         # self.has_premium = has_premium_req
-        return self
-
-    async def get_status(self):
-        """
-        Gets the user's status.
-        :return: A string
-        """
-        status_req = await self.requests.get(endpoint + f"v1/users/{self.id}/status")
-        return status_req.json()["status"]
-
-    async def get_roblox_badges(self):
-        """
-        Gets the user's roblox badges.
-        :return: A list of RobloxBadge instances
-        """
-        roblox_badges_req = await self.requests.get(f"https://accountinformation.roblox.com/v1/users/{self.id}/roblox-badges")
-        roblox_badges = []
-        for roblox_badge_data in roblox_badges_req.json():
-            roblox_badges.append(RobloxBadge(roblox_badge_data))
-        return roblox_badges
-
-    async def get_friends_count(self):
-        """
-        Gets the user's friends count.
-        :return: An integer
-        """
-        friends_count_req = await self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/friends/count")
-        friends_count = friends_count_req.json()["count"]
-        return friends_count
-
-    async def get_followers_count(self):
-        """
-        Gets the user's followers count.
-        :return: An integer
-        """
-        followers_count_req = await self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/followers/count")
-        followers_count = followers_count_req.json()["count"]
-        return followers_count
-
-    async def get_followings_count(self):
-        """
-        Gets the user's followings count.
-        :return: An integer
-        """
-        followings_count_req = await self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/followings/count")
-        followings_count = followings_count_req.json()["count"]
-        return followings_count
-
-    async def get_friends(self):
-        """
-        Gets the user's friends.
-        :return: A list of User instances.
-        """
-        friends_req = await self.requests.get(f"https://friends.roblox.com/v1/users/{self.id}/friends")
-        friends_raw = friends_req.json()["data"]
-        friends_list = []
-        for friend_raw in friends_raw:
-            friends_list.append(
-                User(self.requests, friend_raw["id"])
-            )
-        return friends_list
 
 
-class PartialUser(User):
-    """
-    Represents a user with less information then the normal User class.
-    """
-    pass
+class Events:
+    def __init__(self, cso, user):
+        self.cso = cso
+        self.user = user
+
+    def bind(self, func: Callable, event: str, delay: int = 15):
+        """
+        Binds an event to the provided function.
+
+        Parameters
+        ----------
+        func : function
+                Function that will be called when the event fires.
+        event : ro_py.events.EventTypes
+                The name of the event.
+        delay : int
+                How many seconds between requests.
+        """
+        if event == EventTypes.on_user_change:
+            return asyncio.create_task(self.on_user_change(func, delay))
+
+    async def on_user_change(self, func: Callable, delay: int):
+        old_user = copy.copy(await self.user.update())
+        while True:
+            await asyncio.sleep(delay)
+            new_user = await self.user.update()
+            has_changed = False
+            for attr, value in old_user.__dict__.items():
+                if getattr(new_user, attr) != value:
+                    has_changed = True
+            if has_changed:
+                if asyncio.iscoroutinefunction(func):
+                    await func(old_user, new_user)
+                else:
+                    func(old_user, new_user)
+                old_user = copy.copy(new_user)

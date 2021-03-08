@@ -14,6 +14,58 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #333;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+body {
+background: #212121;
+color: white;
+}
+a {
+color: #0091EA;
+}
+a:hover {
+color: #40C4FF;
+}
+.name {
+background: #424242;
+}
+.name:hover {
+background: #424242;
+}
+.ident {
+color: #1DE9B6;
+}
+.admonition {
+color: black;
+}
+* {
+border-color: #424242 !important;
+}
+</style>
 </head>
 <body>
 <main>
@@ -37,6 +89,53 @@ This file houses custom exceptions unique to this module.
 &#34;&#34;&#34;
 
 
+# The following are HTTP generic errors used by utilities/requests.py
+class ApiError(Exception):
+    &#34;&#34;&#34;Called in requests when an API request fails with an error code that doesn&#39;t have an independent error.&#34;&#34;&#34;
+    pass
+
+
+class BadRequest(ApiError):
+    &#34;&#34;&#34;400 HTTP error&#34;&#34;&#34;
+    pass
+
+
+class Unauthorized(ApiError):
+    &#34;&#34;&#34;401 HTTP error&#34;&#34;&#34;
+    pass
+
+
+class Forbidden(ApiError):
+    &#34;&#34;&#34;403 HTTP error&#34;&#34;&#34;
+    pass
+
+
+class NotFound(ApiError):
+    &#34;&#34;&#34;404 HTTP error (also used for other things)&#34;&#34;&#34;
+    pass
+
+
+class Conflict(ApiError):
+    &#34;&#34;&#34;409 HTTP error&#34;&#34;&#34;
+    pass
+
+
+class TooManyRequests(ApiError):
+    &#34;&#34;&#34;429 HTTP error&#34;&#34;&#34;
+    pass
+
+
+class InternalServerError(ApiError):
+    &#34;&#34;&#34;500 HTTP error&#34;&#34;&#34;
+    pass
+
+
+class BadGateway(ApiError):
+    &#34;&#34;&#34;502 HTTP error&#34;&#34;&#34;
+    pass
+
+
+# The following errors are specific to certain parts of ro.py
 class NotLimitedError(Exception):
     &#34;&#34;&#34;Called when code attempts to read limited-only information.&#34;&#34;&#34;
     pass
@@ -52,17 +151,51 @@ class InvalidShotTypeError(Exception):
     pass
 
 
-class ApiError(Exception):
-    &#34;&#34;&#34;Called in requests when an API request fails.&#34;&#34;&#34;
-    pass
-
-
 class ChatError(Exception):
     &#34;&#34;&#34;Called in chat when a chat action fails.&#34;&#34;&#34;
 
 
 class InvalidPageError(Exception):
-    &#34;&#34;&#34;Called when an invalid page is requested.&#34;&#34;&#34;</code></pre>
+    &#34;&#34;&#34;Called when an invalid page is requested.&#34;&#34;&#34;
+
+
+class UserDoesNotExistError(Exception):
+    &#34;&#34;&#34;Called when a user does not exist.&#34;&#34;&#34;
+
+
+class GameJoinError(Exception):
+    &#34;&#34;&#34;Called when an error occurs when joining a game.&#34;&#34;&#34;
+
+
+class InvalidPlaceIDError(Exception):
+    &#34;&#34;&#34;Called when place ID is invalid.&#34;&#34;&#34;
+
+
+class IncorrectKeyError(Exception):
+    &#34;&#34;&#34;Raised when the api key for 2captcha is incorrect.&#34;&#34;&#34;
+    pass
+
+
+class InsufficientCreditError(Exception):
+    &#34;&#34;&#34;Raised when there is insufficient credit in 2captcha.&#34;&#34;&#34;
+    pass
+
+
+class NoAvailableWorkersError(Exception):
+    &#34;&#34;&#34;Raised when there are no available workers.&#34;&#34;&#34;
+    pass
+
+
+c_errors = {
+    &#34;400&#34;: BadRequest,
+    &#34;401&#34;: Unauthorized,
+    &#34;403&#34;: Forbidden,
+    &#34;404&#34;: NotFound,
+    &#34;409&#34;: Conflict,
+    &#34;429&#34;: TooManyRequests,
+    &#34;500&#34;: InternalServerError,
+    &#34;502&#34;: BadGateway
+}</code></pre>
 </details>
 </section>
 <section>
@@ -79,17 +212,70 @@ class InvalidPageError(Exception):
 <span>(</span><span>*args, **kwargs)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Called in requests when an API request fails.</p></div>
+<div class="desc"><p>Called in requests when an API request fails with an error code that doesn't have an independent error.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">class ApiError(Exception):
-    &#34;&#34;&#34;Called in requests when an API request fails.&#34;&#34;&#34;
+    &#34;&#34;&#34;Called in requests when an API request fails with an error code that doesn&#39;t have an independent error.&#34;&#34;&#34;
     pass</code></pre>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.errors.BadGateway" href="#ro_py.utilities.errors.BadGateway">BadGateway</a></li>
+<li><a title="ro_py.utilities.errors.BadRequest" href="#ro_py.utilities.errors.BadRequest">BadRequest</a></li>
+<li><a title="ro_py.utilities.errors.Conflict" href="#ro_py.utilities.errors.Conflict">Conflict</a></li>
+<li><a title="ro_py.utilities.errors.Forbidden" href="#ro_py.utilities.errors.Forbidden">Forbidden</a></li>
+<li><a title="ro_py.utilities.errors.InternalServerError" href="#ro_py.utilities.errors.InternalServerError">InternalServerError</a></li>
+<li><a title="ro_py.utilities.errors.NotFound" href="#ro_py.utilities.errors.NotFound">NotFound</a></li>
+<li><a title="ro_py.utilities.errors.TooManyRequests" href="#ro_py.utilities.errors.TooManyRequests">TooManyRequests</a></li>
+<li><a title="ro_py.utilities.errors.Unauthorized" href="#ro_py.utilities.errors.Unauthorized">Unauthorized</a></li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.BadGateway"><code class="flex name class">
+<span>class <span class="ident">BadGateway</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>502 HTTP error</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BadGateway(ApiError):
+    &#34;&#34;&#34;502 HTTP error&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.BadRequest"><code class="flex name class">
+<span>class <span class="ident">BadRequest</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>400 HTTP error</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BadRequest(ApiError):
+    &#34;&#34;&#34;400 HTTP error&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
@@ -109,6 +295,128 @@ class InvalidPageError(Exception):
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.Conflict"><code class="flex name class">
+<span>class <span class="ident">Conflict</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>409 HTTP error</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Conflict(ApiError):
+    &#34;&#34;&#34;409 HTTP error&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.Forbidden"><code class="flex name class">
+<span>class <span class="ident">Forbidden</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>403 HTTP error</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Forbidden(ApiError):
+    &#34;&#34;&#34;403 HTTP error&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.GameJoinError"><code class="flex name class">
+<span>class <span class="ident">GameJoinError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called when an error occurs when joining a game.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GameJoinError(Exception):
+    &#34;&#34;&#34;Called when an error occurs when joining a game.&#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.IncorrectKeyError"><code class="flex name class">
+<span>class <span class="ident">IncorrectKeyError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Raised when the api key for 2captcha is incorrect.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class IncorrectKeyError(Exception):
+    &#34;&#34;&#34;Raised when the api key for 2captcha is incorrect.&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.InsufficientCreditError"><code class="flex name class">
+<span>class <span class="ident">InsufficientCreditError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Raised when there is insufficient credit in 2captcha.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class InsufficientCreditError(Exception):
+    &#34;&#34;&#34;Raised when there is insufficient credit in 2captcha.&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.InternalServerError"><code class="flex name class">
+<span>class <span class="ident">InternalServerError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>500 HTTP error</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class InternalServerError(ApiError):
+    &#34;&#34;&#34;500 HTTP error&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
@@ -152,6 +460,25 @@ class InvalidPageError(Exception):
 <li>builtins.BaseException</li>
 </ul>
 </dd>
+<dt id="ro_py.utilities.errors.InvalidPlaceIDError"><code class="flex name class">
+<span>class <span class="ident">InvalidPlaceIDError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called when place ID is invalid.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class InvalidPlaceIDError(Exception):
+    &#34;&#34;&#34;Called when place ID is invalid.&#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
 <dt id="ro_py.utilities.errors.InvalidShotTypeError"><code class="flex name class">
 <span>class <span class="ident">InvalidShotTypeError</span></span>
 <span>(</span><span>*args, **kwargs)</span>
@@ -168,6 +495,47 @@ class InvalidPageError(Exception):
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.NoAvailableWorkersError"><code class="flex name class">
+<span>class <span class="ident">NoAvailableWorkersError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Raised when there are no available workers.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NoAvailableWorkersError(Exception):
+    &#34;&#34;&#34;Raised when there are no available workers.&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.NotFound"><code class="flex name class">
+<span>class <span class="ident">NotFound</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>404 HTTP error (also used for other things)</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class NotFound(ApiError):
+    &#34;&#34;&#34;404 HTTP error (also used for other things)&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
 <li>builtins.Exception</li>
 <li>builtins.BaseException</li>
 </ul>
@@ -192,10 +560,76 @@ class InvalidPageError(Exception):
 <li>builtins.BaseException</li>
 </ul>
 </dd>
+<dt id="ro_py.utilities.errors.TooManyRequests"><code class="flex name class">
+<span>class <span class="ident">TooManyRequests</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>429 HTTP error</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class TooManyRequests(ApiError):
+    &#34;&#34;&#34;429 HTTP error&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.Unauthorized"><code class="flex name class">
+<span>class <span class="ident">Unauthorized</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>401 HTTP error</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Unauthorized(ApiError):
+    &#34;&#34;&#34;401 HTTP error&#34;&#34;&#34;
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></li>
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
+<dt id="ro_py.utilities.errors.UserDoesNotExistError"><code class="flex name class">
+<span>class <span class="ident">UserDoesNotExistError</span></span>
+<span>(</span><span>*args, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Called when a user does not exist.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UserDoesNotExistError(Exception):
+    &#34;&#34;&#34;Called when a user does not exist.&#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>builtins.Exception</li>
+<li>builtins.BaseException</li>
+</ul>
+</dd>
 </dl>
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>
@@ -212,7 +646,31 @@ class InvalidPageError(Exception):
 <h4><code><a title="ro_py.utilities.errors.ApiError" href="#ro_py.utilities.errors.ApiError">ApiError</a></code></h4>
 </li>
 <li>
+<h4><code><a title="ro_py.utilities.errors.BadGateway" href="#ro_py.utilities.errors.BadGateway">BadGateway</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.utilities.errors.BadRequest" href="#ro_py.utilities.errors.BadRequest">BadRequest</a></code></h4>
+</li>
+<li>
 <h4><code><a title="ro_py.utilities.errors.ChatError" href="#ro_py.utilities.errors.ChatError">ChatError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.utilities.errors.Conflict" href="#ro_py.utilities.errors.Conflict">Conflict</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.utilities.errors.Forbidden" href="#ro_py.utilities.errors.Forbidden">Forbidden</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.utilities.errors.GameJoinError" href="#ro_py.utilities.errors.GameJoinError">GameJoinError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.utilities.errors.IncorrectKeyError" href="#ro_py.utilities.errors.IncorrectKeyError">IncorrectKeyError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.utilities.errors.InsufficientCreditError" href="#ro_py.utilities.errors.InsufficientCreditError">InsufficientCreditError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.utilities.errors.InternalServerError" href="#ro_py.utilities.errors.InternalServerError">InternalServerError</a></code></h4>
 </li>
 <li>
 <h4><code><a title="ro_py.utilities.errors.InvalidIconSizeError" href="#ro_py.utilities.errors.InvalidIconSizeError">InvalidIconSizeError</a></code></h4>
@@ -221,10 +679,28 @@ class InvalidPageError(Exception):
 <h4><code><a title="ro_py.utilities.errors.InvalidPageError" href="#ro_py.utilities.errors.InvalidPageError">InvalidPageError</a></code></h4>
 </li>
 <li>
+<h4><code><a title="ro_py.utilities.errors.InvalidPlaceIDError" href="#ro_py.utilities.errors.InvalidPlaceIDError">InvalidPlaceIDError</a></code></h4>
+</li>
+<li>
 <h4><code><a title="ro_py.utilities.errors.InvalidShotTypeError" href="#ro_py.utilities.errors.InvalidShotTypeError">InvalidShotTypeError</a></code></h4>
 </li>
 <li>
+<h4><code><a title="ro_py.utilities.errors.NoAvailableWorkersError" href="#ro_py.utilities.errors.NoAvailableWorkersError">NoAvailableWorkersError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.utilities.errors.NotFound" href="#ro_py.utilities.errors.NotFound">NotFound</a></code></h4>
+</li>
+<li>
 <h4><code><a title="ro_py.utilities.errors.NotLimitedError" href="#ro_py.utilities.errors.NotLimitedError">NotLimitedError</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.utilities.errors.TooManyRequests" href="#ro_py.utilities.errors.TooManyRequests">TooManyRequests</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.utilities.errors.Unauthorized" href="#ro_py.utilities.errors.Unauthorized">Unauthorized</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.utilities.errors.UserDoesNotExistError" href="#ro_py.utilities.errors.UserDoesNotExistError">UserDoesNotExistError</a></code></h4>
 </li>
 </ul>
 </li>

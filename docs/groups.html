@@ -14,6 +14,58 @@
 <style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
 <script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #333;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+body {
+background: #212121;
+color: white;
+}
+a {
+color: #0091EA;
+}
+a:hover {
+color: #40C4FF;
+}
+.name {
+background: #424242;
+}
+.name:hover {
+background: #424242;
+}
+.ident {
+color: #1DE9B6;
+}
+.admonition {
+color: black;
+}
+* {
+border-color: #424242 !important;
+}
+</style>
 </head>
 <body>
 <main>
@@ -33,36 +85,198 @@ This file houses functions and classes that pertain to Roblox groups.
 
 &#34;&#34;&#34;
 
-from ro_py.users import User
-from ro_py.roles import Role
+import copy
+from enum import Enum
 
-endpoint = &#34;https://groups.roblox.com&#34;
+import iso8601
+import asyncio
+
+from ro_py.wall import Wall
+from ro_py.roles import Role
+from ro_py.events import Event
+from ro_py.users import BaseUser
+from typing import Tuple, Callable
+from ro_py.events import EventTypes
+from ro_py.utilities.errors import NotFound
+from ro_py.bases.baseuser import PartialUser
+from ro_py.utilities.pages import Pages, SortOrder
+from ro_py.utilities.clientobject import ClientObject
+
+from ro_py.utilities.url import url
+endpoint = url(&#34;groups&#34;)
 
 
 class Shout:
     &#34;&#34;&#34;
     Represents a group shout.
     &#34;&#34;&#34;
-    def __init__(self, requests, shout_data):
+    def __init__(self, cso, group, shout_data):
+        self.cso = cso
+        self.requests = cso.requests
+        self.group = group
+        self.data = shout_data
         self.body = shout_data[&#34;body&#34;]
-        self.poster = User(requests, shout_data[&#34;poster&#34;][&#34;userId&#34;])
+        self.created = iso8601.parse_date(shout_data[&#34;created&#34;])
+        self.updated = iso8601.parse_date(shout_data[&#34;updated&#34;])
+
+        # TODO: Make this a PartialUser
+        self.poster = None
+
+    def __str__(self):
+        return self.body
+
+    async def __call__(self, message):
+        &#34;&#34;&#34;
+        Updates the shout of the group.
+        Please note that doing so will completely delete this Shout object and return a new Shout object.
+        The parent group&#39;s shout parameter will also be updated accordingly.
+
+        Parameters
+        ----------
+        message : str
+            Message that will overwrite the current shout of a group.
+
+        Returns
+        -------
+        ro_py.groups.Shout
+
+        &#34;&#34;&#34;
+        shout_req = await self.requests.patch(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/status&#34;,
+            data={
+                &#34;message&#34;: message
+            }
+        )
+        self.group.shout = Shout(self.cso, self.group, shout_req.json())
+        return self.group.shout
 
 
-class Group:
+class JoinRequest:
+    def __init__(self, cso, data, group):
+        self.requests = cso.requests
+        self.group = group
+        self.requester = PartialUser(cso, data[&#39;requester&#39;])
+        self.created = iso8601.parse_date(data[&#39;created&#39;])
+
+    async def accept(self):
+        accept_req = await self.requests.post(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requester.id}&#34;
+        )
+        return accept_req.status_code == 200
+
+    async def decline(self):
+        accept_req = await self.requests.delete(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requester.id}&#34;
+        )
+        return accept_req.status_code == 200
+
+
+class Actions(Enum):
+    delete_post = &#34;deletePost&#34;
+    remove_member = &#34;removeMember&#34;
+    accept_join_request = &#34;acceptJoinRequest&#34;
+    decline_join_request = &#34;declineJoinRequest&#34;
+    post_shout = &#34;postShout&#34;
+    change_rank = &#34;changeRank&#34;
+    buy_ad = &#34;buyAd&#34;
+    send_ally_request = &#34;sendAllyRequest&#34;
+    create_enemy = &#34;createEnemy&#34;
+    accept_ally_request = &#34;acceptAllyRequest&#34;
+    decline_ally_request = &#34;declineAllyRequest&#34;
+    delete_ally = &#34;deleteAlly&#34;
+    add_group_place = &#34;addGroupPlace&#34;
+    delete_group_place = &#34;deleteGroupPlace&#34;
+    create_items = &#34;createItems&#34;
+    configure_items = &#34;configureItems&#34;
+    spend_group_funds = &#34;spendGroupFunds&#34;
+    change_owner = &#34;changeOwner&#34;
+    delete = &#34;delete&#34;
+    adjust_currency_amounts = &#34;adjustCurrencyAmounts&#34;
+    abandon = &#34;abandon&#34;
+    claim = &#34;claim&#34;
+    Rename = &#34;rename&#34;
+    change_description = &#34;changeDescription&#34;
+    create_group_asset = &#34;createGroupAsset&#34;
+    upload_group_asset = &#34;uploadGroupAsset&#34;
+    configure_group_asset = &#34;configureGroupAsset&#34;
+    revert_group_asset = &#34;revertGroupAsset&#34;
+    create_group_developer_product = &#34;createGroupDeveloperProduct&#34;
+    configure_group_game = &#34;configureGroupGame&#34;
+    lock = &#34;lock&#34;
+    unlock = &#34;unlock&#34;
+    create_game_pass = &#34;createGamePass&#34;
+    create_badge = &#34;createBadge&#34;
+    configure_badge = &#34;configureBadge&#34;
+    save_place = &#34;savePlace&#34;
+    publish_place = &#34;publishPlace&#34;
+    invite_to_clan = &#34;inviteToClan&#34;
+    kick_from_clan = &#34;kickFromClan&#34;
+    cancel_clan_invite = &#34;cancelClanInvite&#34;
+    buy_clan = &#34;buyClan&#34;
+
+
+class Action:
+    def __init__(self, cso, data, group):
+        self.group = group
+        self.actor = Member(cso, data[&#39;actor&#39;][&#39;user&#39;][&#39;userId&#39;], data[&#39;actor&#39;][&#39;user&#39;][&#39;username&#39;], group, Role(cso, group, data[&#39;actor&#39;][&#39;role&#39;]))
+        self.action = data[&#39;actionType&#39;]
+        self.created = iso8601.parse_date(data[&#39;created&#39;])
+        self.data = data[&#39;description&#39;]
+
+
+def action_handler(cso, data, args):
+    actions = []
+    for action in data:
+        actions.append(Action(cso, action, args))
+    return actions
+
+
+def join_request_handler(cso, data, args):
+    join_requests = []
+    for request in data:
+        join_requests.append(JoinRequest(cso, request, args))
+    return join_requests
+
+
+def member_handler(cso, data, args):
+    members = []
+    for member in data:
+        members.append(member)
+    return members
+
+
+class Group(ClientObject):
     &#34;&#34;&#34;
     Represents a group.
     &#34;&#34;&#34;
-    def __init__(self, requests, group_id):
-        self.requests = requests
+    def __init__(self, cso, group_id):
+        super().__init__()
+        self.cso = cso
+        &#34;&#34;&#34;Client Shared Object&#34;&#34;&#34;
+        self.requests = cso.requests
+        &#34;Requests object.&#34;
         self.id = group_id
-
+        &#34;Group ID.&#34;
+        self.wall = Wall(self.cso, self)
+        &#34;&#34;&#34;Wall object.&#34;&#34;&#34;
         self.name = None
+        &#34;&#34;&#34;Group name.&#34;&#34;&#34;
         self.description = None
+        &#34;&#34;&#34;Group description.&#34;&#34;&#34;
         self.owner = None
+        &#34;&#34;&#34;Group owner.&#34;&#34;&#34;
         self.member_count = None
+        &#34;&#34;&#34;Group member count.&#34;&#34;&#34;
         self.is_builders_club_only = None
+        &#34;&#34;&#34;True if the group is Builders Club (Premium) only. This seems to have been removed.&#34;&#34;&#34;
         self.public_entry_allowed = None
+        &#34;&#34;&#34;Public entry allowed (private/public group)&#34;&#34;&#34;
         self.shout = None
+        &#34;&#34;&#34;Current group shout (Shout)&#34;&#34;&#34;
+        self.events = Events(cso, self)
+        &#34;&#34;&#34;Events object.&#34;&#34;&#34;
+        self.is_locked = False
+        &#34;&#34;&#34;True if this is a locked group.&#34;&#34;&#34;
 
     async def update(self):
         &#34;&#34;&#34;
@@ -72,110 +286,434 @@ class Group:
         group_info = group_info_req.json()
         self.name = group_info[&#34;name&#34;]
         self.description = group_info[&#34;description&#34;]
-        self.owner = User(self.requests, group_info[&#34;owner&#34;][&#34;userId&#34;])
+        self.owner = await self.cso.client.get_user(group_info[&#34;owner&#34;][&#34;userId&#34;])
         self.member_count = group_info[&#34;memberCount&#34;]
         self.is_builders_club_only = group_info[&#34;isBuildersClubOnly&#34;]
         self.public_entry_allowed = group_info[&#34;publicEntryAllowed&#34;]
-        if &#34;shout&#34; in group_info:
-            self.shout = group_info[&#34;shout&#34;]
+        if group_info.get(&#39;shout&#39;):
+            self.shout = Shout(self.cso, self, group_info[&#39;shout&#39;])
         else:
             self.shout = None
-        # self.is_locked = group_info[&#34;isLocked&#34;]
+        if &#34;isLocked&#34; in group_info:
+            self.is_locked = group_info[&#34;isLocked&#34;]
 
     async def update_shout(self, message):
-        shout_req = await self.requests.patch(
-            url=endpoint+ f&#34;/v1/groups/{self.id}/status&#34;,
-            data={
-                &#34;message&#34;: message
-            }
-        )
-        return shout_req.status_code == 200
+        &#34;&#34;&#34;
+        Updates the shout of the group.
+        DEPRECATED: Just call group.shout()
+
+        Parameters
+        ----------
+        message : str
+            Message that will overwrite the current shout of a group.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        return await self.shout(message)
 
     async def get_roles(self):
+        &#34;&#34;&#34;
+        Gets all roles of the group.
+
+        Returns
+        -------
+        list
+        &#34;&#34;&#34;
         role_req = await self.requests.get(
             url=endpoint + f&#34;/v1/groups/{self.id}/roles&#34;
         )
         roles = []
         for role in role_req.json()[&#39;roles&#39;]:
-            roles.append(Role(self.requests, self, role))
-        return roles</code></pre>
-</details>
-</section>
-<section>
-</section>
-<section>
-</section>
-<section>
-</section>
-<section>
-<h2 class="section-title" id="header-classes">Classes</h2>
-<dl>
-<dt id="ro_py.groups.Group"><code class="flex name class">
-<span>class <span class="ident">Group</span></span>
-<span>(</span><span>requests, group_id)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Represents a group.</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">class Group:
-    &#34;&#34;&#34;
-    Represents a group.
-    &#34;&#34;&#34;
-    def __init__(self, requests, group_id):
-        self.requests = requests
-        self.id = group_id
+            roles.append(Role(self.cso, self, role))
+        return roles
 
-        self.name = None
-        self.description = None
-        self.owner = None
+    async def get_member_by_id(self, user_id):
+        # Get list of group user is in.
+        member_req = await self.requests.get(
+            url=endpoint + f&#34;/v2/users/{user_id}/groups/roles&#34;
+        )
+        data = member_req.json()
+
+        # Find group in list.
+        group_data = None
+        for group in data[&#39;data&#39;]:
+            if group[&#39;group&#39;][&#39;id&#39;] == self.id:
+                group_data = group
+                break
+
+        # Check if user is in group.
+        if not group_data:
+            raise NotFound(f&#34;The user {user_id} was not found in group {self.id}&#34;)
+
+        # Create data to return.
+        role = Role(self.cso, self, group_data[&#39;role&#39;])
+        member = Member(self.cso, user_id, &#34;&#34;, self, role)
+        return member
+
+    async def get_member_by_username(self, name):
+        user = await self.cso.client.get_user_by_username(name)
+        member_req = await self.requests.get(
+            url=endpoint + f&#34;/v2/users/{user.id}/groups/roles&#34;
+        )
+        data = member_req.json()
+
+        # Find group in list.
+        group_data = None
+        for group in data[&#39;data&#39;]:
+            if group[&#39;group&#39;][&#39;id&#39;] == self.id:
+                group_data = group
+                break
+
+        # Check if user is in group.
+        if not group_data:
+            raise NotFound(f&#34;The user {name} was not found in group {self.id}&#34;)
+
+        # Create data to return.
+        role = Role(self.cso, self, group_data[&#39;role&#39;])
+        member = Member(self.cso, user.id, user.name, self, role)
+        return member
+
+    async def get_join_requests(self, sort_order=SortOrder.Ascending, limit=100):
+        pages = Pages(
+            cso=self.cso,
+            url=endpoint + f&#34;/v1/groups/{self.id}/join-requests&#34;,
+            sort_order=sort_order,
+            limit=limit,
+            handler=join_request_handler,
+            handler_args=self
+        )
+        await pages.get_page()
+        return pages
+
+    async def get_members(self, sort_order=SortOrder.Ascending, limit=100):
+        pages = Pages(
+            cso=self.cso,
+            url=endpoint + f&#34;/v1/groups/{self.id}/users?limit=100&amp;sortOrder=Desc&#34;,
+            sort_order=sort_order,
+            limit=limit,
+            handler=member_handler,
+            handler_args=self
+        )
+
+        await pages.get_page()
+        return pages
+
+    async def get_audit_logs(self, action_filter: Actions = None, sort_order=SortOrder.Ascending, limit=100):
+        parameters = {}
+        if action_filter:
+            parameters[&#39;actionType&#39;] = action_filter
+
+        pages = Pages(
+            cso=self.cso,
+            url=endpoint + f&#34;/v1/groups/{self.id}/audit-log&#34;,
+            handler=action_handler,
+            extra_parameters=parameters,
+            handler_args=self,
+            limit=limit,
+            sort_order=sort_order
+        )
+
+        await pages.get_page()
+        return pages
+
+
+class PartialGroup:
+    &#34;&#34;&#34;
+    Represents a group with less information.
+
+    Different information will be present here in different circumstances.
+    If it was generated as a game owner, it might only contain an ID and a name.
+    If it was generated from, let&#39;s say, groups/v2/users/userid/groups/roles, it&#39;ll also contain a member count.
+    &#34;&#34;&#34;
+    def __init__(self, cso, data):
+        self.cso = cso
+        self.requests = cso.requests
+        self.id = data[&#34;id&#34;]
+        self.name = data[&#34;name&#34;]
         self.member_count = None
-        self.is_builders_club_only = None
-        self.public_entry_allowed = None
-        self.shout = None
+        if &#34;memberCount&#34; in data:
+            self.member_count = data[&#34;memberCount&#34;]
 
-    async def update(self):
-        &#34;&#34;&#34;
-        Updates the group&#39;s information.
-        &#34;&#34;&#34;
-        group_info_req = await self.requests.get(endpoint + f&#34;/v1/groups/{self.id}&#34;)
-        group_info = group_info_req.json()
-        self.name = group_info[&#34;name&#34;]
-        self.description = group_info[&#34;description&#34;]
-        self.owner = User(self.requests, group_info[&#34;owner&#34;][&#34;userId&#34;])
-        self.member_count = group_info[&#34;memberCount&#34;]
-        self.is_builders_club_only = group_info[&#34;isBuildersClubOnly&#34;]
-        self.public_entry_allowed = group_info[&#34;publicEntryAllowed&#34;]
-        if &#34;shout&#34; in group_info:
-            self.shout = group_info[&#34;shout&#34;]
-        else:
-            self.shout = None
-        # self.is_locked = group_info[&#34;isLocked&#34;]
+    async def expand(self):
+        return self.cso.client.get_group(self.id)
 
-    async def update_shout(self, message):
-        shout_req = await self.requests.patch(
-            url=endpoint+ f&#34;/v1/groups/{self.id}/status&#34;,
+
+class Member(BaseUser):
+    &#34;&#34;&#34;
+    Represents a user in a group.
+
+    Parameters
+    ----------
+    cso : ro_py.utilities.requests.Requests
+            Requests object to use for API requests.
+    user_id : int
+            The id of a user.
+    name : str
+            The name of the user.
+    group : ro_py.groups.Group
+            The group the user is in.
+    role : ro_py.roles.Role
+            The role the user has is the group.
+    &#34;&#34;&#34;
+    def __init__(self, cso, user_id, name, group, role):
+        super().__init__(cso, user_id)
+        self.name = name
+        self.role = role
+        self.group = group
+
+    async def update_role(self):
+        &#34;&#34;&#34;
+        Updates the role information of the user.
+
+        Returns
+        -------
+        ro_py.roles.Role
+        &#34;&#34;&#34;
+        member_req = await self.requests.get(
+            url=endpoint + f&#34;/v2/users/{self.id}/groups/roles&#34;
+        )
+        data = member_req.json()
+        for role in data[&#39;data&#39;]:
+            if role[&#39;group&#39;][&#39;id&#39;] == self.group.id:
+                self.role = Role(self.cso, self.group, role[&#39;role&#39;])
+                break
+        return self.role
+
+    async def change_rank(self, num) -&gt; Tuple[Role, Role]:
+        &#34;&#34;&#34;
+        Changes the users rank specified by a number.
+        If num is 1 the users role will go up by 1.
+        If num is -1 the users role will go down by 1.
+
+        Parameters
+        ----------
+        num : int
+                How much to change the rank by.
+        &#34;&#34;&#34;
+        await self.update_role()
+        roles = await self.group.get_roles()
+        old_role = copy.copy(self.role)
+        role_counter = -1
+        for group_role in roles:
+            role_counter += 1
+            if group_role.rank == self.role.rank:
+                break
+        if not roles:
+            raise NotFound(f&#34;User {self.id} is not in group {self.group.id}&#34;)
+        await self.setrank(roles[role_counter + num].id)
+        self.role = roles[role_counter + num].id
+        return old_role, roles[role_counter + num]
+
+    async def promote(self):
+        &#34;&#34;&#34;
+        Promotes the user.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        return await self.change_rank(1)
+
+    async def demote(self):
+        &#34;&#34;&#34;
+        Demotes the user.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        return await self.change_rank(-1)
+
+    async def setrank(self, rank):
+        &#34;&#34;&#34;
+        Sets the users role to specified role using rank id.
+
+        Parameters
+        ----------
+        rank : int
+                Rank id
+
+        Returns
+        -------
+        bool
+        &#34;&#34;&#34;
+        rank_request = await self.requests.patch(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/users/{self.id}&#34;,
             data={
-                &#34;message&#34;: message
+                &#34;roleId&#34;: rank
             }
         )
-        return shout_req.status_code == 200
+        return rank_request.status_code == 200
 
-    async def get_roles(self):
-        role_req = await self.requests.get(
-            url=endpoint + f&#34;/v1/groups/{self.id}/roles&#34;
+    async def setrole(self, role_num):
+        &#34;&#34;&#34;
+         Sets the users role to specified role using role number (1-255).
+
+         Parameters
+         ----------
+         role_num : int
+                Role number (1-255)
+
+         Returns
+         -------
+         bool
+         &#34;&#34;&#34;
+        roles = await self.group.get_roles()
+        rank_role = None
+        for role in roles:
+            if role.rank == role_num:
+                rank_role = role
+                break
+        if not rank_role:
+            raise NotFound(f&#34;Role {role_num} not found&#34;)
+        return await self.setrank(rank_role.id)
+
+    async def exile(self):
+        exile_req = await self.requests.delete(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/users/{self.id}&#34;
         )
-        roles = []
-        for role in role_req.json()[&#39;roles&#39;]:
-            roles.append(Role(self.requests, self, role))
-        return roles</code></pre>
+        return exile_req.status_code == 200
+
+
+class Events:
+    def __init__(self, cso, group):
+        self.cso = cso
+        self.group = group
+
+    async def bind(self, func: Callable, event: EventTypes, delay: int = 15):
+        &#34;&#34;&#34;
+        Binds a function to an event.
+
+        Parameters
+        ----------
+        func : function
+                Function that will be bound to the event.
+        event : ro_py.events.EventTypes
+                Event that will be bound to the function.
+        delay : int
+                How many seconds between each poll.
+        &#34;&#34;&#34;
+        if event == EventTypes.on_join_request:
+            event = Event(self.on_join_request, EventTypes.on_join_request, (func, None), delay)
+            self.cso.event_handler.add_event(event)
+        if event == EventTypes.on_wall_post:
+            event = Event(self.on_wall_post, EventTypes.on_wall_post, (func, None), delay)
+            self.cso.event_handler.add_event(event)
+        if event == EventTypes.on_group_change:
+            event = Event(self.on_group_change, EventTypes.on_group_change, (func, None), delay)
+            self.cso.event_handler.add_event(event)
+        await self.cso.event_handler.listen()
+
+    async def on_join_request(self, func: Callable, old_req, event: Event):
+        if not old_req:
+            current_group_reqs = await self.group.get_join_requests()
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_group_reqs.data[0].requester.id
+            return event.edit(arguments=tuple(old_arguments))
+
+        current_group_reqs = await self.group.get_join_requests()
+        current_group_reqs = current_group_reqs.data
+
+        if current_group_reqs[0].requester.id != old_req:
+            new_reqs = []
+
+            for request in current_group_reqs:
+                if request.requester.id == old_req:
+                    break
+                new_reqs.append(request)
+
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_group_reqs[0].requester.id
+            event.edit(arguments=tuple(old_arguments))
+
+            for new_req in new_reqs:
+                asyncio.create_task(func(new_req))
+
+    async def on_wall_post(self, func: Callable, newest_wall_post, event: Event):
+        if not newest_wall_post:
+            current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_wall_posts.data[0].id
+            return event.edit(arguments=tuple(old_arguments))
+
+        current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
+        current_wall_posts = current_wall_posts.data
+
+        post = current_wall_posts[0]
+        if post.id != newest_wall_post:
+            new_posts = []
+
+            for post in current_wall_posts:
+                if post.id == newest_wall_post:
+                    break
+                new_posts.append(post)
+
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_wall_posts[0].id
+            event.edit(arguments=tuple(old_arguments))
+
+            for new_post in new_posts:
+                asyncio.create_task(func(new_post))
+
+    async def on_group_change(self, func: Callable, current_group, event: Event):
+        if not current_group:
+            await self.group.update()
+            old_arguments = list(event.arguments)
+            old_arguments[1] = copy.copy(self.group)
+            return event.edit(arguments=tuple(old_arguments))
+
+        await self.group.update()
+
+        has_changed = False
+        for attr, value in current_group.__dict__.items():
+            other_value = getattr(self.group, attr)
+            if attr == &#34;shout&#34;:
+                if str(value) != str(other_value):
+                    has_changed = True
+                else:
+                    continue
+            if other_value != value:
+                has_changed = True
+
+        if has_changed:
+            old_arguments = list(event.arguments)
+            old_arguments[1] = copy.copy(self.group)
+            event.edit(arguments=tuple(old_arguments))
+            asyncio.create_task(func(current_group, self.group))
+
+    &#34;&#34;&#34;
+    async def on_audit_log(self, func: Callable, delay: int):
+        audit_log = await self.group.get_audit_logs()
+        audit_log = audit_log.data[0]
+        while True:
+            await asyncio.sleep(delay)
+            new_audit = await self.group.get_audit_logs()
+            new_audits = []
+            for audit in new_audit.data:
+                if audit.created == audit_log.created:
+                    print(audit.created, audit_log.created, audit.created == audit_log.created)
+                    break
+                else:
+                    print(audit.created, audit_log.created)
+                    new_audits.append(audit)
+            if len(new_audits) &gt; 0:
+                audit_log = new_audit.data[0]
+                for new in new_audits:
+                    asyncio.create_task(func(new))
+    &#34;&#34;&#34;</code></pre>
 </details>
-<h3>Methods</h3>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="ro_py.groups.Group.get_roles"><code class="name flex">
-<span>async def <span class="ident">get_roles</span></span>(<span>self)</span>
+<dt id="ro_py.groups.action_handler"><code class="name flex">
+<span>def <span class="ident">action_handler</span></span>(<span>cso, data, args)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -183,13 +721,996 @@ class Group:
 <summary>
 <span>Expand source code</span>
 </summary>
+<pre><code class="python">def action_handler(cso, data, args):
+    actions = []
+    for action in data:
+        actions.append(Action(cso, action, args))
+    return actions</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.join_request_handler"><code class="name flex">
+<span>def <span class="ident">join_request_handler</span></span>(<span>cso, data, args)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def join_request_handler(cso, data, args):
+    join_requests = []
+    for request in data:
+        join_requests.append(JoinRequest(cso, request, args))
+    return join_requests</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.member_handler"><code class="name flex">
+<span>def <span class="ident">member_handler</span></span>(<span>cso, data, args)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def member_handler(cso, data, args):
+    members = []
+    for member in data:
+        members.append(member)
+    return members</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="ro_py.groups.Action"><code class="flex name class">
+<span>class <span class="ident">Action</span></span>
+<span>(</span><span>cso, data, group)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Action:
+    def __init__(self, cso, data, group):
+        self.group = group
+        self.actor = Member(cso, data[&#39;actor&#39;][&#39;user&#39;][&#39;userId&#39;], data[&#39;actor&#39;][&#39;user&#39;][&#39;username&#39;], group, Role(cso, group, data[&#39;actor&#39;][&#39;role&#39;]))
+        self.action = data[&#39;actionType&#39;]
+        self.created = iso8601.parse_date(data[&#39;created&#39;])
+        self.data = data[&#39;description&#39;]</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Actions"><code class="flex name class">
+<span>class <span class="ident">Actions</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Actions(Enum):
+    delete_post = &#34;deletePost&#34;
+    remove_member = &#34;removeMember&#34;
+    accept_join_request = &#34;acceptJoinRequest&#34;
+    decline_join_request = &#34;declineJoinRequest&#34;
+    post_shout = &#34;postShout&#34;
+    change_rank = &#34;changeRank&#34;
+    buy_ad = &#34;buyAd&#34;
+    send_ally_request = &#34;sendAllyRequest&#34;
+    create_enemy = &#34;createEnemy&#34;
+    accept_ally_request = &#34;acceptAllyRequest&#34;
+    decline_ally_request = &#34;declineAllyRequest&#34;
+    delete_ally = &#34;deleteAlly&#34;
+    add_group_place = &#34;addGroupPlace&#34;
+    delete_group_place = &#34;deleteGroupPlace&#34;
+    create_items = &#34;createItems&#34;
+    configure_items = &#34;configureItems&#34;
+    spend_group_funds = &#34;spendGroupFunds&#34;
+    change_owner = &#34;changeOwner&#34;
+    delete = &#34;delete&#34;
+    adjust_currency_amounts = &#34;adjustCurrencyAmounts&#34;
+    abandon = &#34;abandon&#34;
+    claim = &#34;claim&#34;
+    Rename = &#34;rename&#34;
+    change_description = &#34;changeDescription&#34;
+    create_group_asset = &#34;createGroupAsset&#34;
+    upload_group_asset = &#34;uploadGroupAsset&#34;
+    configure_group_asset = &#34;configureGroupAsset&#34;
+    revert_group_asset = &#34;revertGroupAsset&#34;
+    create_group_developer_product = &#34;createGroupDeveloperProduct&#34;
+    configure_group_game = &#34;configureGroupGame&#34;
+    lock = &#34;lock&#34;
+    unlock = &#34;unlock&#34;
+    create_game_pass = &#34;createGamePass&#34;
+    create_badge = &#34;createBadge&#34;
+    configure_badge = &#34;configureBadge&#34;
+    save_place = &#34;savePlace&#34;
+    publish_place = &#34;publishPlace&#34;
+    invite_to_clan = &#34;inviteToClan&#34;
+    kick_from_clan = &#34;kickFromClan&#34;
+    cancel_clan_invite = &#34;cancelClanInvite&#34;
+    buy_clan = &#34;buyClan&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="ro_py.groups.Actions.Rename"><code class="name">var <span class="ident">Rename</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.abandon"><code class="name">var <span class="ident">abandon</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.accept_ally_request"><code class="name">var <span class="ident">accept_ally_request</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.accept_join_request"><code class="name">var <span class="ident">accept_join_request</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.add_group_place"><code class="name">var <span class="ident">add_group_place</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.adjust_currency_amounts"><code class="name">var <span class="ident">adjust_currency_amounts</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.buy_ad"><code class="name">var <span class="ident">buy_ad</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.buy_clan"><code class="name">var <span class="ident">buy_clan</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.cancel_clan_invite"><code class="name">var <span class="ident">cancel_clan_invite</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.change_description"><code class="name">var <span class="ident">change_description</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.change_owner"><code class="name">var <span class="ident">change_owner</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.change_rank"><code class="name">var <span class="ident">change_rank</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.claim"><code class="name">var <span class="ident">claim</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.configure_badge"><code class="name">var <span class="ident">configure_badge</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.configure_group_asset"><code class="name">var <span class="ident">configure_group_asset</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.configure_group_game"><code class="name">var <span class="ident">configure_group_game</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.configure_items"><code class="name">var <span class="ident">configure_items</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.create_badge"><code class="name">var <span class="ident">create_badge</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.create_enemy"><code class="name">var <span class="ident">create_enemy</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.create_game_pass"><code class="name">var <span class="ident">create_game_pass</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.create_group_asset"><code class="name">var <span class="ident">create_group_asset</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.create_group_developer_product"><code class="name">var <span class="ident">create_group_developer_product</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.create_items"><code class="name">var <span class="ident">create_items</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.decline_ally_request"><code class="name">var <span class="ident">decline_ally_request</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.decline_join_request"><code class="name">var <span class="ident">decline_join_request</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.delete"><code class="name">var <span class="ident">delete</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.delete_ally"><code class="name">var <span class="ident">delete_ally</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.delete_group_place"><code class="name">var <span class="ident">delete_group_place</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.delete_post"><code class="name">var <span class="ident">delete_post</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.invite_to_clan"><code class="name">var <span class="ident">invite_to_clan</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.kick_from_clan"><code class="name">var <span class="ident">kick_from_clan</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.lock"><code class="name">var <span class="ident">lock</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.post_shout"><code class="name">var <span class="ident">post_shout</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.publish_place"><code class="name">var <span class="ident">publish_place</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.remove_member"><code class="name">var <span class="ident">remove_member</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.revert_group_asset"><code class="name">var <span class="ident">revert_group_asset</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.save_place"><code class="name">var <span class="ident">save_place</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.send_ally_request"><code class="name">var <span class="ident">send_ally_request</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.spend_group_funds"><code class="name">var <span class="ident">spend_group_funds</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.unlock"><code class="name">var <span class="ident">unlock</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.groups.Actions.upload_group_asset"><code class="name">var <span class="ident">upload_group_asset</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+<dt id="ro_py.groups.Events"><code class="flex name class">
+<span>class <span class="ident">Events</span></span>
+<span>(</span><span>cso, group)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Events:
+    def __init__(self, cso, group):
+        self.cso = cso
+        self.group = group
+
+    async def bind(self, func: Callable, event: EventTypes, delay: int = 15):
+        &#34;&#34;&#34;
+        Binds a function to an event.
+
+        Parameters
+        ----------
+        func : function
+                Function that will be bound to the event.
+        event : ro_py.events.EventTypes
+                Event that will be bound to the function.
+        delay : int
+                How many seconds between each poll.
+        &#34;&#34;&#34;
+        if event == EventTypes.on_join_request:
+            event = Event(self.on_join_request, EventTypes.on_join_request, (func, None), delay)
+            self.cso.event_handler.add_event(event)
+        if event == EventTypes.on_wall_post:
+            event = Event(self.on_wall_post, EventTypes.on_wall_post, (func, None), delay)
+            self.cso.event_handler.add_event(event)
+        if event == EventTypes.on_group_change:
+            event = Event(self.on_group_change, EventTypes.on_group_change, (func, None), delay)
+            self.cso.event_handler.add_event(event)
+        await self.cso.event_handler.listen()
+
+    async def on_join_request(self, func: Callable, old_req, event: Event):
+        if not old_req:
+            current_group_reqs = await self.group.get_join_requests()
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_group_reqs.data[0].requester.id
+            return event.edit(arguments=tuple(old_arguments))
+
+        current_group_reqs = await self.group.get_join_requests()
+        current_group_reqs = current_group_reqs.data
+
+        if current_group_reqs[0].requester.id != old_req:
+            new_reqs = []
+
+            for request in current_group_reqs:
+                if request.requester.id == old_req:
+                    break
+                new_reqs.append(request)
+
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_group_reqs[0].requester.id
+            event.edit(arguments=tuple(old_arguments))
+
+            for new_req in new_reqs:
+                asyncio.create_task(func(new_req))
+
+    async def on_wall_post(self, func: Callable, newest_wall_post, event: Event):
+        if not newest_wall_post:
+            current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_wall_posts.data[0].id
+            return event.edit(arguments=tuple(old_arguments))
+
+        current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
+        current_wall_posts = current_wall_posts.data
+
+        post = current_wall_posts[0]
+        if post.id != newest_wall_post:
+            new_posts = []
+
+            for post in current_wall_posts:
+                if post.id == newest_wall_post:
+                    break
+                new_posts.append(post)
+
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_wall_posts[0].id
+            event.edit(arguments=tuple(old_arguments))
+
+            for new_post in new_posts:
+                asyncio.create_task(func(new_post))
+
+    async def on_group_change(self, func: Callable, current_group, event: Event):
+        if not current_group:
+            await self.group.update()
+            old_arguments = list(event.arguments)
+            old_arguments[1] = copy.copy(self.group)
+            return event.edit(arguments=tuple(old_arguments))
+
+        await self.group.update()
+
+        has_changed = False
+        for attr, value in current_group.__dict__.items():
+            other_value = getattr(self.group, attr)
+            if attr == &#34;shout&#34;:
+                if str(value) != str(other_value):
+                    has_changed = True
+                else:
+                    continue
+            if other_value != value:
+                has_changed = True
+
+        if has_changed:
+            old_arguments = list(event.arguments)
+            old_arguments[1] = copy.copy(self.group)
+            event.edit(arguments=tuple(old_arguments))
+            asyncio.create_task(func(current_group, self.group))
+
+    &#34;&#34;&#34;
+    async def on_audit_log(self, func: Callable, delay: int):
+        audit_log = await self.group.get_audit_logs()
+        audit_log = audit_log.data[0]
+        while True:
+            await asyncio.sleep(delay)
+            new_audit = await self.group.get_audit_logs()
+            new_audits = []
+            for audit in new_audit.data:
+                if audit.created == audit_log.created:
+                    print(audit.created, audit_log.created, audit.created == audit_log.created)
+                    break
+                else:
+                    print(audit.created, audit_log.created)
+                    new_audits.append(audit)
+            if len(new_audits) &gt; 0:
+                audit_log = new_audit.data[0]
+                for new in new_audits:
+                    asyncio.create_task(func(new))
+    &#34;&#34;&#34;</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.groups.Events.bind"><code class="name flex">
+<span>async def <span class="ident">bind</span></span>(<span>self, func: Callable, event: <a title="ro_py.events.EventTypes" href="events.html#ro_py.events.EventTypes">EventTypes</a>, delay: int = 15)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Binds a function to an event.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>func</code></strong> :&ensp;<code>function</code></dt>
+<dd>Function that will be bound to the event.</dd>
+<dt><strong><code>event</code></strong> :&ensp;<code><a title="ro_py.events.EventTypes" href="events.html#ro_py.events.EventTypes">EventTypes</a></code></dt>
+<dd>Event that will be bound to the function.</dd>
+<dt><strong><code>delay</code></strong> :&ensp;<code>int</code></dt>
+<dd>How many seconds between each poll.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def bind(self, func: Callable, event: EventTypes, delay: int = 15):
+    &#34;&#34;&#34;
+    Binds a function to an event.
+
+    Parameters
+    ----------
+    func : function
+            Function that will be bound to the event.
+    event : ro_py.events.EventTypes
+            Event that will be bound to the function.
+    delay : int
+            How many seconds between each poll.
+    &#34;&#34;&#34;
+    if event == EventTypes.on_join_request:
+        event = Event(self.on_join_request, EventTypes.on_join_request, (func, None), delay)
+        self.cso.event_handler.add_event(event)
+    if event == EventTypes.on_wall_post:
+        event = Event(self.on_wall_post, EventTypes.on_wall_post, (func, None), delay)
+        self.cso.event_handler.add_event(event)
+    if event == EventTypes.on_group_change:
+        event = Event(self.on_group_change, EventTypes.on_group_change, (func, None), delay)
+        self.cso.event_handler.add_event(event)
+    await self.cso.event_handler.listen()</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Events.on_group_change"><code class="name flex">
+<span>async def <span class="ident">on_group_change</span></span>(<span>self, func: Callable, current_group, event: <a title="ro_py.events.Event" href="events.html#ro_py.events.Event">Event</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def on_group_change(self, func: Callable, current_group, event: Event):
+    if not current_group:
+        await self.group.update()
+        old_arguments = list(event.arguments)
+        old_arguments[1] = copy.copy(self.group)
+        return event.edit(arguments=tuple(old_arguments))
+
+    await self.group.update()
+
+    has_changed = False
+    for attr, value in current_group.__dict__.items():
+        other_value = getattr(self.group, attr)
+        if attr == &#34;shout&#34;:
+            if str(value) != str(other_value):
+                has_changed = True
+            else:
+                continue
+        if other_value != value:
+            has_changed = True
+
+    if has_changed:
+        old_arguments = list(event.arguments)
+        old_arguments[1] = copy.copy(self.group)
+        event.edit(arguments=tuple(old_arguments))
+        asyncio.create_task(func(current_group, self.group))</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Events.on_join_request"><code class="name flex">
+<span>async def <span class="ident">on_join_request</span></span>(<span>self, func: Callable, old_req, event: <a title="ro_py.events.Event" href="events.html#ro_py.events.Event">Event</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def on_join_request(self, func: Callable, old_req, event: Event):
+    if not old_req:
+        current_group_reqs = await self.group.get_join_requests()
+        old_arguments = list(event.arguments)
+        old_arguments[1] = current_group_reqs.data[0].requester.id
+        return event.edit(arguments=tuple(old_arguments))
+
+    current_group_reqs = await self.group.get_join_requests()
+    current_group_reqs = current_group_reqs.data
+
+    if current_group_reqs[0].requester.id != old_req:
+        new_reqs = []
+
+        for request in current_group_reqs:
+            if request.requester.id == old_req:
+                break
+            new_reqs.append(request)
+
+        old_arguments = list(event.arguments)
+        old_arguments[1] = current_group_reqs[0].requester.id
+        event.edit(arguments=tuple(old_arguments))
+
+        for new_req in new_reqs:
+            asyncio.create_task(func(new_req))</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Events.on_wall_post"><code class="name flex">
+<span>async def <span class="ident">on_wall_post</span></span>(<span>self, func: Callable, newest_wall_post, event: <a title="ro_py.events.Event" href="events.html#ro_py.events.Event">Event</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def on_wall_post(self, func: Callable, newest_wall_post, event: Event):
+    if not newest_wall_post:
+        current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
+        old_arguments = list(event.arguments)
+        old_arguments[1] = current_wall_posts.data[0].id
+        return event.edit(arguments=tuple(old_arguments))
+
+    current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
+    current_wall_posts = current_wall_posts.data
+
+    post = current_wall_posts[0]
+    if post.id != newest_wall_post:
+        new_posts = []
+
+        for post in current_wall_posts:
+            if post.id == newest_wall_post:
+                break
+            new_posts.append(post)
+
+        old_arguments = list(event.arguments)
+        old_arguments[1] = current_wall_posts[0].id
+        event.edit(arguments=tuple(old_arguments))
+
+        for new_post in new_posts:
+            asyncio.create_task(func(new_post))</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="ro_py.groups.Group"><code class="flex name class">
+<span>class <span class="ident">Group</span></span>
+<span>(</span><span>cso, group_id)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a group.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Group(ClientObject):
+    &#34;&#34;&#34;
+    Represents a group.
+    &#34;&#34;&#34;
+    def __init__(self, cso, group_id):
+        super().__init__()
+        self.cso = cso
+        &#34;&#34;&#34;Client Shared Object&#34;&#34;&#34;
+        self.requests = cso.requests
+        &#34;Requests object.&#34;
+        self.id = group_id
+        &#34;Group ID.&#34;
+        self.wall = Wall(self.cso, self)
+        &#34;&#34;&#34;Wall object.&#34;&#34;&#34;
+        self.name = None
+        &#34;&#34;&#34;Group name.&#34;&#34;&#34;
+        self.description = None
+        &#34;&#34;&#34;Group description.&#34;&#34;&#34;
+        self.owner = None
+        &#34;&#34;&#34;Group owner.&#34;&#34;&#34;
+        self.member_count = None
+        &#34;&#34;&#34;Group member count.&#34;&#34;&#34;
+        self.is_builders_club_only = None
+        &#34;&#34;&#34;True if the group is Builders Club (Premium) only. This seems to have been removed.&#34;&#34;&#34;
+        self.public_entry_allowed = None
+        &#34;&#34;&#34;Public entry allowed (private/public group)&#34;&#34;&#34;
+        self.shout = None
+        &#34;&#34;&#34;Current group shout (Shout)&#34;&#34;&#34;
+        self.events = Events(cso, self)
+        &#34;&#34;&#34;Events object.&#34;&#34;&#34;
+        self.is_locked = False
+        &#34;&#34;&#34;True if this is a locked group.&#34;&#34;&#34;
+
+    async def update(self):
+        &#34;&#34;&#34;
+        Updates the group&#39;s information.
+        &#34;&#34;&#34;
+        group_info_req = await self.requests.get(endpoint + f&#34;/v1/groups/{self.id}&#34;)
+        group_info = group_info_req.json()
+        self.name = group_info[&#34;name&#34;]
+        self.description = group_info[&#34;description&#34;]
+        self.owner = await self.cso.client.get_user(group_info[&#34;owner&#34;][&#34;userId&#34;])
+        self.member_count = group_info[&#34;memberCount&#34;]
+        self.is_builders_club_only = group_info[&#34;isBuildersClubOnly&#34;]
+        self.public_entry_allowed = group_info[&#34;publicEntryAllowed&#34;]
+        if group_info.get(&#39;shout&#39;):
+            self.shout = Shout(self.cso, self, group_info[&#39;shout&#39;])
+        else:
+            self.shout = None
+        if &#34;isLocked&#34; in group_info:
+            self.is_locked = group_info[&#34;isLocked&#34;]
+
+    async def update_shout(self, message):
+        &#34;&#34;&#34;
+        Updates the shout of the group.
+        DEPRECATED: Just call group.shout()
+
+        Parameters
+        ----------
+        message : str
+            Message that will overwrite the current shout of a group.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        return await self.shout(message)
+
+    async def get_roles(self):
+        &#34;&#34;&#34;
+        Gets all roles of the group.
+
+        Returns
+        -------
+        list
+        &#34;&#34;&#34;
+        role_req = await self.requests.get(
+            url=endpoint + f&#34;/v1/groups/{self.id}/roles&#34;
+        )
+        roles = []
+        for role in role_req.json()[&#39;roles&#39;]:
+            roles.append(Role(self.cso, self, role))
+        return roles
+
+    async def get_member_by_id(self, user_id):
+        # Get list of group user is in.
+        member_req = await self.requests.get(
+            url=endpoint + f&#34;/v2/users/{user_id}/groups/roles&#34;
+        )
+        data = member_req.json()
+
+        # Find group in list.
+        group_data = None
+        for group in data[&#39;data&#39;]:
+            if group[&#39;group&#39;][&#39;id&#39;] == self.id:
+                group_data = group
+                break
+
+        # Check if user is in group.
+        if not group_data:
+            raise NotFound(f&#34;The user {user_id} was not found in group {self.id}&#34;)
+
+        # Create data to return.
+        role = Role(self.cso, self, group_data[&#39;role&#39;])
+        member = Member(self.cso, user_id, &#34;&#34;, self, role)
+        return member
+
+    async def get_member_by_username(self, name):
+        user = await self.cso.client.get_user_by_username(name)
+        member_req = await self.requests.get(
+            url=endpoint + f&#34;/v2/users/{user.id}/groups/roles&#34;
+        )
+        data = member_req.json()
+
+        # Find group in list.
+        group_data = None
+        for group in data[&#39;data&#39;]:
+            if group[&#39;group&#39;][&#39;id&#39;] == self.id:
+                group_data = group
+                break
+
+        # Check if user is in group.
+        if not group_data:
+            raise NotFound(f&#34;The user {name} was not found in group {self.id}&#34;)
+
+        # Create data to return.
+        role = Role(self.cso, self, group_data[&#39;role&#39;])
+        member = Member(self.cso, user.id, user.name, self, role)
+        return member
+
+    async def get_join_requests(self, sort_order=SortOrder.Ascending, limit=100):
+        pages = Pages(
+            cso=self.cso,
+            url=endpoint + f&#34;/v1/groups/{self.id}/join-requests&#34;,
+            sort_order=sort_order,
+            limit=limit,
+            handler=join_request_handler,
+            handler_args=self
+        )
+        await pages.get_page()
+        return pages
+
+    async def get_members(self, sort_order=SortOrder.Ascending, limit=100):
+        pages = Pages(
+            cso=self.cso,
+            url=endpoint + f&#34;/v1/groups/{self.id}/users?limit=100&amp;sortOrder=Desc&#34;,
+            sort_order=sort_order,
+            limit=limit,
+            handler=member_handler,
+            handler_args=self
+        )
+
+        await pages.get_page()
+        return pages
+
+    async def get_audit_logs(self, action_filter: Actions = None, sort_order=SortOrder.Ascending, limit=100):
+        parameters = {}
+        if action_filter:
+            parameters[&#39;actionType&#39;] = action_filter
+
+        pages = Pages(
+            cso=self.cso,
+            url=endpoint + f&#34;/v1/groups/{self.id}/audit-log&#34;,
+            handler=action_handler,
+            extra_parameters=parameters,
+            handler_args=self,
+            limit=limit,
+            sort_order=sort_order
+        )
+
+        await pages.get_page()
+        return pages</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.utilities.clientobject.ClientObject" href="utilities/clientobject.html#ro_py.utilities.clientobject.ClientObject">ClientObject</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="ro_py.groups.Group.cso"><code class="name">var <span class="ident">cso</span></code></dt>
+<dd>
+<div class="desc"><p>Client Shared Object</p></div>
+</dd>
+<dt id="ro_py.groups.Group.description"><code class="name">var <span class="ident">description</span></code></dt>
+<dd>
+<div class="desc"><p>Group description.</p></div>
+</dd>
+<dt id="ro_py.groups.Group.events"><code class="name">var <span class="ident">events</span></code></dt>
+<dd>
+<div class="desc"><p>Events object.</p></div>
+</dd>
+<dt id="ro_py.groups.Group.id"><code class="name">var <span class="ident">id</span></code></dt>
+<dd>
+<div class="desc"><p>Group ID.</p></div>
+</dd>
+<dt id="ro_py.groups.Group.is_builders_club_only"><code class="name">var <span class="ident">is_builders_club_only</span></code></dt>
+<dd>
+<div class="desc"><p>True if the group is Builders Club (Premium) only. This seems to have been removed.</p></div>
+</dd>
+<dt id="ro_py.groups.Group.is_locked"><code class="name">var <span class="ident">is_locked</span></code></dt>
+<dd>
+<div class="desc"><p>True if this is a locked group.</p></div>
+</dd>
+<dt id="ro_py.groups.Group.member_count"><code class="name">var <span class="ident">member_count</span></code></dt>
+<dd>
+<div class="desc"><p>Group member count.</p></div>
+</dd>
+<dt id="ro_py.groups.Group.name"><code class="name">var <span class="ident">name</span></code></dt>
+<dd>
+<div class="desc"><p>Group name.</p></div>
+</dd>
+<dt id="ro_py.groups.Group.owner"><code class="name">var <span class="ident">owner</span></code></dt>
+<dd>
+<div class="desc"><p>Group owner.</p></div>
+</dd>
+<dt id="ro_py.groups.Group.public_entry_allowed"><code class="name">var <span class="ident">public_entry_allowed</span></code></dt>
+<dd>
+<div class="desc"><p>Public entry allowed (private/public group)</p></div>
+</dd>
+<dt id="ro_py.groups.Group.requests"><code class="name">var <span class="ident">requests</span></code></dt>
+<dd>
+<div class="desc"><p>Requests object.</p></div>
+</dd>
+<dt id="ro_py.groups.Group.shout"><code class="name">var <span class="ident">shout</span></code></dt>
+<dd>
+<div class="desc"><p>Current group shout (Shout)</p></div>
+</dd>
+<dt id="ro_py.groups.Group.wall"><code class="name">var <span class="ident">wall</span></code></dt>
+<dd>
+<div class="desc"><p>Wall object.</p></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.groups.Group.get_audit_logs"><code class="name flex">
+<span>async def <span class="ident">get_audit_logs</span></span>(<span>self, action_filter: <a title="ro_py.groups.Actions" href="#ro_py.groups.Actions">Actions</a> = None, sort_order=SortOrder.Ascending, limit=100)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_audit_logs(self, action_filter: Actions = None, sort_order=SortOrder.Ascending, limit=100):
+    parameters = {}
+    if action_filter:
+        parameters[&#39;actionType&#39;] = action_filter
+
+    pages = Pages(
+        cso=self.cso,
+        url=endpoint + f&#34;/v1/groups/{self.id}/audit-log&#34;,
+        handler=action_handler,
+        extra_parameters=parameters,
+        handler_args=self,
+        limit=limit,
+        sort_order=sort_order
+    )
+
+    await pages.get_page()
+    return pages</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Group.get_join_requests"><code class="name flex">
+<span>async def <span class="ident">get_join_requests</span></span>(<span>self, sort_order=SortOrder.Ascending, limit=100)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_join_requests(self, sort_order=SortOrder.Ascending, limit=100):
+    pages = Pages(
+        cso=self.cso,
+        url=endpoint + f&#34;/v1/groups/{self.id}/join-requests&#34;,
+        sort_order=sort_order,
+        limit=limit,
+        handler=join_request_handler,
+        handler_args=self
+    )
+    await pages.get_page()
+    return pages</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Group.get_member_by_id"><code class="name flex">
+<span>async def <span class="ident">get_member_by_id</span></span>(<span>self, user_id)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_member_by_id(self, user_id):
+    # Get list of group user is in.
+    member_req = await self.requests.get(
+        url=endpoint + f&#34;/v2/users/{user_id}/groups/roles&#34;
+    )
+    data = member_req.json()
+
+    # Find group in list.
+    group_data = None
+    for group in data[&#39;data&#39;]:
+        if group[&#39;group&#39;][&#39;id&#39;] == self.id:
+            group_data = group
+            break
+
+    # Check if user is in group.
+    if not group_data:
+        raise NotFound(f&#34;The user {user_id} was not found in group {self.id}&#34;)
+
+    # Create data to return.
+    role = Role(self.cso, self, group_data[&#39;role&#39;])
+    member = Member(self.cso, user_id, &#34;&#34;, self, role)
+    return member</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Group.get_member_by_username"><code class="name flex">
+<span>async def <span class="ident">get_member_by_username</span></span>(<span>self, name)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_member_by_username(self, name):
+    user = await self.cso.client.get_user_by_username(name)
+    member_req = await self.requests.get(
+        url=endpoint + f&#34;/v2/users/{user.id}/groups/roles&#34;
+    )
+    data = member_req.json()
+
+    # Find group in list.
+    group_data = None
+    for group in data[&#39;data&#39;]:
+        if group[&#39;group&#39;][&#39;id&#39;] == self.id:
+            group_data = group
+            break
+
+    # Check if user is in group.
+    if not group_data:
+        raise NotFound(f&#34;The user {name} was not found in group {self.id}&#34;)
+
+    # Create data to return.
+    role = Role(self.cso, self, group_data[&#39;role&#39;])
+    member = Member(self.cso, user.id, user.name, self, role)
+    return member</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Group.get_members"><code class="name flex">
+<span>async def <span class="ident">get_members</span></span>(<span>self, sort_order=SortOrder.Ascending, limit=100)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get_members(self, sort_order=SortOrder.Ascending, limit=100):
+    pages = Pages(
+        cso=self.cso,
+        url=endpoint + f&#34;/v1/groups/{self.id}/users?limit=100&amp;sortOrder=Desc&#34;,
+        sort_order=sort_order,
+        limit=limit,
+        handler=member_handler,
+        handler_args=self
+    )
+
+    await pages.get_page()
+    return pages</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Group.get_roles"><code class="name flex">
+<span>async def <span class="ident">get_roles</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Gets all roles of the group.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>list</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
 <pre><code class="python">async def get_roles(self):
+    &#34;&#34;&#34;
+    Gets all roles of the group.
+
+    Returns
+    -------
+    list
+    &#34;&#34;&#34;
     role_req = await self.requests.get(
         url=endpoint + f&#34;/v1/groups/{self.id}/roles&#34;
     )
     roles = []
     for role in role_req.json()[&#39;roles&#39;]:
-        roles.append(Role(self.requests, self, role))
+        roles.append(Role(self.cso, self, role))
     return roles</code></pre>
 </details>
 </dd>
@@ -210,18 +1731,60 @@ class Group:
     group_info = group_info_req.json()
     self.name = group_info[&#34;name&#34;]
     self.description = group_info[&#34;description&#34;]
-    self.owner = User(self.requests, group_info[&#34;owner&#34;][&#34;userId&#34;])
+    self.owner = await self.cso.client.get_user(group_info[&#34;owner&#34;][&#34;userId&#34;])
     self.member_count = group_info[&#34;memberCount&#34;]
     self.is_builders_club_only = group_info[&#34;isBuildersClubOnly&#34;]
     self.public_entry_allowed = group_info[&#34;publicEntryAllowed&#34;]
-    if &#34;shout&#34; in group_info:
-        self.shout = group_info[&#34;shout&#34;]
+    if group_info.get(&#39;shout&#39;):
+        self.shout = Shout(self.cso, self, group_info[&#39;shout&#39;])
     else:
-        self.shout = None</code></pre>
+        self.shout = None
+    if &#34;isLocked&#34; in group_info:
+        self.is_locked = group_info[&#34;isLocked&#34;]</code></pre>
 </details>
 </dd>
 <dt id="ro_py.groups.Group.update_shout"><code class="name flex">
 <span>async def <span class="ident">update_shout</span></span>(<span>self, message)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Updates the shout of the group.
+DEPRECATED: Just call group.shout()</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>message</code></strong> :&ensp;<code>str</code></dt>
+<dd>Message that will overwrite the current shout of a group.</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def update_shout(self, message):
+    &#34;&#34;&#34;
+    Updates the shout of the group.
+    DEPRECATED: Just call group.shout()
+
+    Parameters
+    ----------
+    message : str
+        Message that will overwrite the current shout of a group.
+
+    Returns
+    -------
+    int
+    &#34;&#34;&#34;
+    return await self.shout(message)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="ro_py.groups.JoinRequest"><code class="flex name class">
+<span>class <span class="ident">JoinRequest</span></span>
+<span>(</span><span>cso, data, group)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -229,21 +1792,523 @@ class Group:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def update_shout(self, message):
-    shout_req = await self.requests.patch(
-        url=endpoint+ f&#34;/v1/groups/{self.id}/status&#34;,
+<pre><code class="python">class JoinRequest:
+    def __init__(self, cso, data, group):
+        self.requests = cso.requests
+        self.group = group
+        self.requester = PartialUser(cso, data[&#39;requester&#39;])
+        self.created = iso8601.parse_date(data[&#39;created&#39;])
+
+    async def accept(self):
+        accept_req = await self.requests.post(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requester.id}&#34;
+        )
+        return accept_req.status_code == 200
+
+    async def decline(self):
+        accept_req = await self.requests.delete(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requester.id}&#34;
+        )
+        return accept_req.status_code == 200</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.groups.JoinRequest.accept"><code class="name flex">
+<span>async def <span class="ident">accept</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def accept(self):
+    accept_req = await self.requests.post(
+        url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requester.id}&#34;
+    )
+    return accept_req.status_code == 200</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.JoinRequest.decline"><code class="name flex">
+<span>async def <span class="ident">decline</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def decline(self):
+    accept_req = await self.requests.delete(
+        url=endpoint + f&#34;/v1/groups/{self.group.id}/join-requests/users/{self.requester.id}&#34;
+    )
+    return accept_req.status_code == 200</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="ro_py.groups.Member"><code class="flex name class">
+<span>class <span class="ident">Member</span></span>
+<span>(</span><span>cso, user_id, name, group, role)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a user in a group.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>cso</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
+<dd>Requests object to use for API requests.</dd>
+<dt><strong><code>user_id</code></strong> :&ensp;<code>int</code></dt>
+<dd>The id of a user.</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the user.</dd>
+<dt><strong><code>group</code></strong> :&ensp;<code><a title="ro_py.groups.Group" href="#ro_py.groups.Group">Group</a></code></dt>
+<dd>The group the user is in.</dd>
+<dt><strong><code>role</code></strong> :&ensp;<code><a title="ro_py.roles.Role" href="roles.html#ro_py.roles.Role">Role</a></code></dt>
+<dd>The role the user has is the group.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Member(BaseUser):
+    &#34;&#34;&#34;
+    Represents a user in a group.
+
+    Parameters
+    ----------
+    cso : ro_py.utilities.requests.Requests
+            Requests object to use for API requests.
+    user_id : int
+            The id of a user.
+    name : str
+            The name of the user.
+    group : ro_py.groups.Group
+            The group the user is in.
+    role : ro_py.roles.Role
+            The role the user has is the group.
+    &#34;&#34;&#34;
+    def __init__(self, cso, user_id, name, group, role):
+        super().__init__(cso, user_id)
+        self.name = name
+        self.role = role
+        self.group = group
+
+    async def update_role(self):
+        &#34;&#34;&#34;
+        Updates the role information of the user.
+
+        Returns
+        -------
+        ro_py.roles.Role
+        &#34;&#34;&#34;
+        member_req = await self.requests.get(
+            url=endpoint + f&#34;/v2/users/{self.id}/groups/roles&#34;
+        )
+        data = member_req.json()
+        for role in data[&#39;data&#39;]:
+            if role[&#39;group&#39;][&#39;id&#39;] == self.group.id:
+                self.role = Role(self.cso, self.group, role[&#39;role&#39;])
+                break
+        return self.role
+
+    async def change_rank(self, num) -&gt; Tuple[Role, Role]:
+        &#34;&#34;&#34;
+        Changes the users rank specified by a number.
+        If num is 1 the users role will go up by 1.
+        If num is -1 the users role will go down by 1.
+
+        Parameters
+        ----------
+        num : int
+                How much to change the rank by.
+        &#34;&#34;&#34;
+        await self.update_role()
+        roles = await self.group.get_roles()
+        old_role = copy.copy(self.role)
+        role_counter = -1
+        for group_role in roles:
+            role_counter += 1
+            if group_role.rank == self.role.rank:
+                break
+        if not roles:
+            raise NotFound(f&#34;User {self.id} is not in group {self.group.id}&#34;)
+        await self.setrank(roles[role_counter + num].id)
+        self.role = roles[role_counter + num].id
+        return old_role, roles[role_counter + num]
+
+    async def promote(self):
+        &#34;&#34;&#34;
+        Promotes the user.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        return await self.change_rank(1)
+
+    async def demote(self):
+        &#34;&#34;&#34;
+        Demotes the user.
+
+        Returns
+        -------
+        int
+        &#34;&#34;&#34;
+        return await self.change_rank(-1)
+
+    async def setrank(self, rank):
+        &#34;&#34;&#34;
+        Sets the users role to specified role using rank id.
+
+        Parameters
+        ----------
+        rank : int
+                Rank id
+
+        Returns
+        -------
+        bool
+        &#34;&#34;&#34;
+        rank_request = await self.requests.patch(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/users/{self.id}&#34;,
+            data={
+                &#34;roleId&#34;: rank
+            }
+        )
+        return rank_request.status_code == 200
+
+    async def setrole(self, role_num):
+        &#34;&#34;&#34;
+         Sets the users role to specified role using role number (1-255).
+
+         Parameters
+         ----------
+         role_num : int
+                Role number (1-255)
+
+         Returns
+         -------
+         bool
+         &#34;&#34;&#34;
+        roles = await self.group.get_roles()
+        rank_role = None
+        for role in roles:
+            if role.rank == role_num:
+                rank_role = role
+                break
+        if not rank_role:
+            raise NotFound(f&#34;Role {role_num} not found&#34;)
+        return await self.setrank(rank_role.id)
+
+    async def exile(self):
+        exile_req = await self.requests.delete(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/users/{self.id}&#34;
+        )
+        return exile_req.status_code == 200</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="ro_py.bases.baseuser.BaseUser" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser">BaseUser</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.groups.Member.change_rank"><code class="name flex">
+<span>async def <span class="ident">change_rank</span></span>(<span>self, num) ‑> Tuple[<a title="ro_py.roles.Role" href="roles.html#ro_py.roles.Role">Role</a>, <a title="ro_py.roles.Role" href="roles.html#ro_py.roles.Role">Role</a>]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Changes the users rank specified by a number.
+If num is 1 the users role will go up by 1.
+If num is -1 the users role will go down by 1.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>num</code></strong> :&ensp;<code>int</code></dt>
+<dd>How much to change the rank by.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def change_rank(self, num) -&gt; Tuple[Role, Role]:
+    &#34;&#34;&#34;
+    Changes the users rank specified by a number.
+    If num is 1 the users role will go up by 1.
+    If num is -1 the users role will go down by 1.
+
+    Parameters
+    ----------
+    num : int
+            How much to change the rank by.
+    &#34;&#34;&#34;
+    await self.update_role()
+    roles = await self.group.get_roles()
+    old_role = copy.copy(self.role)
+    role_counter = -1
+    for group_role in roles:
+        role_counter += 1
+        if group_role.rank == self.role.rank:
+            break
+    if not roles:
+        raise NotFound(f&#34;User {self.id} is not in group {self.group.id}&#34;)
+    await self.setrank(roles[role_counter + num].id)
+    self.role = roles[role_counter + num].id
+    return old_role, roles[role_counter + num]</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Member.demote"><code class="name flex">
+<span>async def <span class="ident">demote</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Demotes the user.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def demote(self):
+    &#34;&#34;&#34;
+    Demotes the user.
+
+    Returns
+    -------
+    int
+    &#34;&#34;&#34;
+    return await self.change_rank(-1)</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Member.exile"><code class="name flex">
+<span>async def <span class="ident">exile</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def exile(self):
+    exile_req = await self.requests.delete(
+        url=endpoint + f&#34;/v1/groups/{self.group.id}/users/{self.id}&#34;
+    )
+    return exile_req.status_code == 200</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Member.promote"><code class="name flex">
+<span>async def <span class="ident">promote</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Promotes the user.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>int</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def promote(self):
+    &#34;&#34;&#34;
+    Promotes the user.
+
+    Returns
+    -------
+    int
+    &#34;&#34;&#34;
+    return await self.change_rank(1)</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Member.setrank"><code class="name flex">
+<span>async def <span class="ident">setrank</span></span>(<span>self, rank)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sets the users role to specified role using rank id.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>rank</code></strong> :&ensp;<code>int</code></dt>
+<dd>Rank id</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def setrank(self, rank):
+    &#34;&#34;&#34;
+    Sets the users role to specified role using rank id.
+
+    Parameters
+    ----------
+    rank : int
+            Rank id
+
+    Returns
+    -------
+    bool
+    &#34;&#34;&#34;
+    rank_request = await self.requests.patch(
+        url=endpoint + f&#34;/v1/groups/{self.group.id}/users/{self.id}&#34;,
         data={
-            &#34;message&#34;: message
+            &#34;roleId&#34;: rank
         }
     )
-    return shout_req.status_code == 200</code></pre>
+    return rank_request.status_code == 200</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Member.setrole"><code class="name flex">
+<span>async def <span class="ident">setrole</span></span>(<span>self, role_num)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sets the users role to specified role using role number (1-255).</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>role_num</code></strong> :&ensp;<code>int</code></dt>
+<dd>Role number (1-255)</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>bool</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def setrole(self, role_num):
+    &#34;&#34;&#34;
+     Sets the users role to specified role using role number (1-255).
+
+     Parameters
+     ----------
+     role_num : int
+            Role number (1-255)
+
+     Returns
+     -------
+     bool
+     &#34;&#34;&#34;
+    roles = await self.group.get_roles()
+    rank_role = None
+    for role in roles:
+        if role.rank == role_num:
+            rank_role = role
+            break
+    if not rank_role:
+        raise NotFound(f&#34;Role {role_num} not found&#34;)
+    return await self.setrank(rank_role.id)</code></pre>
+</details>
+</dd>
+<dt id="ro_py.groups.Member.update_role"><code class="name flex">
+<span>async def <span class="ident">update_role</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Updates the role information of the user.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code><a title="ro_py.roles.Role" href="roles.html#ro_py.roles.Role">Role</a></code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def update_role(self):
+    &#34;&#34;&#34;
+    Updates the role information of the user.
+
+    Returns
+    -------
+    ro_py.roles.Role
+    &#34;&#34;&#34;
+    member_req = await self.requests.get(
+        url=endpoint + f&#34;/v2/users/{self.id}/groups/roles&#34;
+    )
+    data = member_req.json()
+    for role in data[&#39;data&#39;]:
+        if role[&#39;group&#39;][&#39;id&#39;] == self.group.id:
+            self.role = Role(self.cso, self.group, role[&#39;role&#39;])
+            break
+    return self.role</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="ro_py.bases.baseuser.BaseUser" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser">BaseUser</a></b></code>:
+<ul class="hlist">
+<li><code><a title="ro_py.bases.baseuser.BaseUser.expand" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.expand">expand</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_followers_count" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_followers_count">get_followers_count</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_followings_count" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_followings_count">get_followings_count</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_friends" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_friends">get_friends</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_friends_count" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_friends_count">get_friends_count</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_groups" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_groups">get_groups</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_limiteds" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_limiteds">get_limiteds</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_roblox_badges" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_roblox_badges">get_roblox_badges</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_status" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_status">get_status</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.has_badge" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.has_badge">has_badge</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="ro_py.groups.PartialGroup"><code class="flex name class">
+<span>class <span class="ident">PartialGroup</span></span>
+<span>(</span><span>cso, data)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a group with less information.</p>
+<p>Different information will be present here in different circumstances.
+If it was generated as a game owner, it might only contain an ID and a name.
+If it was generated from, let's say, groups/v2/users/userid/groups/roles, it'll also contain a member count.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PartialGroup:
+    &#34;&#34;&#34;
+    Represents a group with less information.
+
+    Different information will be present here in different circumstances.
+    If it was generated as a game owner, it might only contain an ID and a name.
+    If it was generated from, let&#39;s say, groups/v2/users/userid/groups/roles, it&#39;ll also contain a member count.
+    &#34;&#34;&#34;
+    def __init__(self, cso, data):
+        self.cso = cso
+        self.requests = cso.requests
+        self.id = data[&#34;id&#34;]
+        self.name = data[&#34;name&#34;]
+        self.member_count = None
+        if &#34;memberCount&#34; in data:
+            self.member_count = data[&#34;memberCount&#34;]
+
+    async def expand(self):
+        return self.cso.client.get_group(self.id)</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.groups.PartialGroup.expand"><code class="name flex">
+<span>async def <span class="ident">expand</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def expand(self):
+    return self.cso.client.get_group(self.id)</code></pre>
 </details>
 </dd>
 </dl>
 </dd>
 <dt id="ro_py.groups.Shout"><code class="flex name class">
 <span>class <span class="ident">Shout</span></span>
-<span>(</span><span>requests, shout_data)</span>
+<span>(</span><span>cso, group, shout_data)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a group shout.</p></div>
@@ -255,15 +2320,56 @@ class Group:
     &#34;&#34;&#34;
     Represents a group shout.
     &#34;&#34;&#34;
-    def __init__(self, requests, shout_data):
+    def __init__(self, cso, group, shout_data):
+        self.cso = cso
+        self.requests = cso.requests
+        self.group = group
+        self.data = shout_data
         self.body = shout_data[&#34;body&#34;]
-        self.poster = User(requests, shout_data[&#34;poster&#34;][&#34;userId&#34;])</code></pre>
+        self.created = iso8601.parse_date(shout_data[&#34;created&#34;])
+        self.updated = iso8601.parse_date(shout_data[&#34;updated&#34;])
+
+        # TODO: Make this a PartialUser
+        self.poster = None
+
+    def __str__(self):
+        return self.body
+
+    async def __call__(self, message):
+        &#34;&#34;&#34;
+        Updates the shout of the group.
+        Please note that doing so will completely delete this Shout object and return a new Shout object.
+        The parent group&#39;s shout parameter will also be updated accordingly.
+
+        Parameters
+        ----------
+        message : str
+            Message that will overwrite the current shout of a group.
+
+        Returns
+        -------
+        ro_py.groups.Shout
+
+        &#34;&#34;&#34;
+        shout_req = await self.requests.patch(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/status&#34;,
+            data={
+                &#34;message&#34;: message
+            }
+        )
+        self.group.shout = Shout(self.cso, self.group, shout_req.json())
+        return self.group.shout</code></pre>
 </details>
 </dd>
 </dl>
 </section>
 </article>
 <nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
 <h1>Index</h1>
 <div class="toc">
 <ul></ul>
@@ -274,14 +2380,122 @@ class Group:
 <li><code><a title="ro_py" href="index.html">ro_py</a></code></li>
 </ul>
 </li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="ro_py.groups.action_handler" href="#ro_py.groups.action_handler">action_handler</a></code></li>
+<li><code><a title="ro_py.groups.join_request_handler" href="#ro_py.groups.join_request_handler">join_request_handler</a></code></li>
+<li><code><a title="ro_py.groups.member_handler" href="#ro_py.groups.member_handler">member_handler</a></code></li>
+</ul>
+</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
+<h4><code><a title="ro_py.groups.Action" href="#ro_py.groups.Action">Action</a></code></h4>
+</li>
+<li>
+<h4><code><a title="ro_py.groups.Actions" href="#ro_py.groups.Actions">Actions</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.groups.Actions.Rename" href="#ro_py.groups.Actions.Rename">Rename</a></code></li>
+<li><code><a title="ro_py.groups.Actions.abandon" href="#ro_py.groups.Actions.abandon">abandon</a></code></li>
+<li><code><a title="ro_py.groups.Actions.accept_ally_request" href="#ro_py.groups.Actions.accept_ally_request">accept_ally_request</a></code></li>
+<li><code><a title="ro_py.groups.Actions.accept_join_request" href="#ro_py.groups.Actions.accept_join_request">accept_join_request</a></code></li>
+<li><code><a title="ro_py.groups.Actions.add_group_place" href="#ro_py.groups.Actions.add_group_place">add_group_place</a></code></li>
+<li><code><a title="ro_py.groups.Actions.adjust_currency_amounts" href="#ro_py.groups.Actions.adjust_currency_amounts">adjust_currency_amounts</a></code></li>
+<li><code><a title="ro_py.groups.Actions.buy_ad" href="#ro_py.groups.Actions.buy_ad">buy_ad</a></code></li>
+<li><code><a title="ro_py.groups.Actions.buy_clan" href="#ro_py.groups.Actions.buy_clan">buy_clan</a></code></li>
+<li><code><a title="ro_py.groups.Actions.cancel_clan_invite" href="#ro_py.groups.Actions.cancel_clan_invite">cancel_clan_invite</a></code></li>
+<li><code><a title="ro_py.groups.Actions.change_description" href="#ro_py.groups.Actions.change_description">change_description</a></code></li>
+<li><code><a title="ro_py.groups.Actions.change_owner" href="#ro_py.groups.Actions.change_owner">change_owner</a></code></li>
+<li><code><a title="ro_py.groups.Actions.change_rank" href="#ro_py.groups.Actions.change_rank">change_rank</a></code></li>
+<li><code><a title="ro_py.groups.Actions.claim" href="#ro_py.groups.Actions.claim">claim</a></code></li>
+<li><code><a title="ro_py.groups.Actions.configure_badge" href="#ro_py.groups.Actions.configure_badge">configure_badge</a></code></li>
+<li><code><a title="ro_py.groups.Actions.configure_group_asset" href="#ro_py.groups.Actions.configure_group_asset">configure_group_asset</a></code></li>
+<li><code><a title="ro_py.groups.Actions.configure_group_game" href="#ro_py.groups.Actions.configure_group_game">configure_group_game</a></code></li>
+<li><code><a title="ro_py.groups.Actions.configure_items" href="#ro_py.groups.Actions.configure_items">configure_items</a></code></li>
+<li><code><a title="ro_py.groups.Actions.create_badge" href="#ro_py.groups.Actions.create_badge">create_badge</a></code></li>
+<li><code><a title="ro_py.groups.Actions.create_enemy" href="#ro_py.groups.Actions.create_enemy">create_enemy</a></code></li>
+<li><code><a title="ro_py.groups.Actions.create_game_pass" href="#ro_py.groups.Actions.create_game_pass">create_game_pass</a></code></li>
+<li><code><a title="ro_py.groups.Actions.create_group_asset" href="#ro_py.groups.Actions.create_group_asset">create_group_asset</a></code></li>
+<li><code><a title="ro_py.groups.Actions.create_group_developer_product" href="#ro_py.groups.Actions.create_group_developer_product">create_group_developer_product</a></code></li>
+<li><code><a title="ro_py.groups.Actions.create_items" href="#ro_py.groups.Actions.create_items">create_items</a></code></li>
+<li><code><a title="ro_py.groups.Actions.decline_ally_request" href="#ro_py.groups.Actions.decline_ally_request">decline_ally_request</a></code></li>
+<li><code><a title="ro_py.groups.Actions.decline_join_request" href="#ro_py.groups.Actions.decline_join_request">decline_join_request</a></code></li>
+<li><code><a title="ro_py.groups.Actions.delete" href="#ro_py.groups.Actions.delete">delete</a></code></li>
+<li><code><a title="ro_py.groups.Actions.delete_ally" href="#ro_py.groups.Actions.delete_ally">delete_ally</a></code></li>
+<li><code><a title="ro_py.groups.Actions.delete_group_place" href="#ro_py.groups.Actions.delete_group_place">delete_group_place</a></code></li>
+<li><code><a title="ro_py.groups.Actions.delete_post" href="#ro_py.groups.Actions.delete_post">delete_post</a></code></li>
+<li><code><a title="ro_py.groups.Actions.invite_to_clan" href="#ro_py.groups.Actions.invite_to_clan">invite_to_clan</a></code></li>
+<li><code><a title="ro_py.groups.Actions.kick_from_clan" href="#ro_py.groups.Actions.kick_from_clan">kick_from_clan</a></code></li>
+<li><code><a title="ro_py.groups.Actions.lock" href="#ro_py.groups.Actions.lock">lock</a></code></li>
+<li><code><a title="ro_py.groups.Actions.post_shout" href="#ro_py.groups.Actions.post_shout">post_shout</a></code></li>
+<li><code><a title="ro_py.groups.Actions.publish_place" href="#ro_py.groups.Actions.publish_place">publish_place</a></code></li>
+<li><code><a title="ro_py.groups.Actions.remove_member" href="#ro_py.groups.Actions.remove_member">remove_member</a></code></li>
+<li><code><a title="ro_py.groups.Actions.revert_group_asset" href="#ro_py.groups.Actions.revert_group_asset">revert_group_asset</a></code></li>
+<li><code><a title="ro_py.groups.Actions.save_place" href="#ro_py.groups.Actions.save_place">save_place</a></code></li>
+<li><code><a title="ro_py.groups.Actions.send_ally_request" href="#ro_py.groups.Actions.send_ally_request">send_ally_request</a></code></li>
+<li><code><a title="ro_py.groups.Actions.spend_group_funds" href="#ro_py.groups.Actions.spend_group_funds">spend_group_funds</a></code></li>
+<li><code><a title="ro_py.groups.Actions.unlock" href="#ro_py.groups.Actions.unlock">unlock</a></code></li>
+<li><code><a title="ro_py.groups.Actions.upload_group_asset" href="#ro_py.groups.Actions.upload_group_asset">upload_group_asset</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.groups.Events" href="#ro_py.groups.Events">Events</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.groups.Events.bind" href="#ro_py.groups.Events.bind">bind</a></code></li>
+<li><code><a title="ro_py.groups.Events.on_group_change" href="#ro_py.groups.Events.on_group_change">on_group_change</a></code></li>
+<li><code><a title="ro_py.groups.Events.on_join_request" href="#ro_py.groups.Events.on_join_request">on_join_request</a></code></li>
+<li><code><a title="ro_py.groups.Events.on_wall_post" href="#ro_py.groups.Events.on_wall_post">on_wall_post</a></code></li>
+</ul>
+</li>
+<li>
 <h4><code><a title="ro_py.groups.Group" href="#ro_py.groups.Group">Group</a></code></h4>
 <ul class="">
+<li><code><a title="ro_py.groups.Group.cso" href="#ro_py.groups.Group.cso">cso</a></code></li>
+<li><code><a title="ro_py.groups.Group.description" href="#ro_py.groups.Group.description">description</a></code></li>
+<li><code><a title="ro_py.groups.Group.events" href="#ro_py.groups.Group.events">events</a></code></li>
+<li><code><a title="ro_py.groups.Group.get_audit_logs" href="#ro_py.groups.Group.get_audit_logs">get_audit_logs</a></code></li>
+<li><code><a title="ro_py.groups.Group.get_join_requests" href="#ro_py.groups.Group.get_join_requests">get_join_requests</a></code></li>
+<li><code><a title="ro_py.groups.Group.get_member_by_id" href="#ro_py.groups.Group.get_member_by_id">get_member_by_id</a></code></li>
+<li><code><a title="ro_py.groups.Group.get_member_by_username" href="#ro_py.groups.Group.get_member_by_username">get_member_by_username</a></code></li>
+<li><code><a title="ro_py.groups.Group.get_members" href="#ro_py.groups.Group.get_members">get_members</a></code></li>
 <li><code><a title="ro_py.groups.Group.get_roles" href="#ro_py.groups.Group.get_roles">get_roles</a></code></li>
+<li><code><a title="ro_py.groups.Group.id" href="#ro_py.groups.Group.id">id</a></code></li>
+<li><code><a title="ro_py.groups.Group.is_builders_club_only" href="#ro_py.groups.Group.is_builders_club_only">is_builders_club_only</a></code></li>
+<li><code><a title="ro_py.groups.Group.is_locked" href="#ro_py.groups.Group.is_locked">is_locked</a></code></li>
+<li><code><a title="ro_py.groups.Group.member_count" href="#ro_py.groups.Group.member_count">member_count</a></code></li>
+<li><code><a title="ro_py.groups.Group.name" href="#ro_py.groups.Group.name">name</a></code></li>
+<li><code><a title="ro_py.groups.Group.owner" href="#ro_py.groups.Group.owner">owner</a></code></li>
+<li><code><a title="ro_py.groups.Group.public_entry_allowed" href="#ro_py.groups.Group.public_entry_allowed">public_entry_allowed</a></code></li>
+<li><code><a title="ro_py.groups.Group.requests" href="#ro_py.groups.Group.requests">requests</a></code></li>
+<li><code><a title="ro_py.groups.Group.shout" href="#ro_py.groups.Group.shout">shout</a></code></li>
 <li><code><a title="ro_py.groups.Group.update" href="#ro_py.groups.Group.update">update</a></code></li>
 <li><code><a title="ro_py.groups.Group.update_shout" href="#ro_py.groups.Group.update_shout">update_shout</a></code></li>
+<li><code><a title="ro_py.groups.Group.wall" href="#ro_py.groups.Group.wall">wall</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.groups.JoinRequest" href="#ro_py.groups.JoinRequest">JoinRequest</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.groups.JoinRequest.accept" href="#ro_py.groups.JoinRequest.accept">accept</a></code></li>
+<li><code><a title="ro_py.groups.JoinRequest.decline" href="#ro_py.groups.JoinRequest.decline">decline</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.groups.Member" href="#ro_py.groups.Member">Member</a></code></h4>
+<ul class="two-column">
+<li><code><a title="ro_py.groups.Member.change_rank" href="#ro_py.groups.Member.change_rank">change_rank</a></code></li>
+<li><code><a title="ro_py.groups.Member.demote" href="#ro_py.groups.Member.demote">demote</a></code></li>
+<li><code><a title="ro_py.groups.Member.exile" href="#ro_py.groups.Member.exile">exile</a></code></li>
+<li><code><a title="ro_py.groups.Member.promote" href="#ro_py.groups.Member.promote">promote</a></code></li>
+<li><code><a title="ro_py.groups.Member.setrank" href="#ro_py.groups.Member.setrank">setrank</a></code></li>
+<li><code><a title="ro_py.groups.Member.setrole" href="#ro_py.groups.Member.setrole">setrole</a></code></li>
+<li><code><a title="ro_py.groups.Member.update_role" href="#ro_py.groups.Member.update_role">update_role</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.groups.PartialGroup" href="#ro_py.groups.PartialGroup">PartialGroup</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.groups.PartialGroup.expand" href="#ro_py.groups.PartialGroup.expand">expand</a></code></li>
 </ul>
 </li>
 <li>
