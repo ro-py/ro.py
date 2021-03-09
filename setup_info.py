@@ -28,6 +28,7 @@ setup_info = {
     "install_requires": [
         "httpx",
         "iso8601",
-        "lxml"
+        "lxml",
+        "requests"
     ]
 }
