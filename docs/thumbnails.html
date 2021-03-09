@@ -88,7 +88,8 @@ This file houses functions and classes that pertain to Roblox icons and thumbnai
 from ro_py.utilities.errors import InvalidShotTypeError
 import enum
 
-endpoint = &#34;https://thumbnails.roblox.com/&#34;
+from ro_py.utilities.url import url
+endpoint = url(&#34;thumbnails&#34;)
 
 
 class ReturnPolicy(enum.Enum):

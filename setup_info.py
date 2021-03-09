@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup_info = {
     "name": "ro-py",
-    "version": "1.1.4",
+    "version": "1.2.0",
     "author": "jmkdev and iranathan",
     "author_email": "jmk@jmksite.dev",
     "description": "ro.py is a Python wrapper for the Roblox web API.",
@@ -28,7 +28,6 @@ setup_info = {
     "install_requires": [
         "httpx",
         "iso8601",
-        "signalrcore",
         "lxml"
     ]
 }

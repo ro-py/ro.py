@@ -88,54 +88,76 @@ This file is a conversion table for asset type IDs to asset type names.
 
 &#34;&#34;&#34;
 
-asset_types = [
-    None,
-    &#34;Image&#34;,
-    &#34;TeeShirt&#34;,
-    &#34;Audio&#34;,
-    &#34;Mesh&#34;,
-    &#34;Lua&#34;,
-    &#34;Hat&#34;,
-    &#34;Place&#34;,
-    &#34;Model&#34;,
-    &#34;Shirt&#34;,
-    &#34;Pants&#34;,
-    &#34;Decal&#34;,
-    &#34;Head&#34;,
-    &#34;Face&#34;,
-    &#34;Gear&#34;,
-    &#34;Badge&#34;,
-    &#34;Animation&#34;,
-    &#34;Torso&#34;,
-    &#34;RightArm&#34;,
-    &#34;LeftArm&#34;,
-    &#34;LeftLeg&#34;,
-    &#34;RightLeg&#34;,
-    &#34;Package&#34;,
-    &#34;GamePass&#34;,
-    &#34;Plugin&#34;,
-    &#34;MeshPart&#34;,
-    &#34;HairAccessory&#34;,
-    &#34;FaceAccessory&#34;,
-    &#34;NeckAccessory&#34;,
-    &#34;ShoulderAccessory&#34;,
-    &#34;FrontAccesory&#34;,
-    &#34;BackAccessory&#34;,
-    &#34;WaistAccessory&#34;,
-    &#34;ClimbAnimation&#34;,
-    &#34;DeathAnimation&#34;,
-    &#34;FallAnimation&#34;,
-    &#34;IdleAnimation&#34;,
-    &#34;JumpAnimation&#34;,
-    &#34;RunAnimation&#34;,
-    &#34;SwimAnimation&#34;,
-    &#34;WalkAnimation&#34;,
-    &#34;PoseAnimation&#34;,
-    &#34;EarAccessory&#34;,
-    &#34;EyeAccessory&#34;,
-    &#34;EmoteAnimation&#34;,
-    &#34;Video&#34;
-]</code></pre>
+from enum import IntEnum
+
+
+class AssetTypes(IntEnum):
+    Image = 1
+    TeeShirt = 2
+    Audio = 3
+    Mesh = 4
+    Lua = 5
+    HTML = 6
+    Text = 7
+    Hat = 8
+    Place = 9
+    Model = 10
+
+    Shirt = 11
+    Pants = 12
+
+    Decal = 13
+    Avatar = 16
+    Head = 17
+    Face = 18
+    Gear = 19
+    Badge = 21
+    GroupEmblem = 22
+    Animation = 24
+
+    Arms = 25
+    Legs = 26
+    Torso = 27
+    RightArm = 28
+    LeftArm = 29
+    LeftLeg = 30
+    RightLeg = 31
+    Package = 32
+
+    YouTubeVideo = 33
+    GamePass = 34
+    App = 45
+    Code = 37
+    Plugin = 38
+
+    SolidModel = 39  # Fixed
+    MeshPart = 40
+
+    HairAccessory = 41
+    FaceAccessory = 42
+    NeckAccessory = 43
+    ShoulderAccessory = 44
+    FrontAccessory = 45
+    BackAccessory = 46
+    WaistAccessory = 47
+
+    ClimbAnimation = 48
+    DeathAnimation = 49
+    FallAnimation = 50
+    IdleAnimation = 51
+    JumpAnimation = 52
+    RunAnimation = 53
+    SwimAniation = 54
+    WalkAnimation = 55
+    PoseAnimation = 56
+    EarAccessory = 57
+    EyeAccessory = 58
+
+    LocalizationTableManifest = 59
+    LocalizationTableTranslation = 60
+    EmoteAnimation = 61
+    Video = 62
+    TexturePack = 63</code></pre>
 </details>
 </section>
 <section>
@@ -145,6 +167,329 @@ asset_types = [
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="ro_py.utilities.asset_type.AssetTypes"><code class="flex name class">
+<span>class <span class="ident">AssetTypes</span></span>
+<span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An enumeration.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AssetTypes(IntEnum):
+    Image = 1
+    TeeShirt = 2
+    Audio = 3
+    Mesh = 4
+    Lua = 5
+    HTML = 6
+    Text = 7
+    Hat = 8
+    Place = 9
+    Model = 10
+
+    Shirt = 11
+    Pants = 12
+
+    Decal = 13
+    Avatar = 16
+    Head = 17
+    Face = 18
+    Gear = 19
+    Badge = 21
+    GroupEmblem = 22
+    Animation = 24
+
+    Arms = 25
+    Legs = 26
+    Torso = 27
+    RightArm = 28
+    LeftArm = 29
+    LeftLeg = 30
+    RightLeg = 31
+    Package = 32
+
+    YouTubeVideo = 33
+    GamePass = 34
+    App = 45
+    Code = 37
+    Plugin = 38
+
+    SolidModel = 39  # Fixed
+    MeshPart = 40
+
+    HairAccessory = 41
+    FaceAccessory = 42
+    NeckAccessory = 43
+    ShoulderAccessory = 44
+    FrontAccessory = 45
+    BackAccessory = 46
+    WaistAccessory = 47
+
+    ClimbAnimation = 48
+    DeathAnimation = 49
+    FallAnimation = 50
+    IdleAnimation = 51
+    JumpAnimation = 52
+    RunAnimation = 53
+    SwimAniation = 54
+    WalkAnimation = 55
+    PoseAnimation = 56
+    EarAccessory = 57
+    EyeAccessory = 58
+
+    LocalizationTableManifest = 59
+    LocalizationTableTranslation = 60
+    EmoteAnimation = 61
+    Video = 62
+    TexturePack = 63</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>enum.IntEnum</li>
+<li>builtins.int</li>
+<li>enum.Enum</li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Animation"><code class="name">var <span class="ident">Animation</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.App"><code class="name">var <span class="ident">App</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Arms"><code class="name">var <span class="ident">Arms</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Audio"><code class="name">var <span class="ident">Audio</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Avatar"><code class="name">var <span class="ident">Avatar</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.BackAccessory"><code class="name">var <span class="ident">BackAccessory</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Badge"><code class="name">var <span class="ident">Badge</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.ClimbAnimation"><code class="name">var <span class="ident">ClimbAnimation</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Code"><code class="name">var <span class="ident">Code</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.DeathAnimation"><code class="name">var <span class="ident">DeathAnimation</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Decal"><code class="name">var <span class="ident">Decal</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.EarAccessory"><code class="name">var <span class="ident">EarAccessory</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.EmoteAnimation"><code class="name">var <span class="ident">EmoteAnimation</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.EyeAccessory"><code class="name">var <span class="ident">EyeAccessory</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Face"><code class="name">var <span class="ident">Face</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.FaceAccessory"><code class="name">var <span class="ident">FaceAccessory</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.FallAnimation"><code class="name">var <span class="ident">FallAnimation</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.FrontAccessory"><code class="name">var <span class="ident">FrontAccessory</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.GamePass"><code class="name">var <span class="ident">GamePass</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Gear"><code class="name">var <span class="ident">Gear</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.GroupEmblem"><code class="name">var <span class="ident">GroupEmblem</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.HTML"><code class="name">var <span class="ident">HTML</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.HairAccessory"><code class="name">var <span class="ident">HairAccessory</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Hat"><code class="name">var <span class="ident">Hat</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Head"><code class="name">var <span class="ident">Head</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.IdleAnimation"><code class="name">var <span class="ident">IdleAnimation</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Image"><code class="name">var <span class="ident">Image</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.JumpAnimation"><code class="name">var <span class="ident">JumpAnimation</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.LeftArm"><code class="name">var <span class="ident">LeftArm</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.LeftLeg"><code class="name">var <span class="ident">LeftLeg</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Legs"><code class="name">var <span class="ident">Legs</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.LocalizationTableManifest"><code class="name">var <span class="ident">LocalizationTableManifest</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.LocalizationTableTranslation"><code class="name">var <span class="ident">LocalizationTableTranslation</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Lua"><code class="name">var <span class="ident">Lua</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Mesh"><code class="name">var <span class="ident">Mesh</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.MeshPart"><code class="name">var <span class="ident">MeshPart</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Model"><code class="name">var <span class="ident">Model</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.NeckAccessory"><code class="name">var <span class="ident">NeckAccessory</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Package"><code class="name">var <span class="ident">Package</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Pants"><code class="name">var <span class="ident">Pants</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Place"><code class="name">var <span class="ident">Place</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Plugin"><code class="name">var <span class="ident">Plugin</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.PoseAnimation"><code class="name">var <span class="ident">PoseAnimation</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.RightArm"><code class="name">var <span class="ident">RightArm</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.RightLeg"><code class="name">var <span class="ident">RightLeg</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.RunAnimation"><code class="name">var <span class="ident">RunAnimation</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Shirt"><code class="name">var <span class="ident">Shirt</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.ShoulderAccessory"><code class="name">var <span class="ident">ShoulderAccessory</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.SolidModel"><code class="name">var <span class="ident">SolidModel</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.SwimAniation"><code class="name">var <span class="ident">SwimAniation</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.TeeShirt"><code class="name">var <span class="ident">TeeShirt</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Text"><code class="name">var <span class="ident">Text</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.TexturePack"><code class="name">var <span class="ident">TexturePack</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Torso"><code class="name">var <span class="ident">Torso</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.Video"><code class="name">var <span class="ident">Video</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.WaistAccessory"><code class="name">var <span class="ident">WaistAccessory</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.WalkAnimation"><code class="name">var <span class="ident">WalkAnimation</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="ro_py.utilities.asset_type.AssetTypes.YouTubeVideo"><code class="name">var <span class="ident">YouTubeVideo</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+</dd>
+</dl>
 </section>
 </article>
 <nav id="sidebar">
@@ -161,6 +506,73 @@ asset_types = [
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="ro_py.utilities" href="index.html">ro_py.utilities</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="ro_py.utilities.asset_type.AssetTypes" href="#ro_py.utilities.asset_type.AssetTypes">AssetTypes</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Animation" href="#ro_py.utilities.asset_type.AssetTypes.Animation">Animation</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.App" href="#ro_py.utilities.asset_type.AssetTypes.App">App</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Arms" href="#ro_py.utilities.asset_type.AssetTypes.Arms">Arms</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Audio" href="#ro_py.utilities.asset_type.AssetTypes.Audio">Audio</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Avatar" href="#ro_py.utilities.asset_type.AssetTypes.Avatar">Avatar</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.BackAccessory" href="#ro_py.utilities.asset_type.AssetTypes.BackAccessory">BackAccessory</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Badge" href="#ro_py.utilities.asset_type.AssetTypes.Badge">Badge</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.ClimbAnimation" href="#ro_py.utilities.asset_type.AssetTypes.ClimbAnimation">ClimbAnimation</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Code" href="#ro_py.utilities.asset_type.AssetTypes.Code">Code</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.DeathAnimation" href="#ro_py.utilities.asset_type.AssetTypes.DeathAnimation">DeathAnimation</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Decal" href="#ro_py.utilities.asset_type.AssetTypes.Decal">Decal</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.EarAccessory" href="#ro_py.utilities.asset_type.AssetTypes.EarAccessory">EarAccessory</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.EmoteAnimation" href="#ro_py.utilities.asset_type.AssetTypes.EmoteAnimation">EmoteAnimation</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.EyeAccessory" href="#ro_py.utilities.asset_type.AssetTypes.EyeAccessory">EyeAccessory</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Face" href="#ro_py.utilities.asset_type.AssetTypes.Face">Face</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.FaceAccessory" href="#ro_py.utilities.asset_type.AssetTypes.FaceAccessory">FaceAccessory</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.FallAnimation" href="#ro_py.utilities.asset_type.AssetTypes.FallAnimation">FallAnimation</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.FrontAccessory" href="#ro_py.utilities.asset_type.AssetTypes.FrontAccessory">FrontAccessory</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.GamePass" href="#ro_py.utilities.asset_type.AssetTypes.GamePass">GamePass</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Gear" href="#ro_py.utilities.asset_type.AssetTypes.Gear">Gear</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.GroupEmblem" href="#ro_py.utilities.asset_type.AssetTypes.GroupEmblem">GroupEmblem</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.HTML" href="#ro_py.utilities.asset_type.AssetTypes.HTML">HTML</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.HairAccessory" href="#ro_py.utilities.asset_type.AssetTypes.HairAccessory">HairAccessory</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Hat" href="#ro_py.utilities.asset_type.AssetTypes.Hat">Hat</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Head" href="#ro_py.utilities.asset_type.AssetTypes.Head">Head</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.IdleAnimation" href="#ro_py.utilities.asset_type.AssetTypes.IdleAnimation">IdleAnimation</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Image" href="#ro_py.utilities.asset_type.AssetTypes.Image">Image</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.JumpAnimation" href="#ro_py.utilities.asset_type.AssetTypes.JumpAnimation">JumpAnimation</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.LeftArm" href="#ro_py.utilities.asset_type.AssetTypes.LeftArm">LeftArm</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.LeftLeg" href="#ro_py.utilities.asset_type.AssetTypes.LeftLeg">LeftLeg</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Legs" href="#ro_py.utilities.asset_type.AssetTypes.Legs">Legs</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.LocalizationTableManifest" href="#ro_py.utilities.asset_type.AssetTypes.LocalizationTableManifest">LocalizationTableManifest</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.LocalizationTableTranslation" href="#ro_py.utilities.asset_type.AssetTypes.LocalizationTableTranslation">LocalizationTableTranslation</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Lua" href="#ro_py.utilities.asset_type.AssetTypes.Lua">Lua</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Mesh" href="#ro_py.utilities.asset_type.AssetTypes.Mesh">Mesh</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.MeshPart" href="#ro_py.utilities.asset_type.AssetTypes.MeshPart">MeshPart</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Model" href="#ro_py.utilities.asset_type.AssetTypes.Model">Model</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.NeckAccessory" href="#ro_py.utilities.asset_type.AssetTypes.NeckAccessory">NeckAccessory</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Package" href="#ro_py.utilities.asset_type.AssetTypes.Package">Package</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Pants" href="#ro_py.utilities.asset_type.AssetTypes.Pants">Pants</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Place" href="#ro_py.utilities.asset_type.AssetTypes.Place">Place</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Plugin" href="#ro_py.utilities.asset_type.AssetTypes.Plugin">Plugin</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.PoseAnimation" href="#ro_py.utilities.asset_type.AssetTypes.PoseAnimation">PoseAnimation</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.RightArm" href="#ro_py.utilities.asset_type.AssetTypes.RightArm">RightArm</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.RightLeg" href="#ro_py.utilities.asset_type.AssetTypes.RightLeg">RightLeg</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.RunAnimation" href="#ro_py.utilities.asset_type.AssetTypes.RunAnimation">RunAnimation</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Shirt" href="#ro_py.utilities.asset_type.AssetTypes.Shirt">Shirt</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.ShoulderAccessory" href="#ro_py.utilities.asset_type.AssetTypes.ShoulderAccessory">ShoulderAccessory</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.SolidModel" href="#ro_py.utilities.asset_type.AssetTypes.SolidModel">SolidModel</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.SwimAniation" href="#ro_py.utilities.asset_type.AssetTypes.SwimAniation">SwimAniation</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.TeeShirt" href="#ro_py.utilities.asset_type.AssetTypes.TeeShirt">TeeShirt</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Text" href="#ro_py.utilities.asset_type.AssetTypes.Text">Text</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.TexturePack" href="#ro_py.utilities.asset_type.AssetTypes.TexturePack">TexturePack</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Torso" href="#ro_py.utilities.asset_type.AssetTypes.Torso">Torso</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.Video" href="#ro_py.utilities.asset_type.AssetTypes.Video">Video</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.WaistAccessory" href="#ro_py.utilities.asset_type.AssetTypes.WaistAccessory">WaistAccessory</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.WalkAnimation" href="#ro_py.utilities.asset_type.AssetTypes.WalkAnimation">WalkAnimation</a></code></li>
+<li><code><a title="ro_py.utilities.asset_type.AssetTypes.YouTubeVideo" href="#ro_py.utilities.asset_type.AssetTypes.YouTubeVideo">YouTubeVideo</a></code></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

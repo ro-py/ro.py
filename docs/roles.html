@@ -86,9 +86,8 @@ This file contains classes and functions related to Roblox roles.
 &#34;&#34;&#34;
 
 
-import enum
-
-endpoint = &#34;https://groups.roblox.com&#34;
+from ro_py.utilities.url import url
+endpoint = url(&#34;groups&#34;)
 
 
 class RolePermissions:

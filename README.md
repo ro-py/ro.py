@@ -15,7 +15,7 @@
 
 <p align="center">
     <a href="#information">Information</a> |
-    <a href="http://j-mk.ml/ro.py">Discord</a> |
+    <a href="http://jmk.gg/ro.py">Discord</a> |
     <a href="#requirements">Requirements</a> |
     <a href="#disclaimer">Disclaimer</a> |
     <a href="#documentation">Documentation</a> |
@@ -30,7 +30,7 @@ ro.py is an object oriented, asynchronous wrapper for the Roblox Web API (and ot
 ro.py allows you to automate much of what you would do on the Roblox website and on other Roblox-related websites.
 
 ## Update: ro.py on Discord
-I’ve set up a small ro.py Discord server. It’s obviously very tiny, but some of you can be the first people to help found the server. If you need support for the library, you can ask your questions here if you need faster support. http://j-mk.ml/ro.py
+I’ve set up a small ro.py Discord server. It’s obviously very tiny, but some of you can be the first people to help found the server. If you need support for the library, you can ask your questions here if you need faster support. http://jmk.gg/ro.py
 
 ## Get Started
 To begin, first import the client, which is the most essential part of ro.py, and initialize it like so:
@@ -71,7 +71,8 @@ You'll need to install `wxPython`, `wxasync` and `pytweening` to use the prompts
 
 ## Disclaimer
 We are not responsible for any malicious use of this library.  
-If you use this library in a way that violates the [Roblox Terms of Use](https://en.help.roblox.com/hc/en-us/articles/115004647846-Roblox-Terms-of-Use) your account may be punished.
+If you use this library in a way that violates the [Roblox Terms of Use](https://en.help.roblox.com/hc/en-us/articles/115004647846-Roblox-Terms-of-Use) your account may be punished.  
+If you use code from ro.py in your own library, please credit us! We're working our hardest to deliver this library, and crediting us is the best way to help support the project. 
 
 ## Documentation
 You can view documentation for ro.py at [ro.py.jmksite.dev](https://ro.py.jmksite.dev/).  

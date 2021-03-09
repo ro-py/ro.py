@@ -93,33 +93,69 @@ import asyncio
 
 from ro_py.wall import Wall
 from ro_py.roles import Role
-from ro_py.users import PartialUser
-from ro_py.events import EventTypes
+from ro_py.events import Event
+from ro_py.users import BaseUser
 from typing import Tuple, Callable
+from ro_py.events import EventTypes
 from ro_py.utilities.errors import NotFound
+from ro_py.bases.baseuser import PartialUser
 from ro_py.utilities.pages import Pages, SortOrder
 from ro_py.utilities.clientobject import ClientObject
 
-endpoint = &#34;https://groups.roblox.com&#34;
+from ro_py.utilities.url import url
+endpoint = url(&#34;groups&#34;)
 
 
 class Shout:
     &#34;&#34;&#34;
     Represents a group shout.
     &#34;&#34;&#34;
-    def __init__(self, cso, shout_data):
+    def __init__(self, cso, group, shout_data):
         self.cso = cso
+        self.requests = cso.requests
+        self.group = group
         self.data = shout_data
         self.body = shout_data[&#34;body&#34;]
+        self.created = iso8601.parse_date(shout_data[&#34;created&#34;])
+        self.updated = iso8601.parse_date(shout_data[&#34;updated&#34;])
+
         # TODO: Make this a PartialUser
         self.poster = None
+
+    def __str__(self):
+        return self.body
+
+    async def __call__(self, message):
+        &#34;&#34;&#34;
+        Updates the shout of the group.
+        Please note that doing so will completely delete this Shout object and return a new Shout object.
+        The parent group&#39;s shout parameter will also be updated accordingly.
+
+        Parameters
+        ----------
+        message : str
+            Message that will overwrite the current shout of a group.
+
+        Returns
+        -------
+        ro_py.groups.Shout
+
+        &#34;&#34;&#34;
+        shout_req = await self.requests.patch(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/status&#34;,
+            data={
+                &#34;message&#34;: message
+            }
+        )
+        self.group.shout = Shout(self.cso, self.group, shout_req.json())
+        return self.group.shout
 
 
 class JoinRequest:
     def __init__(self, cso, data, group):
         self.requests = cso.requests
         self.group = group
-        self.requester = PartialUser(cso, data[&#39;requester&#39;][&#39;userId&#39;], data[&#39;requester&#39;][&#39;username&#39;])
+        self.requester = PartialUser(cso, data[&#39;requester&#39;])
         self.created = iso8601.parse_date(data[&#39;created&#39;])
 
     async def accept(self):
@@ -214,6 +250,7 @@ class Group(ClientObject):
     Represents a group.
     &#34;&#34;&#34;
     def __init__(self, cso, group_id):
+        super().__init__()
         self.cso = cso
         &#34;&#34;&#34;Client Shared Object&#34;&#34;&#34;
         self.requests = cso.requests
@@ -254,7 +291,7 @@ class Group(ClientObject):
         self.is_builders_club_only = group_info[&#34;isBuildersClubOnly&#34;]
         self.public_entry_allowed = group_info[&#34;publicEntryAllowed&#34;]
         if group_info.get(&#39;shout&#39;):
-            self.shout = Shout(self.cso, group_info[&#39;shout&#39;])
+            self.shout = Shout(self.cso, self, group_info[&#39;shout&#39;])
         else:
             self.shout = None
         if &#34;isLocked&#34; in group_info:
@@ -263,6 +300,7 @@ class Group(ClientObject):
     async def update_shout(self, message):
         &#34;&#34;&#34;
         Updates the shout of the group.
+        DEPRECATED: Just call group.shout()
 
         Parameters
         ----------
@@ -273,13 +311,7 @@ class Group(ClientObject):
         -------
         int
         &#34;&#34;&#34;
-        shout_req = await self.requests.patch(
-            url=endpoint + f&#34;/v1/groups/{self.id}/status&#34;,
-            data={
-                &#34;message&#34;: message
-            }
-        )
-        return shout_req.status_code == 200
+        return await self.shout(message)
 
     async def get_roles(self):
         &#34;&#34;&#34;
@@ -297,10 +329,10 @@ class Group(ClientObject):
             roles.append(Role(self.cso, self, role))
         return roles
 
-    async def get_member_by_id(self, roblox_id):
+    async def get_member_by_id(self, user_id):
         # Get list of group user is in.
         member_req = await self.requests.get(
-            url=endpoint + f&#34;/v2/users/{roblox_id}/groups/roles&#34;
+            url=endpoint + f&#34;/v2/users/{user_id}/groups/roles&#34;
         )
         data = member_req.json()
 
@@ -313,11 +345,11 @@ class Group(ClientObject):
 
         # Check if user is in group.
         if not group_data:
-            raise NotFound(f&#34;The user {roblox_id} was not found in group {self.id}&#34;)
+            raise NotFound(f&#34;The user {user_id} was not found in group {self.id}&#34;)
 
         # Create data to return.
         role = Role(self.cso, self, group_data[&#39;role&#39;])
-        member = Member(self.cso, roblox_id, &#34;&#34;, self, role)
+        member = Member(self.cso, user_id, &#34;&#34;, self, role)
         return member
 
     async def get_member_by_username(self, name):
@@ -408,7 +440,7 @@ class PartialGroup:
         return self.cso.client.get_group(self.id)
 
 
-class Member(PartialUser):
+class Member(BaseUser):
     &#34;&#34;&#34;
     Represents a user in a group.
 
@@ -416,7 +448,7 @@ class Member(PartialUser):
     ----------
     cso : ro_py.utilities.requests.Requests
             Requests object to use for API requests.
-    roblox_id : int
+    user_id : int
             The id of a user.
     name : str
             The name of the user.
@@ -425,8 +457,9 @@ class Member(PartialUser):
     role : ro_py.roles.Role
             The role the user has is the group.
     &#34;&#34;&#34;
-    def __init__(self, cso, roblox_id, name, group, role):
-        super().__init__(cso, roblox_id, name)
+    def __init__(self, cso, user_id, name, group, role):
+        super().__init__(cso, user_id)
+        self.name = name
         self.role = role
         self.group = group
 
@@ -549,7 +582,7 @@ class Events:
         self.cso = cso
         self.group = group
 
-    def bind(self, func: Callable, event: EventTypes, delay: int = 15):
+    async def bind(self, func: Callable, event: EventTypes, delay: int = 15):
         &#34;&#34;&#34;
         Binds a function to an event.
 
@@ -563,60 +596,92 @@ class Events:
                 How many seconds between each poll.
         &#34;&#34;&#34;
         if event == EventTypes.on_join_request:
-            return asyncio.create_task(self.on_join_request(func, delay))
+            event = Event(self.on_join_request, EventTypes.on_join_request, (func, None), delay)
+            self.cso.event_handler.add_event(event)
         if event == EventTypes.on_wall_post:
-            return asyncio.create_task(self.on_wall_post(func, delay))
+            event = Event(self.on_wall_post, EventTypes.on_wall_post, (func, None), delay)
+            self.cso.event_handler.add_event(event)
         if event == EventTypes.on_group_change:
-            return asyncio.create_task(self.on_group_change(func, delay))
-        if event == EventTypes.on_audit_log:
-            return asyncio.create_task(self.on_audit_log(func, delay))
+            event = Event(self.on_group_change, EventTypes.on_group_change, (func, None), delay)
+            self.cso.event_handler.add_event(event)
+        await self.cso.event_handler.listen()
 
-    async def on_join_request(self, func: Callable, delay: int):
-        current_group_reqs = await self.group.get_join_requests()
-        old_req = current_group_reqs.data.requester.id
-        while True:
-            await asyncio.sleep(delay)
+    async def on_join_request(self, func: Callable, old_req, event: Event):
+        if not old_req:
             current_group_reqs = await self.group.get_join_requests()
-            current_group_reqs = current_group_reqs.data
-            if current_group_reqs[0].requester.id != old_req:
-                new_reqs = []
-                for request in current_group_reqs:
-                    if request.requester.id != old_req:
-                        new_reqs.append(request)
-                old_req = current_group_reqs[0].requester.id
-                for new_req in new_reqs:
-                    asyncio.create_task(func(new_req))
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_group_reqs.data[0].requester.id
+            return event.edit(arguments=tuple(old_arguments))
 
-    async def on_wall_post(self, func: Callable, delay: int):
-        current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
-        newest_wall_post = current_wall_posts.data[0].id
-        while True:
-            await asyncio.sleep(delay)
+        current_group_reqs = await self.group.get_join_requests()
+        current_group_reqs = current_group_reqs.data
+
+        if current_group_reqs[0].requester.id != old_req:
+            new_reqs = []
+
+            for request in current_group_reqs:
+                if request.requester.id == old_req:
+                    break
+                new_reqs.append(request)
+
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_group_reqs[0].requester.id
+            event.edit(arguments=tuple(old_arguments))
+
+            for new_req in new_reqs:
+                asyncio.create_task(func(new_req))
+
+    async def on_wall_post(self, func: Callable, newest_wall_post, event: Event):
+        if not newest_wall_post:
             current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
-            current_wall_posts = current_wall_posts.data
-            post = current_wall_posts[0]
-            if post.id != newest_wall_post:
-                new_posts = []
-                for post in current_wall_posts:
-                    if post.id == newest_wall_post:
-                        break
-                    new_posts.append(post)
-                newest_wall_post = current_wall_posts[0].id
-                for new_post in new_posts:
-                    asyncio.create_task(func(new_post))
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_wall_posts.data[0].id
+            return event.edit(arguments=tuple(old_arguments))
 
-    async def on_group_change(self, func: Callable, delay: int):
-        await self.group.update()
-        current_group = copy.copy(self.group)
-        while True:
-            await asyncio.sleep(delay)
+        current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
+        current_wall_posts = current_wall_posts.data
+
+        post = current_wall_posts[0]
+        if post.id != newest_wall_post:
+            new_posts = []
+
+            for post in current_wall_posts:
+                if post.id == newest_wall_post:
+                    break
+                new_posts.append(post)
+
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_wall_posts[0].id
+            event.edit(arguments=tuple(old_arguments))
+
+            for new_post in new_posts:
+                asyncio.create_task(func(new_post))
+
+    async def on_group_change(self, func: Callable, current_group, event: Event):
+        if not current_group:
             await self.group.update()
-            has_changed = False
-            for attr, value in current_group.__dict__.items():
-                if getattr(self.group, attr) != value:
+            old_arguments = list(event.arguments)
+            old_arguments[1] = copy.copy(self.group)
+            return event.edit(arguments=tuple(old_arguments))
+
+        await self.group.update()
+
+        has_changed = False
+        for attr, value in current_group.__dict__.items():
+            other_value = getattr(self.group, attr)
+            if attr == &#34;shout&#34;:
+                if str(value) != str(other_value):
                     has_changed = True
-            if has_changed:
-                asyncio.create_task(func(current_group, self.group))
+                else:
+                    continue
+            if other_value != value:
+                has_changed = True
+
+        if has_changed:
+            old_arguments = list(event.arguments)
+            old_arguments[1] = copy.copy(self.group)
+            event.edit(arguments=tuple(old_arguments))
+            asyncio.create_task(func(current_group, self.group))
 
     &#34;&#34;&#34;
     async def on_audit_log(self, func: Callable, delay: int):
@@ -959,7 +1024,7 @@ class Events:
         self.cso = cso
         self.group = group
 
-    def bind(self, func: Callable, event: EventTypes, delay: int = 15):
+    async def bind(self, func: Callable, event: EventTypes, delay: int = 15):
         &#34;&#34;&#34;
         Binds a function to an event.
 
@@ -973,60 +1038,92 @@ class Events:
                 How many seconds between each poll.
         &#34;&#34;&#34;
         if event == EventTypes.on_join_request:
-            return asyncio.create_task(self.on_join_request(func, delay))
+            event = Event(self.on_join_request, EventTypes.on_join_request, (func, None), delay)
+            self.cso.event_handler.add_event(event)
         if event == EventTypes.on_wall_post:
-            return asyncio.create_task(self.on_wall_post(func, delay))
+            event = Event(self.on_wall_post, EventTypes.on_wall_post, (func, None), delay)
+            self.cso.event_handler.add_event(event)
         if event == EventTypes.on_group_change:
-            return asyncio.create_task(self.on_group_change(func, delay))
-        if event == EventTypes.on_audit_log:
-            return asyncio.create_task(self.on_audit_log(func, delay))
+            event = Event(self.on_group_change, EventTypes.on_group_change, (func, None), delay)
+            self.cso.event_handler.add_event(event)
+        await self.cso.event_handler.listen()
 
-    async def on_join_request(self, func: Callable, delay: int):
-        current_group_reqs = await self.group.get_join_requests()
-        old_req = current_group_reqs.data.requester.id
-        while True:
-            await asyncio.sleep(delay)
+    async def on_join_request(self, func: Callable, old_req, event: Event):
+        if not old_req:
             current_group_reqs = await self.group.get_join_requests()
-            current_group_reqs = current_group_reqs.data
-            if current_group_reqs[0].requester.id != old_req:
-                new_reqs = []
-                for request in current_group_reqs:
-                    if request.requester.id != old_req:
-                        new_reqs.append(request)
-                old_req = current_group_reqs[0].requester.id
-                for new_req in new_reqs:
-                    asyncio.create_task(func(new_req))
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_group_reqs.data[0].requester.id
+            return event.edit(arguments=tuple(old_arguments))
 
-    async def on_wall_post(self, func: Callable, delay: int):
-        current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
-        newest_wall_post = current_wall_posts.data[0].id
-        while True:
-            await asyncio.sleep(delay)
+        current_group_reqs = await self.group.get_join_requests()
+        current_group_reqs = current_group_reqs.data
+
+        if current_group_reqs[0].requester.id != old_req:
+            new_reqs = []
+
+            for request in current_group_reqs:
+                if request.requester.id == old_req:
+                    break
+                new_reqs.append(request)
+
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_group_reqs[0].requester.id
+            event.edit(arguments=tuple(old_arguments))
+
+            for new_req in new_reqs:
+                asyncio.create_task(func(new_req))
+
+    async def on_wall_post(self, func: Callable, newest_wall_post, event: Event):
+        if not newest_wall_post:
             current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
-            current_wall_posts = current_wall_posts.data
-            post = current_wall_posts[0]
-            if post.id != newest_wall_post:
-                new_posts = []
-                for post in current_wall_posts:
-                    if post.id == newest_wall_post:
-                        break
-                    new_posts.append(post)
-                newest_wall_post = current_wall_posts[0].id
-                for new_post in new_posts:
-                    asyncio.create_task(func(new_post))
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_wall_posts.data[0].id
+            return event.edit(arguments=tuple(old_arguments))
 
-    async def on_group_change(self, func: Callable, delay: int):
-        await self.group.update()
-        current_group = copy.copy(self.group)
-        while True:
-            await asyncio.sleep(delay)
+        current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
+        current_wall_posts = current_wall_posts.data
+
+        post = current_wall_posts[0]
+        if post.id != newest_wall_post:
+            new_posts = []
+
+            for post in current_wall_posts:
+                if post.id == newest_wall_post:
+                    break
+                new_posts.append(post)
+
+            old_arguments = list(event.arguments)
+            old_arguments[1] = current_wall_posts[0].id
+            event.edit(arguments=tuple(old_arguments))
+
+            for new_post in new_posts:
+                asyncio.create_task(func(new_post))
+
+    async def on_group_change(self, func: Callable, current_group, event: Event):
+        if not current_group:
             await self.group.update()
-            has_changed = False
-            for attr, value in current_group.__dict__.items():
-                if getattr(self.group, attr) != value:
+            old_arguments = list(event.arguments)
+            old_arguments[1] = copy.copy(self.group)
+            return event.edit(arguments=tuple(old_arguments))
+
+        await self.group.update()
+
+        has_changed = False
+        for attr, value in current_group.__dict__.items():
+            other_value = getattr(self.group, attr)
+            if attr == &#34;shout&#34;:
+                if str(value) != str(other_value):
                     has_changed = True
-            if has_changed:
-                asyncio.create_task(func(current_group, self.group))
+                else:
+                    continue
+            if other_value != value:
+                has_changed = True
+
+        if has_changed:
+            old_arguments = list(event.arguments)
+            old_arguments[1] = copy.copy(self.group)
+            event.edit(arguments=tuple(old_arguments))
+            asyncio.create_task(func(current_group, self.group))
 
     &#34;&#34;&#34;
     async def on_audit_log(self, func: Callable, delay: int):
@@ -1052,7 +1149,7 @@ class Events:
 <h3>Methods</h3>
 <dl>
 <dt id="ro_py.groups.Events.bind"><code class="name flex">
-<span>def <span class="ident">bind</span></span>(<span>self, func: Callable, event: <a title="ro_py.events.EventTypes" href="events.html#ro_py.events.EventTypes">EventTypes</a>, delay: int = 15)</span>
+<span>async def <span class="ident">bind</span></span>(<span>self, func: Callable, event: <a title="ro_py.events.EventTypes" href="events.html#ro_py.events.EventTypes">EventTypes</a>, delay: int = 15)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Binds a function to an event.</p>
@@ -1069,7 +1166,7 @@ class Events:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def bind(self, func: Callable, event: EventTypes, delay: int = 15):
+<pre><code class="python">async def bind(self, func: Callable, event: EventTypes, delay: int = 15):
     &#34;&#34;&#34;
     Binds a function to an event.
 
@@ -1083,17 +1180,19 @@ class Events:
             How many seconds between each poll.
     &#34;&#34;&#34;
     if event == EventTypes.on_join_request:
-        return asyncio.create_task(self.on_join_request(func, delay))
+        event = Event(self.on_join_request, EventTypes.on_join_request, (func, None), delay)
+        self.cso.event_handler.add_event(event)
     if event == EventTypes.on_wall_post:
-        return asyncio.create_task(self.on_wall_post(func, delay))
+        event = Event(self.on_wall_post, EventTypes.on_wall_post, (func, None), delay)
+        self.cso.event_handler.add_event(event)
     if event == EventTypes.on_group_change:
-        return asyncio.create_task(self.on_group_change(func, delay))
-    if event == EventTypes.on_audit_log:
-        return asyncio.create_task(self.on_audit_log(func, delay))</code></pre>
+        event = Event(self.on_group_change, EventTypes.on_group_change, (func, None), delay)
+        self.cso.event_handler.add_event(event)
+    await self.cso.event_handler.listen()</code></pre>
 </details>
 </dd>
 <dt id="ro_py.groups.Events.on_group_change"><code class="name flex">
-<span>async def <span class="ident">on_group_change</span></span>(<span>self, func: Callable, delay: int)</span>
+<span>async def <span class="ident">on_group_change</span></span>(<span>self, func: Callable, current_group, event: <a title="ro_py.events.Event" href="events.html#ro_py.events.Event">Event</a>)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1101,22 +1200,35 @@ class Events:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def on_group_change(self, func: Callable, delay: int):
-    await self.group.update()
-    current_group = copy.copy(self.group)
-    while True:
-        await asyncio.sleep(delay)
+<pre><code class="python">async def on_group_change(self, func: Callable, current_group, event: Event):
+    if not current_group:
         await self.group.update()
-        has_changed = False
-        for attr, value in current_group.__dict__.items():
-            if getattr(self.group, attr) != value:
+        old_arguments = list(event.arguments)
+        old_arguments[1] = copy.copy(self.group)
+        return event.edit(arguments=tuple(old_arguments))
+
+    await self.group.update()
+
+    has_changed = False
+    for attr, value in current_group.__dict__.items():
+        other_value = getattr(self.group, attr)
+        if attr == &#34;shout&#34;:
+            if str(value) != str(other_value):
                 has_changed = True
-        if has_changed:
-            asyncio.create_task(func(current_group, self.group))</code></pre>
+            else:
+                continue
+        if other_value != value:
+            has_changed = True
+
+    if has_changed:
+        old_arguments = list(event.arguments)
+        old_arguments[1] = copy.copy(self.group)
+        event.edit(arguments=tuple(old_arguments))
+        asyncio.create_task(func(current_group, self.group))</code></pre>
 </details>
 </dd>
 <dt id="ro_py.groups.Events.on_join_request"><code class="name flex">
-<span>async def <span class="ident">on_join_request</span></span>(<span>self, func: Callable, delay: int)</span>
+<span>async def <span class="ident">on_join_request</span></span>(<span>self, func: Callable, old_req, event: <a title="ro_py.events.Event" href="events.html#ro_py.events.Event">Event</a>)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1124,25 +1236,34 @@ class Events:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def on_join_request(self, func: Callable, delay: int):
-    current_group_reqs = await self.group.get_join_requests()
-    old_req = current_group_reqs.data.requester.id
-    while True:
-        await asyncio.sleep(delay)
+<pre><code class="python">async def on_join_request(self, func: Callable, old_req, event: Event):
+    if not old_req:
         current_group_reqs = await self.group.get_join_requests()
-        current_group_reqs = current_group_reqs.data
-        if current_group_reqs[0].requester.id != old_req:
-            new_reqs = []
-            for request in current_group_reqs:
-                if request.requester.id != old_req:
-                    new_reqs.append(request)
-            old_req = current_group_reqs[0].requester.id
-            for new_req in new_reqs:
-                asyncio.create_task(func(new_req))</code></pre>
+        old_arguments = list(event.arguments)
+        old_arguments[1] = current_group_reqs.data[0].requester.id
+        return event.edit(arguments=tuple(old_arguments))
+
+    current_group_reqs = await self.group.get_join_requests()
+    current_group_reqs = current_group_reqs.data
+
+    if current_group_reqs[0].requester.id != old_req:
+        new_reqs = []
+
+        for request in current_group_reqs:
+            if request.requester.id == old_req:
+                break
+            new_reqs.append(request)
+
+        old_arguments = list(event.arguments)
+        old_arguments[1] = current_group_reqs[0].requester.id
+        event.edit(arguments=tuple(old_arguments))
+
+        for new_req in new_reqs:
+            asyncio.create_task(func(new_req))</code></pre>
 </details>
 </dd>
 <dt id="ro_py.groups.Events.on_wall_post"><code class="name flex">
-<span>async def <span class="ident">on_wall_post</span></span>(<span>self, func: Callable, delay: int)</span>
+<span>async def <span class="ident">on_wall_post</span></span>(<span>self, func: Callable, newest_wall_post, event: <a title="ro_py.events.Event" href="events.html#ro_py.events.Event">Event</a>)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1150,23 +1271,31 @@ class Events:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def on_wall_post(self, func: Callable, delay: int):
-    current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
-    newest_wall_post = current_wall_posts.data[0].id
-    while True:
-        await asyncio.sleep(delay)
+<pre><code class="python">async def on_wall_post(self, func: Callable, newest_wall_post, event: Event):
+    if not newest_wall_post:
         current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
-        current_wall_posts = current_wall_posts.data
-        post = current_wall_posts[0]
-        if post.id != newest_wall_post:
-            new_posts = []
-            for post in current_wall_posts:
-                if post.id == newest_wall_post:
-                    break
-                new_posts.append(post)
-            newest_wall_post = current_wall_posts[0].id
-            for new_post in new_posts:
-                asyncio.create_task(func(new_post))</code></pre>
+        old_arguments = list(event.arguments)
+        old_arguments[1] = current_wall_posts.data[0].id
+        return event.edit(arguments=tuple(old_arguments))
+
+    current_wall_posts = await self.group.wall.get_posts(sort_order=SortOrder.Descending)
+    current_wall_posts = current_wall_posts.data
+
+    post = current_wall_posts[0]
+    if post.id != newest_wall_post:
+        new_posts = []
+
+        for post in current_wall_posts:
+            if post.id == newest_wall_post:
+                break
+            new_posts.append(post)
+
+        old_arguments = list(event.arguments)
+        old_arguments[1] = current_wall_posts[0].id
+        event.edit(arguments=tuple(old_arguments))
+
+        for new_post in new_posts:
+            asyncio.create_task(func(new_post))</code></pre>
 </details>
 </dd>
 </dl>
@@ -1186,6 +1315,7 @@ class Events:
     Represents a group.
     &#34;&#34;&#34;
     def __init__(self, cso, group_id):
+        super().__init__()
         self.cso = cso
         &#34;&#34;&#34;Client Shared Object&#34;&#34;&#34;
         self.requests = cso.requests
@@ -1226,7 +1356,7 @@ class Events:
         self.is_builders_club_only = group_info[&#34;isBuildersClubOnly&#34;]
         self.public_entry_allowed = group_info[&#34;publicEntryAllowed&#34;]
         if group_info.get(&#39;shout&#39;):
-            self.shout = Shout(self.cso, group_info[&#39;shout&#39;])
+            self.shout = Shout(self.cso, self, group_info[&#39;shout&#39;])
         else:
             self.shout = None
         if &#34;isLocked&#34; in group_info:
@@ -1235,6 +1365,7 @@ class Events:
     async def update_shout(self, message):
         &#34;&#34;&#34;
         Updates the shout of the group.
+        DEPRECATED: Just call group.shout()
 
         Parameters
         ----------
@@ -1245,13 +1376,7 @@ class Events:
         -------
         int
         &#34;&#34;&#34;
-        shout_req = await self.requests.patch(
-            url=endpoint + f&#34;/v1/groups/{self.id}/status&#34;,
-            data={
-                &#34;message&#34;: message
-            }
-        )
-        return shout_req.status_code == 200
+        return await self.shout(message)
 
     async def get_roles(self):
         &#34;&#34;&#34;
@@ -1269,10 +1394,10 @@ class Events:
             roles.append(Role(self.cso, self, role))
         return roles
 
-    async def get_member_by_id(self, roblox_id):
+    async def get_member_by_id(self, user_id):
         # Get list of group user is in.
         member_req = await self.requests.get(
-            url=endpoint + f&#34;/v2/users/{roblox_id}/groups/roles&#34;
+            url=endpoint + f&#34;/v2/users/{user_id}/groups/roles&#34;
         )
         data = member_req.json()
 
@@ -1285,11 +1410,11 @@ class Events:
 
         # Check if user is in group.
         if not group_data:
-            raise NotFound(f&#34;The user {roblox_id} was not found in group {self.id}&#34;)
+            raise NotFound(f&#34;The user {user_id} was not found in group {self.id}&#34;)
 
         # Create data to return.
         role = Role(self.cso, self, group_data[&#39;role&#39;])
-        member = Member(self.cso, roblox_id, &#34;&#34;, self, role)
+        member = Member(self.cso, user_id, &#34;&#34;, self, role)
         return member
 
     async def get_member_by_username(self, name):
@@ -1470,7 +1595,7 @@ class Events:
 </details>
 </dd>
 <dt id="ro_py.groups.Group.get_member_by_id"><code class="name flex">
-<span>async def <span class="ident">get_member_by_id</span></span>(<span>self, roblox_id)</span>
+<span>async def <span class="ident">get_member_by_id</span></span>(<span>self, user_id)</span>
 </code></dt>
 <dd>
 <div class="desc"></div>
@@ -1478,10 +1603,10 @@ class Events:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def get_member_by_id(self, roblox_id):
+<pre><code class="python">async def get_member_by_id(self, user_id):
     # Get list of group user is in.
     member_req = await self.requests.get(
-        url=endpoint + f&#34;/v2/users/{roblox_id}/groups/roles&#34;
+        url=endpoint + f&#34;/v2/users/{user_id}/groups/roles&#34;
     )
     data = member_req.json()
 
@@ -1494,11 +1619,11 @@ class Events:
 
     # Check if user is in group.
     if not group_data:
-        raise NotFound(f&#34;The user {roblox_id} was not found in group {self.id}&#34;)
+        raise NotFound(f&#34;The user {user_id} was not found in group {self.id}&#34;)
 
     # Create data to return.
     role = Role(self.cso, self, group_data[&#39;role&#39;])
-    member = Member(self.cso, roblox_id, &#34;&#34;, self, role)
+    member = Member(self.cso, user_id, &#34;&#34;, self, role)
     return member</code></pre>
 </details>
 </dd>
@@ -1611,7 +1736,7 @@ class Events:
     self.is_builders_club_only = group_info[&#34;isBuildersClubOnly&#34;]
     self.public_entry_allowed = group_info[&#34;publicEntryAllowed&#34;]
     if group_info.get(&#39;shout&#39;):
-        self.shout = Shout(self.cso, group_info[&#39;shout&#39;])
+        self.shout = Shout(self.cso, self, group_info[&#39;shout&#39;])
     else:
         self.shout = None
     if &#34;isLocked&#34; in group_info:
@@ -1622,7 +1747,8 @@ class Events:
 <span>async def <span class="ident">update_shout</span></span>(<span>self, message)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Updates the shout of the group.</p>
+<div class="desc"><p>Updates the shout of the group.
+DEPRECATED: Just call group.shout()</p>
 <h2 id="parameters">Parameters</h2>
 <dl>
 <dt><strong><code>message</code></strong> :&ensp;<code>str</code></dt>
@@ -1640,6 +1766,7 @@ class Events:
 <pre><code class="python">async def update_shout(self, message):
     &#34;&#34;&#34;
     Updates the shout of the group.
+    DEPRECATED: Just call group.shout()
 
     Parameters
     ----------
@@ -1650,13 +1777,7 @@ class Events:
     -------
     int
     &#34;&#34;&#34;
-    shout_req = await self.requests.patch(
-        url=endpoint + f&#34;/v1/groups/{self.id}/status&#34;,
-        data={
-            &#34;message&#34;: message
-        }
-    )
-    return shout_req.status_code == 200</code></pre>
+    return await self.shout(message)</code></pre>
 </details>
 </dd>
 </dl>
@@ -1675,7 +1796,7 @@ class Events:
     def __init__(self, cso, data, group):
         self.requests = cso.requests
         self.group = group
-        self.requester = PartialUser(cso, data[&#39;requester&#39;][&#39;userId&#39;], data[&#39;requester&#39;][&#39;username&#39;])
+        self.requester = PartialUser(cso, data[&#39;requester&#39;])
         self.created = iso8601.parse_date(data[&#39;created&#39;])
 
     async def accept(self):
@@ -1728,7 +1849,7 @@ class Events:
 </dd>
 <dt id="ro_py.groups.Member"><code class="flex name class">
 <span>class <span class="ident">Member</span></span>
-<span>(</span><span>cso, roblox_id, name, group, role)</span>
+<span>(</span><span>cso, user_id, name, group, role)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a user in a group.</p>
@@ -1736,7 +1857,7 @@ class Events:
 <dl>
 <dt><strong><code>cso</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
 <dd>Requests object to use for API requests.</dd>
-<dt><strong><code>roblox_id</code></strong> :&ensp;<code>int</code></dt>
+<dt><strong><code>user_id</code></strong> :&ensp;<code>int</code></dt>
 <dd>The id of a user.</dd>
 <dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
 <dd>The name of the user.</dd>
@@ -1749,7 +1870,7 @@ class Events:
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class Member(PartialUser):
+<pre><code class="python">class Member(BaseUser):
     &#34;&#34;&#34;
     Represents a user in a group.
 
@@ -1757,7 +1878,7 @@ class Events:
     ----------
     cso : ro_py.utilities.requests.Requests
             Requests object to use for API requests.
-    roblox_id : int
+    user_id : int
             The id of a user.
     name : str
             The name of the user.
@@ -1766,8 +1887,9 @@ class Events:
     role : ro_py.roles.Role
             The role the user has is the group.
     &#34;&#34;&#34;
-    def __init__(self, cso, roblox_id, name, group, role):
-        super().__init__(cso, roblox_id, name)
+    def __init__(self, cso, user_id, name, group, role):
+        super().__init__(cso, user_id)
+        self.name = name
         self.role = role
         self.group = group
 
@@ -1886,7 +2008,7 @@ class Events:
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="ro_py.users.PartialUser" href="users.html#ro_py.users.PartialUser">PartialUser</a></li>
+<li><a title="ro_py.bases.baseuser.BaseUser" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser">BaseUser</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
@@ -2118,16 +2240,18 @@ If num is -1 the users role will go down by 1.</p>
 </dl>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="ro_py.users.PartialUser" href="users.html#ro_py.users.PartialUser">PartialUser</a></b></code>:
+<li><code><b><a title="ro_py.bases.baseuser.BaseUser" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser">BaseUser</a></b></code>:
 <ul class="hlist">
-<li><code><a title="ro_py.users.PartialUser.expand" href="users.html#ro_py.users.PartialUser.expand">expand</a></code></li>
-<li><code><a title="ro_py.users.PartialUser.get_followers_count" href="users.html#ro_py.users.PartialUser.get_followers_count">get_followers_count</a></code></li>
-<li><code><a title="ro_py.users.PartialUser.get_followings_count" href="users.html#ro_py.users.PartialUser.get_followings_count">get_followings_count</a></code></li>
-<li><code><a title="ro_py.users.PartialUser.get_friends" href="users.html#ro_py.users.PartialUser.get_friends">get_friends</a></code></li>
-<li><code><a title="ro_py.users.PartialUser.get_friends_count" href="users.html#ro_py.users.PartialUser.get_friends_count">get_friends_count</a></code></li>
-<li><code><a title="ro_py.users.PartialUser.get_limiteds" href="users.html#ro_py.users.PartialUser.get_limiteds">get_limiteds</a></code></li>
-<li><code><a title="ro_py.users.PartialUser.get_roblox_badges" href="users.html#ro_py.users.PartialUser.get_roblox_badges">get_roblox_badges</a></code></li>
-<li><code><a title="ro_py.users.PartialUser.get_status" href="users.html#ro_py.users.PartialUser.get_status">get_status</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.expand" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.expand">expand</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_followers_count" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_followers_count">get_followers_count</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_followings_count" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_followings_count">get_followings_count</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_friends" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_friends">get_friends</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_friends_count" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_friends_count">get_friends_count</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_groups" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_groups">get_groups</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_limiteds" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_limiteds">get_limiteds</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_roblox_badges" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_roblox_badges">get_roblox_badges</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.get_status" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.get_status">get_status</a></code></li>
+<li><code><a title="ro_py.bases.baseuser.BaseUser.has_badge" href="bases/baseuser.html#ro_py.bases.baseuser.BaseUser.has_badge">has_badge</a></code></li>
 </ul>
 </li>
 </ul>
@@ -2184,7 +2308,7 @@ If it was generated from, let's say, groups/v2/users/userid/groups/roles, it'll 
 </dd>
 <dt id="ro_py.groups.Shout"><code class="flex name class">
 <span>class <span class="ident">Shout</span></span>
-<span>(</span><span>cso, shout_data)</span>
+<span>(</span><span>cso, group, shout_data)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Represents a group shout.</p></div>
@@ -2196,12 +2320,45 @@ If it was generated from, let's say, groups/v2/users/userid/groups/roles, it'll 
     &#34;&#34;&#34;
     Represents a group shout.
     &#34;&#34;&#34;
-    def __init__(self, cso, shout_data):
+    def __init__(self, cso, group, shout_data):
         self.cso = cso
+        self.requests = cso.requests
+        self.group = group
         self.data = shout_data
         self.body = shout_data[&#34;body&#34;]
+        self.created = iso8601.parse_date(shout_data[&#34;created&#34;])
+        self.updated = iso8601.parse_date(shout_data[&#34;updated&#34;])
+
         # TODO: Make this a PartialUser
-        self.poster = None</code></pre>
+        self.poster = None
+
+    def __str__(self):
+        return self.body
+
+    async def __call__(self, message):
+        &#34;&#34;&#34;
+        Updates the shout of the group.
+        Please note that doing so will completely delete this Shout object and return a new Shout object.
+        The parent group&#39;s shout parameter will also be updated accordingly.
+
+        Parameters
+        ----------
+        message : str
+            Message that will overwrite the current shout of a group.
+
+        Returns
+        -------
+        ro_py.groups.Shout
+
+        &#34;&#34;&#34;
+        shout_req = await self.requests.patch(
+            url=endpoint + f&#34;/v1/groups/{self.group.id}/status&#34;,
+            data={
+                &#34;message&#34;: message
+            }
+        )
+        self.group.shout = Shout(self.cso, self.group, shout_req.json())
+        return self.group.shout</code></pre>
 </details>
 </dd>
 </dl>

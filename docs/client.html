@@ -86,21 +86,31 @@ This file houses functions and classes that represent the core Roblox web client
 &#34;&#34;&#34;
 
 from ro_py.games import Game
+from ro_py.users import User
 from ro_py.groups import Group
 from ro_py.assets import Asset
 from ro_py.badges import Badge
 from ro_py.chat import ChatWrapper
-from ro_py.users import PartialUser
 from ro_py.events import EventTypes
 from ro_py.trades import TradesWrapper
+from ro_py.friends import FriendRequest
 from ro_py.captcha import CaptchaMetadata
 from ro_py.utilities.cache import CacheType
+from ro_py.bases.baseuser import PartialUser
 from ro_py.captcha import UnsolvedLoginCaptcha
 from ro_py.accountsettings import AccountSettings
-from ro_py.notifications import NotificationReceiver
+from ro_py.utilities.pages import Pages, SortOrder
+# from ro_py.notifications import NotificationReceiver
 from ro_py.accountinformation import AccountInformation
 from ro_py.utilities.clientobject import ClientSharedObject
 from ro_py.utilities.errors import UserDoesNotExistError, InvalidPlaceIDError
+
+
+def friend_handler(cso, data, args):
+    friends = []
+    for friend in data:
+        friends.append(FriendRequest(cso, friend))
+    return friends
 
 
 class Client:
@@ -134,85 +144,31 @@ class Client:
         if token:
             self.token_login(token)
 
-    def token_login(self, token):
+    async def filter_text(self, text):
         &#34;&#34;&#34;
-        Authenticates the client with a ROBLOSECURITY token.
+        Filters text.
 
         Parameters
         ----------
-        token : str
-            .ROBLOSECURITY token to authenticate with.
+        text : str
+            Text that will be filtered.
         &#34;&#34;&#34;
-        self.requests.session.cookies[&#34;.ROBLOSECURITY&#34;] = token
-        self.accountinformation = AccountInformation(self.cso)
-        self.accountsettings = AccountSettings(self.cso)
-        self.chat = ChatWrapper(self.cso)
-        self.trade = TradesWrapper(self.cso, self.get_self)
-        self.notifications = NotificationReceiver(self.cso)
+        filter_req = await self.requests.post(
+            url=&#34;https://develop.roblox.com/v1/gameUpdateNotifications/filter&#34;,
+            data=f&#39;&#34;{text}&#34;&#39;
+        )
+        data = filter_req.json()
+        return data[&#39;filteredGameUpdateText&#39;]
 
-    async def user_login(self, username, password, token=None):
-        &#34;&#34;&#34;
-        Authenticates the client with a username and password.
-
-        Parameters
-        ----------
-        username : str
-            Username to log in with.
-        password : str
-            Password to log in with.
-        token : str, optional
-            If you have already solved the captcha, pass it here.
-
-        Returns
-        -------
-        ro_py.captcha.UnsolvedCaptcha or request
-        &#34;&#34;&#34;
-        if token:
-            login_req = self.requests.back_post(
-                url=&#34;https://auth.roblox.com/v2/login&#34;,
-                json={
-                    &#34;ctype&#34;: &#34;Username&#34;,
-                    &#34;cvalue&#34;: username,
-                    &#34;password&#34;: password,
-                    &#34;captchaToken&#34;: token,
-                    &#34;captchaProvider&#34;: &#34;PROVIDER_ARKOSE_LABS&#34;
-                }
-            )
-            return login_req
-        else:
-            login_req = await self.requests.post(
-                url=&#34;https://auth.roblox.com/v2/login&#34;,
-                json={
-                    &#34;ctype&#34;: &#34;Username&#34;,
-                    &#34;cvalue&#34;: username,
-                    &#34;password&#34;: password
-                },
-                quickreturn=True
-            )
-            if login_req.status_code == 200:
-                # If we&#39;re here, no captcha is required and we&#39;re already logged in, so we can return.
-                return
-            elif login_req.status_code == 403:
-                # A captcha is required, so we need to return the captcha to solve.
-                field_data = login_req.json()[&#34;errors&#34;][0][&#34;fieldData&#34;]
-                captcha_req = await self.requests.post(
-                    url=&#34;https://roblox-api.arkoselabs.com/fc/gt2/public_key/476068BF-9607-4799-B53D-966BE98E2B81&#34;,
-                    headers={
-                        &#34;content-type&#34;: &#34;application/x-www-form-urlencoded; charset=UTF-8&#34;
-                    },
-                    data=f&#34;public_key=476068BF-9607-4799-B53D-966BE98E2B81&amp;data[blob]={field_data}&#34;
-                )
-                captcha_json = captcha_req.json()
-                return UnsolvedLoginCaptcha(captcha_json, &#34;476068BF-9607-4799-B53D-966BE98E2B81&#34;)
-
+    # Grab objects
     async def get_self(self):
         self_req = await self.requests.get(
             url=&#34;https://roblox.com/my/profile&#34;
         )
         data = self_req.json()
-        return PartialUser(self.cso, data[&#39;UserId&#39;], data[&#39;Username&#39;])
+        return PartialUser(self.cso, data)
 
-    async def get_user(self, user_id, expand=True):
+    async def get_user(self, user_id):
         &#34;&#34;&#34;
         Gets a Roblox user.
 
@@ -220,19 +176,15 @@ class Client:
         ----------
         user_id
             ID of the user to generate the object from.
-        expand : bool
-            Whether to automatically expand the data returned by the endpoint into Users.s
         &#34;&#34;&#34;
         user = self.cso.cache.get(CacheType.Users, user_id)
         if not user:
-            user = PartialUser(self.cso, user_id)
-            if expand:
-                expanded = await user.expand()
-                self.cso.cache.set(CacheType.Users, user_id, expanded)
-                return expanded
+            user = User(self.cso, user_id)
+            self.cso.cache.set(CacheType.Users, user_id, user)
+        await user.update()
         return user
 
-    async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False, expand=True):
+    async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False):
         &#34;&#34;&#34;
         Gets a Roblox user by their username..
 
@@ -242,8 +194,6 @@ class Client:
             Name of the user to generate the object from.
         exclude_banned_users : bool
             Whether to exclude banned users in the request.
-        expand : bool
-            Whether to automatically expand the data returned by the endpoint into Users.
         &#34;&#34;&#34;
         username_req = await self.requests.post(
             url=&#34;https://users.roblox.com/v1/usernames/users&#34;,
@@ -257,7 +207,7 @@ class Client:
         username_data = username_req.json()
         if len(username_data[&#34;data&#34;]) &gt; 0:
             user_id = username_req.json()[&#34;data&#34;][0][&#34;id&#34;]  # TODO: make this a partialuser
-            return await self.get_user(user_id, expand=expand)
+            return await self.get_user(user_id)
         else:
             raise UserDoesNotExistError
 
@@ -351,18 +301,133 @@ class Client:
             await badge.update()
         return badge
 
-    async def get_friend_requests(self):
-        friend_req = await self.requests.get(
-            url=&#34;https://friends.roblox.com/v1/user/friend-requests/count&#34;
+    async def get_friend_requests(self, sort_order=SortOrder.Ascending, limit=100):
+        &#34;&#34;&#34;
+        Gets friend requests the client has.
+        &#34;&#34;&#34;
+        friends = Pages(
+            cso=self.cso,
+            url=&#34;https://friends.roblox.com/v1/my/friends/requests&#34;,
+            handler=friend_handler,
+            sort_order=sort_order,
+            limit=limit
         )
-        return friend_req.json()[&#34;count&#34;]
+        await friends.get_page()
+        return friends
 
     async def get_captcha_metadata(self):
+        &#34;&#34;&#34;
+        Grabs captcha metadata, which contains public keys. You can pass these to the prompt extension for GUI captcha
+        solving,
+        &#34;&#34;&#34;
         captcha_meta_req = await self.requests.get(
             url=&#34;https://apis.roblox.com/captcha/v1/metadata&#34;
         )
         captcha_meta_raw = captcha_meta_req.json()
-        return CaptchaMetadata(captcha_meta_raw)</code></pre>
+        return CaptchaMetadata(captcha_meta_raw)
+
+    # Login/logout
+
+    def token_login(self, token):
+        &#34;&#34;&#34;
+        Authenticates the client with a ROBLOSECURITY token.
+
+        Parameters
+        ----------
+        token : str
+            .ROBLOSECURITY token to authenticate with.
+        &#34;&#34;&#34;
+        self.requests.session.cookies[&#34;.ROBLOSECURITY&#34;] = token
+        self.accountinformation = AccountInformation(self.cso)
+        self.accountsettings = AccountSettings(self.cso)
+        self.chat = ChatWrapper(self.cso)
+        self.trade = TradesWrapper(self.cso)
+        # self.notifications = NotificationReceiver(self.cso)
+        self.notifications = None
+
+    async def user_login(self, username, password, token=None):
+        &#34;&#34;&#34;
+        Authenticates the client with a username and password.
+
+        Parameters
+        ----------
+        username : str
+            Username to log in with.
+        password : str
+            Password to log in with.
+        token : str, optional
+            If you have already solved the captcha, pass it here.
+
+        Returns
+        -------
+        ro_py.captcha.UnsolvedCaptcha or request
+        &#34;&#34;&#34;
+        if token:
+            login_req = self.requests.back_post(
+                url=&#34;https://auth.roblox.com/v2/login&#34;,
+                json={
+                    &#34;ctype&#34;: &#34;Username&#34;,
+                    &#34;cvalue&#34;: username,
+                    &#34;password&#34;: password,
+                    &#34;captchaToken&#34;: token,
+                    &#34;captchaProvider&#34;: &#34;PROVIDER_ARKOSE_LABS&#34;
+                }
+            )
+            return login_req
+        else:
+            login_req = await self.requests.post(
+                url=&#34;https://auth.roblox.com/v2/login&#34;,
+                json={
+                    &#34;ctype&#34;: &#34;Username&#34;,
+                    &#34;cvalue&#34;: username,
+                    &#34;password&#34;: password
+                },
+                quickreturn=True
+            )
+            if login_req.status_code == 200:
+                # If we&#39;re here, no captcha is required and we&#39;re already logged in, so we can return.
+                return
+            elif login_req.status_code == 403:
+                # A captcha is required, so we need to return the captcha to solve.
+                field_data = login_req.json()[&#34;errors&#34;][0][&#34;fieldData&#34;]
+                captcha_req = await self.requests.post(
+                    url=&#34;https://roblox-api.arkoselabs.com/fc/gt2/public_key/476068BF-9607-4799-B53D-966BE98E2B81&#34;,
+                    headers={
+                        &#34;content-type&#34;: &#34;application/x-www-form-urlencoded; charset=UTF-8&#34;
+                    },
+                    data=f&#34;public_key=476068BF-9607-4799-B53D-966BE98E2B81&amp;data[blob]={field_data}&#34;
+                )
+                captcha_json = captcha_req.json()
+                return UnsolvedLoginCaptcha(captcha_json, &#34;476068BF-9607-4799-B53D-966BE98E2B81&#34;)
+
+    async def secure_sign_out(self):
+        &#34;&#34;&#34;
+        Sends a Secure Sign Out (SSO) request. This invalidates all session tokens and generates a new one.
+
+        In the past, it was believed that Roblox would invalidate sessions automatically. This is not the case.
+        On the server, sessions are never invalidated unless a logout request is sent. In the browser, cookies expire
+        after 30 years.
+
+        Other Roblox API wrappers used to use SSO requests as a way to stop cookies from being invalidated, because
+        they would generate a new session token, and suggested that the user would &#34;refresh their cookie&#34; fairly
+        frequently as to avoid this. This isn&#39;t something you&#39;ll actually need to do, therefore this is left here as an
+        optional feature.
+        &#34;&#34;&#34;
+        await self.requests.post(
+            url=&#34;https://www.roblox.com/authentication/signoutfromallsessionsandreauthenticate&#34;
+        )
+
+    async def logout(self):
+        &#34;&#34;&#34;
+        Logs out this user.
+
+        This will invalidate your .ROBLOSECURITY token, unlike ro_py.client.secure_sign_out().
+        Don&#39;t use this unless you plan to either never use this .ROBLOSECURITY token again.
+
+        &#34;&#34;&#34;
+        await self.requests.post(
+            url=&#34;https://auth.roblox.com/v2/logout&#34;
+        )</code></pre>
 </details>
 </section>
 <section>
@@ -370,6 +435,25 @@ class Client:
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="ro_py.client.friend_handler"><code class="name flex">
+<span>def <span class="ident">friend_handler</span></span>(<span>cso, data, args)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def friend_handler(cso, data, args):
+    friends = []
+    for friend in data:
+        friends.append(FriendRequest(cso, friend))
+    return friends</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
@@ -420,85 +504,31 @@ class Client:
         if token:
             self.token_login(token)
 
-    def token_login(self, token):
+    async def filter_text(self, text):
         &#34;&#34;&#34;
-        Authenticates the client with a ROBLOSECURITY token.
+        Filters text.
 
         Parameters
         ----------
-        token : str
-            .ROBLOSECURITY token to authenticate with.
+        text : str
+            Text that will be filtered.
         &#34;&#34;&#34;
-        self.requests.session.cookies[&#34;.ROBLOSECURITY&#34;] = token
-        self.accountinformation = AccountInformation(self.cso)
-        self.accountsettings = AccountSettings(self.cso)
-        self.chat = ChatWrapper(self.cso)
-        self.trade = TradesWrapper(self.cso, self.get_self)
-        self.notifications = NotificationReceiver(self.cso)
+        filter_req = await self.requests.post(
+            url=&#34;https://develop.roblox.com/v1/gameUpdateNotifications/filter&#34;,
+            data=f&#39;&#34;{text}&#34;&#39;
+        )
+        data = filter_req.json()
+        return data[&#39;filteredGameUpdateText&#39;]
 
-    async def user_login(self, username, password, token=None):
-        &#34;&#34;&#34;
-        Authenticates the client with a username and password.
-
-        Parameters
-        ----------
-        username : str
-            Username to log in with.
-        password : str
-            Password to log in with.
-        token : str, optional
-            If you have already solved the captcha, pass it here.
-
-        Returns
-        -------
-        ro_py.captcha.UnsolvedCaptcha or request
-        &#34;&#34;&#34;
-        if token:
-            login_req = self.requests.back_post(
-                url=&#34;https://auth.roblox.com/v2/login&#34;,
-                json={
-                    &#34;ctype&#34;: &#34;Username&#34;,
-                    &#34;cvalue&#34;: username,
-                    &#34;password&#34;: password,
-                    &#34;captchaToken&#34;: token,
-                    &#34;captchaProvider&#34;: &#34;PROVIDER_ARKOSE_LABS&#34;
-                }
-            )
-            return login_req
-        else:
-            login_req = await self.requests.post(
-                url=&#34;https://auth.roblox.com/v2/login&#34;,
-                json={
-                    &#34;ctype&#34;: &#34;Username&#34;,
-                    &#34;cvalue&#34;: username,
-                    &#34;password&#34;: password
-                },
-                quickreturn=True
-            )
-            if login_req.status_code == 200:
-                # If we&#39;re here, no captcha is required and we&#39;re already logged in, so we can return.
-                return
-            elif login_req.status_code == 403:
-                # A captcha is required, so we need to return the captcha to solve.
-                field_data = login_req.json()[&#34;errors&#34;][0][&#34;fieldData&#34;]
-                captcha_req = await self.requests.post(
-                    url=&#34;https://roblox-api.arkoselabs.com/fc/gt2/public_key/476068BF-9607-4799-B53D-966BE98E2B81&#34;,
-                    headers={
-                        &#34;content-type&#34;: &#34;application/x-www-form-urlencoded; charset=UTF-8&#34;
-                    },
-                    data=f&#34;public_key=476068BF-9607-4799-B53D-966BE98E2B81&amp;data[blob]={field_data}&#34;
-                )
-                captcha_json = captcha_req.json()
-                return UnsolvedLoginCaptcha(captcha_json, &#34;476068BF-9607-4799-B53D-966BE98E2B81&#34;)
-
+    # Grab objects
     async def get_self(self):
         self_req = await self.requests.get(
             url=&#34;https://roblox.com/my/profile&#34;
         )
         data = self_req.json()
-        return PartialUser(self.cso, data[&#39;UserId&#39;], data[&#39;Username&#39;])
+        return PartialUser(self.cso, data)
 
-    async def get_user(self, user_id, expand=True):
+    async def get_user(self, user_id):
         &#34;&#34;&#34;
         Gets a Roblox user.
 
@@ -506,19 +536,15 @@ class Client:
         ----------
         user_id
             ID of the user to generate the object from.
-        expand : bool
-            Whether to automatically expand the data returned by the endpoint into Users.s
         &#34;&#34;&#34;
         user = self.cso.cache.get(CacheType.Users, user_id)
         if not user:
-            user = PartialUser(self.cso, user_id)
-            if expand:
-                expanded = await user.expand()
-                self.cso.cache.set(CacheType.Users, user_id, expanded)
-                return expanded
+            user = User(self.cso, user_id)
+            self.cso.cache.set(CacheType.Users, user_id, user)
+        await user.update()
         return user
 
-    async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False, expand=True):
+    async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False):
         &#34;&#34;&#34;
         Gets a Roblox user by their username..
 
@@ -528,8 +554,6 @@ class Client:
             Name of the user to generate the object from.
         exclude_banned_users : bool
             Whether to exclude banned users in the request.
-        expand : bool
-            Whether to automatically expand the data returned by the endpoint into Users.
         &#34;&#34;&#34;
         username_req = await self.requests.post(
             url=&#34;https://users.roblox.com/v1/usernames/users&#34;,
@@ -543,7 +567,7 @@ class Client:
         username_data = username_req.json()
         if len(username_data[&#34;data&#34;]) &gt; 0:
             user_id = username_req.json()[&#34;data&#34;][0][&#34;id&#34;]  # TODO: make this a partialuser
-            return await self.get_user(user_id, expand=expand)
+            return await self.get_user(user_id)
         else:
             raise UserDoesNotExistError
 
@@ -637,18 +661,133 @@ class Client:
             await badge.update()
         return badge
 
-    async def get_friend_requests(self):
-        friend_req = await self.requests.get(
-            url=&#34;https://friends.roblox.com/v1/user/friend-requests/count&#34;
+    async def get_friend_requests(self, sort_order=SortOrder.Ascending, limit=100):
+        &#34;&#34;&#34;
+        Gets friend requests the client has.
+        &#34;&#34;&#34;
+        friends = Pages(
+            cso=self.cso,
+            url=&#34;https://friends.roblox.com/v1/my/friends/requests&#34;,
+            handler=friend_handler,
+            sort_order=sort_order,
+            limit=limit
         )
-        return friend_req.json()[&#34;count&#34;]
+        await friends.get_page()
+        return friends
 
     async def get_captcha_metadata(self):
+        &#34;&#34;&#34;
+        Grabs captcha metadata, which contains public keys. You can pass these to the prompt extension for GUI captcha
+        solving,
+        &#34;&#34;&#34;
         captcha_meta_req = await self.requests.get(
             url=&#34;https://apis.roblox.com/captcha/v1/metadata&#34;
         )
         captcha_meta_raw = captcha_meta_req.json()
-        return CaptchaMetadata(captcha_meta_raw)</code></pre>
+        return CaptchaMetadata(captcha_meta_raw)
+
+    # Login/logout
+
+    def token_login(self, token):
+        &#34;&#34;&#34;
+        Authenticates the client with a ROBLOSECURITY token.
+
+        Parameters
+        ----------
+        token : str
+            .ROBLOSECURITY token to authenticate with.
+        &#34;&#34;&#34;
+        self.requests.session.cookies[&#34;.ROBLOSECURITY&#34;] = token
+        self.accountinformation = AccountInformation(self.cso)
+        self.accountsettings = AccountSettings(self.cso)
+        self.chat = ChatWrapper(self.cso)
+        self.trade = TradesWrapper(self.cso)
+        # self.notifications = NotificationReceiver(self.cso)
+        self.notifications = None
+
+    async def user_login(self, username, password, token=None):
+        &#34;&#34;&#34;
+        Authenticates the client with a username and password.
+
+        Parameters
+        ----------
+        username : str
+            Username to log in with.
+        password : str
+            Password to log in with.
+        token : str, optional
+            If you have already solved the captcha, pass it here.
+
+        Returns
+        -------
+        ro_py.captcha.UnsolvedCaptcha or request
+        &#34;&#34;&#34;
+        if token:
+            login_req = self.requests.back_post(
+                url=&#34;https://auth.roblox.com/v2/login&#34;,
+                json={
+                    &#34;ctype&#34;: &#34;Username&#34;,
+                    &#34;cvalue&#34;: username,
+                    &#34;password&#34;: password,
+                    &#34;captchaToken&#34;: token,
+                    &#34;captchaProvider&#34;: &#34;PROVIDER_ARKOSE_LABS&#34;
+                }
+            )
+            return login_req
+        else:
+            login_req = await self.requests.post(
+                url=&#34;https://auth.roblox.com/v2/login&#34;,
+                json={
+                    &#34;ctype&#34;: &#34;Username&#34;,
+                    &#34;cvalue&#34;: username,
+                    &#34;password&#34;: password
+                },
+                quickreturn=True
+            )
+            if login_req.status_code == 200:
+                # If we&#39;re here, no captcha is required and we&#39;re already logged in, so we can return.
+                return
+            elif login_req.status_code == 403:
+                # A captcha is required, so we need to return the captcha to solve.
+                field_data = login_req.json()[&#34;errors&#34;][0][&#34;fieldData&#34;]
+                captcha_req = await self.requests.post(
+                    url=&#34;https://roblox-api.arkoselabs.com/fc/gt2/public_key/476068BF-9607-4799-B53D-966BE98E2B81&#34;,
+                    headers={
+                        &#34;content-type&#34;: &#34;application/x-www-form-urlencoded; charset=UTF-8&#34;
+                    },
+                    data=f&#34;public_key=476068BF-9607-4799-B53D-966BE98E2B81&amp;data[blob]={field_data}&#34;
+                )
+                captcha_json = captcha_req.json()
+                return UnsolvedLoginCaptcha(captcha_json, &#34;476068BF-9607-4799-B53D-966BE98E2B81&#34;)
+
+    async def secure_sign_out(self):
+        &#34;&#34;&#34;
+        Sends a Secure Sign Out (SSO) request. This invalidates all session tokens and generates a new one.
+
+        In the past, it was believed that Roblox would invalidate sessions automatically. This is not the case.
+        On the server, sessions are never invalidated unless a logout request is sent. In the browser, cookies expire
+        after 30 years.
+
+        Other Roblox API wrappers used to use SSO requests as a way to stop cookies from being invalidated, because
+        they would generate a new session token, and suggested that the user would &#34;refresh their cookie&#34; fairly
+        frequently as to avoid this. This isn&#39;t something you&#39;ll actually need to do, therefore this is left here as an
+        optional feature.
+        &#34;&#34;&#34;
+        await self.requests.post(
+            url=&#34;https://www.roblox.com/authentication/signoutfromallsessionsandreauthenticate&#34;
+        )
+
+    async def logout(self):
+        &#34;&#34;&#34;
+        Logs out this user.
+
+        This will invalidate your .ROBLOSECURITY token, unlike ro_py.client.secure_sign_out().
+        Don&#39;t use this unless you plan to either never use this .ROBLOSECURITY token again.
+
+        &#34;&#34;&#34;
+        await self.requests.post(
+            url=&#34;https://auth.roblox.com/v2/logout&#34;
+        )</code></pre>
 </details>
 <h3>Subclasses</h3>
 <ul class="hlist">
@@ -691,6 +830,37 @@ class Client:
 </dl>
 <h3>Methods</h3>
 <dl>
+<dt id="ro_py.client.Client.filter_text"><code class="name flex">
+<span>async def <span class="ident">filter_text</span></span>(<span>self, text)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Filters text.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>text</code></strong> :&ensp;<code>str</code></dt>
+<dd>Text that will be filtered.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def filter_text(self, text):
+    &#34;&#34;&#34;
+    Filters text.
+
+    Parameters
+    ----------
+    text : str
+        Text that will be filtered.
+    &#34;&#34;&#34;
+    filter_req = await self.requests.post(
+        url=&#34;https://develop.roblox.com/v1/gameUpdateNotifications/filter&#34;,
+        data=f&#39;&#34;{text}&#34;&#39;
+    )
+    data = filter_req.json()
+    return data[&#39;filteredGameUpdateText&#39;]</code></pre>
+</details>
+</dd>
 <dt id="ro_py.client.Client.get_asset"><code class="name flex">
 <span>async def <span class="ident">get_asset</span></span>(<span>self, asset_id)</span>
 </code></dt>
@@ -757,12 +927,17 @@ class Client:
 <span>async def <span class="ident">get_captcha_metadata</span></span>(<span>self)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Grabs captcha metadata, which contains public keys. You can pass these to the prompt extension for GUI captcha
+solving,</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">async def get_captcha_metadata(self):
+    &#34;&#34;&#34;
+    Grabs captcha metadata, which contains public keys. You can pass these to the prompt extension for GUI captcha
+    solving,
+    &#34;&#34;&#34;
     captcha_meta_req = await self.requests.get(
         url=&#34;https://apis.roblox.com/captcha/v1/metadata&#34;
     )
@@ -771,19 +946,27 @@ class Client:
 </details>
 </dd>
 <dt id="ro_py.client.Client.get_friend_requests"><code class="name flex">
-<span>async def <span class="ident">get_friend_requests</span></span>(<span>self)</span>
+<span>async def <span class="ident">get_friend_requests</span></span>(<span>self, sort_order=SortOrder.Ascending, limit=100)</span>
 </code></dt>
 <dd>
-<div class="desc"></div>
+<div class="desc"><p>Gets friend requests the client has.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def get_friend_requests(self):
-    friend_req = await self.requests.get(
-        url=&#34;https://friends.roblox.com/v1/user/friend-requests/count&#34;
+<pre><code class="python">async def get_friend_requests(self, sort_order=SortOrder.Ascending, limit=100):
+    &#34;&#34;&#34;
+    Gets friend requests the client has.
+    &#34;&#34;&#34;
+    friends = Pages(
+        cso=self.cso,
+        url=&#34;https://friends.roblox.com/v1/my/friends/requests&#34;,
+        handler=friend_handler,
+        sort_order=sort_order,
+        limit=limit
     )
-    return friend_req.json()[&#34;count&#34;]</code></pre>
+    await friends.get_page()
+    return friends</code></pre>
 </details>
 </dd>
 <dt id="ro_py.client.Client.get_game_by_place_id"><code class="name flex">
@@ -903,11 +1086,11 @@ class Client:
         url=&#34;https://roblox.com/my/profile&#34;
     )
     data = self_req.json()
-    return PartialUser(self.cso, data[&#39;UserId&#39;], data[&#39;Username&#39;])</code></pre>
+    return PartialUser(self.cso, data)</code></pre>
 </details>
 </dd>
 <dt id="ro_py.client.Client.get_user"><code class="name flex">
-<span>async def <span class="ident">get_user</span></span>(<span>self, user_id, expand=True)</span>
+<span>async def <span class="ident">get_user</span></span>(<span>self, user_id)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets a Roblox user.</p>
@@ -915,14 +1098,12 @@ class Client:
 <dl>
 <dt><strong><code>user_id</code></strong></dt>
 <dd>ID of the user to generate the object from.</dd>
-<dt><strong><code>expand</code></strong> :&ensp;<code>bool</code></dt>
-<dd>Whether to automatically expand the data returned by the endpoint into Users.s</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def get_user(self, user_id, expand=True):
+<pre><code class="python">async def get_user(self, user_id):
     &#34;&#34;&#34;
     Gets a Roblox user.
 
@@ -930,21 +1111,17 @@ class Client:
     ----------
     user_id
         ID of the user to generate the object from.
-    expand : bool
-        Whether to automatically expand the data returned by the endpoint into Users.s
     &#34;&#34;&#34;
     user = self.cso.cache.get(CacheType.Users, user_id)
     if not user:
-        user = PartialUser(self.cso, user_id)
-        if expand:
-            expanded = await user.expand()
-            self.cso.cache.set(CacheType.Users, user_id, expanded)
-            return expanded
+        user = User(self.cso, user_id)
+        self.cso.cache.set(CacheType.Users, user_id, user)
+    await user.update()
     return user</code></pre>
 </details>
 </dd>
 <dt id="ro_py.client.Client.get_user_by_username"><code class="name flex">
-<span>async def <span class="ident">get_user_by_username</span></span>(<span>self, user_name: str, exclude_banned_users: bool = False, expand=True)</span>
+<span>async def <span class="ident">get_user_by_username</span></span>(<span>self, user_name: str, exclude_banned_users: bool = False)</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Gets a Roblox user by their username..</p>
@@ -954,14 +1131,12 @@ class Client:
 <dd>Name of the user to generate the object from.</dd>
 <dt><strong><code>exclude_banned_users</code></strong> :&ensp;<code>bool</code></dt>
 <dd>Whether to exclude banned users in the request.</dd>
-<dt><strong><code>expand</code></strong> :&ensp;<code>bool</code></dt>
-<dd>Whether to automatically expand the data returned by the endpoint into Users.</dd>
 </dl></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False, expand=True):
+<pre><code class="python">async def get_user_by_username(self, user_name: str, exclude_banned_users: bool = False):
     &#34;&#34;&#34;
     Gets a Roblox user by their username..
 
@@ -971,8 +1146,6 @@ class Client:
         Name of the user to generate the object from.
     exclude_banned_users : bool
         Whether to exclude banned users in the request.
-    expand : bool
-        Whether to automatically expand the data returned by the endpoint into Users.
     &#34;&#34;&#34;
     username_req = await self.requests.post(
         url=&#34;https://users.roblox.com/v1/usernames/users&#34;,
@@ -986,9 +1159,67 @@ class Client:
     username_data = username_req.json()
     if len(username_data[&#34;data&#34;]) &gt; 0:
         user_id = username_req.json()[&#34;data&#34;][0][&#34;id&#34;]  # TODO: make this a partialuser
-        return await self.get_user(user_id, expand=expand)
+        return await self.get_user(user_id)
     else:
         raise UserDoesNotExistError</code></pre>
+</details>
+</dd>
+<dt id="ro_py.client.Client.logout"><code class="name flex">
+<span>async def <span class="ident">logout</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Logs out this user.</p>
+<p>This will invalidate your .ROBLOSECURITY token, unlike ro_py.client.secure_sign_out().
+Don't use this unless you plan to either never use this .ROBLOSECURITY token again.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def logout(self):
+    &#34;&#34;&#34;
+    Logs out this user.
+
+    This will invalidate your .ROBLOSECURITY token, unlike ro_py.client.secure_sign_out().
+    Don&#39;t use this unless you plan to either never use this .ROBLOSECURITY token again.
+
+    &#34;&#34;&#34;
+    await self.requests.post(
+        url=&#34;https://auth.roblox.com/v2/logout&#34;
+    )</code></pre>
+</details>
+</dd>
+<dt id="ro_py.client.Client.secure_sign_out"><code class="name flex">
+<span>async def <span class="ident">secure_sign_out</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Sends a Secure Sign Out (SSO) request. This invalidates all session tokens and generates a new one.</p>
+<p>In the past, it was believed that Roblox would invalidate sessions automatically. This is not the case.
+On the server, sessions are never invalidated unless a logout request is sent. In the browser, cookies expire
+after 30 years.</p>
+<p>Other Roblox API wrappers used to use SSO requests as a way to stop cookies from being invalidated, because
+they would generate a new session token, and suggested that the user would "refresh their cookie" fairly
+frequently as to avoid this. This isn't something you'll actually need to do, therefore this is left here as an
+optional feature.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def secure_sign_out(self):
+    &#34;&#34;&#34;
+    Sends a Secure Sign Out (SSO) request. This invalidates all session tokens and generates a new one.
+
+    In the past, it was believed that Roblox would invalidate sessions automatically. This is not the case.
+    On the server, sessions are never invalidated unless a logout request is sent. In the browser, cookies expire
+    after 30 years.
+
+    Other Roblox API wrappers used to use SSO requests as a way to stop cookies from being invalidated, because
+    they would generate a new session token, and suggested that the user would &#34;refresh their cookie&#34; fairly
+    frequently as to avoid this. This isn&#39;t something you&#39;ll actually need to do, therefore this is left here as an
+    optional feature.
+    &#34;&#34;&#34;
+    await self.requests.post(
+        url=&#34;https://www.roblox.com/authentication/signoutfromallsessionsandreauthenticate&#34;
+    )</code></pre>
 </details>
 </dd>
 <dt id="ro_py.client.Client.token_login"><code class="name flex">
@@ -1018,8 +1249,9 @@ class Client:
     self.accountinformation = AccountInformation(self.cso)
     self.accountsettings = AccountSettings(self.cso)
     self.chat = ChatWrapper(self.cso)
-    self.trade = TradesWrapper(self.cso, self.get_self)
-    self.notifications = NotificationReceiver(self.cso)</code></pre>
+    self.trade = TradesWrapper(self.cso)
+    # self.notifications = NotificationReceiver(self.cso)
+    self.notifications = None</code></pre>
 </details>
 </dd>
 <dt id="ro_py.client.Client.user_login"><code class="name flex">
@@ -1122,6 +1354,11 @@ class Client:
 <li><code><a title="ro_py" href="index.html">ro_py</a></code></li>
 </ul>
 </li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="ro_py.client.friend_handler" href="#ro_py.client.friend_handler">friend_handler</a></code></li>
+</ul>
+</li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
 <li>
@@ -1132,6 +1369,7 @@ class Client:
 <li><code><a title="ro_py.client.Client.chat" href="#ro_py.client.Client.chat">chat</a></code></li>
 <li><code><a title="ro_py.client.Client.cso" href="#ro_py.client.Client.cso">cso</a></code></li>
 <li><code><a title="ro_py.client.Client.events" href="#ro_py.client.Client.events">events</a></code></li>
+<li><code><a title="ro_py.client.Client.filter_text" href="#ro_py.client.Client.filter_text">filter_text</a></code></li>
 <li><code><a title="ro_py.client.Client.get_asset" href="#ro_py.client.Client.get_asset">get_asset</a></code></li>
 <li><code><a title="ro_py.client.Client.get_badge" href="#ro_py.client.Client.get_badge">get_badge</a></code></li>
 <li><code><a title="ro_py.client.Client.get_captcha_metadata" href="#ro_py.client.Client.get_captcha_metadata">get_captcha_metadata</a></code></li>
@@ -1142,8 +1380,10 @@ class Client:
 <li><code><a title="ro_py.client.Client.get_self" href="#ro_py.client.Client.get_self">get_self</a></code></li>
 <li><code><a title="ro_py.client.Client.get_user" href="#ro_py.client.Client.get_user">get_user</a></code></li>
 <li><code><a title="ro_py.client.Client.get_user_by_username" href="#ro_py.client.Client.get_user_by_username">get_user_by_username</a></code></li>
+<li><code><a title="ro_py.client.Client.logout" href="#ro_py.client.Client.logout">logout</a></code></li>
 <li><code><a title="ro_py.client.Client.notifications" href="#ro_py.client.Client.notifications">notifications</a></code></li>
 <li><code><a title="ro_py.client.Client.requests" href="#ro_py.client.Client.requests">requests</a></code></li>
+<li><code><a title="ro_py.client.Client.secure_sign_out" href="#ro_py.client.Client.secure_sign_out">secure_sign_out</a></code></li>
 <li><code><a title="ro_py.client.Client.token_login" href="#ro_py.client.Client.token_login">token_login</a></code></li>
 <li><code><a title="ro_py.client.Client.trade" href="#ro_py.client.Client.trade">trade</a></code></li>
 <li><code><a title="ro_py.client.Client.user_login" href="#ro_py.client.Client.user_login">user_login</a></code></li>

@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.2" />
 <title>ro_py.events API documentation</title>
-<meta name="description" content="" />
+<meta name="description" content="This file houses functions and classes that pertain to events and event handling with ro.py. Most methods that have
+events actually don&#39;t reference …" />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -74,11 +75,23 @@ border-color: #424242 !important;
 <h1 class="title">Module <code>ro_py.events</code></h1>
 </header>
 <section id="section-intro">
+<p>This file houses functions and classes that pertain to events and event handling with ro.py. Most methods that have
+events actually don't reference content here, this doesn't contain much at the moment.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">import enum
+<pre><code class="python">&#34;&#34;&#34;
+
+This file houses functions and classes that pertain to events and event handling with ro.py. Most methods that have
+events actually don&#39;t reference content here, this doesn&#39;t contain much at the moment.
+
+&#34;&#34;&#34;
+
+import enum
+import time
+import asyncio
+from typing import Callable, Tuple
 
 
 class EventTypes(enum.Enum):
@@ -88,7 +101,52 @@ class EventTypes(enum.Enum):
     on_asset_change = &#34;on_asset_change&#34;
     on_user_change = &#34;on_user_change&#34;
     on_audit_log = &#34;on_audit_log&#34;
-    on_trade_request = &#34;on_trade_request&#34;</code></pre>
+    on_trade_request = &#34;on_trade_request&#34;
+
+
+class Event:
+    def __init__(self, func: Callable, event_type: EventTypes, arguments: Tuple = (), delay: int = 15):
+        self.function = func
+        self.event_type = event_type
+        self.arguments = arguments
+        self.delay = delay
+        self.next_run = time.time() + delay
+
+    def edit(self, arguments: Tuple = None, delay: int = None, func: Callable = None):
+        self.arguments = arguments if arguments else self.arguments
+        self.delay = delay if delay else self.delay
+        self.function = func if func else self.function
+
+
+class EventHandler:
+    def __init__(self):
+        self.events = []
+        self.running = False
+
+    def add_event(self, event: Event):
+        self.events.append(event)
+
+    def print_events(self):
+        text = &#34;These are the current running events:&#34;
+        for event in self.events:
+            text += f&#34;\n{event.event_id}:\n   Next run: {event.next_run}\n   Times run per minute: {60 / event.delay}&#34;
+        print(text)
+
+    async def stop_event(self, event: Event):
+        self.events.remove(event)
+
+    async def listen(self):
+        if not self.running:
+            self.running = True
+            while True:
+                # Limits delay to 1 second.
+                await asyncio.sleep(1)
+                for event in self.events:
+                    if event.next_run &lt;= time.time():
+                        if not isinstance(event.arguments[-1], Event):
+                            event.arguments = (*event.arguments, event)
+                        asyncio.create_task(event.function(*event.arguments))
+                        event.next_run = time.time() + event.delay</code></pre>
 </details>
 </section>
 <section>
@@ -100,6 +158,156 @@ class EventTypes(enum.Enum):
 <section>
 <h2 class="section-title" id="header-classes">Classes</h2>
 <dl>
+<dt id="ro_py.events.Event"><code class="flex name class">
+<span>class <span class="ident">Event</span></span>
+<span>(</span><span>func: Callable, event_type: <a title="ro_py.events.EventTypes" href="#ro_py.events.EventTypes">EventTypes</a>, arguments: Tuple = (), delay: int = 15)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Event:
+    def __init__(self, func: Callable, event_type: EventTypes, arguments: Tuple = (), delay: int = 15):
+        self.function = func
+        self.event_type = event_type
+        self.arguments = arguments
+        self.delay = delay
+        self.next_run = time.time() + delay
+
+    def edit(self, arguments: Tuple = None, delay: int = None, func: Callable = None):
+        self.arguments = arguments if arguments else self.arguments
+        self.delay = delay if delay else self.delay
+        self.function = func if func else self.function</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.events.Event.edit"><code class="name flex">
+<span>def <span class="ident">edit</span></span>(<span>self, arguments: Tuple = None, delay: int = None, func: Callable = None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def edit(self, arguments: Tuple = None, delay: int = None, func: Callable = None):
+    self.arguments = arguments if arguments else self.arguments
+    self.delay = delay if delay else self.delay
+    self.function = func if func else self.function</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="ro_py.events.EventHandler"><code class="flex name class">
+<span>class <span class="ident">EventHandler</span></span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class EventHandler:
+    def __init__(self):
+        self.events = []
+        self.running = False
+
+    def add_event(self, event: Event):
+        self.events.append(event)
+
+    def print_events(self):
+        text = &#34;These are the current running events:&#34;
+        for event in self.events:
+            text += f&#34;\n{event.event_id}:\n   Next run: {event.next_run}\n   Times run per minute: {60 / event.delay}&#34;
+        print(text)
+
+    async def stop_event(self, event: Event):
+        self.events.remove(event)
+
+    async def listen(self):
+        if not self.running:
+            self.running = True
+            while True:
+                # Limits delay to 1 second.
+                await asyncio.sleep(1)
+                for event in self.events:
+                    if event.next_run &lt;= time.time():
+                        if not isinstance(event.arguments[-1], Event):
+                            event.arguments = (*event.arguments, event)
+                        asyncio.create_task(event.function(*event.arguments))
+                        event.next_run = time.time() + event.delay</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.events.EventHandler.add_event"><code class="name flex">
+<span>def <span class="ident">add_event</span></span>(<span>self, event: <a title="ro_py.events.Event" href="#ro_py.events.Event">Event</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add_event(self, event: Event):
+    self.events.append(event)</code></pre>
+</details>
+</dd>
+<dt id="ro_py.events.EventHandler.listen"><code class="name flex">
+<span>async def <span class="ident">listen</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def listen(self):
+    if not self.running:
+        self.running = True
+        while True:
+            # Limits delay to 1 second.
+            await asyncio.sleep(1)
+            for event in self.events:
+                if event.next_run &lt;= time.time():
+                    if not isinstance(event.arguments[-1], Event):
+                        event.arguments = (*event.arguments, event)
+                    asyncio.create_task(event.function(*event.arguments))
+                    event.next_run = time.time() + event.delay</code></pre>
+</details>
+</dd>
+<dt id="ro_py.events.EventHandler.print_events"><code class="name flex">
+<span>def <span class="ident">print_events</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def print_events(self):
+    text = &#34;These are the current running events:&#34;
+    for event in self.events:
+        text += f&#34;\n{event.event_id}:\n   Next run: {event.next_run}\n   Times run per minute: {60 / event.delay}&#34;
+    print(text)</code></pre>
+</details>
+</dd>
+<dt id="ro_py.events.EventHandler.stop_event"><code class="name flex">
+<span>async def <span class="ident">stop_event</span></span>(<span>self, event: <a title="ro_py.events.Event" href="#ro_py.events.Event">Event</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def stop_event(self, event: Event):
+    self.events.remove(event)</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
 <dt id="ro_py.events.EventTypes"><code class="flex name class">
 <span>class <span class="ident">EventTypes</span></span>
 <span>(</span><span>value, names=None, *, module=None, qualname=None, type=None, start=1)</span>
@@ -176,6 +384,21 @@ class EventTypes(enum.Enum):
 </li>
 <li><h3><a href="#header-classes">Classes</a></h3>
 <ul>
+<li>
+<h4><code><a title="ro_py.events.Event" href="#ro_py.events.Event">Event</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.events.Event.edit" href="#ro_py.events.Event.edit">edit</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="ro_py.events.EventHandler" href="#ro_py.events.EventHandler">EventHandler</a></code></h4>
+<ul class="">
+<li><code><a title="ro_py.events.EventHandler.add_event" href="#ro_py.events.EventHandler.add_event">add_event</a></code></li>
+<li><code><a title="ro_py.events.EventHandler.listen" href="#ro_py.events.EventHandler.listen">listen</a></code></li>
+<li><code><a title="ro_py.events.EventHandler.print_events" href="#ro_py.events.EventHandler.print_events">print_events</a></code></li>
+<li><code><a title="ro_py.events.EventHandler.stop_event" href="#ro_py.events.EventHandler.stop_event">stop_event</a></code></li>
+</ul>
+</li>
 <li>
 <h4><code><a title="ro_py.events.EventTypes" href="#ro_py.events.EventTypes">EventTypes</a></code></h4>
 <ul class="two-column">
