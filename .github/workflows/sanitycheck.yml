@@ -7,8 +7,6 @@ on:
       - 'ro_py/**'
       - 'tests/**'
 
-  workflow_dispatch:
-
 jobs:
   build:
     runs-on: ubuntu-latest
