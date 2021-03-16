@@ -160,8 +160,7 @@ def join_request_handler(cso, data, args):
 def member_handler(cso, data, args):
     members = []
     for member in data:
-        role = Role(cso, args, member['role'])
-        members.append(Member(cso, member['user']['userId'], member['user']['username'], args, role))
+        members.append(member)
     return members
 
 
