@@ -79,15 +79,27 @@ class Pages:
         return self
 
     async def __anext__(self):
-        if self.i == len(self.data.data):
-            if not self.data.next_page_cursor:
-                self.i = 0
-                raise StopAsyncIteration
-            await self.next()
+        if not self.data.next_page_cursor:
             self.i = 0
-        data = self.data.data[self.i]
+            raise StopAsyncIteration
+        if self.i == 0:
+            self.i += 1
+            return self.data
+        await self.next()
         self.i += 1
-        return data
+        return self.data
+
+    async def objects(self):
+        """
+        Yields the data of all pages.
+        """
+        while True:
+            for data in self.data.data:
+                yield data
+            if not self.data.next_page_cursor:
+                break
+            else:
+                await self.next()
 
     async def get_page(self, cursor=None):
         """
