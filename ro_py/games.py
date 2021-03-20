@@ -162,7 +162,9 @@ class Place(ClientObject, BaseAsset):
         self.price = place_data["price"]
 
     async def join(self, launchtime=1609186776825, rloc="en_us", gloc="en_us",
-                   negotiate_url="https://www.roblox.com/Login/Negotiate.ashx"):
+                   negotiate_url="https://www.roblox.com/Login/Negotiate.ashx",
+                   stdout=subprocess.PIPE,
+                   stderr=subprocess.PIPE):
         """
         Joins the place.
         This currently only works on Windows since it looks in AppData for the executable.
@@ -219,9 +221,9 @@ class Place(ClientObject, BaseAsset):
             "--gloc",
             gloc
         ]
-        join_process = subprocess.run(
+        join_process = subprocess.Popen(
             args=join_parameters,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
+            stdout=stdout,
+            stderr=stderr
         )
-        return join_process.stdout, join_process.stderr
+        return join_process
