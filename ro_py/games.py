@@ -156,7 +156,7 @@ class Place(ClientObject, BaseAsset):
         self.name = place_data["name"]
         self.description = place_data["description"]
         self.url = place_data["url"]
-        self.creator = PartialUser(self.cso, place_data["builderId"], place_data["builder"])
+        self.creator = PartialUser(self.cso, place_data)
         self.is_playable = place_data["isPlayable"]
         self.reason_prohibited = place_data["reasonProhibited"]
         self.price = place_data["price"]

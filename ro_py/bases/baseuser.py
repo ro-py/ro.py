@@ -110,7 +110,7 @@ class BaseUser:
         """
         from ro_py.groups import PartialGroup
         member_req = await self.requests.get(
-            url=f"https://groups.roblox.com/v2/users/{self.id}/groups/roles"
+            url=f"{url('groups')}v2/users/{self.id}/groups/roles"
         )
         data = member_req.json()
         groups = []
@@ -129,7 +129,7 @@ class BaseUser:
         """
         return Pages(
             cso=self.cso,
-            url=f"https://inventory.roblox.com/v1/users/{self.id}/assets/collectibles?cursor=&limit=100&sortOrder=Desc",
+            url=f"{url('inventory')}v1/users/{self.id}/assets/collectibles?cursor=&limit=100&sortOrder=Desc",
             handler=limited_handler
         )
 
@@ -173,7 +173,7 @@ class BaseUser:
 
 class PartialUser(BaseUser):
     def __init__(self, cso, data):
-        self.id = data.get("id") or data.get("Id") or data.get("userId") or data.get("user_id") or data.get("UserId")
+        self.id = data.get("id") or data.get("Id") or data.get("userId") or data.get("user_id") or data.get("UserId") or data.get("builderId")
         super().__init__(cso, self.id)
-        self.name = data.get("name") or data.get("Name") or data.get("Username") or data.get("username")
+        self.name = data.get("name") or data.get("Name") or data.get("Username") or data.get("username") or data.get("builder")
         self.display_name = data.get("displayName") or data.get("DisplayName") or data.get("display_name")
