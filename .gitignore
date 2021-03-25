@@ -1,0 +1,17 @@
+.idea/
+__pycache__/
+*.pyc
+*.pyo
+*.bak
+*.wxg#
+*.??~
+build/
+dist/
+dist_old/
+ro_py.egg-info/
+jmkdev_tests/
+ro_py_old/
+other/
+udocs/
+build.*
+docsbuild.bat
