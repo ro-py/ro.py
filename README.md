@@ -97,22 +97,22 @@ pip3 install git+git://github.com/rbx-libdev/ro.py.git
 
 ## Other Libraries
 ro.py not for you? Come check out these other libraries!
-Name                                                        | Language   | OOP     | Async | Maintained | More Info                       |
-------------------------------------------------------------|------------|---------|-------|------------|---------------------------------|
-[ro.py](https://github.com/rbx-libdev/ro.py)                | Python 3   | Yes     | Yes   | Yes        | You are here!                   |
-[robloxapi](https://github.com/iranathan/robloxapi)         | Python 3   | Yes     | Yes   | No         | Predecessor to ro.py.           |
-[robloxlib](https://github.com/NoahCristino/robloxlib)      | Python 3   | Yes?    | No    | No         |                                 |
-[pyblox](https://github.com/RbxAPI/Pyblox)                  | Python 3   | Partial | No    | Yes        |                                 |
-[bloxy](https://github.com/Visualizememe/bloxy)             | Node.JS    | Yes     | Yes   | Yes        |                                 |
-[noblox.js](https://github.com/suufi/noblox.js)             | Node.JS    | No      | Yes   | Yes        |                                 |
-[roblox.js](https://github.com/sentanos/roblox-js)          | Node.JS    | No      | Yes?  | No         | Predecessor to noblox.js.       |
-[cblox](https://github.com/Meqolo/cblox)                    | C++        | Yes     | No?   | Yes        |                                 |
-[robloxapi](https://github.com/gamenew09/RobloxAPI)         | C#         | Yes     | Yes   | Maybe      |                                 |
-[roblox4j](https://github.com/PizzaCrust/Roblox4j)          | Java       | Yes     | No?   | No         |                                 |
-[javablox](https://github.com/RbxAPI/Javablox)              | Java       | Yes     | No?   | No         |                                 | 
-robloxkt                                                    | Kotlin     | ?       | ?     | No         | I have no information on this.  |
-[KotlinRoblox](https://github.com/PizzaCrust/KotlinRoblox)  | Kotlin     | Yes?    | No?   | No         |                                 |
-[rbx.lua](https://github.com/iiToxicity/rbx.lua)            | Lua        | N/A     | No?   | Yes?       |                                 |
-robloxcomm                                                  | Lua        | N/A     | ?     | ?          | Again, no info on this or link. |
-[tsblox](https://github.com/Dionysusnu/TSBlox)              | TypeScript | Yes     | Yes   | No         |                                 | 
-roblophp                                                    | PHP        | ?       | ?     | ?          | Repo seems to be deleted.       |
+Name                                                        | Language   | OOP     | Async | Maintained | Developers                                                                    | More Info                       |
+------------------------------------------------------------|------------|---------|-------|------------|-------------------------------------------------------------------------------|---------------------------------|
+[ro.py](https://github.com/rbx-libdev/ro.py)                | Python 3   | Yes     | Yes   | Yes        | [@jmkd3v](http://github.com/jmkd3v) [@iranathan](http://github.com/iranathan) | You are here!                   |
+[robloxapi](https://github.com/iranathan/robloxapi)         | Python 3   | Yes     | Yes   | No         | [@iranathan](http://github.com/iranathan)                                     | Predecessor to ro.py.           |
+[robloxlib](https://github.com/NoahCristino/robloxlib)      | Python 3   | Yes?    | No    | No         | [@NoahCristino](http://github.com/NoahCristino)                               |                                 |
+[pyblox](https://github.com/RbxAPI/Pyblox)                  | Python 3   | Partial | No    | Yes        | [@Sanjay-B](http://github.com/Sanjay-B)                                       |                                 |
+[bloxy](https://github.com/Visualizememe/bloxy)             | Node.JS    | Yes     | Yes   | Yes        | [@Visualizememe](http://github.com/Visualizememe)                             |                                 |
+[noblox.js](https://github.com/suufi/noblox.js)             | Node.JS    | No      | Yes   | Yes        | [@suufi](http://github.com/suufi)                                             |                                 |
+[roblox.js](https://github.com/sentanos/roblox-js)          | Node.JS    | No      | Yes?  | No         | [@sentanos](http://github.com/sentanos)                                       | Predecessor to noblox.js.       |
+[cblox](https://github.com/Meqolo/cblox)                    | C++        | Yes     | No?   | Yes        | [@Meqolo](http://github.com/Meqolo)                                           |                                 |
+[robloxapi](https://github.com/gamenew09/RobloxAPI)         | C#         | Yes     | Yes   | Maybe      | [@gamenew09](http://github.com/gamenew09)                                     |                                 |
+[roblox4j](https://github.com/PizzaCrust/Roblox4j)          | Java       | Yes     | No?   | No         | [@PizzaCrust](http://github.com/PizzaCrust)                                   |                                 |
+[javablox](https://github.com/RbxAPI/Javablox)              | Java       | Yes     | No?   | No         | [@Pythonic-Rainbow](http://github.com/Pythonic-Rainbow)                       |                                 | 
+robloxkt                                                    | Kotlin     | ?       | ?     | No         | ?                                                                             | I have no information on this.  |
+[KotlinRoblox](https://github.com/PizzaCrust/KotlinRoblox)  | Kotlin     | Yes?    | No?   | No         | [@Pythonic-Rainbow](http://github.com/Pythonic-Rainbow)                       |                                 |
+[rbx.lua](https://github.com/iiToxicity/rbx.lua)            | Lua        | N/A     | No?   | Yes?       | [@iiToxicity](http://github.com/iiToxicity)                                   |                                 |
+robloxcomm                                                  | Lua        | N/A     | ?     | ?          | ?                                                                             | Again, no info on this or link. |
+[tsblox](https://github.com/Dionysusnu/TSBlox)              | TypeScript | Yes     | Yes   | No         | [@Dionysusnu](http://github.com/Dionysusnu)                                   |                                 | 
+roblophp                                                    | PHP        | ?       | ?     | ?          | ?                                                                             | Repo seems to be deleted.       |
