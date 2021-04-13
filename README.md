@@ -29,8 +29,9 @@ Welcome, and thank you for using ro.py!
 ro.py is an object oriented, asynchronous wrapper for the Roblox Web API (and other Roblox-related APIs) with many new and interesting features.  
 ro.py allows you to automate much of what you would do on the Roblox website and on other Roblox-related websites.
 
-## Update: ro.py on Discord
-I’ve set up a small ro.py Discord server. It’s obviously very tiny, but some of you can be the first people to help found the server. If you need support for the library, you can ask your questions here if you need faster support. http://jmk.gg/ro.py
+## Update: ro.py rewrite
+We are currently working on a complete ro.py rewrite, and as such we are not accepting feature requests until the rewrite branch is on par with the main branch.
+If you'd like to give suggestions on ro.py design decisions, you can join the ro.py <a href="http://jmk.gg/ro.py">Discord</a>. 
 
 ## Get Started
 To begin, first import the client, which is the most essential part of ro.py, and initialize it like so:
