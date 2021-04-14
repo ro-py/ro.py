@@ -259,7 +259,7 @@ class Group(ClientObject):
         # Find group in list.
         group_data = None
         for group in data['data']:
-            if group['group']['id'] == self.id:
+            if group['group']['id'] == int(self.id):
                 group_data = group
                 break
 
