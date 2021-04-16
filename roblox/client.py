@@ -1,3 +1,5 @@
+from roblox.user import User
+from roblox.group import Group
 from roblox.utilities.requests import Requests
 from roblox.utilities.subdomain import Subdomain
 
@@ -12,9 +14,40 @@ class Client:
         self.cso = ClientSharedObject(cookie)
 
     async def get_group(self, group_id):
+        """
+        Creates a group object using the provided group id.
+
+        Parameters
+        ----------
+        group_id : int
+            The id of the group.
+
+        Returns
+        -------
+        roblox.group.Group
+
+        """
         subdomain = Subdomain('group')
         url = subdomain.generate_endpoint("v1", "groups", group_id)
         response = await self.cso.requests.get(url)
+        data = response.json()
+        return Group(self.cso, data)
 
     async def get_user(self, user_id):
-        pass
+        """
+        Creates a user object using the provided user id.
+
+        Parameters
+        ----------
+        user_id : str
+            The id of the user.
+
+        Returns
+        -------
+        roblox.user.User
+        """
+        subdomain = Subdomain('users')
+        url = subdomain.generate_endpoint("v1", "users", user_id)
+        response = await self.cso.requests.get(url)
+        data = response.json()
+        return User(self.cso, data)
