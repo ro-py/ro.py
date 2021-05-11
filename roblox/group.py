@@ -1,27 +1,32 @@
 import iso8601
+import datetime
+
+from roblox.role import Role
+from roblox.member import Member
 from roblox.user import PartialUser
 from roblox.bases.basegroup import BaseGroup
 from roblox.utilities.subdomain import Subdomain
 
 group_subdomain = Subdomain("group")
+status_code = int
 
 
 class Shout:
     def __init__(self, cso, group, raw_data):
         self.cso = cso
         """A client shared object."""
-        self.group = group
+        self.group: Group = group
         """The group the shout belongs to."""
-        self.body = raw_data['body']
+        self.body: str = raw_data['body']
         """What the shout contains."""
-        self.created = iso8601.parse_date(raw_data['created'])
+        self.created: datetime.datetime = iso8601.parse_date(raw_data['created'])
         """When the first shout was created."""
-        self.updated = iso8601.parse_date(raw_data['updated'])
+        self.updated: datetime.datetime = iso8601.parse_date(raw_data['updated'])
         """When the latest shout was created."""
-        self.poster = PartialUser(raw_data['shout']['poster'])
+        self.poster: PartialUser = PartialUser(raw_data['shout']['poster'])
         """The user who posted the shout."""
 
-    async def update(self, new_body):
+    async def update(self, new_body: str) -> status_code:
         """
         Updates the shout
 
@@ -32,7 +37,7 @@ class Shout:
 
         Returns
         -------
-        str
+        int
         """
         url = group_subdomain.generate_endpoint("v1", "groups", self.group.id, "status")
         data = {
@@ -41,7 +46,7 @@ class Shout:
         response = await self.cso.requests.patch(url, json=data)
         return response.status_code
 
-    async def delete(self):
+    async def delete(self) -> status_code:
         """
         Deletes the shout.
 
@@ -60,19 +65,50 @@ class Group(BaseGroup):
         super().__init__(cso, raw_data['id'])
         self.cso = cso
         """A client shared object."""
-        self.id = raw_data['id']
+        self.id: int = raw_data['id']
         """The id of the group."""
-        self.name = raw_data['name']
+        self.name: str = raw_data['name']
         """The name of the group."""
-        self.owner = PartialUser(raw_data['owner'])
+        self.owner: PartialUser = PartialUser(raw_data['owner'])
         """The owner of the group."""
-        self.description = raw_data['description']
+        self.description: str = raw_data['description']
         """The description of the group."""
-        self.member_count = raw_data['memberCount']
+        self.member_count: int = raw_data['memberCount']
         """How many people are in the group."""
-        self.shout = Shout(cso, self, raw_data['shout'])
+        self.shout: Shout = Shout(cso, self, raw_data['shout'])
         """The current shout of the group."""
-        self.is_premium_only = raw_data['isBuildersClubOnly']
+        self.is_premium_only: bool = raw_data['isBuildersClubOnly']
         """If only people with premium can join the group."""
-        self.public_entry_allowed = raw_data['publicEntryAllowed']
+        self.public_entry_allowed: bool = raw_data['publicEntryAllowed']
         """If it is possible to join the group or if it is locked to the public."""
+
+    async def get_member_by_id(self, user_id: int) -> Member:
+        """
+        Gets a user in a group
+
+        Parameters
+        ----------
+        user_id : int
+                The users id.
+
+        Returns
+        -------
+        roblox.member.Member
+        """
+        user = self.cso.client.get_user(user_id)
+        url = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
+        response = await self.requests.get(url)
+        data = response.json()
+
+        member = None
+        for roles in data['data']:
+            if roles['group']['id'] == self.group_id:
+                member = roles
+                break
+
+        role = Role(self.cso, self, member['role'])
+        member = Member(self.cso, user, self, role)
+        return member
+
+    async def get_member_by_name(self, name: str):
+        user = self.cso.client

@@ -1,7 +1,7 @@
 root_site = "roblox.com"
 
 
-def url(path="www"):
+def url(path="www") -> str:
     """
     Generates a url using a path
 
