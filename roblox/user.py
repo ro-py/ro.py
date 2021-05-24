@@ -7,7 +7,7 @@ class User(BaseUser):
     """
     Represents a group with all information from /v1/users/<id>.
     """
-    def __init__(self, cso, raw_data):
+    def __init__(self, cso, raw_data: dict):
         super().__init__(cso, raw_data['id'])
         self.cso = cso
         """A client shared object."""
@@ -29,7 +29,7 @@ class PartialUser(BaseUser):
     """
     Represents a partial group (less information).
     """
-    def __init__(self, cso, raw_data):
+    def __init__(self, cso, raw_data: dict):
         super().__init__(cso, raw_data['userId'])
         self.cso = cso
         """A client shared object."""

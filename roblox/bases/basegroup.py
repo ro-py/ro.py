@@ -1,5 +1,7 @@
 from typing import List
 
+from httpx import Response
+
 from roblox.role import Role
 from roblox.utilities.requests import Requests
 from roblox.utilities.subdomain import Subdomain
@@ -26,10 +28,10 @@ class BaseGroup:
         -------
         roblox.role.Role
         """
-        url = self.subdomain.generate_endpoint("v1", "groups", self.id, "roles")
-        response = await self.requests.get(url)
-        data = response.json()
-        roles = []
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "roles")
+        response: Response = await self.requests.get(url)
+        data: dict = response.json()
+        roles: list[Role] = []
         for role in data['roles']:
             role.append(Role(self.cso, self, role))
         return roles

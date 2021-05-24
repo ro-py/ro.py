@@ -1,3 +1,5 @@
+from httpx import Response
+
 from roblox.utilities.requests import Requests
 from roblox.utilities.subdomain import Subdomain
 
@@ -20,34 +22,34 @@ class BaseUser:
         """
         Sends a friend request to the user.
         """
-        url = self.subdomain.generate_endpoint("v1", "users", self.id, "request-friendship")
-        response = await self.requests.post(url)
+        url: str = self.subdomain.generate_endpoint("v1", "users", self.id, "request-friendship")
+        response: Response = await self.requests.post(url)
         return response.status_code
 
     async def unfriend(self) -> int:
         """
         Removes the user from the authenticated users friends list.
         """
-        url = self.subdomain.generate_endpoint("v1", "users", self.id, "unfriend")
-        response = await self.requests.post(url)
+        url: str = self.subdomain.generate_endpoint("v1", "users", self.id, "unfriend")
+        response: Response = await self.requests.post(url)
         return response.status_code
 
     async def block(self) -> int:
         """
         Blocks the user on the authenticated users account.
         """
-        data = {
+        data: dict = {
             "userId": self.id
         }
-        response = await self.requests.post("https://www.roblox.com/userblock/blockuser", json=data)
+        response: Response = await self.requests.post("https://www.roblox.com/userblock/blockuser", json=data)
         return response.status_code
 
     async def unblock(self) -> int:
         """
         Blocks the user on the authenticated users account.
         """
-        data = {
+        data: dict = {
             "userId": self.id
         }
-        response = await self.requests.post("https://www.roblox.com/userblock/unblock", json=data)
+        response: Response = await self.requests.post("https://www.roblox.com/userblock/unblock", json=data)
         return response.status_code

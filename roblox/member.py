@@ -16,3 +16,13 @@ class Member:
         """The group the user is in."""
         self.role: Role = role
         """The role the user has in the group."""
+
+    async def promote(self):
+        """
+        Adds 1 rank in the group to the member.
+
+        Returns
+        -------
+        int
+        """
+        pass

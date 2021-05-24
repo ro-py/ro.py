@@ -15,7 +15,7 @@ class Role:
     role_data : dict
             Dictionary containing role information.
     """
-    def __init__(self, cso, group, role_data):
+    def __init__(self, cso, group: Group, role_data: dict):
         self.cso = cso
         """Client shared object."""
         self.requests: Requests = cso.requests

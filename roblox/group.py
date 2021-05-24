@@ -1,14 +1,15 @@
 import iso8601
 import datetime
 
+from httpx import Response
 from roblox.role import Role
+from roblox.user import User
 from roblox.member import Member
 from roblox.user import PartialUser
 from roblox.bases.basegroup import BaseGroup
 from roblox.utilities.subdomain import Subdomain
 
-group_subdomain = Subdomain("group")
-status_code = int
+group_subdomain: Subdomain = Subdomain("group")
 
 
 class Shout:
@@ -26,7 +27,7 @@ class Shout:
         self.poster: PartialUser = PartialUser(raw_data['shout']['poster'])
         """The user who posted the shout."""
 
-    async def update(self, new_body: str) -> status_code:
+    async def update(self, new_body: str) -> int:
         """
         Updates the shout
 
@@ -39,14 +40,14 @@ class Shout:
         -------
         int
         """
-        url = group_subdomain.generate_endpoint("v1", "groups", self.group.id, "status")
-        data = {
+        url: str = group_subdomain.generate_endpoint("v1", "groups", self.group.id, "status")
+        data: dict = {
             "message": new_body
         }
-        response = await self.cso.requests.patch(url, json=data)
+        response: Response = await self.cso.requests.patch(url, json=data)
         return response.status_code
 
-    async def delete(self) -> status_code:
+    async def delete(self) -> int:
         """
         Deletes the shout.
 
@@ -82,7 +83,7 @@ class Group(BaseGroup):
         self.public_entry_allowed: bool = raw_data['publicEntryAllowed']
         """If it is possible to join the group or if it is locked to the public."""
 
-    async def get_member_by_id(self, user_id: int) -> Member:
+    async def get_member_by_id(self, user_id: int = 0, user=None) -> Member:
         """
         Gets a user in a group
 
@@ -90,15 +91,17 @@ class Group(BaseGroup):
         ----------
         user_id : int
                 The users id.
+        user : roblox.user.User
+                User object.
 
         Returns
         -------
         roblox.member.Member
         """
-        user = self.cso.client.get_user(user_id)
-        url = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
-        response = await self.requests.get(url)
-        data = response.json()
+        user: User = self.cso.client.get_user(user_id)
+        url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
+        response: Response = await self.requests.get(url)
+        data: dict = response.json()
 
         member = None
         for roles in data['data']:
@@ -106,9 +109,34 @@ class Group(BaseGroup):
                 member = roles
                 break
 
-        role = Role(self.cso, self, member['role'])
+        role: Role = Role(self.cso, self, member['role'])
         member = Member(self.cso, user, self, role)
         return member
 
     async def get_member_by_name(self, name: str):
-        user = self.cso.client
+        """
+        Gets a user in a group
+
+        Parameters
+        ----------
+        name : str
+                The user's name.
+
+        Returns
+        -------
+        roblox.member.Member
+        """
+        user: User = await self.cso.client.get_user_by_username(name)
+        url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
+        response: Response = await self.requests.get(url)
+        data: dict = response.json()
+
+        member = None
+        for roles in data['data']:
+            if roles['group']['id'] == self.group_id:
+                member = roles
+                break
+
+        role: Role = Role(self.cso, self, member['role'])
+        member = Member(self.cso, user, self, role)
+        return member
