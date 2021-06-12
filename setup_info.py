@@ -6,9 +6,9 @@ with open("README.md", "r") as fh:
 setup_info = {
     "name": "ro-py",
     "version": "2.0.0",
-    "author": "jmkdev and iranathan",
+    "author": "jmkdev",
     "author_email": "jmk@jmksite.dev",
-    "description": "ro.py is an modern object-oriented and asynchronous Python wrapper for the Roblox web API.",
+    "description": "ro.py is an modern object-oriented and asynchronous Python wrapper for the Roblox Web API.",
     "long_description": long_description,
     "long_description_content_type": "text/markdown",
     "url": "https://github.com/rbx-libdev/ro.py",
@@ -17,6 +17,7 @@ setup_info = {
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
+        "Framework :: AsyncIO"
     ],
     "project_urls": {
         "Discord": "https://discord.gg/RJdW3gt9Ru",
@@ -28,7 +29,6 @@ setup_info = {
     "install_requires": [
         "httpx",
         "iso8601",
-        "lxml",
-        "requests"
+        "lxml"
     ]
 }

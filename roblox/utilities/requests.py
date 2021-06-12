@@ -1,5 +1,4 @@
 import asyncio
-import requests
 from json.decoder import JSONDecodeError
 from httpx import AsyncClient
 
@@ -45,7 +44,6 @@ class Requests:
                     this_request = await self.session.request(method, *args, **kwargs)
 
         if kwargs.pop("stream", False):
-            # Skip request checking and just get on with it.
             return this_request
 
         try:
@@ -94,20 +92,3 @@ class Requests:
         """
 
         return await self.request("delete", *args, **kwargs)
-
-    def post_default(self, *args, **kwargs):
-        """
-        This is just the default requests.post that handles Roblox-specific data.
-        """
-
-        kwargs["cookies"] = kwargs.pop("cookies", self.session.cookies)
-        kwargs["headers"] = kwargs.pop("headers", self.session.headers)
-
-        post_request = requests.post(*args, **kwargs)
-
-        if self.xcsrf_token_name in post_request.headers:
-            self.session.headers[self.xcsrf_token_name] = post_request.headers[self.xcsrf_token_name]
-            post_request = requests.post(*args, **kwargs)
-
-        self.session.cookies = post_request.cookies
-        return post_request
