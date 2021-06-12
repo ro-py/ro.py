@@ -1,6 +1,6 @@
 import asyncio
+from httpx import AsyncClient, Response
 from json.decoder import JSONDecodeError
-from httpx import AsyncClient
 
 
 class CleanAsyncClient(AsyncClient):
@@ -19,17 +19,22 @@ class CleanAsyncClient(AsyncClient):
             pass
 
 
+def status_code_error(status_code):
+    pass
+
+
 class Requests:
     def __init__(self):
-        self.session = CleanAsyncClient()
+        self.session: CleanAsyncClient = CleanAsyncClient()
         """Session to use for requests."""
-        self.xcsrf_token_name = "X-CSRF-TOKEN"
+        self.xcsrf_token_name: str = "X-CSRF-TOKEN"
         """Header that will contain the X-CSRF-TOKEN. Should be set to "X-CSRF-TOKEN" under most circumstances."""
 
         self.session.headers["User-Agent"] = "Roblox/WinInet"
         self.session.headers["Referer"] = "www.roblox.com"
+        self.status_code = int
 
-    async def request(self, method, *args, **kwargs):
+    async def request(self, method, *args, **kwargs) -> Response:
         skip_roblox = kwargs.pop("skip_roblox", False)
         handle_xcsrf_token = kwargs.pop("handle_xcsrf_token", True)
         this_request = await self.session.request(method, *args, **kwargs)
@@ -65,28 +70,28 @@ class Requests:
         request_exception = status_code_error(this_request.status_code)
         raise request_exception(f"[{this_request.status_code}] {get_request_error[0]['message']}")
 
-    async def get(self, *args, **kwargs):
+    async def get(self, *args, **kwargs) -> Response:
         """
         Shortcut to self.request using the GET method.
         """
 
         return await self.request("GET", *args, **kwargs)
 
-    async def post(self, *args, **kwargs):
+    async def post(self, *args, **kwargs) -> Response:
         """
         Shortcut to self.request using the POST method.
         """
 
         return await self.request("post", *args, **kwargs)
 
-    async def patch(self, *args, **kwargs):
+    async def patch(self, *args, **kwargs) -> Response:
         """
         Shortcut to self.request using the PATCH method.
         """
 
         return await self.request("patch", *args, **kwargs)
 
-    async def delete(self, *args, **kwargs):
+    async def delete(self, *args, **kwargs) -> Response:
         """
         Shortcut to self.request using the DELETE method.
         """
