@@ -175,7 +175,7 @@ class Group(ClientObject):
         """Client Shared Object"""
         self.requests = cso.requests
         "Requests object."
-        self.id = group_id
+        self.id = int(group_id)
         "Group ID."
         self.wall = Wall(self.cso, self)
         """Wall object."""
@@ -259,7 +259,7 @@ class Group(ClientObject):
         # Find group in list.
         group_data = None
         for group in data['data']:
-            if group['group']['id'] == int(self.id):
+            if group['group']['id'] == self.id:
                 group_data = group
                 break
 
