@@ -38,8 +38,7 @@ class Shout:
         self.created = iso8601.parse_date(shout_data["created"])
         self.updated = iso8601.parse_date(shout_data["updated"])
 
-        # TODO: Make this a PartialUser
-        self.poster = None
+        self.poster = PartialUser(cso, shout_data["poster"])
 
     def __str__(self):
         return self.body
