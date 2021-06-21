@@ -135,10 +135,10 @@ class BaseUser:
         data = member_req.json()
         roles = []
         for group in data['data']:
-            group = group['group']
-            PartialGroup(self.cso, group)
             role = group['role']
-            Role(self.cso, group, role)
+            group = group['group']
+            partial_group = PartialGroup(self.cso, group)
+            roles.append(Role(self.cso, partial_group, role))
         return roles
 
     async def get_limiteds(self):
