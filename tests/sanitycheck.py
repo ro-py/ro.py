@@ -23,6 +23,7 @@ async def client_test():
     await user.get_status()
     await user.get_followings_count()
     await user.get_groups()
+    await user.get_groups_role()
     await user.get_friends()
     await user.get_followers_count()
     await user.get_followings_count()

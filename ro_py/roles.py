@@ -69,7 +69,7 @@ class Role:
     ----------
     requests : ro_py.utilities.requests.Requests
             Requests object to use for API requests.
-    group : ro_py.groups.Group
+    group : ro_py.groups.Group or ro_py.groups.PartialGroup
             Group the role belongs to.
     role_data : dict
             Dictionary containing role information.
