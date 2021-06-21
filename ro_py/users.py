@@ -12,6 +12,7 @@ from ro_py.events import EventTypes, Event
 from ro_py.bases.baseuser import BaseUser
 from ro_py.thumbnails import UserThumbnailGenerator
 from ro_py.utilities.clientobject import ClientObject
+import datetime
 
 from ro_py.utilities.url import url
 endpoint = url("users")
@@ -43,6 +44,7 @@ class User(BaseUser, ClientObject):
         self.display_name = None
         self.events = Events(cso, self)
         self.thumbnails = UserThumbnailGenerator(cso, user_id)
+        self.age = None
 
     async def update(self):
         """
@@ -58,6 +60,26 @@ class User(BaseUser, ClientObject):
         self.display_name = user_info["displayName"]
         # has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
         # self.has_premium = has_premium_req
+        
+        
+    async def get_age(self):
+        """
+        Gets a users account age.
+        :return: int
+        """
+        user_info_eq = await self.requests.get(endpoint + f"v1/users/{self.id}")
+        user_info = user_info_req.json()
+        user = user_info['name']
+        
+        year = int(user.created.strftime("%Y")
+        month = int(user.created.strftime("%m"))
+        day = int(user.created.strftime("%d"))
+        now = date.today()
+       years = now.year - year
+       months = now.month - month
+       days = now.day - day + years * 365 + months * 31
+       return days
+                   
 
 
 class Events:
