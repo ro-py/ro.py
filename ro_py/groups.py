@@ -196,6 +196,7 @@ class Group(ClientObject):
         """Events object."""
         self.is_locked = False
         """True if this is a locked group."""
+        self.url = f"https://www.roblox.com/groups/{self.id}/group/"
 
     async def update(self):
         """
