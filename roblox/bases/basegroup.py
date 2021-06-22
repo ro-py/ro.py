@@ -7,10 +7,10 @@ from httpx import Response
 from roblox.utilities.requests import Requests
 from roblox.utilities.subdomain import Subdomain
 
-if TYPE_CHECKING:
-    from roblox.role import Role
-    from roblox.member import Member
-    from roblox.user import User
+from roblox.user import User
+from roblox.role import Role
+from roblox.member import Member
+
 
 class BaseGroup:
     """
@@ -33,7 +33,6 @@ class BaseGroup:
         -------
         roblox.role.Role
         """
-        from roblox.role import Role
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "roles")
         response: Response = await self.requests.get(url)
         data: dict = response.json()
@@ -43,8 +42,6 @@ class BaseGroup:
         return roles
 
     async def get_member_by_user(self, user: User) -> Member:
-        from roblox.role import Role
-        from roblox.member import Member
         url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
         response: Response = await self.requests.get(url)
         data: dict = response.json()
@@ -74,7 +71,6 @@ class BaseGroup:
         -------
         roblox.member.Member
         """
-        from roblox.user import User
 
         user: User = self.cso.client.get_user(user_id)
         return await self.get_member_by_user(user)
@@ -93,7 +89,6 @@ class BaseGroup:
         -------
         roblox.member.Member
         """
-        from roblox.user import User
 
         user: User = await self.cso.client.get_user_by_username(name)
         return await self.get_member_by_user(user)
