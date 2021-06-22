@@ -7,10 +7,10 @@ from httpx import Response
 from roblox.utilities.requests import Requests
 from roblox.utilities.subdomain import Subdomain
 
-from roblox.user import User
-from roblox.role import Role
-from roblox.member import Member
-
+if TYPE_CHECKING:
+    from roblox.role import Role
+    from roblox.member import Member
+    from roblox.user import User
 
 class BaseGroup:
     """
@@ -38,7 +38,7 @@ class BaseGroup:
         data: dict = response.json()
         roles: List[Role] = []
         for role in data['roles']:
-            role.append(Role(self.cso, self, role))
+            role.append(self.cso.Role(self.cso, self, role))
         return roles
 
     async def get_member_by_user(self, user: User) -> Member:
@@ -52,9 +52,8 @@ class BaseGroup:
                 member = roles
                 break
 
-        role: Role = Role(self.cso, self, member['role'])
-        member = Member(self.cso, user, self, role)
-        return member
+        role: Role = self.cso.Role(self.cso, self, member['role'])
+        return self.cso.Member(self.cso, user, self, role)
 
     async def get_member_by_id(self, user_id: int = 0) -> Member:
         """
