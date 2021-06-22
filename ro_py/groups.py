@@ -337,6 +337,13 @@ class Group(ClientObject):
 
         await pages.get_page()
         return pages
+    
+    async def get_group_thumbnail(self):
+        """Gets a Group Thumbnail url"""
+        emblem_req = await self.requests.get(url="https://thumbnails.roblox.com/v1/groups/icons",params={"groupIds": self.id,"size": "420x420", "format": "Png"})
+        emblem_url = emblem_req.json()["data"][0]["imageUrl"]
+        return emblem_url
+        
 
 
 class PartialGroup:
