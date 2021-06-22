@@ -4,7 +4,6 @@ from httpx import Response
 
 from roblox.member import Member
 from roblox.role import Role
-from roblox.user import User
 from roblox.utilities.requests import Requests
 from roblox.utilities.subdomain import Subdomain
 
@@ -53,6 +52,8 @@ class BaseGroup:
         -------
         roblox.member.Member
         """
+        from roblox.user import User
+
         user: User = self.cso.client.get_user(user_id)
         url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
         response: Response = await self.requests.get(url)
@@ -81,6 +82,8 @@ class BaseGroup:
         -------
         roblox.member.Member
         """
+        from roblox.user import User
+
         user: User = await self.cso.client.get_user_by_username(name)
         url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
         response: Response = await self.requests.get(url)
