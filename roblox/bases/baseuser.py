@@ -15,7 +15,7 @@ class BaseUser:
         """A requests object."""
         self.id: int = user_id
         """The id of the user."""
-        self.subdomain: Subdomain = Subdomain('user')
+        self.subdomain: Subdomain = Subdomain('users')
         """Subdomain users.roblox.com"""
 
     async def add_friend(self) -> int:

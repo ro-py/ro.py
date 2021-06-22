@@ -23,7 +23,7 @@ class BaseGroup:
         """Requests object"""
         self.id: int = group_id
         """The groups id."""
-        self.subdomain: Subdomain = Subdomain('group')
+        self.subdomain: Subdomain = Subdomain('groups')
 
     async def get_roles(self) -> List[Role]:
         """
