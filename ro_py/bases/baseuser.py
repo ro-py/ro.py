@@ -2,6 +2,7 @@ from ro_py.robloxbadges import RobloxBadge
 from ro_py.utilities.pages import Pages
 from ro_py.assets import UserAsset
 from ro_py.badges import Badge
+from ro_py.gamepass import Gamepass
 import iso8601
 
 from ro_py.utilities.url import url
@@ -169,6 +170,18 @@ class BaseUser:
             return True, iso8601.parse_date(has_badge_data[0]["awardedDate"])
         else:
             return False, None
+    
+    async def get_gamepass(self, id: int):
+        """
+        Gets a gamepass using an ID
+        :return: Object
+        :type: int
+        """
+        gamepass_req_info = await self.requests.get(url="https://inventory.roblox.com/v1/users/1/items/GamePass/1",params={"userId": self.id,"itemType": "GamePass","itemTargetId":id})
+        return Gamepass(self.cso,gamepass_req_info)
+
+
+
 
 
 class PartialUser(BaseUser):
