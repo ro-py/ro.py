@@ -59,11 +59,10 @@ class User(BaseUser, ClientObject):
         self.name = user_info["name"]
         self.display_name = user_info["displayName"]
         
-        created_date = iso8601.parse_date(user_info["created"])
         now = datetime.datetime.today()
-        years = now.year - created_date.year
-        months = now.month - created_date.month
-        days = now.day - created_date.day + years * 365 + months * 31
+        years = now.year - self.created.year
+        months = now.month - self.created.month
+        days = now.day - self.created.day + years * 365 + months * 31
         self.age = days
         # has_premium_req = requests.get(f"https://premiumfeatures.roblox.com/v1/users/{self.id}/validate-membership")
         # self.has_premium = has_premium_req
