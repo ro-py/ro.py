@@ -34,10 +34,10 @@ class Gamepass(ClientObject):
         """Client Shared Object"""
         self.requests = cso.requests
         """Client Shared Object Requests"""
-        self.gamepass_name = data['name']
+        self.name = data['name']
         """Gamepass Name"""
         self.id = data['id']
         """Gamepass ID"""
-        self.gamepass_description = data['description']
+        self.description = data['description']
         """Gets the gamepass Description"""
         
