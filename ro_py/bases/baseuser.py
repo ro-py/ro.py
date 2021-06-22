@@ -4,6 +4,7 @@ from ro_py.assets import UserAsset
 from ro_py.badges import Badge
 from ro_py.gamepass import Gamepass
 import iso8601
+import datetime
 
 from ro_py.utilities.url import url
 endpoint = url("users")
@@ -178,7 +179,29 @@ class BaseUser:
         :type: int
         """
         gamepass_req_info = await self.requests.get(url="https://inventory.roblox.com/v1/users/1/items/GamePass/1",params={"userId": self.id,"itemType": "GamePass","itemTargetId":id})
-        return Gamepass(self.cso,gamepass_req_info)
+        print(gamepass_req_info.json()["data"])
+        if len(gamepass_req_info.json()["data"]) > 0:
+            return Gamepass(self.cso,gamepass_req_info.json()["data"][0])
+        return None
+    
+    async def get_age(self):
+        """
+        Gets a users account age.
+        :return: int
+        """
+        user_info_req = await self.requests.get(endpoint + f"v1/users/{self.id}")
+        user_info = user_info_req.json()
+        user = user_info['name']
+        
+        year = int(user.created.strftime("%Y"))
+        month = int(user.created.strftime("%m"))
+        day = int(user.created.strftime("%d"))
+        now = datetime.today()
+        years = now.year - year
+        months = now.month - month
+        days = now.day - day + years * 365 + months * 31
+        self.age = days
+        return days
 
 
 
