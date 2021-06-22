@@ -2,7 +2,9 @@ from typing import List
 
 from httpx import Response
 
+from roblox.member import Member
 from roblox.role import Role
+from roblox.user import User
 from roblox.utilities.requests import Requests
 from roblox.utilities.subdomain import Subdomain
 
@@ -16,7 +18,7 @@ class BaseGroup:
         """Client shared object"""
         self.requests: Requests = cso.requests
         """Requests object"""
-        self.group_id: int = group_id
+        self.id: int = group_id
         """The groups id."""
         self.subdomain: Subdomain = Subdomain('group')
 
@@ -31,7 +33,65 @@ class BaseGroup:
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "roles")
         response: Response = await self.requests.get(url)
         data: dict = response.json()
-        roles: list[Role] = []
+        roles: List[Role] = []
         for role in data['roles']:
             role.append(Role(self.cso, self, role))
         return roles
+
+    async def get_member_by_id(self, user_id: int = 0) -> Member:
+        """
+        Gets a user in a group
+
+        Parameters
+        ----------
+        user_id : int
+                The users id.
+        user : roblox.user.User
+                User object.
+
+        Returns
+        -------
+        roblox.member.Member
+        """
+        user: User = self.cso.client.get_user(user_id)
+        url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
+        response: Response = await self.requests.get(url)
+        data: dict = response.json()
+
+        member = None
+        for roles in data['data']:
+            if roles['group']['id'] == self.id:
+                member = roles
+                break
+
+        role: Role = Role(self.cso, self, member['role'])
+        member = Member(self.cso, user, self, role)
+        return member
+
+    async def get_member_by_name(self, name: str):
+        """
+        Gets a user in a group
+
+        Parameters
+        ----------
+        name : str
+                The user's name.
+
+        Returns
+        -------
+        roblox.member.Member
+        """
+        user: User = await self.cso.client.get_user_by_username(name)
+        url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
+        response: Response = await self.requests.get(url)
+        data: dict = response.json()
+
+        member = None
+        for roles in data['data']:
+            if roles['group']['id'] == self.id:
+                member = roles
+                break
+
+        role: Role = Role(self.cso, self, member['role'])
+        member = Member(self.cso, user, self, role)
+        return member

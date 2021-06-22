@@ -1,4 +1,4 @@
-from roblox.group import Group
+from roblox.bases.basegroup import BaseGroup
 from roblox.utilities.requests import Requests
 
 
@@ -15,12 +15,12 @@ class Role:
     role_data : dict
             Dictionary containing role information.
     """
-    def __init__(self, cso, group: Group, role_data: dict):
+    def __init__(self, cso, group: BaseGroup, role_data: dict):
         self.cso = cso
         """Client shared object."""
         self.requests: Requests = cso.requests
         """Requests object for internal use."""
-        self.group: Group = group
+        self.group: BaseGroup = group
         """The group the role belongs to."""
         self.id: int = role_data['id']
         """The id of the role."""

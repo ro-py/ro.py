@@ -2,9 +2,6 @@ import iso8601
 import datetime
 
 from httpx import Response
-from roblox.role import Role
-from roblox.user import User
-from roblox.member import Member
 from roblox.user import PartialUser
 from roblox.bases.basegroup import BaseGroup
 from roblox.utilities.subdomain import Subdomain
@@ -82,61 +79,3 @@ class Group(BaseGroup):
         """If only people with premium can join the group."""
         self.public_entry_allowed: bool = raw_data['publicEntryAllowed']
         """If it is possible to join the group or if it is locked to the public."""
-
-    async def get_member_by_id(self, user_id: int = 0, user=None) -> Member:
-        """
-        Gets a user in a group
-
-        Parameters
-        ----------
-        user_id : int
-                The users id.
-        user : roblox.user.User
-                User object.
-
-        Returns
-        -------
-        roblox.member.Member
-        """
-        user: User = self.cso.client.get_user(user_id)
-        url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
-        response: Response = await self.requests.get(url)
-        data: dict = response.json()
-
-        member = None
-        for roles in data['data']:
-            if roles['group']['id'] == self.group_id:
-                member = roles
-                break
-
-        role: Role = Role(self.cso, self, member['role'])
-        member = Member(self.cso, user, self, role)
-        return member
-
-    async def get_member_by_name(self, name: str):
-        """
-        Gets a user in a group
-
-        Parameters
-        ----------
-        name : str
-                The user's name.
-
-        Returns
-        -------
-        roblox.member.Member
-        """
-        user: User = await self.cso.client.get_user_by_username(name)
-        url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
-        response: Response = await self.requests.get(url)
-        data: dict = response.json()
-
-        member = None
-        for roles in data['data']:
-            if roles['group']['id'] == self.group_id:
-                member = roles
-                break
-
-        role: Role = Role(self.cso, self, member['role'])
-        member = Member(self.cso, user, self, role)
-        return member
