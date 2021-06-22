@@ -192,14 +192,11 @@ class BaseUser:
         user_info_req = await self.requests.get(endpoint + f"v1/users/{self.id}")
         user_info = user_info_req.json()
         user = user_info['name']
-        
-        year = int(user.created.strftime("%Y"))
-        month = int(user.created.strftime("%m"))
-        day = int(user.created.strftime("%d"))
-        now = datetime.today()
-        years = now.year - year
-        months = now.month - month
-        days = now.day - day + years * 365 + months * 31
+        created_date = iso8601.parse_date(user_info["created"])
+        now = datetime.datetime.today()
+        years = now.year - created_date.year
+        months = now.month - created_date.month
+        days = now.day - created_date.day + years * 365 + months * 31
         self.age = days
         return days
 
