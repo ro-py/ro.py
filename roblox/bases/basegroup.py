@@ -41,6 +41,21 @@ class BaseGroup:
             role.append(Role(self.cso, self, role))
         return roles
 
+    async def get_member_by_user(self, user: User) -> Member:
+        url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
+        response: Response = await self.requests.get(url)
+        data: dict = response.json()
+
+        member = None
+        for roles in data['data']:
+            if roles['group']['id'] == self.id:
+                member = roles
+                break
+
+        role: Role = Role(self.cso, self, member['role'])
+        member = Member(self.cso, user, self, role)
+        return member
+
     async def get_member_by_id(self, user_id: int = 0) -> Member:
         """
         Gets a user in a group
@@ -59,21 +74,11 @@ class BaseGroup:
         from roblox.user import User
 
         user: User = self.cso.client.get_user(user_id)
-        url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
-        response: Response = await self.requests.get(url)
-        data: dict = response.json()
-
-        member = None
-        for roles in data['data']:
-            if roles['group']['id'] == self.id:
-                member = roles
-                break
-
-        role: Role = Role(self.cso, self, member['role'])
-        member = Member(self.cso, user, self, role)
+        member: Member = await self.get_member_by_user(user)
         return member
 
-    async def get_member_by_name(self, name: str):
+
+    async def get_member_by_name(self, name: str) -> Member:
         """
         Gets a user in a group
 
@@ -89,16 +94,4 @@ class BaseGroup:
         from roblox.user import User
 
         user: User = await self.cso.client.get_user_by_username(name)
-        url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
-        response: Response = await self.requests.get(url)
-        data: dict = response.json()
-
-        member = None
-        for roles in data['data']:
-            if roles['group']['id'] == self.id:
-                member = roles
-                break
-
-        role: Role = Role(self.cso, self, member['role'])
-        member = Member(self.cso, user, self, role)
-        return member
+        return await self.get_member_by_user(user)
