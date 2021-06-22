@@ -1,5 +1,5 @@
 """
-This file houses functions and classes that pertain to Roblox inventory.
+This file houses functions and classes that pertain to Roblox gamepass.
 """
 
 import copy
@@ -22,10 +22,7 @@ endpoint = url("inventory")
 
 
 class Gamepass(ClientObject):
-    """
-    Represents a Roblox game gamepass.
-    This class represents multiple gamepass-related endpoints.
-    """
+    
     def __init__(self,cso, data):
         super().__init__()
         self.cso = cso
