@@ -29,7 +29,7 @@ class Client:
         roblox.group.Group
 
         """
-        subdomain = Subdomain('group')
+        subdomain = Subdomain('groups')
         url = subdomain.generate_endpoint("v1", "groups", group_id)
         response = await self.cso.requests.get(url)
         data = response.json()
