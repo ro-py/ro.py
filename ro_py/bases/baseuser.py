@@ -179,12 +179,11 @@ class BaseUser:
         :type: int
         """
         gamepass_req_info = await self.requests.get(url="https://inventory.roblox.com/v1/users/1/items/GamePass/1",params={"userId": self.id,"itemType": "GamePass","itemTargetId":id})
-        print(gamepass_req_info.json()["data"])
         if len(gamepass_req_info.json()["data"]) > 0:
             return Gamepass(self.cso,gamepass_req_info.json()["data"][0])
         return None
     
-    
+
 
 
 
