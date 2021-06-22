@@ -77,8 +77,7 @@ class BaseGroup:
         from roblox.user import User
 
         user: User = self.cso.client.get_user(user_id)
-        member: Member = await self.get_member_by_user(user)
-        return member
+        return await self.get_member_by_user(user)
 
 
     async def get_member_by_name(self, name: str) -> Member:
