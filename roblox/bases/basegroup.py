@@ -1,12 +1,16 @@
-from typing import List
+from __future__ import annotations
+
+from typing import List,TYPE_CHECKING
 
 from httpx import Response
 
-from roblox.member import Member
-from roblox.role import Role
 from roblox.utilities.requests import Requests
 from roblox.utilities.subdomain import Subdomain
 
+if TYPE_CHECKING:
+    from roblox.role import Role
+    from roblox.member import Member
+    from roblox.user import User
 
 class BaseGroup:
     """

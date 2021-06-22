@@ -1,5 +1,11 @@
-from roblox.bases.basegroup import BaseGroup
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 from roblox.utilities.requests import Requests
+
+if TYPE_CHECKING:
+    from roblox.bases.basegroup import BaseGroup
 
 
 class Role:
