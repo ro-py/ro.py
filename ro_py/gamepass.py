@@ -22,7 +22,7 @@ endpoint = url("inventory")
 
 
 class Gamepass(ClientObject):
-    
+
     def __init__(self,cso, data):
         super().__init__()
         self.cso = cso
@@ -33,6 +33,4 @@ class Gamepass(ClientObject):
         """Gamepass Name"""
         self.id = data['id']
         """Gamepass ID"""
-        self.description = data['description']
-        """Gets the gamepass Description"""
         
