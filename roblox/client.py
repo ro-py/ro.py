@@ -4,14 +4,16 @@ from roblox.utilities.requests import Requests
 from roblox.utilities.subdomain import Subdomain
 
 
+# TODO ClientSharedObject __init__ client needs to be type checked
 class ClientSharedObject:
-    def __init__(self, cookie):
+    def __init__(self, client, cookie: str):
         self.requests = Requests()
+        self.client = client
 
 
 class Client:
-    def __init__(self, cookie):
-        self.cso: ClientSharedObject = ClientSharedObject(cookie)
+    def __init__(self, cookie: str):
+        self.cso: ClientSharedObject = ClientSharedObject(self, cookie)
 
     async def get_group(self, group_id: int) -> Group:
         """
