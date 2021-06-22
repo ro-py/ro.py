@@ -184,21 +184,7 @@ class BaseUser:
             return Gamepass(self.cso,gamepass_req_info.json()["data"][0])
         return None
     
-    async def get_age(self):
-        """
-        Gets a users account age.
-        :return: int
-        """
-        user_info_req = await self.requests.get(endpoint + f"v1/users/{self.id}")
-        user_info = user_info_req.json()
-        user = user_info['name']
-        created_date = iso8601.parse_date(user_info["created"])
-        now = datetime.datetime.today()
-        years = now.year - created_date.year
-        months = now.month - created_date.month
-        days = now.day - created_date.day + years * 365 + months * 31
-        self.age = days
-        return days
+    
 
 
 
