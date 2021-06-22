@@ -33,6 +33,7 @@ class BaseGroup:
         -------
         roblox.role.Role
         """
+        from roblox.role import Role
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "roles")
         response: Response = await self.requests.get(url)
         data: dict = response.json()
@@ -42,6 +43,8 @@ class BaseGroup:
         return roles
 
     async def get_member_by_user(self, user: User) -> Member:
+        from roblox.role import Role
+        from roblox.member import Member
         url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
         response: Response = await self.requests.get(url)
         data: dict = response.json()
