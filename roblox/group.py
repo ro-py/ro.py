@@ -2,8 +2,8 @@ import iso8601
 import datetime
 
 from httpx import Response
-from roblox.user import PartialUser
-from roblox.bases.basegroup import BaseGroup
+import roblox.user
+import roblox.bases.basegroup
 from roblox.utilities.subdomain import Subdomain
 
 group_subdomain: Subdomain = Subdomain("group")
@@ -21,7 +21,7 @@ class Shout:
         """When the first shout was created."""
         self.updated: datetime.datetime = iso8601.parse_date(raw_data['updated'])
         """When the latest shout was created."""
-        self.poster: PartialUser = PartialUser(cso, raw_data['poster'])
+        self.poster: roblox.user.PartialUser = roblox.user.PartialUser(cso, raw_data['poster'])
         """The user who posted the shout."""
 
     async def update(self, new_body: str) -> int:
@@ -55,7 +55,7 @@ class Shout:
         return await self.update("")
 
 
-class Group(BaseGroup):
+class Group(roblox.bases.basegroup.BaseGroup):
     """
     Represents a group.
     """
@@ -67,7 +67,7 @@ class Group(BaseGroup):
         """The id of the group."""
         self.name: str = raw_data['name']
         """The name of the group."""
-        self.owner: PartialUser = PartialUser(cso,raw_data['owner'])
+        self.owner: roblox.user.PartialUser = roblox.user.PartialUser(cso,raw_data['owner'])
         """The owner of the group."""
         self.description: str = raw_data['description']
         """The description of the group."""

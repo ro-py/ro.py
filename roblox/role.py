@@ -1,11 +1,6 @@
-from __future__ import annotations
-
-from typing import TYPE_CHECKING
-
 from roblox.utilities.requests import Requests
 
-if TYPE_CHECKING:
-    from roblox.bases.basegroup import BaseGroup
+import roblox.bases.basegroup
 
 
 class Role:
@@ -21,12 +16,12 @@ class Role:
     role_data : dict
             Dictionary containing role information.
     """
-    def __init__(self, cso, group: BaseGroup, role_data: dict):
+    def __init__(self, cso, group: roblox.bases.basegroup.BaseGroup, role_data: dict):
         self.cso = cso
         """Client shared object."""
         self.requests: Requests = cso.requests
         """Requests object for internal use."""
-        self.group: BaseGroup = group
+        self.group: roblox.bases.basegroup.BaseGroup = group
         """The group the role belongs to."""
         self.id: int = role_data['id']
         """The id of the role."""

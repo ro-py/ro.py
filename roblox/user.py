@@ -1,9 +1,9 @@
 import datetime
 import iso8601
-from roblox.bases.baseuser import BaseUser
+import roblox.bases.baseuser
 
 
-class User(BaseUser):
+class User(roblox.bases.baseuser.BaseUser):
     """
     Represents a group with all information from /v1/users/<id>.
     """
