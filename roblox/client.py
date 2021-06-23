@@ -1,4 +1,3 @@
-from roblox.bases.basegroup import BaseGroup
 import roblox.user
 import roblox.group
 from roblox.utilities.requests import Requests
