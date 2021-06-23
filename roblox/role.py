@@ -1,3 +1,4 @@
+from __future__ import annotations
 from roblox.utilities.requests import Requests
 
 import roblox.bases.basegroup
@@ -16,12 +17,12 @@ class Role:
     role_data : dict
             Dictionary containing role information.
     """
-    def __init__(self, cso, group: roblox.bases.basegroup.BaseGroup, role_data: dict):
+    def __init__(self, cso, group: roblox.bases.basegroup, role_data: dict):
         self.cso = cso
         """Client shared object."""
         self.requests: Requests = cso.requests
         """Requests object for internal use."""
-        self.group: roblox.bases.basegroup.BaseGroup = group
+        self.group: roblox.bases.basegroup = group
         """The group the role belongs to."""
         self.id: int = role_data['id']
         """The id of the role."""

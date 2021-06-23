@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import List,TYPE_CHECKING
+from typing import List
 
 from httpx import Response
 
@@ -53,8 +53,8 @@ class BaseGroup:
                 member = roles
                 break
 
-        role: roblox.role.Role = self.cso.Role(self.cso, self, member['role'])
-        return self.cso.Member(self.cso, user, self, role)
+        role: roblox.role.Role = roblox.role.Role(self.cso, self, member['role'])
+        return roblox.member.Member(self.cso, user, self, role)
 
     async def get_member_by_id(self, user_id: int = 0) -> roblox.member.Member:
         """
