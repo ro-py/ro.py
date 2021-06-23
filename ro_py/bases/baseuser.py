@@ -119,6 +119,28 @@ class BaseUser:
             groups.append(PartialGroup(self.cso, group))
         return groups
 
+    async def get_groups_role(self):
+        """
+        Gets the user's groups.
+
+        Returns
+        -------
+        List[ro_py.roles.Role]
+        """
+        from ro_py.groups import PartialGroup
+        from ro_py.roles import Role
+        member_req = await self.requests.get(
+            url=f"{url('groups')}v2/users/{self.id}/groups/roles"
+        )
+        data = member_req.json()
+        roles = []
+        for group in data['data']:
+            role = group['role']
+            group = group['group']
+            partial_group = PartialGroup(self.cso, group)
+            roles.append(Role(self.cso, partial_group, role))
+        return roles
+
     async def get_limiteds(self):
         """
         Gets all limiteds the user owns.
