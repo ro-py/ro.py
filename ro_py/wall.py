@@ -27,9 +27,9 @@ class WallPost:
 
     async def delete(self):
         wall_req = await self.requests.delete(
-            url=endpoint + f"/v1/groups/{self.id}/wall/posts/{self.id}"
+            url=endpoint + f"/v1/groups/{self.group.id}/wall/posts/{self.id}"
         )
-        return wall_req.status == 200
+        return wall_req.status_code == 200
 
 
 def wall_post_handler(requests, this_page, args) -> List[WallPost]:
