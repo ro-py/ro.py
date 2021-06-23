@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import iso8601
 import datetime
 
