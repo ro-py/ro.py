@@ -7,10 +7,11 @@ from httpx import Response
 from roblox.utilities.requests import Requests
 from roblox.utilities.subdomain import Subdomain
 
-if TYPE_CHECKING:
-    from roblox.role import Role
-    from roblox.member import Member
-    from roblox.user import User
+import roblox.role
+import roblox.member
+import roblox.user
+
+
 
 class BaseGroup:
     """
@@ -25,7 +26,7 @@ class BaseGroup:
         """The groups id."""
         self.subdomain: Subdomain = Subdomain('groups')
 
-    async def get_roles(self) -> List[Role]:
+    async def get_roles(self) -> List[roblox.role.Role]:
         """
         Gets the roles of the group.
 
@@ -36,12 +37,12 @@ class BaseGroup:
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "roles")
         response: Response = await self.requests.get(url)
         data: dict = response.json()
-        roles: List[Role] = []
+        roles: List[roblox.role.Role] = []
         for role in data['roles']:
-            role.append(self.cso.Role(self.cso, self, role))
+            role.append(roblox.role.Role(self.cso, self, role))
         return roles
 
-    async def get_member_by_user(self, user: User) -> Member:
+    async def get_member_by_user(self, user: roblox.user.User) -> roblox.member.Member:
         url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
         response: Response = await self.requests.get(url)
         data: dict = response.json()
@@ -52,10 +53,10 @@ class BaseGroup:
                 member = roles
                 break
 
-        role: Role = self.cso.Role(self.cso, self, member['role'])
+        role: roblox.role.Role = self.cso.Role(self.cso, self, member['role'])
         return self.cso.Member(self.cso, user, self, role)
 
-    async def get_member_by_id(self, user_id: int = 0) -> Member:
+    async def get_member_by_id(self, user_id: int = 0) -> roblox.member.Member:
         """
         Gets a user in a group
 
@@ -71,11 +72,11 @@ class BaseGroup:
         roblox.member.Member
         """
 
-        user: User = self.cso.client.get_user(user_id)
+        user: roblox.user.User = self.cso.client.get_user(user_id)
         return await self.get_member_by_user(user)
 
 
-    async def get_member_by_name(self, name: str) -> Member:
+    async def get_member_by_name(self, name: str) -> roblox.member.Member:
         """
         Gets a user in a group
 
@@ -89,5 +90,5 @@ class BaseGroup:
         roblox.member.Member
         """
 
-        user: User = await self.cso.client.get_user_by_username(name)
+        user: roblox.user.User = await self.cso.client.get_user_by_username(name)
         return await self.get_member_by_user(user)

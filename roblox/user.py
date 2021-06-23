@@ -25,7 +25,7 @@ class User(roblox.bases.baseuser.BaseUser):
         """When the user created the account."""
 
 
-class PartialUser(BaseUser):
+class PartialUser(roblox.bases.baseuser.BaseUser):
     """
     Represents a partial group (less information).
     """
