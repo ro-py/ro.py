@@ -6,7 +6,7 @@ from roblox.utilities.subdomain import Subdomain
 # TODO ClientSharedObject __init__ client needs to be type checked
 class ClientSharedObject:
     def __init__(self, client, cookie: str):
-        self.requests = Requests()
+        self.requests = Requests(cookie)
         self.client = client
 
 class Client:

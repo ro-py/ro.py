@@ -26,7 +26,7 @@ def status_code_error(status_code):
 
 
 class Requests:
-    def __init__(self):
+    def __init__(self,security_cookie):
         self.session: CleanAsyncClient = CleanAsyncClient()
         """Session to use for requests."""
         self.xcsrf_token_name: str = "X-CSRF-TOKEN"
@@ -34,6 +34,9 @@ class Requests:
 
         self.session.headers["User-Agent"] = "Roblox/WinInet"
         self.session.headers["Referer"] = "www.roblox.com"
+
+        self.session.cookies[".ROBLOSECURITY"] = security_cookie
+
         self.status_code = int
 
     async def request(self, method, *args, **kwargs) -> Response:

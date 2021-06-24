@@ -66,7 +66,7 @@ class Member:
         #    raise NotFound(f"User {self.user.id} is not in group {self.group.id}")
         setrank: bool = await self.__setrank(roles[role_counter].id)
         if setrank:
-            self.role = roblox.role.Role(self.cso, self.group, roles[role_counter])
+            self.role = roles[role_counter]
         # TODO Add raise error if above role change fails if needed?
         return old_role, roles[role_counter]
 
