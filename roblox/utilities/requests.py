@@ -22,7 +22,7 @@ class CleanAsyncClient(AsyncClient):
 
 # TODO is this good enough or did you want it an other way
 def status_code_error(status_code):
-    return c_errors(status_code)
+    return c_errors[status_code]
 
 
 class Requests:

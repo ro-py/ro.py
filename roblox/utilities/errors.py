@@ -51,12 +51,12 @@ class IndexOutOfRange(Exception):
 
 
 c_errors = {
-    "400": BadRequest,
-    "401": Unauthorized,
-    "403": Forbidden,
-    "404": NotFound,
-    "409": Conflict,
-    "429": TooManyRequests,
-    "500": InternalServerError,
-    "502": BadGateway
+    400: BadRequest,
+    401: Unauthorized,
+    403: Forbidden,
+    404: NotFound,
+    409: Conflict,
+    429: TooManyRequests,
+    500: InternalServerError,
+    502: BadGateway
 }
