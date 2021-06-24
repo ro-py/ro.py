@@ -119,6 +119,7 @@ class Member:
             "roleId": rank
         }
         response: Response = await self.cso.requests.patch(url, json=data)
+        # TODO CATCH ERRORS? since it retunrs the statuscode?
         return response.status_code == 200
 
     async def setrank(self, rank):
