@@ -25,6 +25,15 @@ class BaseGroup:
         """The groups id."""
         self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain('groups')
 
+    async def expand(self):
+        """
+        Expands into a full User object.
+        Returns
+        ------
+        ro_py.users.User
+        """
+        return await self.cso.client.get_group(self.id)
+
     async def get_roles(self) -> List[roblox.role.Role]:
         """
         Gets the roles of the group.

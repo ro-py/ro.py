@@ -18,6 +18,15 @@ class BaseUser:
         self.subdomain: Subdomain = Subdomain('users')
         """Subdomain users.roblox.com"""
 
+    async def expand(self):
+        """
+        Expands into a full User object.
+        Returns
+        ------
+        ro_py.users.User
+        """
+        return await self.cso.client.get_user(self.id)
+
     async def add_friend(self) -> int:
         """
         Sends a friend request to the user.
