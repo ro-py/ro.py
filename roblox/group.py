@@ -75,7 +75,9 @@ class Group(roblox.bases.basegroup.BaseGroup):
         """The description of the group."""
         self.member_count: int = raw_data['memberCount']
         """How many people are in the group."""
-        self.shout: Shout = Shout(cso, self, raw_data['shout'])
+        self.shout = None
+        if raw_data.get('shout'):
+            self.shout: Shout = Shout(cso, self, raw_data['shout'])
         """The current shout of the group."""
         self.is_premium_only: bool = raw_data['isBuildersClubOnly']
         """If only people with premium can join the group."""
