@@ -64,10 +64,8 @@ class Member:
             raise IndexOutOfRange(f"Index is out of range")
         # if not roles:
         #    raise NotFound(f"User {self.user.id} is not in group {self.group.id}")
-        setrank: bool = await self.__setrank(roles[role_counter].id)
-        if setrank:
-            self.role = roles[role_counter]
-        # TODO Add raise error if above role change fails if needed?
+        await self.__setrank(roles[role_counter].id)
+        self.role = roles[role_counter]
         return old_role, self.role
 
     async def promote(self, ranks: int = 1):
@@ -118,9 +116,7 @@ class Member:
         data: dict = {
             "roleId": rank
         }
-        response: Response = await self.cso.requests.patch(url, json=data)
-        # TODO CATCH ERRORS? since it retunrs the statuscode?
-        return response.status_code == 200
+        await self.cso.requests.patch(url, json=data)
 
     async def setrank(self, rank):
         await self.__setrank(rank)
