@@ -5,7 +5,7 @@ import roblox.user
 import roblox.group
 import roblox.utilities.subdomain
 from roblox.utilities.errors import NotFound, IndexOutOfRange
-
+from httpx import Response
 
 # TODO Deal with if user is exiled or has left the group since you can't rank somebody who is no longer in the group
 class Member:
@@ -114,11 +114,12 @@ class Member:
         -------
         bool
         """
-        url = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "groups", self.user.id)
-        request = await self.cso.requests.patch(url, json={
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "groups", self.user.id)
+        data: dict = {
             "roleId": rank
-        })
-        return request.status_code == 200
+        }
+        response: Response = await self.cso.requests.patch(url, json=data)
+        return response.status_code == 200
 
     async def setrank(self, rank):
         await self.__setrank(rank)
