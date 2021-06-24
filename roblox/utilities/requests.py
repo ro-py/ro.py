@@ -1,5 +1,6 @@
 import asyncio
 import requests
+from roblox.utilities.errors import c_errors
 from httpx import AsyncClient, Response
 from json.decoder import JSONDecodeError
 
@@ -19,9 +20,9 @@ class CleanAsyncClient(AsyncClient):
         except RuntimeError:
             pass
 
-
+# TODO is this good enough or did you want it an other way
 def status_code_error(status_code):
-    pass
+    return c_errors(status_code)
 
 
 class Requests:
