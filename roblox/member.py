@@ -56,9 +56,9 @@ class Member:
         roles = await self.group.get_roles()
         role_counter = 0
         for group_role in roles:
-            role_counter += 1
             if group_role.rank == self.role.rank:
                 break
+            role_counter += 1
         role_counter = role_counter + num
         if role_counter == 0 or role_counter > len(roles):
             raise IndexOutOfRange(f"Index is out of range")
