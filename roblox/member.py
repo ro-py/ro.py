@@ -60,7 +60,7 @@ class Member:
                 break
             role_counter += 1
         role_counter = role_counter + num
-        if role_counter == 0 or role_counter > len(roles):
+        if role_counter == 0 or role_counter >= len(roles):
             raise IndexOutOfRange(f"Index is out of range")
         # if not roles:
         #    raise NotFound(f"User {self.user.id} is not in group {self.group.id}")
@@ -68,7 +68,7 @@ class Member:
         if setrank:
             self.role = roles[role_counter]
         # TODO Add raise error if above role change fails if needed?
-        return old_role, roles[role_counter]
+        return old_role, self.role
 
     async def promote(self, ranks: int = 1):
         """
