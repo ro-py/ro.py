@@ -4,9 +4,8 @@ from typing import List
 
 from httpx import Response
 
-from roblox.utilities.requests import Requests
-from roblox.utilities.subdomain import Subdomain
-
+import roblox.utilities.requests
+import roblox.utilities.subdomain
 import roblox.role
 import roblox.member
 import roblox.user
@@ -20,11 +19,11 @@ class BaseGroup:
     def __init__(self, cso, group_id: int):
         self.cso = cso
         """Client shared object"""
-        self.requests: Requests = cso.requests
+        self.requests: roblox.utilities.requests.Requests = cso.requests
         """Requests object"""
         self.id: int = group_id
         """The groups id."""
-        self.subdomain: Subdomain = Subdomain('groups')
+        self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain('groups')
 
     async def get_roles(self) -> List[roblox.role.Role]:
         """
