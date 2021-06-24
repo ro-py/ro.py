@@ -114,7 +114,7 @@ class Member:
         -------
         bool
         """
-        url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "groups", self.user.id)
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "users", self.user.id)
         data: dict = {
             "roleId": rank
         }
