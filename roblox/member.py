@@ -115,7 +115,7 @@ class Member:
         bool
         """
         url = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "groups", self.user.id)
-        request = await self.cso.requests.patch(url, data={
+        request = await self.cso.requests.patch(url, json={
             "roleId": rank
         })
         return request.status_code == 200
