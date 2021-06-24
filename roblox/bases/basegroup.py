@@ -11,11 +11,11 @@ import roblox.member
 import roblox.user
 
 
-
 class BaseGroup:
     """
     Represents a group with as little information possible.
     """
+
     def __init__(self, cso, group_id: int):
         self.cso = cso
         """Client shared object"""
@@ -38,7 +38,7 @@ class BaseGroup:
         data: dict = response.json()
         roles: List[roblox.role.Role] = []
         for role in data['roles']:
-            role.append(roblox.role.Role(self.cso, self, role))
+            roles.append(roblox.role.Role(self.cso, self, role))
         return roles
 
     async def get_member_by_user(self, user: roblox.user.User) -> roblox.member.Member:
@@ -73,7 +73,6 @@ class BaseGroup:
 
         user: roblox.user.User = self.cso.client.get_user(user_id)
         return await self.get_member_by_user(user)
-
 
     async def get_member_by_name(self, name: str) -> roblox.member.Member:
         """

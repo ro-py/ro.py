@@ -22,7 +22,7 @@ class Member:
         """The group the user is in."""
         self.role: roblox.role.Role = role
         """The role the user has in the group."""
-        self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain('users')
+        self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain('groups')
 
     async def update_role(self):
         """
