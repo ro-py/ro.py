@@ -60,8 +60,9 @@ async def on_wall_post(post):
 
 async def main():
     client.group = await client.get_group(group_id)
-    await client.group.events.bind(on_wall_post, client.events.on_wall_post)
+    client.group.events.bind(on_wall_post, client.events.on_wall_post)
 
 
 if __name__ == '__main__':
     asyncio.get_event_loop().run_until_complete(main())
+    asyncio.get_event_loop().run_forever()
