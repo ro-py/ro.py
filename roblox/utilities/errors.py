@@ -45,7 +45,7 @@ class BadGateway(ApiError):
 
 # The following errors are specific to certain parts of ro.py
 class IndexOutOfRange(Exception):
-    """Called when a index is out of range"""
+    """Called when an Index is out of range"""
     pass
 
 
