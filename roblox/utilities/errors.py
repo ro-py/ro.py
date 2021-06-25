@@ -47,7 +47,9 @@ class BadGateway(ApiError):
 class IndexOutOfRange(Exception):
     """Called when an Index is out of range"""
     pass
-
+class InvalidPageError(Exception):
+    """Called when an Page is invalid"""
+    pass
 
 
 c_errors = {

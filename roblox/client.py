@@ -1,13 +1,11 @@
+from __future__ import annotations
+
 import roblox.user
 import roblox.group
+from roblox.utilities.clientshardobject import ClientSharedObject
 from roblox.utilities.requests import Requests
 from roblox.utilities.subdomain import Subdomain
 
-# TODO ClientSharedObject __init__ client needs to be type checked
-class ClientSharedObject:
-    def __init__(self, client, cookie: str):
-        self.requests = Requests(cookie)
-        self.client = client
 
 class Client:
     def __init__(self, cookie: str):

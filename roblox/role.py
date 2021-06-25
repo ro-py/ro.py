@@ -2,7 +2,7 @@ from __future__ import annotations
 from roblox.utilities.requests import Requests
 
 import roblox.bases.basegroup
-
+from roblox.utilities.clientshardobject import ClientSharedObject
 
 class Role:
     """
@@ -17,8 +17,8 @@ class Role:
     role_data : dict
             Dictionary containing role information.
     """
-    def __init__(self, cso, group: roblox.bases.basegroup, role_data: dict):
-        self.cso = cso
+    def __init__(self, cso: ClientSharedObject, group: roblox.bases.basegroup, role_data: dict):
+        self.cso: ClientSharedObject = cso
         """Client shared object."""
         self.requests: Requests = cso.requests
         """Requests object for internal use."""

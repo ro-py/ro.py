@@ -1,4 +1,4 @@
-from ro_py.utilities.errors import InvalidPageError
+from roblox.utilities.errors import InvalidPageError
 import enum
 
 

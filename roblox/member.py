@@ -5,7 +5,10 @@ import roblox.user
 import roblox.group
 import roblox.utilities.subdomain
 from roblox.utilities.errors import NotFound, IndexOutOfRange
+from roblox.utilities.clientshardobject import ClientSharedObject
+
 from httpx import Response
+
 
 # TODO Deal with if user is exiled or has left the group since you can't rank somebody who is no longer in the group
 class Member:
@@ -13,8 +16,8 @@ class Member:
     Represents a user in a group.
     """
 
-    def __init__(self, cso, user, group, role):
-        self.cso = cso
+    def __init__(self, cso: ClientSharedObject, user:roblox.user.User, group:roblox.group.Group, role):
+        self.cso: ClientSharedObject = cso
         """Client shared object."""
         self.user: roblox.user.User = user
         """The user that is in the group."""

@@ -4,6 +4,7 @@ from typing import List
 
 from httpx import Response
 
+import roblox.utilities.clientshardobject
 import roblox.utilities.requests
 import roblox.utilities.subdomain
 import roblox.role
@@ -16,8 +17,8 @@ class BaseGroup:
     Represents a group with as little information possible.
     """
 
-    def __init__(self, cso, group_id: int):
-        self.cso = cso
+    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, group_id: int):
+        self.cso: roblox.utilities.clientshardobject.ClientSharedObject = cso
         """Client shared object"""
         self.requests: roblox.utilities.requests.Requests = cso.requests
         """Requests object"""
