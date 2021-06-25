@@ -28,7 +28,7 @@ class Page:
         """Client shared object."""
         self.previous_page_cursor: str = data["previousPageCursor"]
         """Cursor to navigate to the previous page."""
-        self.next_page_cursor: str  = data["nextPageCursor"]
+        self.next_page_cursor: str = data["nextPageCursor"]
         """Cursor to navigate to the next page."""
         self.data: dict or List[ClassVar] = data["data"]
         """Raw data from this page."""
@@ -64,7 +64,7 @@ class Pages:
     """
 
     def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, url: str,
-                 sort_order: SortOrder =SortOrder.Ascending, limit=10, extra_parameters: dict = None,
+                 sort_order: SortOrder = SortOrder.Ascending, limit=10, extra_parameters: dict = None,
                  handler: Callable[[roblox.utilities.clientshardobject.ClientSharedObject, List, Any], List[ClassVar]] = None,
                  handler_args: Any = None):
         if extra_parameters is None:
@@ -78,7 +78,7 @@ class Pages:
 
         self.parameters: dict = extra_parameters
         """Extra parameters for the request."""
-        self.cso: roblox.utilities.clientshardobject.ClientSharedObject  = cso
+        self.cso: roblox.utilities.clientshardobject.ClientSharedObject = cso
         self.requests: roblox.utilities.requests.Requests = cso.requests
         """Requests object."""
         self.url: str = url
@@ -86,7 +86,13 @@ class Pages:
         self.page: int = 0
         """Current page number."""
         self.handler_args: Any = handler_args
-        self.data: Page or None = None
+        self.data: Page or None = Page(
+            cso=self.cso,
+            data={},
+            pages=self,
+            handler=self.handler,
+            handler_args=self.handler_args
+        )
         self.i = 0
 
     def __aiter__(self):
