@@ -4,6 +4,7 @@ from typing import Callable, List, Any, ClassVar
 
 from roblox.utilities.errors import InvalidPageError
 import roblox.utilities.clientshardobject
+import roblox.utilities.requests
 import enum
 
 
@@ -75,17 +76,17 @@ class Pages:
         extra_parameters["sortOrder"] = sort_order.value
         extra_parameters["limit"] = limit
 
-        self.parameters = extra_parameters
+        self.parameters: dict = extra_parameters
         """Extra parameters for the request."""
-        self.cso = cso
-        self.requests = cso.requests
+        self.cso: roblox.utilities.clientshardobject.ClientSharedObject  = cso
+        self.requests: roblox.utilities.requests.Requests = cso.requests
         """Requests object."""
-        self.url = url
+        self.url: str = url
         """URL containing the paginated data, accessible with a GET request."""
-        self.page = 0
+        self.page: int = 0
         """Current page number."""
-        self.handler_args = handler_args
-        self.data = None
+        self.handler_args: Any = handler_args
+        self.data: Page or None = None
         self.i = 0
 
     def __aiter__(self):
