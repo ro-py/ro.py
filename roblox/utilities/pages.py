@@ -1,4 +1,9 @@
+from __future__ import annotations
+
+from typing import Callable, List, Any, ClassVar
+
 from roblox.utilities.errors import InvalidPageError
+import roblox.utilities.clientshardobject
 import enum
 
 
@@ -15,7 +20,9 @@ class Page:
         Represents a single page from a Pages object.
         """
 
-    def __init__(self, cso, data, pages, handler=None, handler_args=None):
+    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, data: dict, pages: Pages,
+                 handler: Callable[[roblox.utilities.clientshardobject.ClientSharedObject, List, Any], List[ClassVar]] = None,
+                 handler_args: Any = None):
         self.cso = cso
         """Client shared object."""
         self.previous_page_cursor = data["previousPageCursor"]
@@ -32,17 +39,17 @@ class Page:
         if handler:
             self.data = handler(self.cso, self.data, handler_args)
 
-    def update(self, data):
+    def update(self, data: dict) -> None:
         self.previous_page_cursor = data["previousPageCursor"]
         self.next_page_cursor = data["nextPageCursor"]
         self.data = data["data"]
         if self.handler:
             self.data = self.handler(self.cso, data["data"], self.handler_args)
 
-    def __getitem__(self, key):
+    def __getitem__(self, key) -> ClassVar:
         return self.data[key]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.data)
 
 
@@ -55,8 +62,10 @@ class Pages:
         cache the pages yourself if speed is required.
     """
 
-    def __init__(self, cso, url, sort_order=SortOrder.Ascending, limit=10, extra_parameters=None, handler=None,
-                 handler_args=None):
+    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, url: str,
+                 sort_order: SortOrder =SortOrder.Ascending, limit=10, extra_parameters: dict = None,
+                 handler: Callable[[roblox.utilities.clientshardobject.ClientSharedObject, List, Any], List[ClassVar]] = None,
+                 handler_args: Any = None):
         if extra_parameters is None:
             extra_parameters = {}
 
@@ -93,7 +102,7 @@ class Pages:
         self.i += 1
         return data
 
-    async def get_page(self, cursor=None):
+    async def get_page(self, cursor: str = None) -> None:
         """
         Gets a page at the specified cursor position.
         """
@@ -119,7 +128,7 @@ class Pages:
             handler_args=self.handler_args
         )
 
-    async def previous(self):
+    async def previous(self) -> None:
         """
         Moves to the previous page.
         """
@@ -128,7 +137,7 @@ class Pages:
         else:
             raise InvalidPageError
 
-    async def next(self):
+    async def next(self) -> None:
         """
         Moves to the next page.
         """

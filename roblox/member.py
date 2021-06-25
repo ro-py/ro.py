@@ -30,7 +30,7 @@ class Member:
         """The role the user has in the group."""
         self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain('groups')
 
-    async def update_role(self):
+    async def update_role(self) -> roblox.role.Role:
         """
         Updates the role information of the user.
 
@@ -74,7 +74,7 @@ class Member:
         self.role = roles[role_counter]
         return old_role, self.role
 
-    async def promote(self, ranks: int = 1):
+    async def promote(self, ranks: int = 1) -> Tuple[roblox.role.Role, roblox.role.Role]:
         """
         Promotes the user.
 
@@ -89,7 +89,7 @@ class Member:
         """
         return await self.change_rank(abs(ranks))
 
-    async def demote(self, ranks: int = 1):
+    async def demote(self, ranks: int = 1) -> Tuple[roblox.role.Role, roblox.role.Role]:
         """
         Demotes the user.
 
@@ -105,7 +105,7 @@ class Member:
 
         return await self.change_rank(-abs(ranks))
 
-    async def __setrank(self, rank):
+    async def __setrank(self, rank) -> None:
         """
         Sets the users role to specified role using rank id.
 
@@ -124,7 +124,7 @@ class Member:
         }
         await self.cso.requests.patch(url, json=data)
 
-    async def setrank(self, rank):
+    async def setrank(self, rank) -> None:
         await self.__setrank(rank)
         await self.update_role()
 
@@ -151,7 +151,6 @@ class Member:
             raise NotFound(f"Role {role_num} not found")
         return await self.__setrank(rank_role.id)
 
-    async def exile(self):
+    async def exile(self) -> None:
         url = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "users", self.user.id)
-        request = await self.cso.requests.delete(url)
-        return request.status_code == 200
+        await self.cso.requests.delete(url)

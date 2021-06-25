@@ -20,13 +20,14 @@ class CleanAsyncClient(AsyncClient):
         except RuntimeError:
             pass
 
+
 # TODO is this good enough or did you want it an other way
 def status_code_error(status_code):
     return c_errors[status_code]
 
 
 class Requests:
-    def __init__(self,security_cookie):
+    def __init__(self, security_cookie: str = None):
         self.session: CleanAsyncClient = CleanAsyncClient()
         """Session to use for requests."""
         self.xcsrf_token_name: str = "X-CSRF-TOKEN"
@@ -35,7 +36,8 @@ class Requests:
         self.session.headers["User-Agent"] = "Roblox/WinInet"
         self.session.headers["Referer"] = "www.roblox.com"
 
-        self.session.cookies[".ROBLOSECURITY"] = security_cookie
+        if security_cookie:
+            self.session.cookies[".ROBLOSECURITY"] = security_cookie
 
         self.status_code = int
 

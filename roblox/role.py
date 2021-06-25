@@ -53,7 +53,8 @@ class Role:
         """The amount of members that have the role."""
         self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain("groups")
 
-    async def get_members(self, sort_order=roblox.utilities.pages.SortOrder.Ascending, limit=100) -> roblox.utilities.pages.Pages:
+    async def get_members(self, sort_order: roblox.utilities.pages.SortOrder = roblox.utilities.pages.SortOrder.Ascending
+                          , limit: int = 100) -> roblox.utilities.pages.Pages:
         pages = roblox.utilities.pages.Pages(
             cso=self.cso,
 

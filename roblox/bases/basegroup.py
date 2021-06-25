@@ -10,6 +10,7 @@ import roblox.utilities.subdomain
 import roblox.role
 import roblox.member
 import roblox.user
+import roblox.group
 import roblox.utilities.pages
 
 
@@ -36,7 +37,9 @@ class BaseGroup:
         """The groups id."""
         self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain('groups')
 
-    async def expand(self):
+        self.shout = roblox.group.Shout(self.cso, self)
+
+    async def expand(self) -> roblox.user.User:
         """
         Expands into a full User object.
         Returns
@@ -61,7 +64,7 @@ class BaseGroup:
             roles.append(roblox.role.Role(self.cso, self, role))
         return roles
 
-    async def get_members(self, sort_order=roblox.utilities.pages.SortOrder.Ascending, limit=100):
+    async def get_members(self, sort_order=roblox.utilities.pages.SortOrder.Ascending, limit=100) -> roblox.utilities.pages.Pages:
         pages = roblox.utilities.pages.Pages(
             cso=self.cso,
             url=self.subdomain.generate_endpoint("v1", "groups", self.id, "users"),
@@ -124,17 +127,17 @@ class BaseGroup:
         user: roblox.user.User = await self.cso.client.get_user_by_username(name)
         return await self.get_member_by_user(user)
 
-    async def set_description(self, new_body: str):
-            """
-            Updates the shout
+    async def set_description(self, new_body: str) -> None:
+        """
+        Updates the shout
 
-            Parameters
-            ----------
-            new_body : str
-                What the shout will be updated to.
-            """
-            url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "description")
-            data: dict = {
-                "message": new_body
-            }
-            await self.cso.requests.patch(url, json=data)
+        Parameters
+        ----------
+        new_body : str
+            What the shout will be updated to.
+        """
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "description")
+        data: dict = {
+            "message": new_body
+        }
+        await self.cso.requests.patch(url, json=data)

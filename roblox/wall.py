@@ -77,7 +77,7 @@ class Wall:
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "subscribe")
         self.requests.post(url)
 
-    # TODO MAKE SOMETING THAT DEALS WITH UnsolvedCaptcha
+    # TODO MAKE SOMETHING THAT DEALS WITH UnsolvedCaptcha
     # async def post(self, content, captcha_key=None):
     #    pass
     #    data = {

@@ -12,16 +12,15 @@ import roblox.utilities.clientshardobject
 import roblox.utilities.subdomain
 
 
-
 class Shout:
-    def __init__(self, cso, group, raw_data):
+    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, group: roblox.bases.basegroup.BaseGroup, raw_data: dict = None):
         self.cso = cso
 
         self.requests: roblox.utilities.requests.Requests = cso.requests
         """A client shared object."""
-        self.group: Group = group
+        self.group: roblox.bases.basegroup.BaseGroup = group
         """The group the shout belongs to."""
-        self.body: str = raw_data['body']
+        self.body: str or None = raw_data['body']
         """What the shout contains."""
         self.created: datetime.datetime = iso8601.parse_date(raw_data['created'])
         """When the first shout was created."""
@@ -90,7 +89,7 @@ class Group(roblox.bases.basegroup.BaseGroup):
         """If it is possible to join the group or if it is locked to the public."""
         self.wall: roblox.wall.Wall = roblox.wall.Wall(self.cso, self)
 
-    async def set_description(self, new_body: str):
+    async def set_description(self, new_body: str) -> None:
         await super().set_description(new_body)
         self.description = new_body
 
