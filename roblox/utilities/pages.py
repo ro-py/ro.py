@@ -118,7 +118,7 @@ class Pages:
             url=self.url,
             params=this_parameters
         )
-        if self.data:
+        if hasattr(self, 'data'):
             self.data.update(page_req.json())
             return
         self.data = Page(
