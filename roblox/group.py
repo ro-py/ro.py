@@ -5,10 +5,12 @@ import datetime
 
 from httpx import Response
 import roblox.user
+import roblox.wall
 import roblox.bases.basegroup
 from roblox.utilities.subdomain import Subdomain
 import roblox.utilities.clientshardobject
 group_subdomain: Subdomain = Subdomain("group")
+
 
 
 class Shout:
@@ -75,13 +77,14 @@ class Group(roblox.bases.basegroup.BaseGroup):
         self.member_count: int = raw_data['memberCount']
         """How many people are in the group."""
         self.shout: Shout or None = None
-        if raw_data.get('shout'):
+        if raw_data['shout']:
             self.shout = Shout(cso, self, raw_data['shout'])
         """The current shout of the group."""
         self.is_premium_only: bool = raw_data['isBuildersClubOnly']
         """If only people with premium can join the group."""
         self.public_entry_allowed: bool = raw_data['publicEntryAllowed']
         """If it is possible to join the group or if it is locked to the public."""
+        self.wall: roblox.wall.Wall = roblox.wall.Wall(self.cso, self)
 
 
 class PartialGroup(roblox.bases.basegroup.BaseGroup):
