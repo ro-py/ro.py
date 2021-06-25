@@ -44,9 +44,8 @@ class BadGateway(ApiError):
 
 
 # The following errors are specific to certain parts of ro.py
-class IndexOutOfRange(Exception):
-    """Called when an Index is out of range"""
-    pass
+
+
 class InvalidPageError(Exception):
     """Called when an Page is invalid"""
     pass

@@ -66,8 +66,8 @@ class Member:
                 break
             role_counter += 1
         role_counter = role_counter + num
-        if role_counter == 0 or role_counter >= len(roles):
-            raise IndexOutOfRange(f"Index is out of range")
+        if role_counter < 1 or role_counter >= len(roles):
+            raise IndexError(f"Index is out of range")
         # if not roles:
         #    raise NotFound(f"User {self.user.id} is not in group {self.group.id}")
         await self.__setrank(roles[role_counter].id)
