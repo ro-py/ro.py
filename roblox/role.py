@@ -1,8 +1,23 @@
 from __future__ import annotations
-from roblox.utilities.requests import Requests
 
+from typing import List
+
+from roblox.utilities.requests import Requests
+import roblox.member
+import roblox.user
 import roblox.bases.basegroup
+import roblox.utilities.subdomain
+import roblox.utilities.pages
 from roblox.utilities.clientshardobject import ClientSharedObject
+
+
+def member_handler(cso, data, group) -> List[roblox.member.Member]:
+    members = []
+    for member in data:
+        role = roblox.role.Role(cso, group, member['role'])
+        user = roblox.user.PartialUser(cso, member['user'])
+        members.append(roblox.member.Member(cso, user, group, role))
+    return members
 
 
 class Role:
@@ -36,3 +51,18 @@ class Role:
         """The rank of the role."""
         self.member_count: int = role_data.get('memberCount')
         """The amount of members that have the role."""
+        self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain("groups")
+
+    async def get_members(self, sort_order=roblox.utilities.pages.SortOrder.Ascending, limit=100) -> roblox.utilities.pages.Pages:
+        pages = roblox.utilities.pages.Pages(
+            cso=self.cso,
+
+            url=self.subdomain.generate_endpoint("v1", "groups", self.id, "roles", self.id, "users"),
+            sort_order=sort_order,
+            limit=limit,
+            handler=member_handler,
+            handler_args=self
+        )
+
+        await pages.get_page()
+        return pages

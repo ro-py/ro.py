@@ -10,6 +10,16 @@ import roblox.utilities.subdomain
 import roblox.role
 import roblox.member
 import roblox.user
+import roblox.utilities.pages
+
+
+def member_handler(cso, data, group) -> List[roblox.member.Member]:
+    members = []
+    for member in data:
+        role = roblox.role.Role(cso, group, member['role'])
+        user = roblox.user.PartialUser(cso, member['user'])
+        members.append(roblox.member.Member(cso, user, group, role))
+    return members
 
 
 class BaseGroup:
@@ -51,6 +61,19 @@ class BaseGroup:
             roles.append(roblox.role.Role(self.cso, self, role))
         return roles
 
+    async def get_members(self, sort_order=roblox.utilities.pages.SortOrder.Ascending, limit=100):
+        pages = roblox.utilities.pages.Pages(
+            cso=self.cso,
+            url=self.subdomain.generate_endpoint("v1", "groups", self.id, "users"),
+            sort_order=sort_order,
+            limit=limit,
+            handler=member_handler,
+            handler_args=self
+        )
+
+        await pages.get_page()
+        return pages
+
     async def get_member_by_user(self, user: roblox.user.User) -> roblox.member.Member:
         url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
         response: Response = await self.requests.get(url)
@@ -81,7 +104,7 @@ class BaseGroup:
         roblox.member.Member
         """
 
-        user: roblox.user.User = self.cso.client.get_user(user_id)
+        user: roblox.user.User = await self.cso.client.get_user(user_id)
         return await self.get_member_by_user(user)
 
     async def get_member_by_name(self, name: str) -> roblox.member.Member:
