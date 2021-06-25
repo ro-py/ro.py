@@ -26,14 +26,14 @@ class Page:
                  handler_args: Any = None):
         self.cso: roblox.utilities.clientshardobject.ClientSharedObject = cso
         """Client shared object."""
+        self.pages: Pages = pages
+        """Pages object for iteration."""
         self.previous_page_cursor: str = data["previousPageCursor"]
         """Cursor to navigate to the previous page."""
         self.next_page_cursor: str = data["nextPageCursor"]
         """Cursor to navigate to the next page."""
         self.data: dict or List[ClassVar] = data["data"]
         """Raw data from this page."""
-        self.pages: Pages = pages
-        """Pages object for iteration."""
 
         self.handler = handler
         self.handler_args: Any = handler_args
@@ -86,13 +86,7 @@ class Pages:
         self.page: int = 0
         """Current page number."""
         self.handler_args: Any = handler_args
-        self.data: Page or None = Page(
-            cso=self.cso,
-            data={},
-            pages=self,
-            handler=self.handler,
-            handler_args=self.handler_args
-        )
+        self.data: Page
         self.i = 0
 
     def __aiter__(self):

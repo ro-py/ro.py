@@ -13,21 +13,23 @@ import roblox.utilities.subdomain
 
 
 class Shout:
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, group: roblox.bases.basegroup.BaseGroup, raw_data: dict = None):
+    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject,
+                 group: roblox.bases.basegroup.BaseGroup, raw_data: dict = None):
         self.cso = cso
 
         self.requests: roblox.utilities.requests.Requests = cso.requests
         """A client shared object."""
         self.group: roblox.bases.basegroup.BaseGroup = group
         """The group the shout belongs to."""
-        self.body: str or None = raw_data['body']
-        """What the shout contains."""
-        self.created: datetime.datetime = iso8601.parse_date(raw_data['created'])
-        """When the first shout was created."""
-        self.updated: datetime.datetime = iso8601.parse_date(raw_data['updated'])
-        """When the latest shout was created."""
-        self.poster: roblox.user.PartialUser = roblox.user.PartialUser(cso, raw_data['poster'])
-        """The user who posted the shout."""
+        if raw_data is not None:
+            self.body: str = raw_data['body']
+            """What the shout contains."""
+            self.created: datetime.datetime = iso8601.parse_date(raw_data['created'])
+            """When the first shout was created."""
+            self.updated: datetime.datetime = iso8601.parse_date(raw_data['updated'])
+            """When the latest shout was created."""
+            self.poster: roblox.user.PartialUser = roblox.user.PartialUser(cso, raw_data['poster'])
+            """The user who posted the shout."""
         self.subdomain: roblox.utilities.subdomain = roblox.utilities.subdomain.Subdomain("groups")
         """""The subdomain being used."""
 
