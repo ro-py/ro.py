@@ -24,19 +24,19 @@ class Page:
     def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, data: dict, pages: Pages,
                  handler: Callable[[roblox.utilities.clientshardobject.ClientSharedObject, List, Any], List[ClassVar]] = None,
                  handler_args: Any = None):
-        self.cso = cso
+        self.cso: roblox.utilities.clientshardobject.ClientSharedObject = cso
         """Client shared object."""
-        self.previous_page_cursor = data["previousPageCursor"]
+        self.previous_page_cursor: str = data["previousPageCursor"]
         """Cursor to navigate to the previous page."""
-        self.next_page_cursor = data["nextPageCursor"]
+        self.next_page_cursor: str  = data["nextPageCursor"]
         """Cursor to navigate to the next page."""
-        self.data = data["data"]
+        self.data: dict or List[ClassVar] = data["data"]
         """Raw data from this page."""
-        self.pages = pages
+        self.pages: Pages = pages
         """Pages object for iteration."""
 
         self.handler = handler
-        self.handler_args = handler_args
+        self.handler_args: Any = handler_args
         if handler:
             self.data = handler(self.cso, self.data, handler_args)
 
