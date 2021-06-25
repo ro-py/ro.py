@@ -7,15 +7,17 @@ from httpx import Response
 import roblox.user
 import roblox.wall
 import roblox.bases.basegroup
-from roblox.utilities.subdomain import Subdomain
+import roblox.utilities.requests
 import roblox.utilities.clientshardobject
-group_subdomain: Subdomain = Subdomain("group")
+import roblox.utilities.subdomain
 
 
 
 class Shout:
     def __init__(self, cso, group, raw_data):
         self.cso = cso
+
+        self.requests: roblox.utilities.requests.Requests = cso.requests
         """A client shared object."""
         self.group: Group = group
         """The group the shout belongs to."""
@@ -27,8 +29,10 @@ class Shout:
         """When the latest shout was created."""
         self.poster: roblox.user.PartialUser = roblox.user.PartialUser(cso, raw_data['poster'])
         """The user who posted the shout."""
+        self.subdomain: roblox.utilities.subdomain = roblox.utilities.subdomain.Subdomain("groups")
+        """""The subdomain being used."""
 
-    async def update(self, new_body: str) -> int:
+    async def set(self, new_body: str) -> int:
         """
         Updates the shout
 
@@ -41,7 +45,7 @@ class Shout:
         -------
         int
         """
-        url: str = group_subdomain.generate_endpoint("v1", "groups", self.group.id, "status")
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "status")
         data: dict = {
             "message": new_body
         }
@@ -56,7 +60,7 @@ class Shout:
         -------
         str
         """
-        return await self.update("")
+        return await self.set("")
 
 
 class Group(roblox.bases.basegroup.BaseGroup):

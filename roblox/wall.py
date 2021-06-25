@@ -1,9 +1,11 @@
+from __future__ import annotations
 import iso8601
 from typing import List
 # from ro_py.captcha import UnsolvedCaptcha
 import roblox.user
 import roblox.utilities.pages
 import roblox.group
+import roblox.bases.baseuser
 import roblox.utilities.subdomain
 import roblox.utilities.clientshardobject
 import roblox.utilities.requests
@@ -48,6 +50,13 @@ class Wall:
         self.group = group
         self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain('groups')
 
+    async def delete_all_posts_by_user(self, user: roblox.bases.baseuser.BaseUser):
+        """"
+        Deletes all group wall posts made by a specific user.
+        """
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "wall", "users", user.id, "posts")
+        self.requests.delete(url)
+
     async def get_posts(self, sort_order=roblox.utilities.pages.SortOrder.Ascending, limit=100):
         url: str = self.subdomain.generate_endpoint("v2", "groups", self.group.id, "wall", "posts")
         wall_req = roblox.utilities.pages.Pages(
@@ -61,6 +70,14 @@ class Wall:
         await wall_req.get_page()
         return wall_req
 
+    async def subscribe(self):
+        """"
+        Subscribes the authenticated user to notifications of group wall events.
+        """
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "subscribe")
+        self.requests.post(url)
+
+    # TODO MAKE SOMETING THAT DEALS WITH UnsolvedCaptcha
     # async def post(self, content, captcha_key=None):
     #    pass
     #    data = {

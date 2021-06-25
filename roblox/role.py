@@ -4,6 +4,7 @@ from roblox.utilities.requests import Requests
 import roblox.bases.basegroup
 from roblox.utilities.clientshardobject import ClientSharedObject
 
+
 class Role:
     """
     Represents a role
@@ -17,6 +18,7 @@ class Role:
     role_data : dict
             Dictionary containing role information.
     """
+
     def __init__(self, cso: ClientSharedObject, group: roblox.bases.basegroup, role_data: dict):
         self.cso: ClientSharedObject = cso
         """Client shared object."""
