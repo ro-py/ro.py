@@ -61,7 +61,7 @@ class Wall:
         await wall_req.get_page()
         return wall_req
 
-    # async def  (self, content, captcha_key=None):
+    # async def post(self, content, captcha_key=None):
     #    pass
     #    data = {
     #        "body": content
