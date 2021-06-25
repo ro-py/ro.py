@@ -123,3 +123,18 @@ class BaseGroup:
 
         user: roblox.user.User = await self.cso.client.get_user_by_username(name)
         return await self.get_member_by_user(user)
+
+    async def set_description(self, new_body: str):
+            """
+            Updates the shout
+
+            Parameters
+            ----------
+            new_body : str
+                What the shout will be updated to.
+            """
+            url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "description")
+            data: dict = {
+                "message": new_body
+            }
+            await self.cso.requests.patch(url, json=data)

@@ -34,7 +34,7 @@ class Role:
             Dictionary containing role information.
     """
 
-    def __init__(self, cso: ClientSharedObject, group: roblox.bases.basegroup, role_data: dict):
+    def __init__(self, cso: ClientSharedObject, group: roblox.bases.basegroup.BaseGroup, role_data: dict):
         self.cso: ClientSharedObject = cso
         """Client shared object."""
         self.requests: Requests = cso.requests

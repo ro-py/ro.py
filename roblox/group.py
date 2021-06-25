@@ -90,6 +90,10 @@ class Group(roblox.bases.basegroup.BaseGroup):
         """If it is possible to join the group or if it is locked to the public."""
         self.wall: roblox.wall.Wall = roblox.wall.Wall(self.cso, self)
 
+    async def set_description(self, new_body: str):
+        await super().set_description(new_body)
+        self.description = new_body
+
 
 class PartialGroup(roblox.bases.basegroup.BaseGroup):
     """
