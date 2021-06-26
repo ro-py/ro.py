@@ -13,6 +13,7 @@ import roblox.user
 import roblox.group
 import roblox.utilities.pages
 
+
 # TODO ADD ALL FUNCTIONS FROM https://groups.roblox.com/
 def member_handler(cso, data, group) -> List[roblox.member.Member]:
     members = []
@@ -64,7 +65,8 @@ class BaseGroup:
             roles.append(roblox.role.Role(self.cso, self, role))
         return roles
 
-    async def get_members(self, sort_order=roblox.utilities.pages.SortOrder.Ascending, limit=100) -> roblox.utilities.pages.Pages:
+    async def get_members(self, sort_order=roblox.utilities.pages.SortOrder.Ascending,
+                          limit=100) -> roblox.utilities.pages.Pages:
         pages = roblox.utilities.pages.Pages(
             cso=self.cso,
             url=self.subdomain.generate_endpoint("v1", "groups", self.id, "users"),
@@ -152,7 +154,8 @@ class BaseGroup:
         }
         await self.cso.requests.patch(url, json=data)
 
-    async def get_audit_logs(self, sort_order=roblox.utilities.pages.SortOrder.Ascending, limit=100) -> roblox.utilities.pages.Pages:
+    async def get_audit_logs(self, sort_order=roblox.utilities.pages.SortOrder.Ascending,
+                             limit=100) -> roblox.utilities.pages.Pages:
         pages = roblox.utilities.pages.Pages(
             cso=self.cso,
             url=self.subdomain.generate_endpoint("v1", "groups", self.id, "audit-log"),
@@ -164,3 +167,14 @@ class BaseGroup:
 
         await pages.get_page()
         return pages
+
+    async def set_primary_group(self) -> None:
+        """
+        Sets the authenticated user his primary group.
+        """
+        subdomain = roblox.utilities.subdomain.Subdomain("groups")
+        url: str = subdomain.generate_endpoint("v2", "users", "groups", "primary", )
+        json: dict = {
+            "groupId": self.id
+        }
+        await self.requests.post(url, json=json)
