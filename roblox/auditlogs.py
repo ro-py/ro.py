@@ -7,6 +7,7 @@ import roblox.user
 import roblox.role
 import roblox.member
 import roblox.bases.basegroup
+import datetime
 import roblox.utilities.clientshardobject
 
 
@@ -19,16 +20,16 @@ class Action:
         actor_user = roblox.user.PartialUser(self.cso, raw_data["actor"]["user"])
         actor_role = roblox.role.Role(self.cso, self.group, raw_data["actor"]["role"])
         self.actor: roblox.member.Member = roblox.member.Member(self.cso, actor_user, self.group, actor_role)
-        self.action = raw_data['actionType']
-        self.created = iso8601.parse_date(raw_data['created'])
-        self.data = raw_data['description']
-        self.newdata = Description.from_action(raw_data['actionType'], raw_data['description'])
+        self.action: str = raw_data['actionType']
+        self.created: datetime.datetime = iso8601.parse_date(raw_data['created'])
+        self.data: dict = raw_data['description']
+        self.newdata: Description = Description.from_action(raw_data['actionType'], raw_data['description'])
 
 
 class Description:
 
     def __init__(self, type, description):
-        self.type = type
+        self.action: str = type
 
     @classmethod
     def from_action(cls, action, description) -> Description:
@@ -43,19 +44,23 @@ class Description:
 class DeletePost(Description):
 
     def __init__(self, action, description):
-        super().__init__(type,description)
+        super().__init__(action, description)
 
 
 class RemoveMember(Description):
     def __init__(self, action, description):
-        self.action = Actions.remove_member
-        super().__init__(type,description)
+        super().__init__(action, description)
+
+
+class AcceptJoinRequest(Description):
+    def __init__(self, action, description):
+        super().__init__(action, description)
 
 
 class ActionsToClasses(Enum):
     deletePost = DeletePost
     removeMember = RemoveMember
-    accept_join_request = "acceptJoinRequest"
+    accept_join_request = AcceptJoinRequest
     decline_join_request = "declineJoinRequest"
     post_shout = "postShout"
     change_rank = "changeRank"
