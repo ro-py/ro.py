@@ -73,7 +73,7 @@ class Action:
 class Description:
     action = None
 
-    def __init__(self, cso):
+    def __init__(self, cso,description):
         self.cso = cso
         self.target: roblox.user.PartialUser
 
@@ -85,7 +85,7 @@ class Description:
                 break
         else:
             return description
-        return c(cso)
+        return c(cso,description)
 
 
 class DeletePost(Description):
@@ -112,6 +112,6 @@ class AcceptJoinRequest(Description):
 class ChangeRank(Description):
     action = Actions.change_rank
 
-    def __init__(self, cso):
+    def __init__(self, cso,description):
         super().__init__(cso)
-        target = roblox.user.PartialUser(self.cso, )
+        self.target = roblox.user.PartialUser(self.cso,description)
