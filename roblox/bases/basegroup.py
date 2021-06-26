@@ -12,9 +12,12 @@ import roblox.member
 import roblox.user
 import roblox.group
 import roblox.utilities.pages
+import roblox.auditlogs
 
 
 # TODO ADD ALL FUNCTIONS FROM https://groups.roblox.com/
+
+
 def member_handler(cso, data, group) -> List[roblox.member.Member]:
     members = []
     for member in data:
@@ -22,6 +25,13 @@ def member_handler(cso, data, group) -> List[roblox.member.Member]:
         user = roblox.user.PartialUser(cso, member['user'])
         members.append(roblox.member.Member(cso, user, group, role))
     return members
+
+
+def action_handler(cso, data, group):
+    actions = []
+    for action in data:
+        actions.append(roblox.auditlogs.Action(cso, group, action))
+    return actions
 
 
 class BaseGroup:
@@ -161,13 +171,13 @@ class BaseGroup:
             url=self.subdomain.generate_endpoint("v1", "groups", self.id, "audit-log"),
             sort_order=sort_order,
             limit=limit,
-            handler=member_handler,
+            handler=action_handler,
             handler_args=self
         )
 
         await pages.get_page()
         return pages
-
+      
     async def set_primary_group(self) -> None:
         """
         Sets the authenticated user his primary group.
