@@ -14,6 +14,7 @@ import roblox.group
 import roblox.utilities.pages
 import roblox.auditlogs
 
+
 # TODO ADD ALL FUNCTIONS FROM https://groups.roblox.com/
 
 
@@ -176,3 +177,14 @@ class BaseGroup:
 
         await pages.get_page()
         return pages
+      
+    async def set_primary_group(self) -> None:
+        """
+        Sets the authenticated user his primary group.
+        """
+        subdomain = roblox.utilities.subdomain.Subdomain("groups")
+        url: str = subdomain.generate_endpoint("v2", "users", "groups", "primary", )
+        json: dict = {
+            "groupId": self.id
+        }
+        await self.requests.post(url, json=json)

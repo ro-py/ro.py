@@ -80,14 +80,6 @@ class BaseUser:
         group: roblox.group.Group = roblox.group.Group(self.cso,data['group'])
         return roblox.role.Role(self.cso,group,data['role'])
 
-    async def set_primary_group(self) -> None:
-        """
-        Sets the authenticated user his primary group.
-        """
-        subdomain = roblox.utilities.subdomain.Subdomain("groups")
-        url: str = subdomain.generate_endpoint("v2", "users", "groups", "primary",)
-        await self.requests.post(url)
-
     async def get_groups(self) -> List[roblox.group.PartialGroup]:
         """
         Gets the user's groups.
