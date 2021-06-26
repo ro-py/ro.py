@@ -6,7 +6,7 @@ import roblox.role
 import roblox.bases.basegroup
 import roblox.bases.baseuser
 import roblox.utilities.subdomain
-from roblox.utilities.errors import NotFound, IndexOutOfRange
+from roblox.utilities.errors import NotFound
 from roblox.utilities.clientshardobject import ClientSharedObject
 
 from httpx import Response
