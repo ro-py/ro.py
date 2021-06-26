@@ -66,8 +66,8 @@ class Action:
         self.actor: roblox.member.Member = roblox.member.Member(self.cso, actor_user, self.group, actor_role)
         self.action: str = raw_data['actionType']
         self.created: datetime.datetime = iso8601.parse_date(raw_data['created'])
-        self.data: Description or dict = Description.from_action(self.cso, raw_data['actionType'],
-                                                                 raw_data['description'])
+        self.data:  dict = raw_data['description']
+        #self.data:  dict = Description.from_action(self.cso, raw_data['actionType'],raw_data['description'])
 
 
 class Description:
