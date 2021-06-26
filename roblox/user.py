@@ -23,15 +23,10 @@ class User(PartialUser):
     Represents a group with all information from /v1/users/<id>.
     """
     def __init__(self, cso: roblox.utilities.clientshardobject, raw_data: dict):
-        super().__init__(cso, raw_data['id'])
-        """The id of the user."""
-        self.name: str = raw_data['name']
-        """The name of the user."""
+        super().__init__(cso, raw_data)
         self.is_banned: bool = raw_data['isBanned']
         """If the user is banned or not."""
         self.description: str = raw_data["description"]
         """The users profile description."""
-        self.display_name: str = raw_data['displayName']
-        """The display name of the user."""
         self.created: datetime.datetime = iso8601.parse_date(raw_data['created'])
         """When the user created the account."""

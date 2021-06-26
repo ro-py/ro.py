@@ -81,6 +81,26 @@ class Client:
         params = {
             "username": name
         }
-        request = await self.cso.requests.get(f'https://api.roblox.com/users/get-by-username', params=params)
+        subdomain = Subdomain('api')
+        url = subdomain.generate_endpoint("users", "get-by-username")
+        request = await self.cso.requests.get(url, params=params)
         response = request.json()
         return await self.get_user(response.get("Id"))
+
+    async def remove_primary_group(self) -> None:
+        """
+        Gets a user using a username.
+
+        Parameters
+        ----------
+        name : str
+                The name of the user
+
+        Returns
+        -------
+        roblox.user.User
+        """
+        subdomain = Subdomain('groups')
+        url = subdomain.generate_endpoint("v1", "groups", "primary")
+        request = await self.cso.requests.delete(url)
+        response = request.json()
