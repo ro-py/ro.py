@@ -66,49 +66,52 @@ class Action:
         self.actor: roblox.member.Member = roblox.member.Member(self.cso, actor_user, self.group, actor_role)
         self.action: str = raw_data['actionType']
         self.created: datetime.datetime = iso8601.parse_date(raw_data['created'])
-        self.data: dict = raw_data['description']
-        self.newdata: Description = Description.from_action(raw_data['actionType'], raw_data['description'])
+        self.data: Description or dict = Description.from_action(self.cso, raw_data['actionType'],
+                                                                 raw_data['description'])
 
 
 class Description:
     action = None
 
-    def __init__(self, description):
-        pass
+    def __init__(self, cso):
+        self.cso = cso
+        self.target: roblox.user.PartialUser
 
     @classmethod
-    def from_action(cls, action, description) -> Description:
+    def from_action(cls, cso, action, description) -> Description:
         for c in cls.__subclasses__():
-            if c.action == action:
+            print(c.action)
+            if c.action.value == action:
                 break
         else:
-            raise ValueError("Unknown type: {!r}".format(action))
-        return c(description)
+            return description
+        return c(cso)
 
 
 class DeletePost(Description):
     action = Actions.delete_post
 
-    def __init__(self, action, description):
-        super().__init__(description)
+    def __init__(self, cso, description):
+        super().__init__(cso)
 
 
 class RemoveMember(Description):
     action = Actions.remove_member
 
-    def __init__(self, action, description):
-        super().__init__(description)
+    def __init__(self, cso, action, description):
+        super().__init__(cso)
 
 
 class AcceptJoinRequest(Description):
     action = Actions.accept_join_request
 
-    def __init__(self, action, description):
-        super().__init__(description)
+    def __init__(self, cso, description):
+        super().__init__(cso)
 
 
 class ChangeRank(Description):
     action = Actions.change_rank
 
-    def __init__(self, action, description):
-        super().__init__(description)
+    def __init__(self, cso):
+        super().__init__(cso)
+        target = roblox.user.PartialUser(self.cso, )
