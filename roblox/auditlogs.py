@@ -17,7 +17,7 @@ class Actions(Enum):
     accept_join_request = "Accept Join Request"
     decline_join_request = "declineJoinRequest"
     post_shout = "postShout"
-    change_rank = "changeRank"
+    change_rank = "Change Rank"
     buy_ad = "buyAd"
     send_ally_request = "sendAllyRequest"
     create_enemy = "createEnemy"
@@ -101,6 +101,13 @@ class RemoveMember(Description):
 
 
 class AcceptJoinRequest(Description):
+    action = Actions.accept_join_request
+
+    def __init__(self, action, description):
+        super().__init__(description)
+
+
+class ChangeRank(Description):
     action = Actions.accept_join_request
 
     def __init__(self, action, description):
