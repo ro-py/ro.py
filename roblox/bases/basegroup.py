@@ -26,10 +26,10 @@ def member_handler(cso, data, group) -> List[roblox.member.Member]:
     return members
 
 
-def action_handler(cso, data, args):
+def action_handler(cso, data, group):
     actions = []
     for action in data:
-        actions.append(roblox.auditlogs.Action(cso, action, args))
+        actions.append(roblox.auditlogs.Action(cso, group, data))
     return actions
 
 
@@ -170,7 +170,7 @@ class BaseGroup:
             url=self.subdomain.generate_endpoint("v1", "groups", self.id, "audit-log"),
             sort_order=sort_order,
             limit=limit,
-            handler=member_handler,
+            handler=action_handler,
             handler_args=self
         )
 
