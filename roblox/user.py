@@ -4,7 +4,21 @@ import roblox.bases.baseuser
 import roblox.utilities.clientshardobject
 
 
-class User(roblox.bases.baseuser.BaseUser):
+class PartialUser(roblox.bases.baseuser.BaseUser):
+    """
+    Represents a partial group (less information).
+    """
+    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data: dict):
+        super().__init__(cso, raw_data['userId'])
+        """The id of the user."""
+        self.name: str = raw_data['username']
+        """The name of the user."""
+        self.display_name: str = raw_data["displayName"]
+        """The display name of the user."""
+        self.builders_club_membership_type = raw_data.get("buildersClubMembershipType")
+
+
+class User(PartialUser):
     """
     Represents a group with all information from /v1/users/<id>.
     """
@@ -21,17 +35,3 @@ class User(roblox.bases.baseuser.BaseUser):
         """The display name of the user."""
         self.created: datetime.datetime = iso8601.parse_date(raw_data['created'])
         """When the user created the account."""
-
-
-class PartialUser(roblox.bases.baseuser.BaseUser):
-    """
-    Represents a partial group (less information).
-    """
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data: dict):
-        super().__init__(cso, raw_data['userId'])
-        """The id of the user."""
-        self.name: str = raw_data['username']
-        """The name of the user."""
-        self.display_name: str = raw_data["displayName"]
-        """The display name of the user."""
-        self.builders_club_membership_type = raw_data.get("buildersClubMembershipType")

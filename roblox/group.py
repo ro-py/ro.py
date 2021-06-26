@@ -64,23 +64,32 @@ class Shout:
         return await self.set("")
 
 
-class Group(roblox.bases.basegroup.BaseGroup):
+class PartialGroup(roblox.bases.basegroup.BaseGroup):
+    """
+    Represents a group with less information.
+    Different information will be present here in different circumstances.
+    If it was generated as a game owner, it might only contain an ID and a name.
+    If it was generated from, let's say, groups/v2/users/userid/groups/roles, it'll also contain a member count.
+    """
+
+    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data):
+        super().__init__(cso, raw_data['id'])
+        self.name: str = raw_data["name"]
+        self.member_count: int or None = raw_data.get("memberCount")
+
+
+class Group(PartialGroup):
     """
     Represents a group.
     """
 
     def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data: dict):
-        super().__init__(cso, raw_data['id'])
+        super().__init__(cso, raw_data)
         """A client shared object."""
-        """The id of the group."""
-        self.name: str = raw_data['name']
-        """The name of the group."""
         self.owner: roblox.user.PartialUser = roblox.user.PartialUser(cso, raw_data['owner'])
         """The owner of the group."""
         self.description: str = raw_data['description']
         """The description of the group."""
-        self.member_count: int = raw_data['memberCount']
-        """How many people are in the group."""
         self.shout: Shout or None = None
         if raw_data['shout']:
             self.shout = Shout(cso, self, raw_data['shout'])
@@ -94,17 +103,3 @@ class Group(roblox.bases.basegroup.BaseGroup):
     async def set_description(self, new_body: str) -> None:
         await super().set_description(new_body)
         self.description = new_body
-
-
-class PartialGroup(roblox.bases.basegroup.BaseGroup):
-    """
-    Represents a group with less information.
-    Different information will be present here in different circumstances.
-    If it was generated as a game owner, it might only contain an ID and a name.
-    If it was generated from, let's say, groups/v2/users/userid/groups/roles, it'll also contain a member count.
-    """
-
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data):
-        super().__init__(cso, raw_data['id'])
-        self.name: str = raw_data["name"]
-        self.member_count: int or None = raw_data.get("memberCount")

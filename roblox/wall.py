@@ -5,7 +5,7 @@ from typing import List
 import roblox.user
 import roblox.utilities.pages
 import roblox.group
-import roblox.bases.baseuser
+import roblox.user
 import roblox.utilities.subdomain
 import roblox.utilities.clientshardobject
 import roblox.utilities.requests
@@ -50,7 +50,7 @@ class Wall:
         self.group = group
         self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain('groups')
 
-    async def delete_all_posts_by_user(self, user: roblox.bases.baseuser.BaseUser):
+    async def delete_all_posts_by_user(self, user: roblox.user.PartialUser):
         """"
         Deletes all group wall posts made by a specific user.
         """

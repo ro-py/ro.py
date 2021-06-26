@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import Tuple
 
 import roblox.role
-import roblox.bases.basegroup
-import roblox.bases.baseuser
+import roblox.group
+import roblox.user
 import roblox.utilities.subdomain
 from roblox.utilities.errors import NotFound
 from roblox.utilities.clientshardobject import ClientSharedObject
@@ -18,13 +18,13 @@ class Member:
     Represents a user in a group.
     """
 
-    def __init__(self, cso: ClientSharedObject, user: roblox.bases.baseuser.BaseUser,
-                 group: roblox.bases.basegroup.BaseGroup, role: roblox.role.Role):
+    def __init__(self, cso: ClientSharedObject, user: roblox.user.PartialUser,
+                 group: roblox.group.PartialGroup, role: roblox.role.Role):
         self.cso: ClientSharedObject = cso
         """Client shared object."""
-        self.user: roblox.bases.baseuser = user
+        self.user: roblox.user.PartialUser = user
         """The user that is in the group."""
-        self.group: roblox.bases.basegroup = group
+        self.group: roblox.group.PartialGroup = group
         """The group the user is in."""
         self.role: roblox.role.Role = role
         """The role the user has in the group."""
