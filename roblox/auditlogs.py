@@ -108,7 +108,7 @@ class AcceptJoinRequest(Description):
 
 
 class ChangeRank(Description):
-    action = Actions.accept_join_request
+    action = Actions.change_rank
 
     def __init__(self, action, description):
         super().__init__(description)
