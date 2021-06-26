@@ -10,7 +10,7 @@ import roblox.bases.basegroup
 import roblox.utilities.clientshardobject
 
 
-class AuditLogs:
+class Action:
     def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject,
                  group: roblox.bases.basegroup.BaseGroup, raw_data: dict):
         self.cso: roblox.utilities.clientshardobject.ClientSharedObject = cso

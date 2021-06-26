@@ -12,8 +12,11 @@ import roblox.member
 import roblox.user
 import roblox.group
 import roblox.utilities.pages
+import roblox.auditlogs
 
 # TODO ADD ALL FUNCTIONS FROM https://groups.roblox.com/
+
+
 def member_handler(cso, data, group) -> List[roblox.member.Member]:
     members = []
     for member in data:
@@ -21,6 +24,13 @@ def member_handler(cso, data, group) -> List[roblox.member.Member]:
         user = roblox.user.PartialUser(cso, member['user'])
         members.append(roblox.member.Member(cso, user, group, role))
     return members
+
+
+def action_handler(cso, data, args):
+    actions = []
+    for action in data:
+        actions.append(roblox.auditlogs.Action(cso, action, args))
+    return actions
 
 
 class BaseGroup:
@@ -64,7 +74,8 @@ class BaseGroup:
             roles.append(roblox.role.Role(self.cso, self, role))
         return roles
 
-    async def get_members(self, sort_order=roblox.utilities.pages.SortOrder.Ascending, limit=100) -> roblox.utilities.pages.Pages:
+    async def get_members(self, sort_order=roblox.utilities.pages.SortOrder.Ascending,
+                          limit=100) -> roblox.utilities.pages.Pages:
         pages = roblox.utilities.pages.Pages(
             cso=self.cso,
             url=self.subdomain.generate_endpoint("v1", "groups", self.id, "users"),
@@ -152,7 +163,8 @@ class BaseGroup:
         }
         await self.cso.requests.patch(url, json=data)
 
-    async def get_audit_logs(self, sort_order=roblox.utilities.pages.SortOrder.Ascending, limit=100) -> roblox.utilities.pages.Pages:
+    async def get_audit_logs(self, sort_order=roblox.utilities.pages.SortOrder.Ascending,
+                             limit=100) -> roblox.utilities.pages.Pages:
         pages = roblox.utilities.pages.Pages(
             cso=self.cso,
             url=self.subdomain.generate_endpoint("v1", "groups", self.id, "audit-log"),
