@@ -29,7 +29,7 @@ def member_handler(cso, data, group) -> List[roblox.member.Member]:
 def action_handler(cso, data, group):
     actions = []
     for action in data:
-        actions.append(roblox.auditlogs.Action(cso, group, data))
+        actions.append(roblox.auditlogs.Action(cso, group, action))
     return actions
 
 
