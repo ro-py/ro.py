@@ -34,3 +34,4 @@ class PartialUser(roblox.bases.baseuser.BaseUser):
         """The name of the user."""
         self.display_name: str = raw_data["displayName"]
         """The display name of the user."""
+        self.builders_club_membership_type = raw_data.get("buildersClubMembershipType")

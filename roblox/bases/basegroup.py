@@ -13,7 +13,7 @@ import roblox.user
 import roblox.group
 import roblox.utilities.pages
 
-
+# TODO ADD ALL FUNCTIONS FROM https://groups.roblox.com/
 def member_handler(cso, data, group) -> List[roblox.member.Member]:
     members = []
     for member in data:
@@ -78,6 +78,18 @@ class BaseGroup:
         return pages
 
     async def get_member_by_user(self, user: roblox.user.User) -> roblox.member.Member:
+        """
+        Gets a user in a group
+
+        Parameters
+        ----------
+        user : User
+                The users object.
+
+        Returns
+        -------
+        roblox.member.Member
+        """
         url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
         response: Response = await self.requests.get(url)
         data: dict = response.json()
@@ -99,8 +111,6 @@ class BaseGroup:
         ----------
         user_id : int
                 The users id.
-        user : roblox.user.User
-                User object.
 
         Returns
         -------
@@ -129,15 +139,28 @@ class BaseGroup:
 
     async def set_description(self, new_body: str) -> None:
         """
-        Updates the shout
+        Sets the description of the group
 
         Parameters
         ----------
         new_body : str
-            What the shout will be updated to.
+            What the description will be updated to.
         """
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "description")
         data: dict = {
             "message": new_body
         }
         await self.cso.requests.patch(url, json=data)
+
+    async def get_audit_logs(self, sort_order=roblox.utilities.pages.SortOrder.Ascending, limit=100) -> roblox.utilities.pages.Pages:
+        pages = roblox.utilities.pages.Pages(
+            cso=self.cso,
+            url=self.subdomain.generate_endpoint("v1", "groups", self.id, "audit-log"),
+            sort_order=sort_order,
+            limit=limit,
+            handler=member_handler,
+            handler_args=self
+        )
+
+        await pages.get_page()
+        return pages
