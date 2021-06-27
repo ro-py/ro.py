@@ -1,5 +1,4 @@
 import asyncio
-import requests
 from roblox.utilities.errors import c_errors
 from httpx import AsyncClient, Response
 from json.decoder import JSONDecodeError

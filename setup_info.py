@@ -29,8 +29,7 @@ setup_info = {
     "install_requires": [
         "httpx",
         "iso8601",
-        "lxml",
-        "requests"
+        "lxml"
     ],
     "zip_safe": False
 }

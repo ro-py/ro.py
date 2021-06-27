@@ -17,8 +17,9 @@ class WallPost:
     Represents a Roblox wall post.
     """
 
-    def __init__(self, cso, wall_data, group: roblox.group.Group):
-        self.cso: roblox.utilities.clientshardobject = cso
+    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, wall_data: dict,
+                 group: roblox.group.Group):
+        self.cso: roblox.utilities.clientshardobject.ClientSharedObject = cso
         self.requests: roblox.utilities.requests.Requests = cso.requests
         self.group: roblox.group.Group = group
         self.id: int = wall_data['id']
@@ -44,7 +45,7 @@ def wall_post_handler(requests, this_page, args) -> List[WallPost]:
 
 
 class Wall:
-    def __init__(self, cso, group: roblox.group.Group):
+    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, group: roblox.group.Group):
         self.cso = cso
         self.requests = cso.requests
         self.group = group
