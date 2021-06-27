@@ -22,7 +22,7 @@ class User(PartialUser):
     """
     Represents a group with all information from /v1/users/<id>.
     """
-    def __init__(self, cso: roblox.utilities.clientshardobject, raw_data: dict):
+    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data: dict):
         super().__init__(cso, raw_data)
         self.is_banned: bool = raw_data['isBanned']
         """If the user is banned or not."""

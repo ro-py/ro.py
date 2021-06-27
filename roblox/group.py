@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import iso8601
 import datetime
-
+from typing import Optional
 from httpx import Response
 import roblox.user
 import roblox.wall
@@ -30,7 +30,7 @@ class Shout:
             """When the latest shout was created."""
             self.poster: roblox.user.PartialUser = roblox.user.PartialUser(cso, raw_data['poster'])
             """The user who posted the shout."""
-        self.subdomain: roblox.utilities.subdomain = roblox.utilities.subdomain.Subdomain("groups")
+        self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain("groups")
         """""The subdomain being used."""
 
     async def set(self, new_body: str) -> int:
@@ -75,7 +75,7 @@ class PartialGroup(roblox.bases.basegroup.BaseGroup):
     def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data):
         super().__init__(cso, raw_data['id'])
         self.name: str = raw_data["name"]
-        self.member_count: int or None = raw_data.get("memberCount")
+        self.member_count: Optional[int] = raw_data.get("memberCount")
 
 
 class Group(PartialGroup):
@@ -90,7 +90,7 @@ class Group(PartialGroup):
         """The owner of the group."""
         self.description: str = raw_data['description']
         """The description of the group."""
-        self.shout: Shout or None = None
+        self.shout: Optional[Shout] = None
         if raw_data['shout']:
             self.shout = Shout(cso, self, raw_data['shout'])
         """The current shout of the group."""
