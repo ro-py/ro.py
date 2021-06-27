@@ -31,7 +31,7 @@ class Client:
         data = response.json()
         return roblox.group.Group(self.cso, data)
 
-    async def get_user(self, user_id: int) -> roblox.user.User:
+    async def get_user(self, user_id: int) -> roblox.group.Group:
         """
         Creates a user object using the provided user id.
 
