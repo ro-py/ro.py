@@ -1,33 +1,39 @@
+from __future__ import annotations
+
 import iso8601
 import datetime
-
+from typing import Optional
 from httpx import Response
-from roblox.role import Role
-from roblox.user import User
-from roblox.member import Member
-from roblox.user import PartialUser
-from roblox.bases.basegroup import BaseGroup
-from roblox.utilities.subdomain import Subdomain
-
-group_subdomain: Subdomain = Subdomain("group")
+import roblox.user
+import roblox.wall
+import roblox.bases.basegroup
+import roblox.utilities.requests
+import roblox.utilities.clientshardobject
+import roblox.utilities.subdomain
 
 
 class Shout:
-    def __init__(self, cso, group, raw_data):
+    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject,
+                 group: roblox.bases.basegroup.BaseGroup, raw_data: dict = None):
         self.cso = cso
-        """A client shared object."""
-        self.group: Group = group
-        """The group the shout belongs to."""
-        self.body: str = raw_data['body']
-        """What the shout contains."""
-        self.created: datetime.datetime = iso8601.parse_date(raw_data['created'])
-        """When the first shout was created."""
-        self.updated: datetime.datetime = iso8601.parse_date(raw_data['updated'])
-        """When the latest shout was created."""
-        self.poster: PartialUser = PartialUser(raw_data['shout']['poster'])
-        """The user who posted the shout."""
 
-    async def update(self, new_body: str) -> int:
+        self.requests: roblox.utilities.requests.Requests = cso.requests
+        """A client shared object."""
+        self.group: roblox.bases.basegroup.BaseGroup = group
+        """The group the shout belongs to."""
+        if raw_data is not None:
+            self.body: str = raw_data['body']
+            """What the shout contains."""
+            self.created: datetime.datetime = iso8601.parse_date(raw_data['created'])
+            """When the first shout was created."""
+            self.updated: datetime.datetime = iso8601.parse_date(raw_data['updated'])
+            """When the latest shout was created."""
+            self.poster: roblox.user.PartialUser = roblox.user.PartialUser(cso, raw_data['poster'])
+            """The user who posted the shout."""
+        self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain("groups")
+        """""The subdomain being used."""
+
+    async def set(self, new_body: str) -> int:
         """
         Updates the shout
 
@@ -40,7 +46,7 @@ class Shout:
         -------
         int
         """
-        url: str = group_subdomain.generate_endpoint("v1", "groups", self.group.id, "status")
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "status")
         data: dict = {
             "message": new_body
         }
@@ -55,88 +61,44 @@ class Shout:
         -------
         str
         """
-        return await self.update("")
+        return await self.set("")
 
 
-class Group(BaseGroup):
+class PartialGroup(roblox.bases.basegroup.BaseGroup):
+    """
+    Represents a group with less information.
+    Different information will be present here in different circumstances.
+    If it was generated as a game owner, it might only contain an ID and a name.
+    If it was generated from, let's say, groups/v2/users/userid/groups/roles, it'll also contain a member count.
+    """
+
+    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data):
+        super().__init__(cso, raw_data['id'])
+        self.name: str = raw_data["name"]
+        self.member_count: Optional[int] = raw_data.get("memberCount")
+
+
+class Group(PartialGroup):
     """
     Represents a group.
     """
-    def __init__(self, cso, raw_data):
-        super().__init__(cso, raw_data['id'])
-        self.cso = cso
+
+    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data: dict):
+        super().__init__(cso, raw_data)
         """A client shared object."""
-        self.id: int = raw_data['id']
-        """The id of the group."""
-        self.name: str = raw_data['name']
-        """The name of the group."""
-        self.owner: PartialUser = PartialUser(raw_data['owner'])
+        self.owner: roblox.user.PartialUser = roblox.user.PartialUser(cso, raw_data['owner'])
         """The owner of the group."""
         self.description: str = raw_data['description']
         """The description of the group."""
-        self.member_count: int = raw_data['memberCount']
-        """How many people are in the group."""
-        self.shout: Shout = Shout(cso, self, raw_data['shout'])
+        if raw_data['shout']:
+            self.shout: Optional[Shout] = Shout(cso, self, raw_data['shout'])
         """The current shout of the group."""
         self.is_premium_only: bool = raw_data['isBuildersClubOnly']
         """If only people with premium can join the group."""
         self.public_entry_allowed: bool = raw_data['publicEntryAllowed']
         """If it is possible to join the group or if it is locked to the public."""
+        self.wall: roblox.wall.Wall = roblox.wall.Wall(self.cso, self)
 
-    async def get_member_by_id(self, user_id: int = 0, user=None) -> Member:
-        """
-        Gets a user in a group
-
-        Parameters
-        ----------
-        user_id : int
-                The users id.
-        user : roblox.user.User
-                User object.
-
-        Returns
-        -------
-        roblox.member.Member
-        """
-        user: User = self.cso.client.get_user(user_id)
-        url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
-        response: Response = await self.requests.get(url)
-        data: dict = response.json()
-
-        member = None
-        for roles in data['data']:
-            if roles['group']['id'] == self.group_id:
-                member = roles
-                break
-
-        role: Role = Role(self.cso, self, member['role'])
-        member = Member(self.cso, user, self, role)
-        return member
-
-    async def get_member_by_name(self, name: str):
-        """
-        Gets a user in a group
-
-        Parameters
-        ----------
-        name : str
-                The user's name.
-
-        Returns
-        -------
-        roblox.member.Member
-        """
-        user: User = await self.cso.client.get_user_by_username(name)
-        url: str = self.subdomain.generate_endpoint("v2", "users", user.id, "groups", "roles")
-        response: Response = await self.requests.get(url)
-        data: dict = response.json()
-
-        member = None
-        for roles in data['data']:
-            if roles['group']['id'] == self.group_id:
-                member = roles
-                break
-
-        role: Role = Role(self.cso, self, member['role'])
-        member = Member(self.cso, user, self, role)
-        return member
+    async def set_description(self, new_body: str) -> None:
+        await super().set_description(new_body)
+        self.description = new_body

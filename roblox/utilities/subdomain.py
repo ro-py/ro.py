@@ -2,7 +2,7 @@ from roblox.utilities.url import url
 
 
 class Subdomain:
-    def __init__(self, subdomain="www"):
+    def __init__(self, subdomain: str = "www"):
         self.url: str = url(subdomain)
 
     def generate_endpoint(self, *args) -> str:
