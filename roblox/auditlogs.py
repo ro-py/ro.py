@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from enum import Enum
 
+from typing import Optional
 import iso8601
 import roblox.user
 import roblox.role
@@ -75,43 +76,4 @@ class Description:
 
     def __init__(self, cso,description):
         self.cso = cso
-        self.target: roblox.user.PartialUser
-
-    @classmethod
-    def from_action(cls, cso, action, description) -> Description:
-        for c in cls.__subclasses__():
-            print(c.action)
-            if c.action.value == action:
-                break
-        else:
-            return description
-        return c(cso,description)
-
-
-class DeletePost(Description):
-    action = Actions.delete_post
-
-    def __init__(self, cso, description):
-        super().__init__(cso)
-
-
-class RemoveMember(Description):
-    action = Actions.remove_member
-
-    def __init__(self, cso, action, description):
-        super().__init__(cso)
-
-
-class AcceptJoinRequest(Description):
-    action = Actions.accept_join_request
-
-    def __init__(self, cso, description):
-        super().__init__(cso)
-
-
-class ChangeRank(Description):
-    action = Actions.change_rank
-
-    def __init__(self, cso,description):
-        super().__init__(cso)
-        self.target = roblox.user.PartialUser(self.cso,description)
+        self.target: Optional[roblox.user.PartialUser]
