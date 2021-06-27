@@ -5,7 +5,7 @@ from typing import List, Optional
 from roblox.utilities.requests import Requests
 import roblox.member
 import roblox.user
-import roblox.group
+import roblox.bases.basegroup
 import roblox.utilities.subdomain
 import roblox.utilities.pages
 from roblox.utilities.clientshardobject import ClientSharedObject
@@ -34,12 +34,12 @@ class Role:
             Dictionary containing role information.
     """
 
-    def __init__(self, cso: ClientSharedObject, group: roblox.group.PartialGroup, role_data: dict):
+    def __init__(self, cso: ClientSharedObject, group: roblox.bases.basegroup.BaseGroup, role_data: dict):
         self.cso: ClientSharedObject = cso
         """Client shared object."""
         self.requests: Requests = cso.requests
         """Requests object for internal use."""
-        self.group: roblox.group.PartialGroup = group
+        self.group: roblox.bases.basegroup.BaseGroup = group
         """The group the role belongs to."""
         self.id: int = role_data['id']
         """The id of the role."""
