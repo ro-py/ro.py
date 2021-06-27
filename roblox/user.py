@@ -1,4 +1,6 @@
 import datetime
+from typing import Optional
+
 import iso8601
 import roblox.bases.baseuser
 import roblox.utilities.clientshardobject
@@ -11,7 +13,7 @@ class PartialUser(roblox.bases.baseuser.BaseUser):
     def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data: dict):
         super().__init__(cso, raw_data.get('userId') or raw_data.get('id'))
         """The id of the user."""
-        self.name: str = raw_data.get('username') or raw_data.get('name')
+        self.name: Optional[str] = raw_data.get('username') or raw_data.get('name')
         """The name of the user."""
         self.display_name: str = raw_data["displayName"]
         """The display name of the user."""

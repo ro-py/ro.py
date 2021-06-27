@@ -110,7 +110,7 @@ class BaseUser:
         data = member_req.json()
         roles = []
         for data in data['data']:
-            group = data['group']
-            group: roblox.group.PartialGroup = roblox.group.PartialGroup(self.cso, group)
+            groupdata = data['group']
+            group: roblox.group.PartialGroup = roblox.group.PartialGroup(self.cso, groupdata)
             roles.append(roblox.role.Role(self.cso, group, data['role']))
         return roles

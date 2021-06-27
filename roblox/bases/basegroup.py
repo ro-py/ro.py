@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-from typing import List
+import json
+from pathlib import Path
+from typing import List, Union, BinaryIO, Optional
 
 from httpx import Response
-
 import roblox.utilities.clientshardobject
 import roblox.utilities.requests
 import roblox.utilities.subdomain
@@ -13,7 +14,7 @@ import roblox.user
 import roblox.group
 import roblox.utilities.pages
 import roblox.auditlogs
-
+import imghdr
 
 # TODO ADD ALL FUNCTIONS FROM https://groups.roblox.com/
 
@@ -48,8 +49,8 @@ class BaseGroup:
         """The groups id."""
         self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain('groups')
 
-        self.shout = roblox.group.Shout(self.cso, self)
-
+        self.shout: Optional[roblox.group.Shout] = roblox.group.Shout(self.cso, self)
+        """The current shout of the group."""
     async def expand(self) -> roblox.user.User:
         """
         Expands into a full User object.
@@ -177,7 +178,7 @@ class BaseGroup:
 
         await pages.get_page()
         return pages
-      
+
     async def set_primary_group(self) -> None:
         """
         Sets the authenticated user his primary group.
@@ -188,3 +189,20 @@ class BaseGroup:
             "groupId": self.id
         }
         await self.requests.post(url, json=json)
+
+    async def set_icon(self, file_path: Union[str, Path]) -> None:
+        """
+        Sets the authenticated user his primary group.
+        """
+        if imghdr.what(file_path) in ["jpg","png","jpeg"]:
+            raise TypeError("File type is wrong only allowed types are jpg, png and jpeg")
+        file: BinaryIO
+        subdomain = roblox.utilities.subdomain.Subdomain("groups")
+        url: str = subdomain.generate_endpoint("v2", "groups", f"icon")
+        params: dict = {
+            "groupId": self.id
+        }
+        files: dict = {
+            "upload-file": open(file_path, 'rb')
+        }
+        await self.requests.post(url, files=files, params=params)

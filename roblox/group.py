@@ -90,9 +90,8 @@ class Group(PartialGroup):
         """The owner of the group."""
         self.description: str = raw_data['description']
         """The description of the group."""
-        self.shout: Optional[Shout] = None
         if raw_data['shout']:
-            self.shout = Shout(cso, self, raw_data['shout'])
+            self.shout: Optional[Shout] = Shout(cso, self, raw_data['shout'])
         """The current shout of the group."""
         self.is_premium_only: bool = raw_data['isBuildersClubOnly']
         """If only people with premium can join the group."""
