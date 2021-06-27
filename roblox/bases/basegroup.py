@@ -107,11 +107,13 @@ class BaseGroup:
         response: Response = await self.requests.get(url)
         data: dict = response.json()
 
-        member = None
+        member: dict
         for roles in data['data']:
             if roles['group']['id'] == self.id:
                 member = roles
                 break
+        if member == None:
+            raise IndexError(f"user {user.name} is not part of the group {self.id}")
 
         role: roblox.role.Role = roblox.role.Role(self.cso, self, member['role'])
         return roblox.member.Member(self.cso, user, self, role)
