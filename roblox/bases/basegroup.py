@@ -51,7 +51,7 @@ class BaseGroup:
 
         self.shout: Optional[roblox.group.Shout] = roblox.group.Shout(self.cso, self)
         """The current shout of the group."""
-    async def expand(self) -> roblox.user.User:
+    async def expand(self) -> roblox.group.Group:
         """
         Expands into a full User object.
         Returns
