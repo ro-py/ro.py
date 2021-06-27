@@ -31,5 +31,6 @@ setup_info = {
         "iso8601",
         "lxml",
         "requests"
-    ]
+    ],
+    "zip_safe": False
 }
