@@ -76,7 +76,6 @@ class BaseUser:
         url: str = subdomain.generate_endpoint("v2", "users", self.id, "groups", "primary", "roles")
         member_req = await self.requests.get(url)
         data = member_req.json()
-        groups = []
         group: roblox.group.Group = roblox.group.Group(self.cso,data['group'])
         return roblox.role.Role(self.cso,group,data['role'])
 
@@ -110,7 +109,7 @@ class BaseUser:
         data = member_req.json()
         roles = []
         for data in data['data']:
-            groupdata = data['group']
-            group: roblox.group.PartialGroup = roblox.group.PartialGroup(self.cso, groupdata)
+            group_data = data['group']
+            group: roblox.group.PartialGroup = roblox.group.PartialGroup(self.cso, group_data)
             roles.append(roblox.role.Role(self.cso, group, data['role']))
         return roles
