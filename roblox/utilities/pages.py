@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, List, Any
+from typing import Callable, List, Any, Union
 
 from roblox.utilities.errors import InvalidPageError
 import roblox.utilities.clientshardobject
@@ -22,7 +22,7 @@ class Page:
         """
 
     def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, data: dict, pages: Pages,
-                 handler: Callable[[roblox.utilities.clientshardobject.ClientSharedObject, List, Any], List[object]] = None,
+                 handler: Callable[[roblox.utilities.clientshardobject.ClientSharedObject, dict, Any], List[Any]] = None,
                  handler_args: Any = None):
         self.cso: roblox.utilities.clientshardobject.ClientSharedObject = cso
         """Client shared object."""
@@ -32,13 +32,13 @@ class Page:
         """Cursor to navigate to the previous page."""
         self.next_page_cursor: str = data["nextPageCursor"]
         """Cursor to navigate to the next page."""
-        self.data: dict or List[object] = data["data"]
+        self.data: dict = data["data"]
         """Raw data from this page."""
 
         self.handler = handler
         self.handler_args: Any = handler_args
         if handler:
-            self.data = handler(self.cso, self.data, handler_args)
+            self.data: List[Any] = handler(self.cso, self.data, handler_args)
 
     def update(self, data: dict) -> None:
         self.previous_page_cursor = data["previousPageCursor"]
@@ -65,7 +65,7 @@ class Pages:
 
     def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, url: str,
                  sort_order: SortOrder = SortOrder.Ascending, limit=10, extra_parameters: dict = None,
-                 handler: Callable[[roblox.utilities.clientshardobject.ClientSharedObject, List, Any], List[object]] = None,
+                 handler: Callable[[roblox.utilities.clientshardobject.ClientSharedObject, dict, Any], List[Any]] = None,
                  handler_args: Any = None):
         if extra_parameters is None:
             extra_parameters = {}
