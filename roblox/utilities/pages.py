@@ -32,20 +32,25 @@ class Page:
         """Cursor to navigate to the previous page."""
         self.next_page_cursor: str = data["nextPageCursor"]
         """Cursor to navigate to the next page."""
-        self.data: dict = data["data"]
+        self.rawdata: dict = data["data"]
         """Raw data from this page."""
 
         self.handler = handler
         self.handler_args: Any = handler_args
+        self.data: Union[dict, List]
         if handler:
-            self.data: List[Any] = handler(self.cso, self.data, handler_args)
+            self.data = handler(self.cso, self.rawdata, handler_args)
+        else:
+            self.data = self.rawdata
 
     def update(self, data: dict) -> None:
         self.previous_page_cursor = data["previousPageCursor"]
         self.next_page_cursor = data["nextPageCursor"]
-        self.data = data["data"]
+        self.rawdata = data["data"]
         if self.handler:
             self.data = self.handler(self.cso, data["data"], self.handler_args)
+        else:
+            self.data = self.rawdata
 
     def __getitem__(self, key) -> object:
         return self.data[key]
