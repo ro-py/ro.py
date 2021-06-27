@@ -5,5 +5,5 @@ import roblox.utilities.requests
 
 class ClientSharedObject:
     def __init__(self, client: roblox.client.Client, cookie: str):
-        self.requests: roblox.utilities.requests = roblox.utilities.requests.Requests(cookie)
+        self.requests: roblox.utilities.requests.Requests = roblox.utilities.requests.Requests(cookie)
         self.client: roblox.client.Client = client

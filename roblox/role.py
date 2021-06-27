@@ -45,11 +45,11 @@ class Role:
         """The id of the role."""
         self.name: str = role_data['name']
         """The name of the role."""
-        self.description: str = role_data.get('description')
+        self.description: None or str = role_data.get('description')
         """The description of the role."""
         self.rank: int = role_data['rank']
         """The rank of the role."""
-        self.member_count: int = role_data.get('memberCount')
+        self.member_count: None or int = role_data.get('memberCount')
         """The amount of members that have the role."""
         self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain("groups")
 
