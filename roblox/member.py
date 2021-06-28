@@ -74,7 +74,7 @@ class Member:
         self.role = roles[role_counter]
         return old_role, self.role
 
-    async def promote(self, ranks: int = 1) -> Tuple[roblox.role.Role, roblox.role.Role]:
+    async def promote(self, rank: int = 1) -> Tuple[roblox.role.Role, roblox.role.Role]:
         """
         Promotes the user.
 
@@ -87,9 +87,9 @@ class Member:
         -------
         int
         """
-        return await self.change_rank(abs(ranks))
+        return await self.change_rank(abs(rank))
 
-    async def demote(self, ranks: int = 1) -> Tuple[roblox.role.Role, roblox.role.Role]:
+    async def demote(self, rank: int = 1) -> Tuple[roblox.role.Role, roblox.role.Role]:
         """
         Demotes the user.
 
@@ -103,9 +103,9 @@ class Member:
         int
         """
 
-        return await self.change_rank(-abs(ranks))
+        return await self.change_rank(-abs(rank))
 
-    async def __setrank(self, rank) -> None:
+    async def __set_rank(self, rank) -> None:
         """
         Sets the users role to specified role using rank id.
 
@@ -124,11 +124,11 @@ class Member:
         }
         await self.cso.requests.patch(url, json=data)
 
-    async def setrank(self, rank) -> None:
-        await self.__setrank(rank)
+    async def set_rank(self, rank) -> None:
+        await self.__set_rank(rank)
         await self.update_role()
 
-    async def setrole(self, role_num):
+    async def set_role(self, role_num):
         """
          Sets the users role to specified role using role number (1-255).
 
@@ -149,7 +149,7 @@ class Member:
                 break
         if not rank_role:
             raise NotFound(f"Role {role_num} not found")
-        return await self.__setrank(rank_role.id)
+        return await self.__set_rank(rank_role.id)
 
     async def exile(self) -> None:
         url = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "users", self.user.id)

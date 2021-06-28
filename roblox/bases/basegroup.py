@@ -8,6 +8,7 @@ from httpx import Response
 import roblox.utilities.clientshardobject
 import roblox.utilities.requests
 import roblox.utilities.subdomain
+import roblox.bases.basesociallink
 import roblox.role
 import roblox.member
 import roblox.user
@@ -16,11 +17,12 @@ import roblox.utilities.pages
 import roblox.auditlog
 import roblox.joinrequest
 import imghdr
+import enum
 
 
 # TODO ADD ALL FUNCTIONS FROM https://groups.roblox.com/
 # TODO Add lookup functions to client
-# TODO Add socialmedia links to group
+# TODO Add Group settings
 # TODO Add Relationships to group
 def member_handler(cso, data, group) -> List[roblox.member.Member]:
     members = []
@@ -44,6 +46,38 @@ def join_request_handler(cso, data, group) -> List[roblox.joinrequest.JoinReques
         user: roblox.user.PartialUser = roblox.user.PartialUser(cso, join_request['requester'])
         join_requests.append(roblox.joinrequest.JoinRequest(cso, join_request, group, user))
     return join_requests
+
+
+class SociaLink(roblox.bases.basesociallink.BaseSocialLink):
+    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data: dict, group: BaseGroup):
+        super().__init__(cso, raw_data)
+        self.group: BaseGroup = group
+        self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain("groups")
+        self.requests = self.cso.requests
+
+    async def set(self, type: Optional[roblox.bases.basesociallink.SocialLinkType] = None, url: Optional[str] = None, title: Optional[str] = None):
+        if type:
+            type = type.value
+        else:
+            type = self.type
+        if not title:
+            title = self.title
+        if not url:
+            url = self.url
+        json = {
+            "type": type,
+            "url": url,
+            "title": title
+        }
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "social-links", self.id)
+        await self.requests.patch(url,json=json)
+        self.url = json['url']
+        self.type = json['type']
+        self.title = json['title']
+
+    async def delete(self):
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "social-links", self.id)
+        await self.requests.delete(url)
 
 
 class BaseGroup:
@@ -251,4 +285,27 @@ class BaseGroup:
             user_ids.append(join_request.user.id)
         json["UserIds"] = user_ids
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "join-requests")
+        await self.cso.requests.delete(url, json=json)
+
+    async def get_social_links(self) -> List[SociaLink]:
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "social-links")
+        responce = await self.cso.requests.delete(url)
+        json = responce.json()
+        join_requests: List[SociaLink] = []
+        for join_request in json["data"]:
+            join_requests.append(SociaLink(self.cso, join_request, self))
+        return join_requests
+
+    async def create_social_link(self, type: roblox.bases.basesociallink.SocialLinkType, url: str, title: str) -> None:
+        json = {
+            "type": type.value,
+            "url": url,
+            "title": title
+        }
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "social-links")
+        responce = await self.cso.requests.post(url)
+        json = responce.json()
+        join_requests: List[SociaLink] = []
+        for join_request in json["data"]:
+            join_requests.append(SociaLink(self.cso, join_request, self))
         await self.cso.requests.delete(url, json=json)
