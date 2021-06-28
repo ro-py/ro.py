@@ -13,8 +13,10 @@ import roblox.member
 import roblox.user
 import roblox.group
 import roblox.utilities.pages
-import roblox.auditlogs
+import roblox.auditlog
+import roblox.joinrequest
 import imghdr
+
 
 # TODO ADD ALL FUNCTIONS FROM https://groups.roblox.com/
 
@@ -28,11 +30,19 @@ def member_handler(cso, data, group) -> List[roblox.member.Member]:
     return members
 
 
-def action_handler(cso, data, group):
+def action_handler(cso, data, group) -> List[roblox.auditlog.Action]:
     actions = []
     for action in data:
-        actions.append(roblox.auditlogs.Action(cso, group, action))
+        actions.append(roblox.auditlog.Action(cso, group, action))
     return actions
+
+
+def join_request_handler(cso, data, group) -> List[roblox.joinrequest.JoinRequest]:
+    join_requests = []
+    for join_request in data:
+        user: roblox.user.PartialUser = roblox.user.PartialUser(cso, join_request['requester'])
+        join_requests.append(roblox.joinrequest.JoinRequest(cso, join_request, group, user))
+    return join_requests
 
 
 class BaseGroup:
@@ -51,6 +61,7 @@ class BaseGroup:
 
         self.shout: Optional[roblox.group.Shout] = roblox.group.Shout(self.cso, self)
         """The current shout of the group."""
+
     async def expand(self) -> roblox.group.Group:
         """
         Expands into a full User object.
@@ -196,7 +207,7 @@ class BaseGroup:
         """
         Sets the authenticated user his primary group.
         """
-        if imghdr.what(file_path) in ["jpg","png","jpeg"]:
+        if imghdr.what(file_path) in ["jpg", "png", "jpeg"]:
             raise TypeError("File type is wrong only allowed types are jpg, png and jpeg")
         file: BinaryIO
         subdomain = roblox.utilities.subdomain.Subdomain("groups")
@@ -208,3 +219,35 @@ class BaseGroup:
             "upload-file": open(file_path, 'rb')
         }
         await self.requests.post(url, files=files, params=params)
+
+    async def get_join_requests(self, sort_order=roblox.utilities.pages.SortOrder.Ascending,
+                                limit=100) -> roblox.utilities.pages.Pages:
+        pages = roblox.utilities.pages.Pages(
+            cso=self.cso,
+            url=self.subdomain.generate_endpoint("v1", "groups", self.id, "join-requests"),
+            sort_order=sort_order,
+            limit=limit,
+            handler=join_request_handler,
+            handler_args=self
+        )
+
+        await pages.get_page()
+        return pages
+
+    async def batch_accept_join_requests(self, join_requests: List[roblox.joinrequest.JoinRequest]) -> None:
+        json = {}
+        user_ids = []
+        for join_request in join_requests:
+            user_ids.append(join_request.user.id)
+        json["UserIds"] = user_ids
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "join-requests")
+        await self.cso.requests.post(url, json=json)
+
+    async def batch_deny_join_requests(self, join_requests: List[roblox.joinrequest.JoinRequest]) -> None:
+        json = {}
+        user_ids = []
+        for join_request in join_requests:
+            user_ids.append(join_request.user.id)
+        json["UserIds"] = user_ids
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "join-requests")
+        await self.cso.requests.delete(url,json=json)
