@@ -4,11 +4,11 @@ from abc import ABC, abstractmethod
 
 
 class SocialLinkType(enum):
-    Facebook = "Facebook"
-    Twitter = "Twitter"
-    Youtube = "Youtube"
-    Twitch = "Twitch"
-    Discord = "Discord"
+    FACEBOOK = "Facebook"
+    TWITTER = "Twitter"
+    YOUTUBE = "Youtube"
+    TWITCH = "Twitch"
+    DISCORD = "Discord"
 
 
 class BaseSocialLink(ABC):

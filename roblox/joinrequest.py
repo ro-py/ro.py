@@ -5,7 +5,7 @@ import roblox.utilities.subdomain
 import iso8601
 
 
-class JoinRequest():
+class JoinRequest:
 
     def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject,
                  raw_data: dict, group: roblox.bases.basegroup.BaseGroup, user: roblox.user.PartialUser):
@@ -22,9 +22,9 @@ class JoinRequest():
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "join-requests","users",self.user.id)
         await self.cso.requests.post(url)
 
-    async def deny(self) -> None:
+    async def decline(self) -> None:
         """
-        Denys users join request
+        Declines users join request
         """
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "join-requests", "users", self.user.id)
         await self.cso.requests.delete(url)
