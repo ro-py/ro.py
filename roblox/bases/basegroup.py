@@ -19,8 +19,9 @@ import imghdr
 
 
 # TODO ADD ALL FUNCTIONS FROM https://groups.roblox.com/
-
-
+# TODO Add lookup functions to client
+# TODO Add socialmedia links to group
+# TODO Add Relationships to group
 def member_handler(cso, data, group) -> List[roblox.member.Member]:
     members = []
     for member in data:
@@ -250,4 +251,4 @@ class BaseGroup:
             user_ids.append(join_request.user.id)
         json["UserIds"] = user_ids
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "join-requests")
-        await self.cso.requests.delete(url,json=json)
+        await self.cso.requests.delete(url, json=json)
