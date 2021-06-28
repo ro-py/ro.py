@@ -16,11 +16,15 @@ class JoinRequest():
         self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain('groups')
 
     async def accept(self) -> None:
-
+        """
+        Accepts user in to group
+        """
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "join-requests","users",self.user.id)
         await self.cso.requests.post(url)
 
     async def deny(self) -> None:
-
+        """
+        Denys users join request
+        """
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "join-requests", "users", self.user.id)
         await self.cso.requests.delete(url)

@@ -55,7 +55,8 @@ class SociaLink(roblox.bases.basesociallink.BaseSocialLink):
         self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain("groups")
         self.requests = self.cso.requests
 
-    async def set(self, type: Optional[roblox.bases.basesociallink.SocialLinkType] = None, url: Optional[str] = None, title: Optional[str] = None):
+    async def set(self, type: Optional[roblox.bases.basesociallink.SocialLinkType] = None, url: Optional[str] = None,
+                  title: Optional[str] = None) -> None:
         if type:
             type = type.value
         else:
@@ -75,7 +76,7 @@ class SociaLink(roblox.bases.basesociallink.BaseSocialLink):
         self.type = json['type']
         self.title = json['title']
 
-    async def delete(self):
+    async def delete(self) -> None:
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "social-links", self.id)
         await self.requests.delete(url)
 
@@ -257,6 +258,20 @@ class BaseGroup:
 
     async def get_join_requests(self, sort_order=roblox.utilities.pages.SortOrder.Ascending,
                                 limit=100) -> roblox.utilities.pages.Pages:
+        """
+        Gets a user in a group
+
+        Parameters
+        ----------
+        sort_order : roblox.utilities.pages.SortOrder
+               The order you want it to be in.
+
+        limit : int
+                The limit on the request
+        Returns
+        -------
+        roblox.utilities.pages.Pages
+        """
         pages = roblox.utilities.pages.Pages(
             cso=self.cso,
             url=self.subdomain.generate_endpoint("v1", "groups", self.id, "join-requests"),
@@ -270,6 +285,14 @@ class BaseGroup:
         return pages
 
     async def batch_accept_join_requests(self, join_requests: List[roblox.joinrequest.JoinRequest]) -> None:
+        """
+        Accepts a batch of users in to the group
+
+        Parameters
+        ----------
+        join_requests : List[roblox.joinrequest.JoinRequest]
+               All the join requests you want to accept
+        """
         json = {}
         user_ids = []
         for join_request in join_requests:
@@ -279,6 +302,14 @@ class BaseGroup:
         await self.cso.requests.post(url, json=json)
 
     async def batch_deny_join_requests(self, join_requests: List[roblox.joinrequest.JoinRequest]) -> None:
+        """
+        Denys a batch of users in to the group
+
+        Parameters
+        ----------
+        join_requests : List[roblox.joinrequest.JoinRequest]
+                All the join requests you want to deny
+        """
         json = {}
         user_ids = []
         for join_request in join_requests:
@@ -288,6 +319,13 @@ class BaseGroup:
         await self.cso.requests.delete(url, json=json)
 
     async def get_social_links(self) -> List[SociaLink]:
+        """
+        Gets you all curent social links
+
+        Returns
+        -------
+        List[roblox.bases.basegroup.SociaLink]
+        """
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "social-links")
         responce = await self.cso.requests.delete(url)
         json = responce.json()
@@ -296,16 +334,30 @@ class BaseGroup:
             join_requests.append(SociaLink(self.cso, join_request, self))
         return join_requests
 
-    async def create_social_link(self, type: roblox.bases.basesociallink.SocialLinkType, url: str, title: str) -> None:
+    async def create_social_link(self, type: roblox.bases.basesociallink.SocialLinkType, url: str,
+                                 title: str) -> SociaLink:
+        """
+        creates a social link
+
+        Parameters
+        ----------
+        type : roblox.bases.basesociallink.SocialLinkType
+               LinkType
+
+        url : str
+                Url you want to use
+        title : str
+                Titile you want to give it
+        Returns
+        -------
+        roblox.bases.basegroup.SociaLink
+        """
         json = {
             "type": type.value,
             "url": url,
             "title": title
         }
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "social-links")
-        responce = await self.cso.requests.post(url)
-        json = responce.json()
-        join_requests: List[SociaLink] = []
-        for join_request in json["data"]:
-            join_requests.append(SociaLink(self.cso, join_request, self))
-        await self.cso.requests.delete(url, json=json)
+        responce = await self.cso.requests.post(url, json=json)
+        raw_data = responce.json()
+        return SociaLink(self.cso,raw_data)
