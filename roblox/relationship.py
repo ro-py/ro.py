@@ -2,10 +2,10 @@ import roblox.group
 import roblox.utilities.clientshardobject
 import roblox.bases.basegroup
 import roblox.utilities.subdomain
-import enum
+from enum import Enum
 
 
-class RelationshipType(enum):
+class RelationshipType(Enum):
     ALLYS = "Allys"
     ENEMIES = "Enemies"
 
