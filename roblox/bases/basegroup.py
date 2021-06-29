@@ -5,9 +5,9 @@ from pathlib import Path
 from typing import List, Union, BinaryIO, Optional
 
 from httpx import Response
-import roblox.utilities.clientshardobject
+from roblox.utilities.clientsharedobject import ClientSharedObject
 import roblox.utilities.requests
-import roblox.utilities.subdomain
+from roblox.utilities.utils import Subdomain
 import roblox.bases.basesociallink
 import roblox.role
 import roblox.member
@@ -50,10 +50,10 @@ def join_request_handler(cso, data, group) -> List[roblox.joinrequest.JoinReques
 
 
 class SociaLink(roblox.bases.basesociallink.BaseSocialLink):
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data: dict, group: BaseGroup):
+    def __init__(self, cso: ClientSharedObject, raw_data: dict, group: BaseGroup):
         super().__init__(cso, raw_data)
         self.group: BaseGroup = group
-        self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain("groups")
+        self.subdomain: Subdomain = Subdomain("groups")
         self.requests = self.cso.requests
 
     async def set(self, type: Optional[roblox.bases.basesociallink.SocialLinkType] = None, url: Optional[str] = None,
@@ -87,8 +87,8 @@ class BaseGroup:
     Represents a group with as little information possible.
     """
 
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, group_id: int):
-        self.cso: roblox.utilities.clientshardobject.ClientSharedObject = cso
+    def __init__(self, cso: roblox.utilities.clientsharedobject.ClientSharedObject, group_id: int):
+        self.cso: roblox.utilities.clientsharedobject.ClientSharedObject = cso
         """Client shared object"""
         self.requests: roblox.utilities.requests.Requests = cso.requests
         """Requests object"""
@@ -233,7 +233,7 @@ class BaseGroup:
         """
         Sets the authenticated user his primary group.
         """
-        subdomain = roblox.utilities.subdomain.Subdomain("groups")
+        subdomain = Subdomain("groups")
         url: str = subdomain.generate_endpoint("v2", "users", "groups", "primary", )
         json: dict = {
             "groupId": self.id
@@ -247,7 +247,7 @@ class BaseGroup:
         if imghdr.what(file_path) in ["jpg", "png", "jpeg"]:
             raise TypeError("File type is wrong only allowed types are jpg, png and jpeg")
         file: BinaryIO
-        subdomain = roblox.utilities.subdomain.Subdomain("groups")
+        subdomain = Subdomain("groups")
         url: str = subdomain.generate_endpoint("v2", "groups", f"icon")
         params: dict = {
             "groupId": self.id

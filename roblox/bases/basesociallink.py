@@ -1,4 +1,5 @@
-import roblox.utilities.clientshardobject
+from __future__ import annotations
+import roblox.utilities.clientsharedobject
 from enum import Enum
 from abc import ABC, abstractmethod
 
@@ -12,8 +13,8 @@ class SocialLinkType(Enum):
 
 
 class BaseSocialLink(ABC):
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data: dict):
-        self.cso: roblox.utilities.clientshardobject.ClientSharedObject = cso
+    def __init__(self, cso: roblox.utilities.clientsharedobject.ClientSharedObject, raw_data: dict):
+        self.cso: roblox.utilities.clientsharedobject.ClientSharedObject = cso
         self.id = raw_data["id"]
         self.type = raw_data["type"]
         self.url = raw_data["url"]

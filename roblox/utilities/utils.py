@@ -2,6 +2,7 @@ from __future__ import annotations
 
 ROOT_SITE = "roblox.com"
 
+
 def url(path="www") -> str:
     """
     Generates a url using a path
@@ -21,10 +22,13 @@ def url(path="www") -> str:
     else:
         return f"https://{ROOT_SITE}"
 
-def generate_endpoint(subdomain: str="www", *args: dict):
-    endpoint = url(subdomain)
 
-    for arg in args:
-        endpoint += f"{arg}/"
+class Subdomain:
+    def __init__(self, subdomain: str = "www"):
+        self.url: str = url(subdomain)
 
-    return endpoint
+    def generate_endpoint(self, *args) -> str:
+        endpoint = self.url
+        for arg in args:
+            endpoint += f"{arg}/"
+        return endpoint

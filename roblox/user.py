@@ -1,9 +1,10 @@
-from typing import Optional
+from __future__ import annotations
 
 import iso8601
 
 from roblox.bases.baseuser import BaseUser
 from roblox.utilities.clientsharedobject import ClientSharedObject
+
 
 class PartialUser(BaseUser):
     """
@@ -23,6 +24,7 @@ class User(PartialUser):
     """
     Represents a group with all information from /v1/users/<id>.
     """
+
     def __init__(self: User, cso: ClientSharedObject, raw_data: dict):
         super().__init__(cso, raw_data)
         self.is_banned = raw_data['isBanned']

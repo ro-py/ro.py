@@ -5,10 +5,11 @@ import iso8601
 
 from roblox.utilities.pages import Page, Pages, SortOrder
 from roblox.utilities.requests import Requests
-from roblox.utilities.utils import generate_endpoint
+from roblox.utilities.utils import Subdomain
 from roblox.user import PartialUser, User
 from roblox.group import Group
 from roblox.utilities.clientsharedobject import ClientSharedObject
+
 
 # from ro_py.captcha import UnsolvedCaptcha
 
@@ -27,9 +28,10 @@ class WallPost:
         self.created = iso8601.parse_date(wall_data['created'])
         self.updated = iso8601.parse_date(wall_data['updated'])
         self.poster = PartialUser(self.cso, wall_data['poster']['user'])
+        self.subdomain = Subdomain("groups")
 
     async def delete(self: WallPost) -> bool:
-        url = generate_endpoint("groups", "v1", "groups", self.group.id, "wall", "posts", self.id)
+        url = self.subdomain.generate_endpoint("groups", "v1", "groups", self.group.id, "wall", "posts", self.id)
         wall_req = await self.requests.delete(
             url=url
         )
@@ -37,13 +39,14 @@ class WallPost:
         return wall_req.status_code == 200
 
 
-def wall_post_handler(requests: Requests, this_page: Page, *args: Tuple[dict, Group]) -> List[WallPost]:
+def wall_post_handler(cso: ClientSharedObject, this_page: dict, args: Group) -> List[WallPost]:
     wall_posts = []
 
     for wall_post in this_page:
-        wall_posts.append(WallPost(requests, wall_post, args))
-    
+        wall_posts.append(WallPost(cso, wall_post, args))
+
     return wall_posts
+
 
 class Wall:
     def __init__(self: Wall, cso: ClientSharedObject, group: Group):
@@ -56,11 +59,11 @@ class Wall:
         """"
         Deletes all group wall posts made by a specific user.
         """
-        
-        url = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "wall", "users", user.id, "posts")
-        self.requests.delete(url)
 
-    async def get_posts(self: Wall, sort_order: SortOrder=SortOrder.Ascending, limit: int=100):
+        url = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "wall", "users", user.id, "posts")
+        await self.requests.delete(url)
+
+    async def get_posts(self: Wall, sort_order: SortOrder = SortOrder.Ascending, limit: int = 100):
         url = self.subdomain.generate_endpoint("v2", "groups", self.group.id, "wall", "posts")
         wall_req = Pages(
             cso=self.cso,
@@ -80,7 +83,7 @@ class Wall:
         """
 
         url = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "subscribe")
-        self.requests.post(url)
+        await self.requests.post(url)
 
     # TODO MAKE SOMETHING THAT DEALS WITH UnsolvedCaptcha
     # async def post(self, content, captcha_key=None):

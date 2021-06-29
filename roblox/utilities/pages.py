@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import Callable, List, Any, Union
 
 from roblox.utilities.errors import InvalidPageError
-import roblox.utilities.clientshardobject
+from  roblox.utilities.clientsharedobject import ClientSharedObject
 import roblox.utilities.requests
 import enum
 
@@ -21,10 +21,10 @@ class Page:
         Represents a single page from a Pages object.
         """
 
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, data: dict, pages: Pages,
-                 handler: Callable[[roblox.utilities.clientshardobject.ClientSharedObject, dict, Any], List[Any]] = None,
+    def __init__(self, cso: ClientSharedObject, data: dict, pages: Pages,
+                 handler: Callable[[ClientSharedObject, dict, Any], List[Any]] = None,
                  handler_args: Any = None):
-        self.cso: roblox.utilities.clientshardobject.ClientSharedObject = cso
+        self.cso: ClientSharedObject = cso
         """Client shared object."""
         self.pages: Pages = pages
         """Pages object for iteration."""
@@ -68,9 +68,9 @@ class Pages:
         cache the pages yourself if speed is required.
     """
 
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, url: str,
+    def __init__(self, cso: ClientSharedObject, url: str,
                  sort_order: SortOrder = SortOrder.Ascending, limit=10, extra_parameters: dict = None,
-                 handler: Callable[[roblox.utilities.clientshardobject.ClientSharedObject, dict, Any], List[Any]] = None,
+                 handler: Callable[[ClientSharedObject, dict, Any], List] = None,
                  handler_args: Any = None):
         if extra_parameters is None:
             extra_parameters = {}
@@ -83,7 +83,7 @@ class Pages:
 
         self.parameters: dict = extra_parameters
         """Extra parameters for the request."""
-        self.cso: roblox.utilities.clientshardobject.ClientSharedObject = cso
+        self.cso: ClientSharedObject = cso
         self.requests: roblox.utilities.requests.Requests = cso.requests
         """Requests object."""
         self.url: str = url
