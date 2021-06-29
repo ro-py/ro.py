@@ -1,9 +1,9 @@
 import roblox.utilities.clientshardobject
-import enum
+from enum import Enum
 from abc import ABC, abstractmethod
 
 
-class SocialLinkType(enum):
+class SocialLinkType(Enum):
     FACEBOOK = "Facebook"
     TWITTER = "Twitter"
     YOUTUBE = "Youtube"
