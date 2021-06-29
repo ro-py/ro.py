@@ -1,11 +1,10 @@
+from __future__ import annotations
+
 import roblox.group
 import roblox.utilities.clientshardobject
 import roblox.utilities.subdomain
+import roblox.bases.basegroup
 from enum import Enum
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    import roblox.bases.basegroup
-
 
 class RelationshipType(Enum):
     ALLYS = "Allys"

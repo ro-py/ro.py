@@ -1,10 +1,10 @@
+from __future__ import annotations
 import roblox.user
 import roblox.utilities.clientshardobject
 import roblox.utilities.subdomain
 import iso8601
-from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    import roblox.bases.basegroup
+import roblox.bases.basegroup
+
 
 class JoinRequest:
 
@@ -20,12 +20,14 @@ class JoinRequest:
         """
         Accepts user in to group
         """
-        url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "join-requests","users",self.user.id)
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "join-requests", "users",
+                                                    self.user.id)
         await self.cso.requests.post(url)
 
     async def decline(self) -> None:
         """
         Declines users join request
         """
-        url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "join-requests", "users", self.user.id)
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "join-requests", "users",
+                                                    self.user.id)
         await self.cso.requests.delete(url)
