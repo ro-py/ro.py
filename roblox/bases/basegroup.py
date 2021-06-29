@@ -15,15 +15,16 @@ import roblox.user
 import roblox.group
 import roblox.utilities.pages
 import roblox.auditlog
-import roblox.joinrequest
 import imghdr
-import enum
+import roblox.relationship
+import roblox.joinrequest
 
 
-# TODO ADD ALL FUNCTIONS FROM https://groups.roblox.com/
+# TODO ADD ALL API calls FROM https://groups.roblox.com/
 # TODO Add lookup functions to client
 # TODO Add Group settings
 # TODO Add Relationships to group
+# TODO Add group claim and change owner
 def member_handler(cso, data, group) -> List[roblox.member.Member]:
     members = []
     for member in data:
@@ -71,7 +72,7 @@ class SociaLink(roblox.bases.basesociallink.BaseSocialLink):
             "title": title
         }
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "social-links", self.id)
-        await self.requests.patch(url,json=json)
+        await self.requests.patch(url, json=json)
         self.url = json['url']
         self.type = json['type']
         self.title = json['title']
@@ -360,4 +361,20 @@ class BaseGroup:
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "social-links")
         responce = await self.cso.requests.post(url, json=json)
         raw_data = responce.json()
-        return SociaLink(self.cso,raw_data)
+        return SociaLink(self.cso, raw_data, self)
+
+    # TODO Make a pagination system for this to return more then the first 100
+    async def get_relationships(self, relationship_type: roblox.relationship.RelationshipType):
+        params = {
+            "model.startRowIndex": 0,
+            "model.maxRows": 100
+        }
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "relationships", relationship_type.value,
+                                                    "requests")
+        response = await self.requests.get(url, params=params)
+        data = response.json()
+        relationships = []
+        for relationship in data:
+            relationships.append(
+                roblox.relationship.RelationshipRequest(self.cso, relationship, self, relationship_type))
+        return relationships

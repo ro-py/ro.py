@@ -1,14 +1,14 @@
 import roblox.utilities.clientshardobject
-import enum
+from enum import Enum
 from abc import ABC, abstractmethod
 
 
-class SocialLinkType(enum):
-    Facebook = "Facebook"
-    Twitter = "Twitter"
-    Youtube = "Youtube"
-    Twitch = "Twitch"
-    Discord = "Discord"
+class SocialLinkType(Enum):
+    FACEBOOK = "Facebook"
+    TWITTER = "Twitter"
+    YOUTUBE = "Youtube"
+    TWITCH = "Twitch"
+    DISCORD = "Discord"
 
 
 class BaseSocialLink(ABC):
@@ -20,7 +20,7 @@ class BaseSocialLink(ABC):
         self.title = raw_data["title"]
 
     @abstractmethod
-    async def set(self, type: roblox.bases.basesociallink.SocialLinkType, url: str, title: str):
+    async def set(self, type: SocialLinkType, url: str, title: str):
         pass
 
     @abstractmethod
