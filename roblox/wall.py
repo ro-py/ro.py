@@ -1,15 +1,16 @@
 from __future__ import annotations
+from typing import List, Tuple, Union
+
 import iso8601
-from typing import List
+
+from roblox.utilities.pages import Page, Pages, SortOrder
+from roblox.utilities.requests import Requests
+from roblox.utilities.utils import generate_endpoint
+from roblox.user import PartialUser, User
+from roblox.group import Group
+from roblox.utilities.clientsharedobject import ClientSharedObject
+
 # from ro_py.captcha import UnsolvedCaptcha
-import roblox.user
-import roblox.utilities.pages
-import roblox.group
-import roblox.user
-import roblox.utilities.subdomain
-import roblox.utilities.clientshardobject
-import roblox.utilities.requests
-import datetime
 
 
 class WallPost:
@@ -17,50 +18,51 @@ class WallPost:
     Represents a Roblox wall post.
     """
 
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, wall_data: dict,
-                 group: roblox.group.Group):
-        self.cso: roblox.utilities.clientshardobject.ClientSharedObject = cso
-        self.requests: roblox.utilities.requests.Requests = cso.requests
-        self.group: roblox.group.Group = group
-        self.id: int = wall_data['id']
-        self.body: str = wall_data['body']
-        self.created: datetime.datetime = iso8601.parse_date(wall_data['created'])
-        self.updated: datetime.datetime = iso8601.parse_date(wall_data['updated'])
-        self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain('groups')
-        self.poster = roblox.user.PartialUser(self.cso, wall_data['poster']['user'])
-
-    async def delete(self):
-        url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "wall", "posts", self.id)
-        wall_req = await self.requests.delete(
-            url=url
-        )
-        return wall_req.status_code == 200
-
-
-def wall_post_handler(requests, this_page, args) -> List[WallPost]:
-    wall_posts = []
-    for wall_post in this_page:
-        wall_posts.append(WallPost(requests, wall_post, args))
-    return wall_posts
-
-
-class Wall:
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, group: roblox.group.Group):
+    def __init__(self: WallPost, cso: ClientSharedObject, wall_data: dict, group: Group):
         self.cso = cso
         self.requests = cso.requests
         self.group = group
-        self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain('groups')
+        self.id = wall_data['id']
+        self.body = wall_data['body']
+        self.created = iso8601.parse_date(wall_data['created'])
+        self.updated = iso8601.parse_date(wall_data['updated'])
+        self.poster = PartialUser(self.cso, wall_data['poster']['user'])
 
-    async def delete_all_posts_by_user(self, user: roblox.user.PartialUser):
+    async def delete(self: WallPost) -> bool:
+        url = generate_endpoint("groups", "v1", "groups", self.group.id, "wall", "posts", self.id)
+        wall_req = await self.requests.delete(
+            url=url
+        )
+
+        return wall_req.status_code == 200
+
+
+def wall_post_handler(requests: Requests, this_page: Page, *args: Tuple[dict, Group]) -> List[WallPost]:
+    wall_posts = []
+
+    for wall_post in this_page:
+        wall_posts.append(WallPost(requests, wall_post, args))
+    
+    return wall_posts
+
+class Wall:
+    def __init__(self: Wall, cso: ClientSharedObject, group: Group):
+        self.cso = cso
+        self.requests = cso.requests
+        self.group = group
+        self.subdomain = Subdomain('groups')
+
+    async def delete_all_posts_by_user(self: Wall, user: Union[PartialUser, User]):
         """"
         Deletes all group wall posts made by a specific user.
         """
-        url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "wall", "users", user.id, "posts")
+        
+        url = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "wall", "users", user.id, "posts")
         self.requests.delete(url)
 
-    async def get_posts(self, sort_order=roblox.utilities.pages.SortOrder.Ascending, limit=100):
-        url: str = self.subdomain.generate_endpoint("v2", "groups", self.group.id, "wall", "posts")
-        wall_req = roblox.utilities.pages.Pages(
+    async def get_posts(self: Wall, sort_order: SortOrder=SortOrder.Ascending, limit: int=100):
+        url = self.subdomain.generate_endpoint("v2", "groups", self.group.id, "wall", "posts")
+        wall_req = Pages(
             cso=self.cso,
             url=url,
             sort_order=sort_order,
@@ -68,14 +70,16 @@ class Wall:
             handler=wall_post_handler,
             handler_args=self.group
         )
+
         await wall_req.get_page()
         return wall_req
 
-    async def subscribe(self):
+    async def subscribe(self: Wall):
         """"
         Subscribes the authenticated user to notifications of group wall events.
         """
-        url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "subscribe")
+
+        url = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "subscribe")
         self.requests.post(url)
 
     # TODO MAKE SOMETHING THAT DEALS WITH UnsolvedCaptcha
