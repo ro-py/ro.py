@@ -15,10 +15,13 @@ import roblox.user
 import roblox.group
 import roblox.utilities.pages
 import roblox.auditlog
-import roblox.joinrequest
-import roblox.relationship
 import imghdr
 import enum
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    import roblox.relationship
+    import roblox.joinrequest
 
 
 # TODO ADD ALL API calls FROM https://groups.roblox.com/
@@ -43,6 +46,7 @@ def action_handler(cso, data, group) -> List[roblox.auditlog.Action]:
 
 
 def join_request_handler(cso, data, group) -> List[roblox.joinrequest.JoinRequest]:
+    import roblox.joinrequest
     join_requests = []
     for join_request in data:
         user: roblox.user.PartialUser = roblox.user.PartialUser(cso, join_request['requester'])
@@ -366,13 +370,14 @@ class BaseGroup:
 
     # TODO Make a pagination system for this to return more then the first 100
     async def get_relationships(self, relationship_type: roblox.relationship.RelationshipType):
+        import roblox.relationship
         params = {
             "model.startRowIndex": 0,
             "model.maxRows": 100
         }
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "relationships", relationship_type.value,
                                                     "requests")
-        response = await self.requests.get(url,params=params)
+        response = await self.requests.get(url, params=params)
         data = response.json()
         relationships = []
         for relationship in data:
