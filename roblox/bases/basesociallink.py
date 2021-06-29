@@ -20,7 +20,7 @@ class BaseSocialLink(ABC):
         self.title = raw_data["title"]
 
     @abstractmethod
-    async def set(self, type: roblox.bases.basesociallink.SocialLinkType, url: str, title: str):
+    async def set(self, type: SocialLinkType, url: str, title: str):
         pass
 
     @abstractmethod
