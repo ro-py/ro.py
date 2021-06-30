@@ -43,7 +43,7 @@ class Member:
         data = response.json()
         for role in data['data']:
             if role['group']['id'] == self.group.id:
-                self.role = Role(self.cso, self.group, role['role'])
+                self.role = roblox.role.Role(self.cso, self.group, role['role'])
                 break
 
         return self.role
