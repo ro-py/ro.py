@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import roblox.user
 import roblox.group
-from roblox.utilities.clientshardobject import ClientSharedObject
+from roblox.utilities.clientsharedobject import ClientSharedObject
 from roblox.utilities.requests import Requests
 from roblox.utilities.subdomain import Subdomain
 

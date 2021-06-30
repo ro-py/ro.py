@@ -1,4 +1,3 @@
-from __future__ import annotations
 import roblox.utilities.clientsharedobject
 from enum import Enum
 from abc import ABC, abstractmethod

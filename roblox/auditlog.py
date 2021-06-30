@@ -9,7 +9,7 @@ import roblox.role
 import roblox.member
 import roblox.bases.basegroup
 import datetime
-import roblox.utilities.clientshardobject
+import roblox.utilities.clientsharedobject
 
 
 class Actions(Enum):
@@ -57,9 +57,9 @@ class Actions(Enum):
 
 
 class Action:
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject,
+    def __init__(self, cso: roblox.utilities.clientsharedobject.ClientSharedObject,
                  group: roblox.bases.basegroup.BaseGroup, raw_data: dict):
-        self.cso: roblox.utilities.clientshardobject.ClientSharedObject = cso
+        self.cso: roblox.utilities.clientsharedobject.ClientSharedObject = cso
         self.group: roblox.bases.basegroup.BaseGroup = group
 
         actor_user = roblox.user.PartialUser(self.cso, raw_data["actor"]["user"])

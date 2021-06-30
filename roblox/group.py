@@ -1,5 +1,4 @@
 from __future__ import annotations
-from roblox.utilities.clientsharedobject import ClientSharedObject
 
 import iso8601
 import datetime
@@ -9,11 +8,13 @@ import roblox.user
 import roblox.wall
 import roblox.bases.basegroup
 import roblox.utilities.requests
-import roblox.utilities.clientshardobject
+import roblox.utilities.clientsharedobject
 import roblox.utilities.subdomain
 
+
 class Shout:
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, group: roblox.bases.basegroup.BaseGroup, raw_data: dict = None):
+    def __init__(self, cso: roblox.utilities.clientsharedobject.ClientSharedObject,
+                 group: roblox.bases.basegroup.BaseGroup, raw_data: dict = None):
         self.cso = cso
 
         self.requests: roblox.utilities.requests.Requests = cso.requests
@@ -71,7 +72,7 @@ class PartialGroup(roblox.bases.basegroup.BaseGroup):
     If it was generated from, let's say, groups/v2/users/userid/groups/roles, it'll also contain a member count.
     """
 
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data):
+    def __init__(self, cso: roblox.utilities.clientsharedobject.ClientSharedObject, raw_data):
         super().__init__(cso, raw_data['id'])
         self.name: str = raw_data["name"]
         self.member_count: Optional[int] = raw_data.get("memberCount")
@@ -82,7 +83,7 @@ class Group(PartialGroup):
     Represents a group.
     """
 
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data: dict):
+    def __init__(self, cso: roblox.utilities.clientsharedobject.ClientSharedObject, raw_data: dict):
         super().__init__(cso, raw_data)
         """A client shared object."""
         self.owner: roblox.user.PartialUser = roblox.user.PartialUser(cso, raw_data['owner'])

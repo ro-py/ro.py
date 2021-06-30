@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import roblox.group
-import roblox.utilities.clientshardobject
+import roblox.utilities.clientsharedobject
 import roblox.utilities.subdomain
 import roblox.bases.basegroup
 from enum import Enum
@@ -12,7 +12,7 @@ class RelationshipType(Enum):
 
 
 class RelationshipRequest:
-    def __init__(self, cso: roblox.utilities.clientshardobject.ClientSharedObject, raw_data: dict,
+    def __init__(self, cso: roblox.utilities.clientsharedobject.ClientSharedObject, raw_data: dict,
                  group: roblox.bases.basegroup, relationship_type: RelationshipType):
         self.relationship_type: str = relationship_type.value
         self.cso = cso

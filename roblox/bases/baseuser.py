@@ -1,13 +1,13 @@
-from __future__ import annotations
 from typing import List
 
 from httpx import Response
 
-from roblox.utilities.clientsharedobject import ClientSharedObject
-from roblox.utilities.requests import Requests
-from roblox.utilities.utils import Subdomain
-from roblox.group import Group, PartialGroup
-from roblox.role import Role
+import roblox.utilities.clientsharedobject
+import roblox.utilities.requests
+import roblox.utilities.subdomain
+import roblox.group
+import roblox.role
+import roblox.utilities.pages
 
 
 class BaseUser:
@@ -15,14 +15,14 @@ class BaseUser:
     Represents a user with as little information possible.
     """
 
-    def __init__(self, cso: ClientSharedObject, user_id: int):
-        self.cso = cso
+    def __init__(self, cso: roblox.utilities.clientsharedobject.ClientSharedObject, user_id):
+        self.cso: roblox.utilities.clientsharedobject.ClientSharedObject = cso
         """A client shared object."""
-        self.requests: Requests = cso.requests
+        self.requests: roblox.utilities.requests.Requests = cso.requests
         """A requests object."""
-        self.id = user_id
+        self.id: int = user_id
         """The id of the user."""
-        self.subdomain: Subdomain = Subdomain('users')
+        self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain('users')
         """Subdomain users.roblox.com"""
 
     async def expand(self):
@@ -66,51 +66,51 @@ class BaseUser:
         }
         response: Response = await self.requests.post("https://www.roblox.com/userblock/unblock", json=data)
 
-    async def get_primary_group_role(self) -> Role:
+    async def get_primary_group_role(self) -> roblox.role.Role:
         """
         Gets the primary group from the user.
         Returns
         -------
         roblox.group.Group
         """
-        subdomain = Subdomain("groups")
+        subdomain = roblox.utilities.subdomain.Subdomain("groups")
         url: str = subdomain.generate_endpoint("v2", "users", self.id, "groups", "primary", "roles")
         member_req = await self.requests.get(url)
         data = member_req.json()
-        group: Group = Group(self.cso, data['group'])
-        return Role(self.cso, group, data['role'])
+        group: roblox.group.Group = roblox.group.Group(self.cso, data['group'])
+        return roblox.role.Role(self.cso, group, data['role'])
 
-    async def get_groups(self) -> List[PartialGroup]:
+    async def get_groups(self) -> List[roblox.group.PartialGroup]:
         """
         Gets the user's groups.
         Returns
         -------
         List[ro_py.groups.PartialGroup]
         """
-        subdomain = Subdomain("groups")
+        subdomain = roblox.utilities.subdomain.Subdomain("groups")
         url: str = subdomain.generate_endpoint("v2", "users", self.id, "groups", "roles")
         member_req = await self.requests.get(url)
         data = member_req.json()
         groups = []
         for group in data['data']:
             group = group['group']
-            groups.append(PartialGroup(self.cso, group))
+            groups.append(roblox.group.PartialGroup(self.cso, group))
         return groups
 
-    async def get_groups_role(self) -> List[Role]:
+    async def get_groups_role(self) -> List[roblox.role.Role]:
         """
         Gets the user's groups role (role contains group).
         Returns
         -------
         List[ro_py.role.Role]
         """
-        subdomain = Subdomain("groups")
+        subdomain = roblox.utilities.subdomain.Subdomain("groups")
         url: str = subdomain.generate_endpoint("v2", "users", self.id, "groups", "roles")
         member_req = await self.requests.get(url)
         data = member_req.json()
         roles = []
         for data in data['data']:
             group_data = data['group']
-            group: PartialGroup = PartialGroup(self.cso, group_data)
-            roles.append(Role(self.cso, group, data['role']))
+            group: roblox.group.PartialGroup = roblox.group.PartialGroup(self.cso, group_data)
+            roles.append(roblox.role.Role(self.cso, group, data['role']))
         return roles

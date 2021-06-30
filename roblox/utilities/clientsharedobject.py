@@ -1,9 +1,9 @@
 from __future__ import annotations
-from roblox.client import Client
-from roblox.utilities.requests import Requests
+import roblox.client
+import roblox.utilities.requests
 
 
 class ClientSharedObject:
-    def __init__(self, client: Client, cookie: str):
-        self.requests: Requests = Requests(cookie)
-        self.client: Client = client
+    def __init__(self, client: roblox.client.Client, cookie: str):
+        self.requests: roblox.utilities.requests.Requests = roblox.utilities.requests.Requests(cookie)
+        self.client: roblox.client.Client = client
