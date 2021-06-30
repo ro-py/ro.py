@@ -1,7 +1,8 @@
 from __future__ import annotations
 import iso8601
-from typing import List
-# from ro_py.captcha import UnsolvedCaptcha
+from typing import List, Optional
+import roblox.utilities.errors
+import roblox.captcha
 import roblox.user
 import roblox.utilities.pages
 import roblox.group
@@ -78,24 +79,20 @@ class Wall:
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "subscribe")
         self.requests.post(url)
 
-    # TODO MAKE SOMETHING THAT DEALS WITH UnsolvedCaptcha
-    # async def post(self, content, captcha_key=None):
-    #    pass
-    #    data = {
-    #        "body": content
-    #    }
+    async def post(self, content, captcha_key=None) -> Optional[roblox.captcha.UnsolvedCaptcha]:
+        data = {
+            "body": content
+        }
 
-    #    if captcha_key:
-    #        data['captchaProvider'] = "PROVIDER_ARKOSE_LABS"
-    #        data['captchaToken'] = captcha_key
+        if captcha_key:
+            data['captchaProvider'] = "PROVIDER_ARKOSE_LABS"
+            data['captchaToken'] = captcha_key
 
-    #    post_req = await self.requests.post(
-    #        url=endpoint + f"/v1/groups/2695946/wall/posts",
-    #        data=data,
-    #        quickreturn=True
-    #    )
-
-    #    if post_req.status_code == 403:
-    #        return UnsolvedCaptcha(pkey="63E4117F-E727-42B4-6DAA-C8448E9B137F")
-    #    else:
-    #        return post_req.status_code == 200
+        try:
+            await self.requests.post(
+                url=self.subdomain.generate_endpoint("v1", "groups", self.group.id, "wall", "posts"),
+                data=data,
+                quickreturn=True
+            )
+        except roblox.utilities.errors.Forbidden:
+            return roblox.captcha.UnsolvedCaptcha(pkey="63E4117F-E727-42B4-6DAA-C8448E9B137F")
