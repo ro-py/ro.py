@@ -16,8 +16,8 @@ class Member:
     """
 
     def __init__(self: Member, cso: roblox.utilities.clientsharedobject.ClientSharedObject,
-                 user: Union[roblox.user.PartialUser, roblox.user.User], group: roblox.group.Group,
-                 role: roblox.role.Role):
+                 user: Union[roblox.user.PartialUser, roblox.user.User],
+                 group: roblox.group.Group, role: roblox.role.Role):
         self.cso = cso
         """Client shared object."""
         self.user = user
@@ -26,7 +26,7 @@ class Member:
         """The group the user is in."""
         self.role = role
         """The role the user has in the group."""
-        self.subdomain = Subdomain("groups")
+        self.subdomain = roblox.utilities.subdomain.Subdomain("groups")
 
     async def update_role(self: Member) -> roblox.role.Role:
         """
@@ -48,7 +48,7 @@ class Member:
 
         return self.role
 
-    async def change_rank(self: Member, num: int) -> Tuple[roblox.role.Role.Role, roblox.role.Role.Role]:
+    async def change_rank(self: Member, num: int) -> Tuple[roblox.role.Role, roblox.role.Role]:
         """
         Changes the users rank specified by a number.
         If num is 1 the users role will go up by 1.
@@ -78,7 +78,7 @@ class Member:
         # if not roles:
         #    raise NotFound(f"User {self.user.id} is not in group {self.group.id}")
 
-        await self.__setrank(roles[role_counter].id)
+        await self.__set_rank(roles[role_counter].id)
         self.role = roles[role_counter]
 
         return old_role, self.role
@@ -163,7 +163,7 @@ class Member:
                 break
 
         if not rank_role:
-            raise NotFound(f"Role {role_num} not found")
+            raise roblox.utilities.errors.NotFound(f"Role {role_num} not found")
 
         return await self.__set_rank(rank_role.id)
 
