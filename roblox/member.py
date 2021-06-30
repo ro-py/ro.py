@@ -1,12 +1,13 @@
 from __future__ import annotations
 from typing import Tuple, Union
 
-from roblox.utilities.errors import NotFound
-from roblox.utilities.subdomain import Subdomain
-from roblox.user import PartialUser, User
-from roblox.group import Group
-from roblox.utilities.clientsharedobject import ClientSharedObject
-from roblox.role import Role
+import roblox.utilities.errors
+import roblox.utilities.subdomain
+import roblox.user
+import roblox.group
+import roblox.utilities.clientsharedobject
+import roblox.role
+
 
 # TODO Deal with if user is exiled or has left the group since you can't rank somebody who is no longer in the group
 class Member:
@@ -14,10 +15,12 @@ class Member:
     Represents a user in a group.
     """
 
-    def __init__(self: Member, cso: ClientSharedObject, user: Union[PartialUser, User], group: Group, role: Role):
+    def __init__(self: Member, cso: roblox.utilities.clientsharedobject.ClientSharedObject,
+                 user: Union[roblox.user.PartialUser, roblox.user.User], group: roblox.group.Group,
+                 role: roblox.role.Role):
         self.cso = cso
         """Client shared object."""
-        self.user= user
+        self.user = user
         """The user that is in the group."""
         self.group = group
         """The group the user is in."""
@@ -25,7 +28,7 @@ class Member:
         """The role the user has in the group."""
         self.subdomain = Subdomain("groups")
 
-    async def update_role(self: Member) -> Role:
+    async def update_role(self: Member) -> roblox.role.Role:
         """
         Updates the role information of the user.
 
@@ -42,10 +45,10 @@ class Member:
             if role['group']['id'] == self.group.id:
                 self.role = Role(self.cso, self.group, role['role'])
                 break
-        
+
         return self.role
 
-    async def change_rank(self: Member, num: int) -> Tuple[Role, Role]:
+    async def change_rank(self: Member, num: int) -> Tuple[roblox.role.Role.Role, roblox.role.Role.Role]:
         """
         Changes the users rank specified by a number.
         If num is 1 the users role will go up by 1.
@@ -66,7 +69,7 @@ class Member:
                 break
 
             role_counter += 1
-        
+
         role_counter += num
 
         if role_counter < 1 or role_counter >= len(roles):
@@ -80,7 +83,7 @@ class Member:
 
         return old_role, self.role
 
-    async def promote(self: Member, rank: int = 1) -> Tuple[Role, Role]:
+    async def promote(self: Member, rank: int = 1) -> Tuple[roblox.role.Role, roblox.role.Role]:
         """
         Promotes the user.
 
@@ -96,7 +99,7 @@ class Member:
 
         return await self.change_rank(abs(rank))
 
-    async def demote(self: Member, rank: int = 1) -> Tuple[Role, Role]:
+    async def demote(self: Member, rank: int = 1) -> Tuple[roblox.role.Role, roblox.role.Role]:
         """
         Demotes the user.
 
@@ -133,11 +136,11 @@ class Member:
 
         await self.cso.requests.patch(url, json=data)
 
-    async def set_rank(self, rank) -> None:
+    async def set_rank(self, rank: int) -> None:
         await self.__set_rank(rank)
         await self.update_role()
 
-    async def set_role(self, role_num):
+    async def set_role(self, role_num: int):
         """
         Sets the users role to specified role using role number (1-255).
 
@@ -158,10 +161,10 @@ class Member:
             if role.rank == role_num:
                 rank_role = role
                 break
-        
+
         if not rank_role:
             raise NotFound(f"Role {role_num} not found")
-        
+
         return await self.__set_rank(rank_role.id)
 
     async def exile(self: Member) -> None:
