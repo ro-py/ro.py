@@ -79,19 +79,20 @@ class Wall:
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "subscribe")
         self.requests.post(url)
 
-    async def post(self, content, captcha_key=None) -> Optional[roblox.captcha.UnsolvedCaptcha]:
-        data = {
-            "body": content
-        }
-
-        if captcha_key:
-            data['captchaProvider'] = "PROVIDER_ARKOSE_LABS"
-            data['captchaToken'] = captcha_key
-
-        try:
-            await self.requests.post(
-                url=self.subdomain.generate_endpoint("v1", "groups", self.group.id, "wall", "posts"),
-                json=data,
-            )
-        except roblox.utilities.errors.Forbidden:
-            return roblox.captcha.UnsolvedCaptcha(pkey="63E4117F-E727-42B4-6DAA-C8448E9B137F")
+    # TODO FIX BROKEN CAPTCHA SYSTEM
+    #async def post(self, content, captcha_key=None) -> Optional[roblox.captcha.UnsolvedCaptcha]:
+        #    data = {
+        #        "body": content
+        #     }
+        #
+        #    if captcha_key:
+        #         data['captchaProvider'] = "PROVIDER_ARKOSE_LABS"
+        #        data['captchaToken'] = captcha_key
+        #
+        #    try:
+        #       await self.requests.post(
+        #            url=self.subdomain.generate_endpoint("v1", "groups", self.group.id, "wall", "posts"),
+        #            json=data,
+        #       )
+        #   except roblox.utilities.errors.Forbidden:
+        #    return roblox.captcha.UnsolvedCaptcha(pkey="63E4117F-E727-42B4-6DAA-C8448E9B137F")
