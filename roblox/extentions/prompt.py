@@ -1,5 +1,6 @@
 import sys
 import roblox.captcha
+from typing import Tuple
 try:
     import wx
     import wxasync
@@ -203,7 +204,7 @@ class RbxCaptcha(wx.Frame):
         kwds["style"] = kwds.get("style", 0) | wx.DEFAULT_FRAME_STYLE
         wx.Frame.__init__(self, *args, **kwds)
         self.SetSize((512, 600))
-        self.SetTitle("Roblox Captcha (ro.py)")
+        self.SetTitle("Roblox Captcha (roblox.py)")
         self.SetBackgroundColour(wx.Colour(255, 255, 255))
         self.SetIcon(icon_image.GetIcon())
 
@@ -283,10 +284,10 @@ async def authenticate_prompt(client):
     return app.rbx_login.status
 
 
-async def captcha_prompt(unsolved_captcha: roblox.captcha.UnsolvedCaptcha):
+async def captcha_prompt(unsolved_captcha: roblox.captcha.UnsolvedCaptcha) -> Tuple:
     """
     Prompts a captcha solve screen.
-    First item in tuple is True if the solve was sucessful, and the second item is the token.
+    First item in tuple is True if the solve was sucessful, and the second item is th e token.
     Image will be placed here soon.
     Parameters
     ----------

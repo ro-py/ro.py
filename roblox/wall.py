@@ -91,8 +91,7 @@ class Wall:
         try:
             await self.requests.post(
                 url=self.subdomain.generate_endpoint("v1", "groups", self.group.id, "wall", "posts"),
-                data=data,
-                quickreturn=True
+                json=data,
             )
         except roblox.utilities.errors.Forbidden:
             return roblox.captcha.UnsolvedCaptcha(pkey="63E4117F-E727-42B4-6DAA-C8448E9B137F")
