@@ -21,12 +21,12 @@ class RelationshipRequest:
         self.requester = roblox.group.Group(cso, raw_data)
         self.subdomain: roblox.utilities.subdomain.Subdomain = roblox.utilities.subdomain.Subdomain("groups")
 
-    async def accept(self):
+    async def accept(self) -> None:
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "relationships",
                                                     self.relationship_type, "requests", self.requester.id)
         self.requests.post(url)
 
-    async def decline(self):
+    async def decline(self) -> None:
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.group.id, "relationships",
                                                     self.relationship_type, "requests", self.requester.id)
         self.requests.delete(url)

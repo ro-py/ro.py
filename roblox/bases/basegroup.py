@@ -363,10 +363,10 @@ class BaseGroup:
         raw_data = responce.json()
         return SociaLink(self.cso, raw_data, self)
 
-    # TODO Make a pagination system for this to return more then the first 100
-    async def get_relationships(self, relationship_type: roblox.relationship.RelationshipType):
+    async def get_relationships(self, relationship_type: roblox.relationship.RelationshipType,
+                                start_row_index: int = 0) -> List[roblox.relationship.RelationshipRequest]:
         params = {
-            "model.startRowIndex": 0,
+            "model.startRowIndex": start_row_index,
             "model.maxRows": 100
         }
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "relationships", relationship_type.value,
@@ -378,3 +378,45 @@ class BaseGroup:
             relationships.append(
                 roblox.relationship.RelationshipRequest(self.cso, relationship, self, relationship_type))
         return relationships
+
+    async def batch_accept_relationships(self, join_requests: List[roblox.relationship.RelationshipRequest],
+                                         relationship_type: roblox.relationship.RelationshipType) -> None:
+        """
+        Accepts a batch of users in to the group
+
+        Parameters
+        ----------
+        join_requests : List[roblox.joinrequest.JoinRequest]
+               All the join requests you want to accept
+
+        relationship_type : roblox.relationship.RelationshipType
+               Type of relationship the requests are
+        """
+        json = {}
+        group_ids = []
+        for join_request in join_requests:
+            group_ids.append(join_request.requester)
+        json["GroupIds"] = group_ids
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "relationships" ,relationship_type.value,"requests")
+        await self.cso.requests.post(url, json=json)
+
+    async def batch_deny_relationships(self, join_requests: List[roblox.relationship.RelationshipRequest],
+                                       relationship_type: roblox.relationship.RelationshipType) -> None:
+        """
+        Denys a batch of users in to the group
+
+        Parameters
+        ----------
+        join_requests : List[roblox.joinrequest.JoinRequest]
+                All the join requests you want to deny
+
+        relationship_type : roblox.relationship.RelationshipType
+               Type of relationship the requests are
+        """
+        json = {}
+        group_ids = []
+        for join_request in join_requests:
+            group_ids.append(join_request.requester)
+        json["GroupIds"] = group_ids
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "relationships" ,relationship_type.value,"requests")
+        await self.cso.requests.delete(url, json=json)
