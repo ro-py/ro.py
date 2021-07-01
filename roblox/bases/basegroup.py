@@ -21,10 +21,9 @@ import roblox.joinrequest
 
 
 # TODO ADD ALL API calls FROM https://groups.roblox.com/
-# TODO Add lookup functions to client
 # TODO Add Group settings
-# TODO Add Relationships to group
 # TODO Add group claim and change owner
+# TODO Add payouts
 def member_handler(cso, data, group) -> List[roblox.member.Member]:
     members = []
     for member in data:
@@ -397,7 +396,8 @@ class BaseGroup:
         for join_request in join_requests:
             group_ids.append(join_request.requester)
         json["GroupIds"] = group_ids
-        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "relationships" ,relationship_type.value,"requests")
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "relationships", relationship_type.value,
+                                                    "requests")
         await self.cso.requests.post(url, json=json)
 
     async def batch_deny_relationships(self, join_requests: List[roblox.relationship.RelationshipRequest],
@@ -418,5 +418,6 @@ class BaseGroup:
         for join_request in join_requests:
             group_ids.append(join_request.requester)
         json["GroupIds"] = group_ids
-        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "relationships" ,relationship_type.value,"requests")
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "relationships", relationship_type.value,
+                                                    "requests")
         await self.cso.requests.delete(url, json=json)
