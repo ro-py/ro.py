@@ -1,10 +1,19 @@
 from __future__ import annotations
 
+from typing import List
+
 import roblox.user
 import roblox.group
+import roblox.utilities.pages
 from roblox.utilities.clientsharedobject import ClientSharedObject
-from roblox.utilities.requests import Requests
 from roblox.utilities.subdomain import Subdomain
+
+
+def group_handler(cso, data) -> List[roblox.group.Group]:
+    groups = []
+    for group_data in data:
+        groups.append(roblox.group.Group(cso, group_data))
+    return groups
 
 
 class Client:
@@ -30,6 +39,46 @@ class Client:
         response = await self.cso.requests.get(url)
         data = response.json()
         return roblox.group.Group(self.cso, data)
+
+    # TODO add prioritizeExactMatch to pages to deal wih this
+    async def search_group(self, keyword:str , prioritize_exact_match: bool = False,  sort_order=roblox.utilities.pages.SortOrder.Ascending,
+                           limit=100) -> roblox.utilities.pages.Pages:
+        """
+        Seaches for a group with spesific name
+
+        Parameters
+        ----------
+        keyword : str
+               On what you are searching
+
+        prioritize_exact_match : bool
+                If you prioritize an exact match
+
+        sort_order : roblox.utilities.pages.SortOrder
+               The order you want it to be in.
+
+        limit : int
+                The limit on the request
+        Returns
+        -------
+        roblox.utilities.pages.Pages
+        """
+        extra_parameters = {
+            "keyword": keyword,
+            "prioritizeExactMatch": prioritize_exact_match
+        }
+        subdomain = Subdomain('groups')
+        pages = roblox.utilities.pages.Pages(
+            cso=self.cso,
+            url=subdomain.generate_endpoint("v1", "groups", "search"),
+            sort_order=sort_order,
+            limit=limit,
+            handler=group_handler,
+            extra_parameters=extra_parameters
+        )
+
+        await pages.get_page()
+        return pages
 
     async def get_user(self, user_id: int) -> roblox.user.User:
         """
