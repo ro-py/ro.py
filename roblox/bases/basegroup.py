@@ -5,6 +5,8 @@ from pathlib import Path
 from typing import List, Union, BinaryIO, Optional
 
 from httpx import Response
+
+import enum
 import roblox.utilities.clientsharedobject
 import roblox.utilities.requests
 import roblox.utilities.subdomain
@@ -46,6 +48,23 @@ def join_request_handler(cso, data, group) -> List[roblox.joinrequest.JoinReques
         user: roblox.user.PartialUser = roblox.user.PartialUser(cso, join_request['requester'])
         join_requests.append(roblox.joinrequest.JoinRequest(cso, join_request, group, user))
     return join_requests
+
+
+def is_percentage(num) -> bool:
+    return 0 <= num <= 100 and num % 1 == 0
+
+
+class PayoutType(enum.Enum):
+    PERCENTAGE = "Percentage"
+    FIXEDAMOUNT = "FixedAmount"
+
+
+class RecurringPayout:
+    def __init__(self, cso: roblox.utilities.clientsharedobject.ClientSharedObject, raw_data: dict,
+                 user: roblox.user.PartialUser):
+        self.cso = cso
+        self.user = user
+        self.percentage = raw_data["percentage"]
 
 
 class SociaLink(roblox.bases.basesociallink.BaseSocialLink):
@@ -421,3 +440,113 @@ class BaseGroup:
         url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "relationships", relationship_type.value,
                                                     "requests")
         await self.cso.requests.delete(url, json=json)
+
+    async def payout(self, payout_type: PayoutType, members: List[roblox.member.Member], amount: int) -> None:
+        """
+        Payouts amount to spesific user
+
+        Parameters
+        ----------
+        payout_type : roblox.bases.basegroup.PayoutType
+            Type of payout
+
+        members : List[roblox.member.Member]
+            List of members you want to payout
+
+        amount : int
+            Amount
+        """
+        if payout_type == PayoutType.PERCENTAGE and not is_percentage(amount):
+            raise ValueError("payout_type is not a valid percentage")
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "payouts")
+        recipients = []
+        for member in members:
+            recipients.append({
+                "recipientId": member.user.id,
+                "recipientType": "User",
+                "amount": amount
+            })
+        data: dict = {
+            "PayoutType": payout_type.value,
+            "Recipients": recipients
+        }
+        await self.cso.requests.post(url, json=data)
+
+    async def set_recurring_payout(self, members: List[roblox.member.Member], amount: int) -> None:
+        """
+        sets recurring payouts to spesific users
+
+        Parameters
+        ----------
+        members : List[roblox.member.Member]
+            List of members you want to payout
+
+        amount : int
+            Amount
+        """
+        if not is_percentage(amount):
+            raise ValueError("payout_type is not a valid percentage")
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "payouts", "recurring")
+        recipients = []
+        for member in members:
+            recipients.append({
+                "recipientId": member.user.id,
+                "recipientType": "User",
+                "amount": amount
+            })
+        data: dict = {
+            "PayoutType": PayoutType.PERCENTAGE.value,
+            "Recipients": recipients
+        }
+        await self.cso.requests.post(url, json=data)
+
+    async def update_recurring_payout(self, member: roblox.member.Member, amount: int) -> None:
+        """
+        updates recurring payouts of spesific user or adds spesific user to list
+
+        Parameters
+        ----------
+        member : roblox.member.Member
+            Member you want to add or change
+
+        amount : int
+            Amount
+        """
+        if not is_percentage(amount):
+            raise ValueError("payout_type is not a valid percentage")
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "payouts", "recurring")
+        recipients = []
+        for oldpayouts in await self.get_payouts():
+            if member.user.id != oldpayouts.user.id:
+                recipients.append({
+                    "recipientId": oldpayouts.user.id,
+                    "recipientType": "User",
+                    "amount": oldpayouts.percentage
+                })
+        recipients.append({
+            "recipientId": member.user.id,
+            "recipientType": "User",
+            "amount": amount
+        })
+        data: dict = {
+            "PayoutType": PayoutType.PERCENTAGE.value,
+            "Recipients": recipients
+        }
+        await self.cso.requests.post(url, json=data)
+
+    async def get_payouts(self) -> List[RecurringPayout]:
+        """
+        Sets the description of the group
+
+        Returns
+        -------
+        roblox.bases.basegroup.RecurringPayout
+        """
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "payouts")
+        response: Response = await self.cso.requests.get(url)
+        data = response.json()
+        payouts = []
+        for payout_data in data["data"]:
+            partial_user = roblox.user.PartialUser(self.cso, payout_data["user"])
+            payouts.append(RecurringPayout(self.cso, payout_data, partial_user))
+        return payouts
