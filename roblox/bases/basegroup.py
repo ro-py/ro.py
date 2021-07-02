@@ -22,10 +22,7 @@ import roblox.relationship
 import roblox.joinrequest
 
 
-# TODO ADD ALL API calls FROM https://groups.roblox.com/
-# TODO Add Group settings
-# TODO Add group claim and change owner
-# TODO Add payouts
+# TODO Add Make it so you can also give a user or just a userID for payouts and change_owner (reduce api requests)
 def member_handler(cso, data, group) -> List[roblox.member.Member]:
     members = []
     for member in data:
@@ -65,6 +62,18 @@ class RecurringPayout:
         self.cso = cso
         self.user = user
         self.percentage = raw_data["percentage"]
+
+
+class Settings:
+    def __init__(self, cso: roblox.utilities.clientsharedobject.ClientSharedObject, raw_data: dict):
+        self.cso = cso
+        self.is_approval_required: bool = raw_data["isApprovalRequired"]
+        self.is_builders_club_required: bool = raw_data["isBuildersClubRequired"]
+        self.are_enemies_allowed: bool = raw_data["areEnemiesAllowed"]
+        self.are_group_funds_visible: bool = raw_data["areGroupFundsVisible"]
+        self.are_group_games_visible: bool = raw_data["areGroupGamesVisible"]
+        self.is_group_name_change_enabled: bool = raw_data["isGroupNameChangeEnabled"]
+        self.can_change_group_name: bool = raw_data["canChangeGroupName"]
 
 
 class SociaLink(roblox.bases.basesociallink.BaseSocialLink):
@@ -550,3 +559,55 @@ class BaseGroup:
             partial_user = roblox.user.PartialUser(self.cso, payout_data["user"])
             payouts.append(RecurringPayout(self.cso, payout_data, partial_user))
         return payouts
+
+    async def claim(self) -> None:
+        """
+        Claims the group as yours
+        """
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "claim-ownership")
+        await self.cso.requests.post(url)
+
+    async def change_owner(self, member: roblox.member.Member) -> None:
+        """
+        Changes the group ownership
+        """
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "change-owner")
+        json = {
+            "userId": member.user.id
+        }
+        await self.cso.requests.post(url, json=json)
+
+    async def get_settings(self) -> Settings:
+        """
+        Sets the description of the group
+
+        Returns
+        -------
+        roblox.bases.basegroup.RecurringPayout
+        """
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "settings")
+        response: Response = await self.cso.requests.get(url)
+        data = response.json()
+        return Settings(self.cso, data)
+
+    async def update_settings(self, is_approval_required: Optional[bool] = None,
+                              is_builders_club_required: Optional[bool] = None,
+                              are_enemies_allowed: Optional[bool] = None,
+                              are_group_funds_visible: Optional[bool] = None,
+                              are_group_games_visible: Optional[bool] = None, ) -> None:
+        """
+        Sets the group settings
+        """
+        json = {}
+        if is_approval_required:
+            json["isApprovalRequired"] = is_approval_required,
+        if is_builders_club_required:
+            json["isBuildersClubRequired"] = is_builders_club_required
+        if are_enemies_allowed:
+            json["areEnemiesAllowed"] = are_enemies_allowed,
+        if are_group_funds_visible:
+            json["areGroupFundsVisible"] = are_group_funds_visible,
+        if are_group_games_visible:
+            json["areGroupGamesVisible"] = are_group_games_visible
+        url: str = self.subdomain.generate_endpoint("v1", "groups", self.id, "settings")
+        await self.cso.requests.patch(url, json=json)
