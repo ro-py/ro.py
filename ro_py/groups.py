@@ -356,7 +356,7 @@ class PartialGroup:
             self.member_count = data["memberCount"]
 
     async def expand(self):
-        return self.cso.client.get_group(self.id)
+        return await self.cso.client.get_group(self.id)
 
 
 class Member(BaseUser):
