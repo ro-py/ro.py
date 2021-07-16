@@ -205,8 +205,6 @@ class Place(ClientObject, BaseAsset):
             auth_ticket,
             "-j",
             launch_url,
-            "-b",
-            browser_tracker_id,
             "--launchtime=" + str(launchtime),
             "--rloc",
             rloc,
