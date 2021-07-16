@@ -178,12 +178,7 @@ class Place(ClientObject, BaseAsset):
         roblox_appdata_path = local_app_data + "\\Roblox"
         roblox_launcher = None
 
-        app_storage = roblox_appdata_path + "\\LocalStorage"
         app_versions = roblox_appdata_path + "\\Versions"
-
-        with open(app_storage + "\\appStorage.json") as app_storage_file:
-            app_storage_data = json.load(app_storage_file)
-        browser_tracker_id = app_storage_data["BrowserTrackerId"]
 
         for directory in os.listdir(app_versions):
             dir_path = app_versions + "\\" + directory
@@ -199,7 +194,6 @@ class Place(ClientObject, BaseAsset):
 
         launch_url = "https://assetgame.roblox.com/game/PlaceLauncher.ashx" \
                      "?request=RequestGame" \
-                     f"&browserTrackerId={browser_tracker_id}" \
                      f"&placeId={self.id}" \
                      "&isPlayTogetherGame=false"
         join_parameters = [
