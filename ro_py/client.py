@@ -63,7 +63,7 @@ class Client:
         """Types of events used for binding events to a function."""
 
         if verifyToken:
-            isValid, token = self.verify_valid_token(token);
+            isValid, token = self.verify_valid_token(token)
             if not isValid:
                 raise SyntaxError("The token you supplied has incorrect syntax, and doesn't follow Roblox's AuthenticationCore standards.")
 
@@ -271,7 +271,8 @@ class Client:
         # self.notifications = NotificationReceiver(self.cso)
         self.notifications = None
     
-    def verify_valid_token(self, token: str):
+    @staticmethod
+    def verify_valid_token(token: str):
         """
         Verifies that the `token` parameter is a valid Roblox Security token.
 
