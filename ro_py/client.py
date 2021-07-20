@@ -40,9 +40,11 @@ class Client:
     ----------
     token : str
         Authentication token. You can take this from the .ROBLOSECURITY cookie in your browser.
+    verifyToken : bool
+        Will verify if the token is correct syntax, but doesn't verify the Jwt. Because then I would have to put a Salt in here.
     """
 
-    def __init__(self, token: str = None):
+    def __init__(self, token: str = None, verifyToken: bool = False):
         self.cso = ClientSharedObject(self)
         """ClientSharedObject. Passed to each new object to share information."""
         self.requests = self.cso.requests
@@ -59,6 +61,11 @@ class Client:
         """NotificationReceiver object. Only available for authenticated clients."""
         self.events = EventTypes
         """Types of events used for binding events to a function."""
+
+        if verifyToken:
+            isValid, token = self.verify_valid_token(token);
+            if not isValid:
+                raise SyntaxError("The token you supplied has incorrect syntax, and doesn't follow Roblox's AuthenticationCore standards.")
 
         if token:
             self.token_login(token)
@@ -263,6 +270,28 @@ class Client:
         self.trade = TradesWrapper(self.cso)
         # self.notifications = NotificationReceiver(self.cso)
         self.notifications = None
+    
+    def verify_valid_token(self, token: str):
+        """
+        Verifies that the `token` parameter is a valid Roblox Security token.
+
+        Uses AuthenticationCore patterns.
+
+        Parameters
+        ----------
+        token : str
+            .ROBLOSECURITY token to verify.
+        """
+
+        # Z:\build\1a40e06802c0ae1e\ro_py\client.py 291 Cringe error wtf
+        
+        if (token.startswith("_|")):
+            indexOfPrefix = token.index("|_")
+            if (indexOfPrefix != -1):
+                return True, token[indexOfPrefix + len("|_")]
+            return False, None
+        return True, f"_||_{token}"
+
 
     async def user_login(self, username, password, token=None):
         """
