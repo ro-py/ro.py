@@ -8,6 +8,7 @@
     <a href="https://jmk.gg/ro.py"><img src="https://img.shields.io/discord/761603917490159676?style=flat-square&logo=discord" alt="ro.py Discord"/></a>
     <a href="https://pypi.org/project/ro-py/"><img src="https://img.shields.io/pypi/v/ro-py?style=flat-square" alt="ro.py PyPI"/></a>
     <a href="https://pypi.org/project/ro-py/"><img src="https://img.shields.io/pypi/dm/ro-py?style=flat-square" alt="ro.py PyPI Downloads"/></a>
+    <a href="https://pypi.org/project/roblox/"><img src="https://img.shields.io/pypi/dm/roblox?style=flat-square" alt="ro.py PyPI Downloads alt"/></a>
     <a href="https://pypi.org/project/ro-py/"><img src="https://img.shields.io/pypi/l/ro-py?style=flat-square" alt="ro.py PyPI License"/></a>
     <a href="https://github.com/rbx-libdev/ro.py"><img src="https://img.shields.io/github/commit-activity/w/rbx-libdev/ro.py?style=flat-square" alt="ro.py GitHub Commit Activity"/></a>
     <a href="https://github.com/rbx-libdev/ro.py"><img src="https://img.shields.io/github/last-commit/rbx-libdev/ro.py?style=flat-square" alt="ro.py GitHub Last Commit"/></a>
