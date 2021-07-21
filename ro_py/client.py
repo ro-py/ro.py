@@ -289,7 +289,8 @@ class Client:
         if (token.startswith("_|")):
             indexOfPrefix = token.index("|_")
             if (indexOfPrefix != -1):
-                return True, token[indexOfPrefix + len("|_")]
+                parsed = token[indexOfPrefix + len("|_"):]
+                return True, f"_||_{parsed}"
             return False, None
         return True, f"_||_{token}"
 
