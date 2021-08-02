@@ -61,8 +61,8 @@ class Shout:
         """
         shout_req = await self.requests.patch(
             url=endpoint + f"/v1/groups/{self.group.id}/status",
-            data={
-                "message": message
+            json={
+                "message": message or ""
             }
         )
         self.group.shout = Shout(self.cso, self.group, shout_req.json())
