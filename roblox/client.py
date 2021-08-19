@@ -3,7 +3,7 @@ from .utilities.requests import Requests
 
 
 class Client:
-    def __init__(self, cookie=None):
+    def __init__(self, cookie=None, base_url="roblox.com"):
         self.requests: Requests = Requests()
         """
         The requests object, which is used to send requests to Roblox endpoints.
