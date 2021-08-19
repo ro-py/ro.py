@@ -1,124 +1,165 @@
 import asyncio
-import requests
-from roblox.utilities.errors import c_errors
 from httpx import AsyncClient, Response
-from json.decoder import JSONDecodeError
+from json import JSONDecodeError
+from .exceptions import HTTPStatusError
 
 
 class CleanAsyncClient(AsyncClient):
     """
-    This is a clean-on-delete alternative to httpx.AsyncClient.
+    This is a clean-on-delete version of httpx.AsyncClient.
     """
 
     def __init__(self):
-        super(CleanAsyncClient, self).__init__()
+        super().__init__()
 
     def __del__(self):
-        # asyncio.create_task(self.client.aclose())
         try:
             asyncio.get_event_loop().create_task(self.aclose())
         except RuntimeError:
             pass
 
 
-# TODO is this good enough or did you want it an other way
 def status_code_error(status_code):
-    return c_errors[status_code]
+    pass
 
 
 class Requests:
-    def __init__(self, security_cookie: str = None):
+    """
+    A special request object that implements special functionality required to connect to some Roblox endpoints.
+    """
+    def __init__(self):
         self.session: CleanAsyncClient = CleanAsyncClient()
-        """Session to use for requests."""
-        self.xcsrf_token_name: str = "X-CSRF-TOKEN"
-        """Header that will contain the X-CSRF-TOKEN. Should be set to "X-CSRF-TOKEN" under most circumstances."""
+        """
+        Base session object to use when sending requests.
+        By default, this is an instance of CleanAsyncClient.
+        """
+
+        self.xcsrf_token_name: str = "X-CSRF-Token"
+        """
+        The header that will contain the Cross-Site Request Forgery token.
+        Should be set to `X-CSRF-Token` under most circumstances.
+        """
+
+        self.xcsrf_allowed_methods: dict[str, bool] = {
+            "post": True,
+            "put": True,
+            "patch": True,
+            "delete": True
+        }
+        """
+        A dictionary where the keys are HTTP method types and values are whether the X-CSRF-Token should be handled for
+        that method. Keys must be in lowercase.
+        """
 
         self.session.headers["User-Agent"] = "Roblox/WinInet"
         self.session.headers["Referer"] = "www.roblox.com"
 
-        if security_cookie:
-            self.session.cookies[".ROBLOSECURITY"] = security_cookie
-
-        self.status_code = int
-
-    async def request(self, method, *args, **kwargs) -> Response:
+    async def request(self, method: str, *args, **kwargs) -> Response:
         skip_roblox = kwargs.pop("skip_roblox", False)
         handle_xcsrf_token = kwargs.pop("handle_xcsrf_token", True)
-        this_request = await self.session.request(method, *args, **kwargs)
+        response = await self.session.request(method, *args, **kwargs)
+
+        if skip_roblox:
+            return response
 
         method = method.lower()
 
-        if handle_xcsrf_token and (
-                (method == "post") or (method == "put") or (method == "patch") or (method == "delete")):
-            if self.xcsrf_token_name in this_request.headers:
-                self.session.headers[self.xcsrf_token_name] = this_request.headers[self.xcsrf_token_name]
-                if this_request.status_code == 403:  # Request failed, send it again
-                    this_request = await self.session.request(method, *args, **kwargs)
+        if handle_xcsrf_token and self.xcsrf_token_name in response.headers and self.xcsrf_allowed_methods.get(method):
+            self.session.headers[self.xcsrf_token_name] = response.headers[self.xcsrf_token_name]
+            if response.status_code == 403:  # Request failed, send it again
+                response = await self.session.request(method, *args, **kwargs)
 
-        if kwargs.pop("stream", False):
-            # Skip request checking and just get on with it.
-            return this_request
+        if kwargs.get("stream"):
+            # Streamed responses should not be decoded, so we immediately return the response.
+            return response
 
-        try:
-            this_request_json = this_request.json()
-        except JSONDecodeError:
-            return this_request
+        if response.is_error:
+            # Something went wrong, parse an error
+            content_type = response.headers.get("Content-Type")
+            errors = None
+            if content_type and content_type.startswith("application/json"):
+                data = None
+                try:
+                    data = response.json()
+                except JSONDecodeError:
+                    pass
+                errors = data and data.get("errors")
+            if errors:
+                parsed_errors = []
+                for error in errors:
+                    # Make each error into a parsed string
+                    error_code = error["code"]
+                    error_message = error.get("message")
 
-        if isinstance(this_request_json, dict):
-            try:
-                get_request_error = this_request_json["errors"]
-            except KeyError:
-                return this_request
+                    parsed_error = f"{error_code}: {error_message}"
+
+                    error_messages = []
+
+                    error_user_facing_message = error.get("userFacingMessage")
+                    error_field = error.get("field")
+                    error_retryable = error.get("retryable")
+
+                    if error_user_facing_message:
+                        # Add the parenthesis-wrapped user facing message
+                        error_messages.append(f"User-facing message: {error_user_facing_message})")
+
+                    if error_field:
+                        # Add the field, which is the name of the key in the request body that caused the error
+                        error_messages.append(f"Field: {error_field}")
+
+                    if error_retryable is not None:
+                        error_messages.append(f"Retryable: {error_retryable}")
+
+                    if error_messages:
+                        error_message_string = ", ".join(error_messages)
+                        parsed_error += f" ({error_message_string})"
+
+                    parsed_errors.append(parsed_error)
+
+                # Turn the parsed errors into a joined string
+                parsed_error_string = "\n".join(parsed_errors)
+
+                exception = HTTPStatusError(
+                    message=f"""{response.status_code} {response.reason_phrase}: {response.url}. Errors:
+{parsed_error_string}""",
+                    request=response.request,
+                    response=response,
+                    errors=errors
+                )
+            else:
+                exception = HTTPStatusError(
+                    message=f"{response.status_code} {response.reason_phrase}: {response.url}",
+                    request=response.request,
+                    response=response
+                )
+            raise exception
         else:
-            return this_request
+            return response
 
-        if skip_roblox:
-            return this_request
-
-        request_exception = status_code_error(this_request.status_code)
-        raise request_exception(f"[{this_request.status_code}] {get_request_error[0]['message']}")
-
-    async def get(self, *args, **kwargs) -> Response:
+    def get(self, *args, **kwargs):
         """
         Shortcut to self.request using the GET method.
         """
 
-        return await self.request("GET", *args, **kwargs)
+        return self.request("GET", *args, **kwargs)
 
-    async def post(self, *args, **kwargs) -> Response:
+    def post(self, *args, **kwargs):
         """
         Shortcut to self.request using the POST method.
         """
 
-        return await self.request("post", *args, **kwargs)
+        return self.request("post", *args, **kwargs)
 
-    async def patch(self, *args, **kwargs) -> Response:
+    def patch(self, *args, **kwargs):
         """
         Shortcut to self.request using the PATCH method.
         """
 
-        return await self.request("patch", *args, **kwargs)
+        return self.request("patch", *args, **kwargs)
 
-    async def delete(self, *args, **kwargs) -> Response:
+    def delete(self, *args, **kwargs):
         """
         Shortcut to self.request using the DELETE method.
         """
 
-        return await self.request("delete", *args, **kwargs)
-
-    def post_default(self, *args, **kwargs) -> Response:
-        """
-        This is just the default requests.post that handles Roblox-specific data.
-        """
-
-        kwargs["cookies"] = kwargs.pop("cookies", self.session.cookies)
-        kwargs["headers"] = kwargs.pop("headers", self.session.headers)
-
-        post_request = requests.post(*args, **kwargs)
-
-        if self.xcsrf_token_name in post_request.headers:
-            self.session.headers[self.xcsrf_token_name] = post_request.headers[self.xcsrf_token_name]
-            post_request = requests.post(*args, **kwargs)
-
-        self.session.cookies = post_request.cookies
-        return post_request
+        return self.request("delete", *args, **kwargs)
