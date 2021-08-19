@@ -12,6 +12,7 @@ setup_info = {
     "long_description": long_description,
     "long_description_content_type": "text/markdown",
     "url": "https://github.com/rbx-libdev/ro.py",
+    "package_data": {"roblox": ["py.typed"]},
     "packages": setuptools.find_packages(),
     "classifiers": [
         "Programming Language :: Python :: 3",
@@ -27,8 +28,7 @@ setup_info = {
     },
     "python_requires": '>=3.6',
     "install_requires": [
-        "httpx",
-        "iso8601",
-        "lxml"
-    ]
+        "httpx"
+    ],
+    "zip_safe": False
 }
