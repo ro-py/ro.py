@@ -8,4 +8,4 @@ from ro.py import Client
 
 """
 
-import py
+from . import py
