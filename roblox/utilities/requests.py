@@ -57,6 +57,8 @@ class Requests:
     async def request(self, method: str, *args, **kwargs) -> Response:
         skip_roblox = kwargs.pop("skip_roblox", False)
         handle_xcsrf_token = kwargs.pop("handle_xcsrf_token", True)
+        skip_roblox = kwargs.pop("skip_roblox", False)
+
         response = await self.session.request(method, *args, **kwargs)
 
         if skip_roblox:
