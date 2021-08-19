@@ -1,26 +1,6 @@
 root_site = "roblox.com"
 
 
-def url(subdomain="www") -> str:
-    """
-    Generates a url using a path
-
-    Parameters
-    ----------
-    subdomain : str
-        The path of the url
-
-    Returns
-    -------
-    str
-    """
-
-    if subdomain:
-        return f"https://{subdomain}.{root_site}/"
-    else:
-        return f"https://{root_site}"
-
-
 class URLGenerator:
     """
     Generates URLs based on a chosen base URL.
@@ -35,8 +15,8 @@ class URLGenerator:
         """
         return f"{protocol}://{subdomain}.{self.base_url}"
 
-    def get_url(self, subdomain: str, protocol: str = "https", path: str = "/"):
+    def get_url(self, subdomain: str, protocol: str = "https", path: str = ""):
         """
         Returns a full URl, given a subdomain name, protocol, and each.
         """
-        return f"{protocol}://{subdomain}.{self.base_url}"
+        return f"{protocol}://{subdomain}.{self.base_url}/{path}"
