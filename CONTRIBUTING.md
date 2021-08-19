@@ -1,5 +1,5 @@
 <h1 align="center">
-    <img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py" width="400" />
+    <img src="./resources/textlogo.svg" alt="ro.py" width="400" />
     <br>
 </h1>
 
