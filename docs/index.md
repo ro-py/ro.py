@@ -1,7 +1,7 @@
 # Welcome to ro.py
 
 <div align="center">
-    <img width="50%" src="/assets/textlogo.svg">
+    <img width="50%" src="assets/textlogo.svg">
 </div>
 
 Welcome to ro.py!
