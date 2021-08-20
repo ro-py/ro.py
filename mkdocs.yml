@@ -1,3 +1,34 @@
+# See Elttob's original mkdocs.yml file here: https://github.com/Elttob/Fusion/blob/main/mkdocs.yml
+
 site_name: ro.py
+site_url: https://ro.py.jmk.gg/
+repo_name: rbx-libdev/ro.py
+repo_url: https://github.com/rbx-libdev/ro.py
+
 theme:
   name: material
+  logo: assets/logo.svg
+  favicon: assets/logo.svg
+  font:
+    text: Inter
+    code: JetBrains Mono
+  icon:
+    repo: fontawesome/brands/github
+  palette:
+    scheme: slate
+    primary: black
+    accent: blue
+
+extra_css:
+  - assets/theme.css
+
+markdown_extensions:
+  - pymdownx.superfences
+  - pymdownx.betterem
+  - pymdownx.details
+  - pymdownx.tabbed
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      guess_lang: false
+  - toc:
+      permalink: true
