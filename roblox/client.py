@@ -22,7 +22,10 @@ class Client:
         The URL generator object, which is used to generate URLs to send requests to endpoints.
         """
 
-        self._shared: ClientSharedObject = ClientSharedObject(requests=self._requests, url_generator=self._url_generator)
+        self._shared: ClientSharedObject = ClientSharedObject(
+            requests=self._requests,
+            url_generator=self._url_generator
+        )
         """
         The shared object, which is shared between all objects the client generates.
         """

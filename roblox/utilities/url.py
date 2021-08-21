@@ -15,7 +15,7 @@ class URLGenerator:
         """
         return f"{protocol}://{subdomain}.{self.base_url}"
 
-    def get_url(self, subdomain: str, protocol: str = "https", path: str = ""):
+    def get_url(self, subdomain: str, path: str = "", protocol: str = "https"):
         """
         Returns a full URl, given a subdomain name, protocol, and each.
         """

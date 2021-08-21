@@ -8,7 +8,7 @@ from .bases.baseuser import BaseUser
 
 class User(BaseUser):
     def __init__(self, shared: ClientSharedObject, data: dict):
-        super().__init__(user_id=data["id"])
+        super().__init__(shared=shared, user_id=data["id"])
 
         self._shared = shared
         self._data: dict = data
