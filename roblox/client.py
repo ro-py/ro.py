@@ -7,7 +7,7 @@ from .users import User
 
 class Client:
     def __init__(self, cookie=None, base_url="roblox.com"):
-        self.requests: Requests = Requests()
+        self._requests: Requests = Requests()
         """
         The requests object, which is used to send requests to Roblox endpoints.
         !!! note
@@ -17,17 +17,20 @@ class Client:
             
         """
 
-        self.url_generator: URLGenerator = URLGenerator(base_url=base_url)
+        self._url_generator: URLGenerator = URLGenerator(base_url=base_url)
         """
         The URL generator object, which is used to generate URLs to send requests to endpoints.
         """
 
-        self.shared: ClientSharedObject = ClientSharedObject(requests=self.requests, url_generator=self.url_generator)
+        self._shared: ClientSharedObject = ClientSharedObject(requests=self._requests, url_generator=self._url_generator)
         """
         The shared object, which is shared between all objects the client generates.
         """
 
     async def get_user(self, user_id: int):
-        user_response = await self.requests.get(f"https://users.roblox.com/v1/users/{user_id}")
+        user_response = await self._requests.get(f"https://users.roblox.com/v1/users/{user_id}")
         user_data = user_response.json()
-        return User(data=user_data)
+        return User(
+            shared=self._shared,
+            data=user_data
+        )
