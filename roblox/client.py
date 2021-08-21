@@ -6,6 +6,9 @@ from .utilities.requests import Requests
 
 from .users import User
 
+from .bases.baseuser import BaseUser
+from .bases.basegroup import BaseGroup
+
 from .partials.partialuser import PartialUser, RequestedUsernamePartialUser
 
 
@@ -144,3 +147,10 @@ class Client:
             return users[0]
         except IndexError:
             return None
+
+    def get_base_user(self, user_id: int):
+        return BaseUser(shared=self._shared, user_id=user_id)
+
+    def get_base_group(self, group_id: int):
+        return BaseGroup(shared=self._shared, group_id=group_id)
+
