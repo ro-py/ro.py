@@ -10,7 +10,7 @@ from .partials.partialuser import PartialUser
 
 
 class Client:
-    def __init__(self, cookie: str = None, base_url: str = "roblox.com"):
+    def __init__(self, token: str = None, base_url: str = "roblox.com"):
         self._requests: Requests = Requests()
         """
         The requests object, which is used to send requests to Roblox endpoints.
@@ -34,6 +34,15 @@ class Client:
         """
         The shared object, which is shared between all objects the client generates.
         """
+
+        if token:
+            self.set_token(token)
+
+    def set_token(self, token: str):
+        """
+        Sets the .ROBLOSECURITY token.
+        """
+        self._requests.session.cookies[".ROBLOSECURITY"] = token
 
     async def get_user(self, user_id: int) -> User:
         """
