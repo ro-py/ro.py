@@ -30,7 +30,8 @@ setup_info = {
     },
     "python_requires": '>=3.6',
     "install_requires": [
-        "httpx"
+        "httpx",
+        "python-dateutil"
     ]
 }
 

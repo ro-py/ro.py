@@ -16,6 +16,10 @@ class Client:
         """
 
         self.url_generator: URLGenerator = URLGenerator(base_url=base_url)
+        """
+        The URL generator object, which is used to generate URLs to send requests to endpoints.
+        """
+
         self.shared: ClientSharedObject = ClientSharedObject(requests=self.requests, url_generator=self.url_generator)
         """
         The shared object, which is shared between all objects the client generates.
