@@ -114,7 +114,7 @@ class Client:
             expand: bool = False
     ) -> Union[list[RequestedUsernamePartialUser], list[User]]:
         """
-        Returns a list of users corresponding to each user ID in the list.
+        Returns a list of users corresponding to each username in the list.
         If the "expand" property is True, returns a list of User. If not, returns a list of PartialUser.
         """
         users_response = await self._requests.post(
@@ -140,6 +140,10 @@ class Client:
             exclude_banned_users: bool = False,
             expand: bool = False
     ):
+        """
+        Returns a user corresponding to the passed username.
+        If the "expand" property is True, returns a User. If not, returns a PartialUser.
+        """
         users = await self.get_users_by_usernames(
             usernames=[username],
             exclude_banned_users=exclude_banned_users,
@@ -151,12 +155,21 @@ class Client:
             return None
 
     def get_base_user(self, user_id: int) -> BaseUser:
+        """
+        Gets a base user.
+        This method does not send any requests - it just generates a BaseUser object.
+        Passing an invalid user ID to this method will not raise an error until you use one of the BaseUser methods.
+        Use this method when you want to use one of the BaseUser methods without grabbing information about the user.
+        """
         return BaseUser(shared=self._shared, user_id=user_id)
 
     def _user_search_handler(self, data: dict) -> RequestedUsernamePartialUser:
         return RequestedUsernamePartialUser(shared=self._shared, data=data)
 
     def user_search(self, keyword: str, limit: int = 10) -> PageIterator:
+        """
+        Search for users with a keyword.
+        """
         return PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("users", f"v1/users/search"),
