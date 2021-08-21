@@ -13,3 +13,10 @@ class PartialUser(BaseUser):
 
         self.name: str = data.get("name") or data.get("username") or data.get("Username")
         self.display_name: str = data.get("displayName")
+
+
+class RequestedUsernamePartialUser(PartialUser):
+    def __init__(self, shared: ClientSharedObject, data: dict):
+        super().__init__(shared=shared, data=data)
+
+        self.requested_username = data.get("requestedUsername")

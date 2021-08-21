@@ -6,7 +6,7 @@ from .utilities.requests import Requests
 
 from .users import User
 
-from .partials.partialuser import PartialUser
+from .partials.partialuser import PartialUser, RequestedUsernamePartialUser
 
 
 class Client:
@@ -75,8 +75,12 @@ class Client:
                 data=authenticated_user_data
             )
 
-    async def get_users(self, user_ids: list[int], exclude_banned_users: bool = False, expand: bool = False) \
-            -> Union[list[User], list[PartialUser]]:
+    async def get_users(
+            self,
+            user_ids: list[int],
+            exclude_banned_users: bool = False,
+            expand: bool = False
+    ) -> Union[list[PartialUser], list[User]]:
         """
         Returns a list of users corresponding to each user ID in the list.
         If the "expand" property is True, returns a list of User. If not, returns a list of PartialUser.
@@ -94,6 +98,33 @@ class Client:
             return [await self.get_user(user_data["id"]) for user_data in users_data]
         else:
             return [PartialUser(
+                shared=self._shared,
+                data=user_data
+            ) for user_data in users_data]
+
+    async def get_users_by_usernames(
+            self,
+            usernames: list[str],
+            exclude_banned_users: bool = False,
+            expand: bool = False
+    ) -> Union[list[RequestedUsernamePartialUser], list[User]]:
+        """
+        Returns a list of users corresponding to each user ID in the list.
+        If the "expand" property is True, returns a list of User. If not, returns a list of PartialUser.
+        """
+        users_response = await self._requests.post(
+            url=self._shared.url_generator.get_url("users", f"v1/usernames/users"),
+            json={
+                "usernames": usernames,
+                "excludeBannedUsers": exclude_banned_users
+            }
+        )
+        users_data = users_response.json()["data"]
+
+        if expand:
+            return [await self.get_user(user_data["id"]) for user_data in users_data]
+        else:
+            return [RequestedUsernamePartialUser(
                 shared=self._shared,
                 data=user_data
             ) for user_data in users_data]
