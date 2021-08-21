@@ -7,7 +7,3 @@ class HTTPStatusError(_HTTPStatusError):
         if errors is None:
             errors = []
         self.errors = errors
-
-
-class InvalidUserError(HTTPStatusError):
-    pass
