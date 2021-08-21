@@ -164,4 +164,3 @@ class Client:
 
     def get_base_group(self, group_id: int) -> BaseGroup:
         return BaseGroup(shared=self._shared, group_id=group_id)
-
