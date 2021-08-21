@@ -3,6 +3,7 @@ from typing import Union
 from .utilities.shared import ClientSharedObject
 from .utilities.url import URLGenerator
 from .utilities.requests import Requests
+from .utilities.iterators import PageIterator
 
 from .users import User
 from .groups import Group
@@ -151,6 +152,20 @@ class Client:
 
     def get_base_user(self, user_id: int) -> BaseUser:
         return BaseUser(shared=self._shared, user_id=user_id)
+
+    def _user_search_handler(self, data: dict) -> RequestedUsernamePartialUser:
+        return RequestedUsernamePartialUser(shared=self._shared, data=data)
+
+    def user_search(self, keyword: str, limit: int = 10) -> PageIterator:
+        return PageIterator(
+            shared=self._shared,
+            url=self._shared.url_generator.get_url("users", f"v1/users/search"),
+            limit=limit,
+            extra_parameters={
+                "keyword": keyword
+            },
+            item_handler=self._user_search_handler
+        )
 
     async def get_group(self, group_id: int) -> Group:
         group_response = await self._requests.get(

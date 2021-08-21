@@ -28,7 +28,7 @@ class PageIterator:
             sort_order: SortOrder = SortOrder.Ascending,
             limit: int = 10,
             extra_parameters: dict = None,
-            item_handler: Callable[[dict], dict] = None
+            item_handler: Callable[[dict], any] = None
     ):
         self._shared: ClientSharedObject = shared
 
@@ -36,7 +36,7 @@ class PageIterator:
         self.sort_order: SortOrder = sort_order.value
         self.limit: int = limit
         self.extra_parameters: dict = extra_parameters
-        self.item_handler: Callable[[dict], dict] = item_handler
+        self.item_handler: Callable[[dict], any] = item_handler
 
         self.previous_page_cursor: str = ""
         self.next_page_cursor: str = ""
