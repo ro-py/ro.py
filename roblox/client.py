@@ -128,3 +128,19 @@ class Client:
                 shared=self._shared,
                 data=user_data
             ) for user_data in users_data]
+
+    async def get_user_by_username(
+            self,
+            username: str,
+            exclude_banned_users: bool = False,
+            expand: bool = False
+    ):
+        users = await self.get_users_by_usernames(
+            usernames=[username],
+            exclude_banned_users=exclude_banned_users,
+            expand=expand
+        )
+        try:
+            return users[0]
+        except IndexError:
+            return None
