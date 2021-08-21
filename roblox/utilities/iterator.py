@@ -33,10 +33,10 @@ class PageIterator:
         self._shared: ClientSharedObject = shared
 
         self.url: str = url
-        self.sort_order = sort_order.value
-        self.limit = limit
-        self.extra_parameters = extra_parameters
-        self.item_handler = item_handler
+        self.sort_order: SortOrder = sort_order.value
+        self.limit: int = limit
+        self.extra_parameters: dict = extra_parameters
+        self.item_handler: Callable[[dict], dict] = item_handler
 
         self.previous_page_cursor: str = ""
         self.next_page_cursor: str = ""
@@ -79,7 +79,10 @@ class PageIterator:
 
         self.next_page_cursor = page_data["nextPageCursor"]
         self.previous_page_cursor = page_data["previousPageCursor"]
-        self.data += page_data["data"]
+        if self.item_handler:
+            self.data += [self.item_handler(item_data) for item_data in page_data["data"]]
+        else:
+            self.data += page_data["data"]
 
         if not self.next_page_cursor:
             self.more_data = False
