@@ -28,7 +28,7 @@ setup_info = {
         "Examples": "https://github.com/rbx-libdev/ro.py/tree/main/examples",
         "Twitter": "https://twitter.com/jmkdev"
     },
-    "python_requires": '>=3.6',
+    "python_requires": '>=3.7',
     "install_requires": [
         "httpx",
         "python-dateutil"
