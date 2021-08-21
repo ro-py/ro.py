@@ -46,4 +46,11 @@ async def main():
 asyncio.get_event_loop().run_until_complete(main())
 ```
 
-Great, our code works!
+Great, our code works - but it's not doing anything yet. Let's print out some information about this user by replacing
+the code in `main()` with this:
+```python
+user = await client.get_user(1)
+print("Name:", user.name)
+print("Display Name:", user.display_name)
+print("Description:", user.description)
+```
