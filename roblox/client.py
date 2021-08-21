@@ -8,6 +8,11 @@ class Client:
         self.requests: Requests = Requests()
         """
         The requests object, which is used to send requests to Roblox endpoints.
+        !!! note
+            It is not recommended to initialize this object alone without a Client.
+            Ideally, you should always generate a client, even when sending requests, as it allows you to use our
+            builtin authentication methods and still recieve fixes in case of API changes that break existing code.
+            
         """
 
         self.url_generator: URLGenerator = URLGenerator(base_url=base_url)

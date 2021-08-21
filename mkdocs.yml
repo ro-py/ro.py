@@ -25,6 +25,9 @@ extra_css:
 
 plugins:
   - search
+  - mermaid2:
+      arguments:
+        theme: dark
   - gen-files:
       scripts:
         - docs/gen_doc_stubs.py
@@ -47,11 +50,15 @@ markdown_extensions:
   - admonition
   - attr_list
   - meta
-  - pymdownx.superfences
   - pymdownx.betterem
   - pymdownx.details
   - pymdownx.tabbed
   - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:mermaid2.fence_mermaid
   - pymdownx.highlight:
       guess_lang: false
   - toc:

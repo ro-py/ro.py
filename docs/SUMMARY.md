@@ -1,2 +1,4 @@
 - [Overview](index.md)
+- [Get Started](get-started.md)
+- [The .ROBLOSECURITY Token](roblosecurity.md)
 - [Code Reference](reference/)
