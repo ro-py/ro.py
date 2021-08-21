@@ -57,10 +57,10 @@ class Client:
             data=user_data
         )
 
-    async def get_authenticated_user(self, expand=True) -> Union[User, PartialUser]:
+    async def get_authenticated_user(self, expand: bool = True) -> Union[User, PartialUser]:
         """
         Returns the authenticated user.
-        If the "expand" property is set to True, returns a User. If not, it returns a PartialUser.
+        If the "expand" property is True, returns a User. If not, it returns a PartialUser.
         """
         authenticated_user_response = await self._requests.get(
             url=self._shared.url_generator.get_url("users", f"v1/users/authenticated")
@@ -74,3 +74,26 @@ class Client:
                 shared=self._shared,
                 data=authenticated_user_data
             )
+
+    async def get_users(self, user_ids: list[int], exclude_banned_users: bool = False, expand: bool = False) \
+            -> Union[list[User], list[PartialUser]]:
+        """
+        Returns a list of users corresponding to each user ID in the list.
+        If the "expand" property is True, returns a list of User. If not, returns a list of PartialUser.
+        """
+        users_response = await self._requests.post(
+            url=self._shared.url_generator.get_url("users", f"v1/users"),
+            json={
+                "userIds": user_ids,
+                "excludeBannedUsers": exclude_banned_users
+            }
+        )
+        users_data = users_response.json()["data"]
+
+        if expand:
+            return [await self.get_user(user_data["id"]) for user_data in users_data]
+        else:
+            return [PartialUser(
+                shared=self._shared,
+                data=user_data
+            ) for user_data in users_data]
