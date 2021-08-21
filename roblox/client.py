@@ -2,6 +2,8 @@ from .utilities.shared import ClientSharedObject
 from .utilities.url import URLGenerator
 from .utilities.requests import Requests
 
+from .users import User
+
 
 class Client:
     def __init__(self, cookie=None, base_url="roblox.com"):
@@ -24,3 +26,8 @@ class Client:
         """
         The shared object, which is shared between all objects the client generates.
         """
+
+    async def get_user(self, user_id: int):
+        user_response = await self.requests.get(f"https://users.roblox.com/v1/users/{user_id}")
+        user_data = user_response.json()
+        return User(data=user_data)
