@@ -5,6 +5,7 @@ from .utilities.url import URLGenerator
 from .utilities.requests import Requests
 
 from .users import User
+from .groups import Group
 
 from .bases.baseuser import BaseUser
 from .bases.basegroup import BaseGroup
@@ -148,9 +149,19 @@ class Client:
         except IndexError:
             return None
 
-    def get_base_user(self, user_id: int):
+    def get_base_user(self, user_id: int) -> BaseUser:
         return BaseUser(shared=self._shared, user_id=user_id)
 
-    def get_base_group(self, group_id: int):
+    async def get_group(self, group_id: int) -> Group:
+        group_response = await self._requests.get(
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{group_id}")
+        )
+        group_data = group_response.json()
+        return Group(
+            shared=self._shared,
+            data=group_data
+        )
+
+    def get_base_group(self, group_id: int) -> BaseGroup:
         return BaseGroup(shared=self._shared, group_id=group_id)
 
