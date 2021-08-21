@@ -4,8 +4,8 @@ from ..bases.baseuser import BaseUser
 
 class PartialUser(BaseUser):
     def __init__(self, shared: ClientSharedObject, data: dict):
-        self._shared = shared
-        self._data = data
+        self._shared: ClientSharedObject = shared
+        self._data: dict = data
 
         self.id: int = data.get("id") or data.get("userId") or data.get("Id")
 

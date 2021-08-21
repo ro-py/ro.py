@@ -3,7 +3,7 @@ from ..utilities.shared import ClientSharedObject
 
 class BaseUser:
     def __init__(self, shared: ClientSharedObject, user_id: int):
-        self._shared = shared
+        self._shared: ClientSharedObject = shared
         self.id: int = user_id
 
     async def get_status(self):

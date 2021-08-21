@@ -10,7 +10,7 @@ class Group(BaseGroup):
         super().__init__(shared, data["id"])
 
         self._shared: ClientSharedObject = shared
-        self._data: data = data
+        self._data: dict = data
 
         self.id: int = data["id"]
         self.name: str = data["name"]
