@@ -7,6 +7,7 @@ from .utilities.iterators import PageIterator
 
 from .users import User
 from .groups import Group
+from .universes import Universe
 
 from .bases.baseuser import BaseUser
 from .bases.basegroup import BaseGroup
@@ -181,6 +182,9 @@ class Client:
         )
 
     async def get_group(self, group_id: int) -> Group:
+        """
+        Gets a group by its ID.
+        """
         group_response = await self._requests.get(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{group_id}")
         )
@@ -191,4 +195,38 @@ class Client:
         )
 
     def get_base_group(self, group_id: int) -> BaseGroup:
+        """
+        Gets a base group.
+        This method does not send any requests - it just generates a BaseGroup object.
+        Passing an invalid group ID to this method will not raise an error until you use one of the BaseGroup methods.
+        Use this method when you want to use one of the BaseGroup methods without grabbing information about the group.
+        """
         return BaseGroup(shared=self._shared, group_id=group_id)
+
+    async def get_universes(self, universe_ids: list[int]):
+        """
+        Returns a list of universes corresponding to each ID in the list.
+        """
+        universes_response = await self._requests.get(
+            url=self._shared.url_generator.get_url("games", f"v1/games"),
+            params={
+                "universeIds": universe_ids
+            }
+        )
+        universes_data = universes_response.json()["data"]
+        return [Universe(
+            shared=self._shared,
+            data=universe_data
+        ) for universe_data in universes_data]
+
+    async def get_universe(self, universe_id: int):
+        """
+        Returns a universe with the passed ID.
+        """
+        universes = await self.get_universes(
+            universe_ids=[universe_id]
+        )
+        try:
+            return universes[0]
+        except IndexError:
+            return None
