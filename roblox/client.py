@@ -9,7 +9,7 @@ from .users import User
 from .groups import Group
 from .universes import Universe
 from .places import Place
-from .assets import Asset
+from .assets import EconomyAsset
 
 from .bases.baseuser import BaseUser
 from .bases.basegroup import BaseGroup
@@ -276,12 +276,12 @@ class Client:
         """
         return BasePlace(shared=self._shared, place_id=place_id)
 
-    async def get_asset(self, asset_id: int) -> Asset:
+    async def get_asset(self, asset_id: int) -> EconomyAsset:
         asset_response = await self._requests.get(
             url=self._shared.url_generator.get_url("economy", f"v2/assets/{asset_id}/details")
         )
         asset_data = asset_response.json()
-        return Asset(
+        return EconomyAsset(
             shared=self._shared,
             data=asset_data
         )

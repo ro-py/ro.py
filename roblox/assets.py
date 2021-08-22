@@ -10,7 +10,7 @@ from .partials.partialgroup import AssetPartialGroup
 from .bases.baseasset import BaseAsset
 
 
-class Asset(BaseAsset):
+class EconomyAsset(BaseAsset):
     """
     Represents a Roblox asset.
     It is intended to parse data from https://economy.roblox.com/v2/assets/ASSETID/details.
