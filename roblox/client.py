@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Union, Optional
 
 from .utilities.shared import ClientSharedObject
 from .utilities.url import URLGenerator
@@ -8,9 +8,12 @@ from .utilities.iterators import PageIterator
 from .users import User
 from .groups import Group
 from .universes import Universe
+from .places import Place
 
 from .bases.baseuser import BaseUser
 from .bases.basegroup import BaseGroup
+from .bases.baseuniverse import BaseUniverse
+from .bases.baseplace import BasePlace
 
 from .partials.partialuser import PartialUser, RequestedUsernamePartialUser
 
@@ -140,7 +143,7 @@ class Client:
             username: str,
             exclude_banned_users: bool = False,
             expand: bool = False
-    ):
+    ) -> Optional[Union[list[RequestedUsernamePartialUser], list[User]]]:
         """
         Returns a user corresponding to the passed username.
         If the "expand" property is True, returns a User. If not, returns a PartialUser.
@@ -203,7 +206,7 @@ class Client:
         """
         return BaseGroup(shared=self._shared, group_id=group_id)
 
-    async def get_universes(self, universe_ids: list[int]):
+    async def get_universes(self, universe_ids: list[int]) -> list[Universe]:
         """
         Returns a list of universes corresponding to each ID in the list.
         """
@@ -219,14 +222,48 @@ class Client:
             data=universe_data
         ) for universe_data in universes_data]
 
-    async def get_universe(self, universe_id: int):
+    async def get_universe(self, universe_id: int) -> Optional[Universe]:
         """
-        Returns a universe with the passed ID.
+        Gets a universe with the passed ID.
         """
         universes = await self.get_universes(
             universe_ids=[universe_id]
         )
         try:
             return universes[0]
+        except IndexError:
+            return None
+
+    def get_base_universe(self, universe_id: int) -> BaseUniverse:
+        """
+        Gets a base universe.
+        """
+        return BaseUniverse(shared=self._shared, universe_id=universe_id)
+
+    async def get_places(self, place_ids: list[int]) -> list[Place]:
+        """
+        Returns a list of places corresponding to each ID in the list.
+        """
+        places_response = await self._requests.get(
+            url=self._shared.url_generator.get_url("games", f"v1/games/multiget-place-details"),
+            params={
+                "placeIds": place_ids
+            }
+        )
+        places_data = places_response.json()
+        return [Place(
+            shared=self._shared,
+            data=place_data
+        ) for place_data in places_data]
+
+    async def get_place(self, place_id: int) -> Optional[Place]:
+        """
+        Gets a place with the passed ID.
+        """
+        places = await self.get_places(
+            place_ids=[place_id]
+        )
+        try:
+            return places[0]
         except IndexError:
             return None
