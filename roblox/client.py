@@ -28,8 +28,7 @@ class Client:
         !!! note
             It is not recommended to initialize this object alone without a Client.
             Ideally, you should always generate a client, even when sending requests, as it allows you to use our
-            builtin authentication methods and still recieve fixes in case of API changes that break existing code.
-            
+            builtin authentication methods and still recieve fixes in case of API changes that break existing code.            
         """
 
         self._url_generator: URLGenerator = URLGenerator(base_url=base_url)
@@ -277,6 +276,9 @@ class Client:
         return BasePlace(shared=self._shared, place_id=place_id)
 
     async def get_asset(self, asset_id: int) -> EconomyAsset:
+        """
+        Gets an asset with the passed ID.
+        """
         asset_response = await self._requests.get(
             url=self._shared.url_generator.get_url("economy", f"v2/assets/{asset_id}/details")
         )
