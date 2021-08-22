@@ -9,11 +9,13 @@ from .users import User
 from .groups import Group
 from .universes import Universe
 from .places import Place
+from .assets import Asset
 
 from .bases.baseuser import BaseUser
 from .bases.basegroup import BaseGroup
 from .bases.baseuniverse import BaseUniverse
 from .bases.baseplace import BasePlace
+from .bases.baseasset import BaseAsset
 
 from .partials.partialuser import PartialUser, RequestedUsernamePartialUser
 
@@ -267,3 +269,25 @@ class Client:
             return places[0]
         except IndexError:
             return None
+
+    def get_base_place(self, place_id: int) -> BasePlace:
+        """
+        Gets a base place.
+        """
+        return BasePlace(shared=self._shared, place_id=place_id)
+
+    async def get_asset(self, asset_id: int) -> Asset:
+        asset_response = await self._requests.get(
+            url=self._shared.url_generator.get_url("economy", f"v2/assets/{asset_id}/details")
+        )
+        asset_data = asset_response.json()
+        return Asset(
+            shared=self._shared,
+            data=asset_data
+        )
+
+    def get_base_asset(self, asset_id: int) -> BaseAsset:
+        """
+        Gets a base asset.
+        """
+        return BaseAsset(shared=self._shared, asset_id=asset_id)
