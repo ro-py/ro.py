@@ -41,7 +41,7 @@ You would get an error like this:
 SyntaxError: 'await' outside function
 ```
 
-This may seem confusing - but this is intended design. [Learn more about asyncio design](https://lukasa.co.uk/2016/07/The_Function_Colour_Myth/)
+This may seem confusing - but this is [intended design.](https://lukasa.co.uk/2016/07/The_Function_Colour_Myth/)
 To fix this, we need to wrap our code in an asynchronous function, and then run it with `get_event_loop().run_until_complete`, like so:
 ```python
 import asyncio

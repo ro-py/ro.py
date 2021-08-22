@@ -5,6 +5,7 @@ from dateutil.parser import parse
 from .utilities.shared import ClientSharedObject
 
 from .bases.baseuniverse import BaseUniverse
+from .bases.baseplace import BasePlace
 
 
 class Universe(BaseUniverse):
@@ -15,7 +16,7 @@ class Universe(BaseUniverse):
         self._data: dict = data
 
         self.id: int = data["id"]
-        # rootPlaceId is missing because I have no BaseAsset/BasePlace yet
+        self.root_place: BaseUniverse = BaseUniverse(shared=shared, universe_id=data["rootPlaceId"])
         self.name: str = data["name"]
         self.description: str = data["description"]
         # creator is missing because I have not completed it yet
