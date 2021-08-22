@@ -54,6 +54,8 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.tabbed
   - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid

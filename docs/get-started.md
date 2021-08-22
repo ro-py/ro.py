@@ -64,3 +64,4 @@ print("Description:", user.description)
 ```
 
 Great! We now have a program that prints out a user's name, display name, and description.
+But what if we want to log in and get our *own* username?
