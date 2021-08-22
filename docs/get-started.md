@@ -9,16 +9,24 @@ client = Client()
 
 Great, we've got a client! But how can we use it?  
 We start by calling `await client.get_OBJECT()` where `OBJECT` is a Roblox datatype. Here are some examples: 
-```python
-await client.get_asset(asset_id) -> Asset
-await client.get_badge(badge_id) -> Badge
-await client.get_game_by_place_id(place_id) -> Place
-await client.get_game_by_universe_id(universe_id) -> Universe
-await client.get_group(group_id) -> Group
-await client.get_self() -> User # authenticated user
-await client.get_user(user_id) -> User
-await client.get_user_by_username(username) -> User
-```
+??? example "Examples of ro.py datatypes"
+    ```python
+    # Users
+    client.get_base_user()
+    await client.get_user()
+    await client.get_users()
+    await client.get_user_by_username()
+    await client.get_users_by_username()
+    await client.get_authenticated_user()
+    await client.user_search()
+    # Groups
+    client.get_base_group()
+    await client.get_group()
+    # Universe
+    client.get_base_universe()
+    await client.get_universe()
+    await client.get_universes()
+    ```
 
 But wait - if you tried to run code like this:
 ```python
@@ -33,8 +41,8 @@ You would get an error like this:
 SyntaxError: 'await' outside function
 ```
 
-This may seem confusing - but this is intended design. The authors of Python's `asnycio` determined that it is critically important to mark places of suspend in code.
-To fix this, we need to wrap our code in an asynchronous function, and then run it with `get_event_loop()run_until_complete`, like so:
+This may seem confusing - but this is intended design. [Learn more about asyncio design](https://lukasa.co.uk/2016/07/The_Function_Colour_Myth/)
+To fix this, we need to wrap our code in an asynchronous function, and then run it with `get_event_loop().run_until_complete`, like so:
 ```python
 import asyncio
 from roblox import Client
@@ -54,3 +62,5 @@ print("Name:", user.name)
 print("Display Name:", user.display_name)
 print("Description:", user.description)
 ```
+
+Great! We now have a program that prints out a user's name, display name, and description.
