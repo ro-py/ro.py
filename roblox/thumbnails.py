@@ -205,3 +205,25 @@ class ThumbnailProvider:
             UniverseThumbnail(shared=self._shared, data=thumbnail_data)
             for thumbnail_data in thumbnails_data
         ]
+
+    async def get_group_icons(
+        self,
+        group_ids: list[int],
+        size: str = "150x150",
+        format: ThumbnailFormat = ThumbnailFormat.png,
+        is_circular: bool = False,
+    ) -> list[Thumbnail]:
+        thumbnails_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("thumbnails", "v1/groups/icons"),
+            params={
+                "groupIds": group_ids,
+                "size": size,
+                "format": format.value,
+                "isCircular": is_circular,
+            },
+        )
+        thumbnails_data = thumbnails_response.json()["data"]
+        return [
+            Thumbnail(shared=self._shared, data=thumbnail_data)
+            for thumbnail_data in thumbnails_data
+        ]
