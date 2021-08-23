@@ -10,6 +10,7 @@ from .groups import Group
 from .universes import Universe
 from .places import Place
 from .assets import EconomyAsset
+from .presence import PresenceProvider
 
 from .bases.baseuser import BaseUser
 from .bases.basegroup import BaseGroup
@@ -44,6 +45,8 @@ class Client:
         """
         The shared object, which is shared between all objects the client generates.
         """
+
+        self.presence = PresenceProvider(shared=self._shared)
 
         if token:
             self.set_token(token)
