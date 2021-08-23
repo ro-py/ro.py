@@ -251,3 +251,81 @@ class ThumbnailProvider:
             Thumbnail(shared=self._shared, data=thumbnail_data)
             for thumbnail_data in thumbnails_data
         ]
+
+    async def get_user_avatars(
+        self,
+        user_ids: list[int],
+        size: str = "30x30",
+        format: ThumbnailFormat = ThumbnailFormat.png,
+        is_circular: bool = False,
+    ) -> list[Thumbnail]:
+        thumbnails_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("thumbnails", "v1/users/avatar"),
+            params={
+                "userIds": user_ids,
+                "size": size,
+                "format": format.value,
+                "isCircular": is_circular,
+            },
+        )
+        thumbnails_data = thumbnails_response.json()["data"]
+        return [
+            Thumbnail(shared=self._shared, data=thumbnail_data)
+            for thumbnail_data in thumbnails_data
+        ]
+
+    async def get_user_avatars_bust(
+        self,
+        user_ids: list[int],
+        size: str = "30x30",
+        format: ThumbnailFormat = ThumbnailFormat.png,
+        is_circular: bool = False,
+    ) -> list[Thumbnail]:
+        thumbnails_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url(
+                "thumbnails", "v1/users/avatar-bust"
+            ),
+            params={
+                "userIds": user_ids,
+                "size": size,
+                "format": format.value,
+                "isCircular": is_circular,
+            },
+        )
+        thumbnails_data = thumbnails_response.json()["data"]
+        return [
+            Thumbnail(shared=self._shared, data=thumbnail_data)
+            for thumbnail_data in thumbnails_data
+        ]
+
+    async def get_user_avatars_headshot(
+        self,
+        user_ids: list[int],
+        size: str = "30x30",
+        format: ThumbnailFormat = ThumbnailFormat.png,
+        is_circular: bool = False,
+    ) -> list[Thumbnail]:
+        thumbnails_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url(
+                "thumbnails", "v1/users/avatar-headshot"
+            ),
+            params={
+                "userIds": user_ids,
+                "size": size,
+                "format": format.value,
+                "isCircular": is_circular,
+            },
+        )
+        thumbnails_data = thumbnails_response.json()["data"]
+        return [
+            Thumbnail(shared=self._shared, data=thumbnail_data)
+            for thumbnail_data in thumbnails_data
+        ]
+
+    async def get_user_avatar_3d(self, user_id: int) -> Thumbnail:
+        thumbnail_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("thumbnails", "v1/users/avatar-3d"),
+            params={"userId": user_id},
+        )
+        thumbnail_data = thumbnail_response.json()
+        return Thumbnail(shared=self._shared, data=thumbnail_data)
