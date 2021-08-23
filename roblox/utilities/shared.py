@@ -6,13 +6,16 @@ from .url import URLGenerator
 
 if TYPE_CHECKING:
     from ..client import Client
+    from ..presence import PresenceProvider
 
 
 class ClientSharedObject:
     """
     This object is shared between the client and all objects it generates.
     """
+
     def __init__(self, client: Client, requests: Requests, url_generator: URLGenerator):
-        self.client = client
+        self.client: Client = client
         self.requests: Requests = requests
         self.url_generator: URLGenerator = url_generator
+        self.presence_provider: PresenceProvider

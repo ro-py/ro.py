@@ -1,3 +1,5 @@
+from typing import Optional
+
 from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator, SortOrder
 
@@ -14,19 +16,35 @@ class BaseUser:
         Returns the user's status.
         """
         status_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("users", f"/v1/users/{self.id}/status")
+            url=self._shared.url_generator.get_url(
+                "users", f"/v1/users/{self.id}/status"
+            )
         )
         status_data = status_response.json()
         return status_data["status"]
 
-    def username_history(self, limit: int = 10, sort_order: SortOrder = SortOrder.Ascending) -> PageIterator:
+    def username_history(
+        self, limit: int = 10, sort_order: SortOrder = SortOrder.Ascending
+    ) -> PageIterator:
         """
         Returns a PageIterator containing the user's username history.
         """
         return PageIterator(
             shared=self._shared,
-            url=self._shared.url_generator.get_url("users", f"v1/users/{self.id}/username-history"),
+            url=self._shared.url_generator.get_url(
+                "users", f"v1/users/{self.id}/username-history"
+            ),
             limit=limit,
             sort_order=sort_order,
-            item_handler=lambda data: data["name"]
+            item_handler=lambda data: data["name"],
         )
+
+    async def get_presence(self) -> Optional[Presence]:
+        """
+        Returns the user's presence.
+        """
+        presences = await self._shared.presence_provider.get_user_presences([self.id])
+        try:
+            return presences[0]
+        except IndexError:
+            return None

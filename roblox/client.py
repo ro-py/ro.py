@@ -38,15 +38,17 @@ class Client:
         """
 
         self._shared: ClientSharedObject = ClientSharedObject(
-            client=self,
-            requests=self._requests,
-            url_generator=self._url_generator
+            client=self, requests=self._requests, url_generator=self._url_generator
         )
         """
         The shared object, which is shared between all objects the client generates.
         """
 
-        self.presence = PresenceProvider(shared=self._shared)
+        self.presence: PresenceProvider = PresenceProvider(shared=self._shared)
+        """
+        The presence generator object.
+        """
+        self._shared.presence_provider = self.presence  # TODO: Improve this hack
 
         if token:
             self.set_token(token)
@@ -65,12 +67,11 @@ class Client:
             url=self._shared.url_generator.get_url("users", f"v1/users/{user_id}")
         )
         user_data = user_response.json()
-        return User(
-            shared=self._shared,
-            data=user_data
-        )
+        return User(shared=self._shared, data=user_data)
 
-    async def get_authenticated_user(self, expand: bool = True) -> Union[User, PartialUser]:
+    async def get_authenticated_user(
+        self, expand: bool = True
+    ) -> Union[User, PartialUser]:
         """
         Returns the authenticated user.
         If the "expand" property is True, returns a User. If not, it returns a PartialUser.
@@ -83,16 +84,13 @@ class Client:
         if expand:
             return await self.get_user(authenticated_user_data["id"])
         else:
-            return PartialUser(
-                shared=self._shared,
-                data=authenticated_user_data
-            )
+            return PartialUser(shared=self._shared, data=authenticated_user_data)
 
     async def get_users(
-            self,
-            user_ids: list[int],
-            exclude_banned_users: bool = False,
-            expand: bool = False
+        self,
+        user_ids: list[int],
+        exclude_banned_users: bool = False,
+        expand: bool = False,
     ) -> Union[list[PartialUser], list[User]]:
         """
         Returns a list of users corresponding to each user ID in the list.
@@ -100,26 +98,23 @@ class Client:
         """
         users_response = await self._requests.post(
             url=self._shared.url_generator.get_url("users", f"v1/users"),
-            json={
-                "userIds": user_ids,
-                "excludeBannedUsers": exclude_banned_users
-            }
+            json={"userIds": user_ids, "excludeBannedUsers": exclude_banned_users},
         )
         users_data = users_response.json()["data"]
 
         if expand:
             return [await self.get_user(user_data["id"]) for user_data in users_data]
         else:
-            return [PartialUser(
-                shared=self._shared,
-                data=user_data
-            ) for user_data in users_data]
+            return [
+                PartialUser(shared=self._shared, data=user_data)
+                for user_data in users_data
+            ]
 
     async def get_users_by_usernames(
-            self,
-            usernames: list[str],
-            exclude_banned_users: bool = False,
-            expand: bool = False
+        self,
+        usernames: list[str],
+        exclude_banned_users: bool = False,
+        expand: bool = False,
     ) -> Union[list[RequestedUsernamePartialUser], list[User]]:
         """
         Returns a list of users corresponding to each username in the list.
@@ -127,26 +122,20 @@ class Client:
         """
         users_response = await self._requests.post(
             url=self._shared.url_generator.get_url("users", f"v1/usernames/users"),
-            json={
-                "usernames": usernames,
-                "excludeBannedUsers": exclude_banned_users
-            }
+            json={"usernames": usernames, "excludeBannedUsers": exclude_banned_users},
         )
         users_data = users_response.json()["data"]
 
         if expand:
             return [await self.get_user(user_data["id"]) for user_data in users_data]
         else:
-            return [RequestedUsernamePartialUser(
-                shared=self._shared,
-                data=user_data
-            ) for user_data in users_data]
+            return [
+                RequestedUsernamePartialUser(shared=self._shared, data=user_data)
+                for user_data in users_data
+            ]
 
     async def get_user_by_username(
-            self,
-            username: str,
-            exclude_banned_users: bool = False,
-            expand: bool = False
+        self, username: str, exclude_banned_users: bool = False, expand: bool = False
     ) -> Optional[Union[list[RequestedUsernamePartialUser], list[User]]]:
         """
         Returns a user corresponding to the passed username.
@@ -155,7 +144,7 @@ class Client:
         users = await self.get_users_by_usernames(
             usernames=[username],
             exclude_banned_users=exclude_banned_users,
-            expand=expand
+            expand=expand,
         )
         try:
             return users[0]
@@ -182,10 +171,8 @@ class Client:
             shared=self._shared,
             url=self._shared.url_generator.get_url("users", f"v1/users/search"),
             limit=limit,
-            extra_parameters={
-                "keyword": keyword
-            },
-            item_handler=self._user_search_handler
+            extra_parameters={"keyword": keyword},
+            item_handler=self._user_search_handler,
         )
 
     async def get_group(self, group_id: int) -> Group:
@@ -196,10 +183,7 @@ class Client:
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{group_id}")
         )
         group_data = group_response.json()
-        return Group(
-            shared=self._shared,
-            data=group_data
-        )
+        return Group(shared=self._shared, data=group_data)
 
     def get_base_group(self, group_id: int) -> BaseGroup:
         """
@@ -216,23 +200,19 @@ class Client:
         """
         universes_response = await self._requests.get(
             url=self._shared.url_generator.get_url("games", f"v1/games"),
-            params={
-                "universeIds": universe_ids
-            }
+            params={"universeIds": universe_ids},
         )
         universes_data = universes_response.json()["data"]
-        return [Universe(
-            shared=self._shared,
-            data=universe_data
-        ) for universe_data in universes_data]
+        return [
+            Universe(shared=self._shared, data=universe_data)
+            for universe_data in universes_data
+        ]
 
     async def get_universe(self, universe_id: int) -> Optional[Universe]:
         """
         Gets a universe with the passed ID.
         """
-        universes = await self.get_universes(
-            universe_ids=[universe_id]
-        )
+        universes = await self.get_universes(universe_ids=[universe_id])
         try:
             return universes[0]
         except IndexError:
@@ -249,24 +229,21 @@ class Client:
         Returns a list of places corresponding to each ID in the list.
         """
         places_response = await self._requests.get(
-            url=self._shared.url_generator.get_url("games", f"v1/games/multiget-place-details"),
-            params={
-                "placeIds": place_ids
-            }
+            url=self._shared.url_generator.get_url(
+                "games", f"v1/games/multiget-place-details"
+            ),
+            params={"placeIds": place_ids},
         )
         places_data = places_response.json()
-        return [Place(
-            shared=self._shared,
-            data=place_data
-        ) for place_data in places_data]
+        return [
+            Place(shared=self._shared, data=place_data) for place_data in places_data
+        ]
 
     async def get_place(self, place_id: int) -> Optional[Place]:
         """
         Gets a place with the passed ID.
         """
-        places = await self.get_places(
-            place_ids=[place_id]
-        )
+        places = await self.get_places(place_ids=[place_id])
         try:
             return places[0]
         except IndexError:
@@ -283,13 +260,12 @@ class Client:
         Gets an asset with the passed ID.
         """
         asset_response = await self._requests.get(
-            url=self._shared.url_generator.get_url("economy", f"v2/assets/{asset_id}/details")
+            url=self._shared.url_generator.get_url(
+                "economy", f"v2/assets/{asset_id}/details"
+            )
         )
         asset_data = asset_response.json()
-        return EconomyAsset(
-            shared=self._shared,
-            data=asset_data
-        )
+        return EconomyAsset(shared=self._shared, data=asset_data)
 
     def get_base_asset(self, asset_id: int) -> BaseAsset:
         """
