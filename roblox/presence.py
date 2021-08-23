@@ -50,5 +50,5 @@ class PresenceProvider:
                 "userIds": user_ids
             }
         )
-        presences_data = presence_response.json()["userPresences"]
+        presences_data = presences_response.json()["userPresences"]
         return [Presence(shared=self._shared, data=presence_data) for presence_data in presences_data]
