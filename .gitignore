@@ -1,5 +1,6 @@
 .idea/
 __pycache__/
+venv/
 *.pyc
 *.pyo
 *.bak
@@ -15,3 +16,4 @@ other/
 udocs/
 build.*
 docsbuild.bat
+*.egg-info
