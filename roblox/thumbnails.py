@@ -28,11 +28,24 @@ class ThumbnailFormat(Enum):
 class Thumbnail:
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
-        self._data = data
+        self._data: dict = data
 
         self.target_id: int = data["targetId"]
         self.state: ThumbnailState = ThumbnailState(data["state"])
         self.image_url: Optional[str] = data["imageUrl"]
+
+
+class UniverseThumbnail:
+    def __init__(self, shared: ClientSharedObject, data: dict):
+        self._shared: ClientSharedObject = shared
+        self._data: dict = data
+
+        self.universe_id: int = data["universeId"]
+        self.error: Optional[str] = data["error"]
+        self.thumbnails: list[Thumbnail] = [
+            Thumbnail(shared=self._shared, data=thumbnail_data)
+            for thumbnail_data in data["thumbnails"]
+        ]
 
 
 class ThumbnailProvider:
@@ -73,7 +86,7 @@ class ThumbnailProvider:
         thumbnail_data = thumbnail_response.json()
         return Thumbnail(shared=self._shared, data=thumbnail_data)
 
-    async def get_badge_thumbnails(
+    async def get_badge_icons(
         self,
         badge_ids: list[int],
         size: str = "150x150",
@@ -119,7 +132,7 @@ class ThumbnailProvider:
             for thumbnail_data in thumbnails_data
         ]
 
-    async def get_gamepass_thumbnails(
+    async def get_gamepass_icons(
         self,
         gamepass_ids: list[int],
         size: str = "150x150",
@@ -138,5 +151,57 @@ class ThumbnailProvider:
         thumbnails_data = thumbnails_response.json()["data"]
         return [
             Thumbnail(shared=self._shared, data=thumbnail_data)
+            for thumbnail_data in thumbnails_data
+        ]
+
+    async def get_universe_icons(
+        self,
+        universe_ids: list[int],
+        return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
+        size: str = "50x50",
+        format: ThumbnailFormat = ThumbnailFormat.png,
+        is_circular: bool = False,
+    ) -> list[Thumbnail]:
+        thumbnails_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("thumbnails", "v1/games/icons"),
+            params={
+                "universeIds": universe_ids,
+                "returnPolicy": return_policy.value,
+                "size": size,
+                "format": format.value,
+                "isCircular": is_circular,
+            },
+        )
+        thumbnails_data = thumbnails_response.json()["data"]
+        return [
+            Thumbnail(shared=self._shared, data=thumbnail_data)
+            for thumbnail_data in thumbnails_data
+        ]
+
+    async def get_universe_thumbnails(
+        self,
+        universe_ids: list[int],
+        size: str = "768x432",
+        format: ThumbnailFormat = ThumbnailFormat.png,
+        is_circular: bool = False,
+        count_per_universe: int = None,
+        defaults: bool = None,
+    ) -> list[UniverseThumbnail]:
+        thumbnails_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url(
+                "thumbnails", "v1/games/multiget/thumbnails"
+            ),
+            params={
+                "universeIds": universe_ids,
+                "countPerUniverse": count_per_universe,
+                "defaults": defaults,
+                "size": size,
+                "format": format.value,
+                "isCircular": is_circular,
+            },
+        )
+        thumbnails_data = thumbnails_response.json()["data"]
+        return [
+            UniverseThumbnail(shared=self._shared, data=thumbnail_data)
             for thumbnail_data in thumbnails_data
         ]
