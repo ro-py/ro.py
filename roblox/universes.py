@@ -16,7 +16,9 @@ class Universe(BaseUniverse):
         self._data: dict = data
 
         self.id: int = data["id"]
-        self.root_place: BaseUniverse = BaseUniverse(shared=shared, universe_id=data["rootPlaceId"])
+        self.root_place: BaseUniverse = BaseUniverse(
+            shared=shared, universe_id=data["rootPlaceId"]
+        )
         self.name: str = data["name"]
         self.description: str = data["description"]
         # creator is missing because I have not completed it yet

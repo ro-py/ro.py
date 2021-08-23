@@ -15,6 +15,7 @@ class EconomyAsset(BaseAsset):
     Represents a Roblox asset.
     It is intended to parse data from https://economy.roblox.com/v2/assets/ASSETID/details.
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         super().__init__(shared=shared, asset_id=data["AssetId"])
 
@@ -34,9 +35,13 @@ class EconomyAsset(BaseAsset):
         if self.creator_type == "User":
             self.creator: PartialUser = PartialUser(shared=shared, data=data["Creator"])
         elif self.creator_type == "Group":
-            self.creator: AssetPartialGroup = AssetPartialGroup(shared=shared, data=data["Creator"])
+            self.creator: AssetPartialGroup = AssetPartialGroup(
+                shared=shared, data=data["Creator"]
+            )
 
-        self.icon_image: BaseAsset = BaseAsset(shared=shared, asset_id=data["IconImageAssetId"])
+        self.icon_image: BaseAsset = BaseAsset(
+            shared=shared, asset_id=data["IconImageAssetId"]
+        )
 
         self.created: datetime = parse(data["Created"])
         self.updated: datetime = parse(data["Updated"])
