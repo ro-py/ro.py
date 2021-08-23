@@ -7,6 +7,7 @@ from .url import URLGenerator
 if TYPE_CHECKING:
     from ..client import Client
     from ..presence import PresenceProvider
+    from ..thumbnails import ThumbnailProvider
 
 
 class ClientSharedObject:
@@ -19,3 +20,4 @@ class ClientSharedObject:
         self.requests: Requests = requests
         self.url_generator: URLGenerator = url_generator
         self.presence_provider: PresenceProvider
+        self.thumbnail_provider: ThumbnailProvider

@@ -11,6 +11,7 @@ from .universes import Universe
 from .places import Place
 from .assets import EconomyAsset
 from .presence import PresenceProvider
+from .thumbnails import ThumbnailProvider
 
 from .bases.baseuser import BaseUser
 from .bases.basegroup import BaseGroup
@@ -46,9 +47,15 @@ class Client:
 
         self.presence: PresenceProvider = PresenceProvider(shared=self._shared)
         """
-        The presence generator object.
+        The presence provider object.
         """
+        self.thumbnails: ThumbnailProvider = ThumbnailProvider(shared=self._shared)
+        """
+        The thumbnail provider object.
+        """
+
         self._shared.presence_provider = self.presence  # TODO: Improve this hack
+        self._shared.thumbnail_provider = self.thumbnails
 
         if token:
             self.set_token(token)
