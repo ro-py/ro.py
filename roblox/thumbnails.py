@@ -227,3 +227,27 @@ class ThumbnailProvider:
             Thumbnail(shared=self._shared, data=thumbnail_data)
             for thumbnail_data in thumbnails_data
         ]
+
+    async def get_place_icons(
+        self,
+        place_ids: list[int],
+        return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
+        size: str = "50x50",
+        format: ThumbnailFormat = ThumbnailFormat.png,
+        is_circular: bool = False,
+    ) -> list[Thumbnail]:
+        thumbnails_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("thumbnails", "v1/places/gameicons"),
+            params={
+                "placeIds": place_ids,
+                "returnPolicy": return_policy.value,
+                "size": size,
+                "format": format.value,
+                "isCircular": is_circular,
+            },
+        )
+        thumbnails_data = thumbnails_response.json()["data"]
+        return [
+            Thumbnail(shared=self._shared, data=thumbnail_data)
+            for thumbnail_data in thumbnails_data
+        ]
