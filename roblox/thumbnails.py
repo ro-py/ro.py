@@ -46,12 +46,90 @@ class ThumbnailProvider:
         size: str = "30x30",
         format: ThumbnailFormat = ThumbnailFormat.png,
         is_circular: bool = False,
-    ):
+    ) -> list[Thumbnail]:
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/assets"),
             params={
                 "assetIds": asset_ids,
                 "returnPolicy": return_policy.value,
+                "size": size,
+                "format": format.value,
+                "isCircular": is_circular,
+            },
+        )
+        thumbnails_data = thumbnails_response.json()["data"]
+        return [
+            Thumbnail(shared=self._shared, data=thumbnail_data)
+            for thumbnail_data in thumbnails_data
+        ]
+
+    async def get_asset_thumbnail_3d(self, asset_id: int) -> Thumbnail:
+        thumbnail_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url(
+                "thumbnails", "v1/assets-thumbnail-3d"
+            ),
+            params={"assetId": asset_id},
+        )
+        thumbnail_data = thumbnail_response.json()
+        return Thumbnail(shared=self._shared, data=thumbnail_data)
+
+    async def get_badge_thumbnails(
+        self,
+        badge_ids: list[int],
+        size: str = "150x150",
+        format: ThumbnailFormat = ThumbnailFormat.png,
+        is_circular: bool = False,
+    ) -> list[Thumbnail]:
+        thumbnails_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("thumbnails", "v1/badges/icons"),
+            params={
+                "badgeIds": badge_ids,
+                "size": size,
+                "format": format.value,
+                "isCircular": is_circular,
+            },
+        )
+        thumbnails_data = thumbnails_response.json()["data"]
+        return [
+            Thumbnail(shared=self._shared, data=thumbnail_data)
+            for thumbnail_data in thumbnails_data
+        ]
+
+    async def get_bundle_thumbnails(
+        self,
+        bundle_ids: list[int],
+        size: str = "150x150",
+        format: ThumbnailFormat = ThumbnailFormat.png,
+        is_circular: bool = False,
+    ) -> list[Thumbnail]:
+        thumbnails_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url(
+                "thumbnails", "v1/bundles/thumbnails"
+            ),
+            params={
+                "bundleIds": bundle_ids,
+                "size": size,
+                "format": format.value,
+                "isCircular": is_circular,
+            },
+        )
+        thumbnails_data = thumbnails_response.json()["data"]
+        return [
+            Thumbnail(shared=self._shared, data=thumbnail_data)
+            for thumbnail_data in thumbnails_data
+        ]
+
+    async def get_gamepass_thumbnails(
+        self,
+        gamepass_ids: list[int],
+        size: str = "150x150",
+        format: ThumbnailFormat = ThumbnailFormat.png,
+        is_circular: bool = False,
+    ) -> list[Thumbnail]:
+        thumbnails_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("thumbnails", "v1/game-passes"),
+            params={
+                "gamePassIds": gamepass_ids,
                 "size": size,
                 "format": format.value,
                 "isCircular": is_circular,
