@@ -14,12 +14,7 @@ from ..users import User
 from ..utilities.iterators import SortOrder, PageIterator
 from typing import List, Union, BinaryIO, Optional, TYPE_CHECKING
 
-from httpx import Response
-import json
 from pathlib import Path
-
-import enum
-
 if TYPE_CHECKING:
     from ..relationship import RelationshipType, RelationshipRequest
     from ..groups import Group
