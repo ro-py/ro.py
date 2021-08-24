@@ -1,9 +1,12 @@
-import iso8601
+from __future__ import annotations
 
-from .bases.basegroup import BaseGroup
-from .partials.partialuser import PartialUser
 from .utilities.shared import ClientSharedObject
+from dateutil.parser import parse
+from typing import TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from .bases.basegroup import BaseGroup
+    from .partials.partialuser import PartialUser
 
 class JoinRequest:
 
@@ -13,7 +16,7 @@ class JoinRequest:
         self._requests = shared.requests
         self.group = group
         self.user: PartialUser = user
-        self.created = iso8601.parse_date(data['created'])
+        self.created = parse(data['created'])
 
     async def accept(self) -> None:
         """

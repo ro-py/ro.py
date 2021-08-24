@@ -1,11 +1,15 @@
+from __future__ import annotations
+
 from datetime import datetime
 
-import iso8601
-
-from .bases.basegroup import BaseGroup
+from dateutil.parser import parse
 from .partials.partialuser import PartialUser
 from .utilities.shared import ClientSharedObject
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .bases.basegroup import BaseGroup
 
 class Shout:
     def __init__(self, shared: ClientSharedObject,
@@ -19,11 +23,11 @@ class Shout:
         if raw_data is not None:
             self.body: str = raw_data['body']
             """What the shout contains."""
-            self.created: datetime = iso8601.parse_date(raw_data['created'])
+            self.created: datetime = parse(raw_data['created'])
             """When the first shout was created."""
-            self.updated: datetime = iso8601.parse_date(raw_data['updated'])
+            self.updated: datetime = parse(raw_data['updated'])
             """When the latest shout was created."""
-            self.poster: PartialUser = PartialUser(cso, raw_data['poster'])
+            self.poster: PartialUser = PartialUser(self._shared, raw_data['poster'])
             """The user who posted the shout."""
 
     async def set(self, new_body: str) -> int:

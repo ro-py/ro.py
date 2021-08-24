@@ -1,11 +1,14 @@
-from .bases.basegroup import BaseGroup
+from __future__ import annotations
+
 from .utilities.shared import ClientSharedObject
 from .partials.partialuser import PartialUser
-from users import User
-from role import Role
+from .users import User
+from .role import Role
 
-from typing import Union, Tuple
+from typing import Union, Tuple, TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from .bases.basegroup import BaseGroup
 
 class Member:
     """

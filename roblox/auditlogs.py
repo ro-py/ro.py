@@ -3,14 +3,15 @@ from __future__ import annotations
 from datetime import datetime
 from enum import Enum
 
-from typing import Optional
-import iso8601
-
-from .bases.basegroup import BaseGroup
+from typing import TYPE_CHECKING
+from dateutil.parser import parse
 from .member import Member
 from .partials.partialuser import PartialUser
 from .role import Role
 from .utilities.shared import ClientSharedObject
+
+if TYPE_CHECKING:
+    from .bases.basegroup import BaseGroup
 
 
 class Actions(Enum):
@@ -65,7 +66,7 @@ class Action:
 
         actor_user = PartialUser(self._shared, raw_data["actor"]["user"])
         actor_role = Role(self._shared, self.group, raw_data["actor"]["role"])
-        self.actor: Member =Member(self._shared, actor_user, self.group, actor_role)
+        self.actor: Member = Member(self._shared, actor_user, self.group, actor_role)
         self.action: str = raw_data['actionType']
-        self.created: datetime = iso8601.parse_date(raw_data['created'])
-        self.data:  dict = raw_data['description']
+        self.created: datetime = parse(raw_data['created'])
+        self.data: dict = raw_data['description']

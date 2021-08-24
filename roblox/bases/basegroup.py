@@ -5,22 +5,24 @@ import imghdr
 from .basesociallink import BaseSocialLink, SocialLinkType
 from ..auditlogs import Action
 from ..joinrequest import JoinRequest
-from ..relationship import RelationshipType, RelationshipRequest
 from ..shout import Shout
 from ..utilities.shared import ClientSharedObject
 from ..partials.partialuser import PartialUser
-from ..groups import Group
 from ..role import Role
 from ..member import Member
 from ..users import User
 from ..utilities.iterators import SortOrder, PageIterator
-from typing import List, Union, BinaryIO, Optional
+from typing import List, Union, BinaryIO, Optional, TYPE_CHECKING
 
 from httpx import Response
 import json
 from pathlib import Path
 
 import enum
+
+if TYPE_CHECKING:
+    from ..relationship import RelationshipType, RelationshipRequest
+    from ..groups import Group
 
 
 def member_handler(shared, data, dict) -> List[Member]:
@@ -229,7 +231,7 @@ class BaseGroup:
             sort_order=sort_order,
             limit=limit,
             item_handler=action_handler,
-            extra_parameters= {'group': self}
+            extra_parameters={'group': self}
         )
 
         await pages.next()
@@ -379,7 +381,8 @@ class BaseGroup:
     async def get_relationships(self, relationship_type: RelationshipType,
                                 start_row_index: int = 0) -> List[RelationshipRequest]:
         response = await self._requests.get(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups{self.id}/relationships/{relationship_type.value}/requests"),
+            url=self._shared.url_generator.get_url("groups",
+                                                   f"v1/groups{self.id}/relationships/{relationship_type.value}/requests"),
             params={
                 "model.startRowIndex": start_row_index,
                 "model.maxRows": 100
@@ -410,9 +413,11 @@ class BaseGroup:
             group_ids.append(join_request.requester)
         json["GroupIds"] = group_ids
         await self._requests.post(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups{self.id}/relationships/{relationship_type.value}/requests"),
+            url=self._shared.url_generator.get_url("groups",
+                                                   f"v1/groups{self.id}/relationships/{relationship_type.value}/requests"),
             json=json
         )
+
     async def batch_deny_relationships(self, join_requests: List[RelationshipRequest],
                                        relationship_type: RelationshipType) -> None:
         """
@@ -432,7 +437,8 @@ class BaseGroup:
             group_ids.append(join_request.requester)
         json["GroupIds"] = group_ids
         await self._requests.delete(
-            url=self._shared.url_generator.get_url("groups",f"v1/groups{self.id}/relationships/{relationship_type.value}/requests"),
+            url=self._shared.url_generator.get_url("groups",
+                                                   f"v1/groups{self.id}/relationships/{relationship_type.value}/requests"),
             json=json
         )
 
@@ -445,7 +451,7 @@ class BaseGroup:
         roblox.bases.basegroup.RecurringPayout
         """
         response = await self._requests.get(
-            url=self._shared.url_generator.get_url("groups",f"v1/groups{self.id}/settings"),
+            url=self._shared.url_generator.get_url("groups", f"v1/groups{self.id}/settings"),
         )
         data = response.json()
         return Settings(self._shared, data)
@@ -470,7 +476,7 @@ class BaseGroup:
         if are_group_games_visible:
             json["areGroupGamesVisible"] = are_group_games_visible
         response = await self._requests.patch(
-            url=self._shared.url_generator.get_url("groups",f"v1/groups{self.id}/settings"),
+            url=self._shared.url_generator.get_url("groups", f"v1/groups{self.id}/settings"),
             json=json
         )
         return Settings(self._shared, response.json())
