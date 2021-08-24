@@ -25,6 +25,12 @@ class ThumbnailFormat(Enum):
     jpeg = "Jpeg"
 
 
+class AvatarThumbnailType(Enum):
+    full_body = 1
+    headshot = 2
+    bust = 3
+
+
 class Thumbnail:
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
@@ -255,36 +261,26 @@ class ThumbnailProvider:
     async def get_user_avatars(
         self,
         user_ids: list[int],
-        size: str = "30x30",
+        type: AvatarThumbnailType = AvatarThumbnailType.full_body,
+        size: str = None,
         format: ThumbnailFormat = ThumbnailFormat.png,
         is_circular: bool = False,
     ) -> list[Thumbnail]:
-        thumbnails_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("thumbnails", "v1/users/avatar"),
-            params={
-                "userIds": user_ids,
-                "size": size,
-                "format": format.value,
-                "isCircular": is_circular,
-            },
-        )
-        thumbnails_data = thumbnails_response.json()["data"]
-        return [
-            Thumbnail(shared=self._shared, data=thumbnail_data)
-            for thumbnail_data in thumbnails_data
-        ]
+        uri: str
+        if type == AvatarThumbnailType.full_body:
+            uri = "avatar"
+            size = size or "30x30"
+        elif type == AvatarThumbnailType.bust:
+            uri = "avatar-bust"
+            size = size or "48x48"
+        elif type == AvatarThumbnailType.headshot:
+            uri = "avatar-headshot"
+            size = size or "48x48"
+        else:
+            raise ValueError("Avatar type is invalid.")
 
-    async def get_user_avatars_bust(
-        self,
-        user_ids: list[int],
-        size: str = "30x30",
-        format: ThumbnailFormat = ThumbnailFormat.png,
-        is_circular: bool = False,
-    ) -> list[Thumbnail]:
         thumbnails_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url(
-                "thumbnails", "v1/users/avatar-bust"
-            ),
+            url=self._shared.url_generator.get_url("thumbnails", f"v1/users/{uri}"),
             params={
                 "userIds": user_ids,
                 "size": size,
@@ -292,30 +288,7 @@ class ThumbnailProvider:
                 "isCircular": is_circular,
             },
         )
-        thumbnails_data = thumbnails_response.json()["data"]
-        return [
-            Thumbnail(shared=self._shared, data=thumbnail_data)
-            for thumbnail_data in thumbnails_data
-        ]
 
-    async def get_user_avatars_headshot(
-        self,
-        user_ids: list[int],
-        size: str = "30x30",
-        format: ThumbnailFormat = ThumbnailFormat.png,
-        is_circular: bool = False,
-    ) -> list[Thumbnail]:
-        thumbnails_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url(
-                "thumbnails", "v1/users/avatar-headshot"
-            ),
-            params={
-                "userIds": user_ids,
-                "size": size,
-                "format": format.value,
-                "isCircular": is_circular,
-            },
-        )
         thumbnails_data = thumbnails_response.json()["data"]
         return [
             Thumbnail(shared=self._shared, data=thumbnail_data)
