@@ -9,6 +9,10 @@ from .bases.baseplace import BasePlace
 
 
 class Universe(BaseUniverse):
+    """
+    Represents the response data of https://games.roblox.com/v1/games.
+    """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         super().__init__(shared=shared, universe_id=data["id"])
 

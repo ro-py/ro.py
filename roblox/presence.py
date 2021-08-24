@@ -35,6 +35,10 @@ class Presence:
 
 
 class PresenceProvider:
+    """
+    The PresenceProvider is an object that represents https://presence.roblox.com/ and provides multiple functions for fetching user presence information.
+    """
+
     def __init__(self, shared: ClientSharedObject):
         self._shared: ClientSharedObject = shared
 
