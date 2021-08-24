@@ -1,4 +1,5 @@
 root_site = "roblox.com"
+cdn_site = "rbxcdn.com"
 
 
 class URLGenerator:
@@ -15,8 +16,16 @@ class URLGenerator:
         """
         return f"{protocol}://{subdomain}.{self.base_url}"
 
-    def get_url(self, subdomain: str, path: str = "", protocol: str = "https"):
+    def get_url(
+        self,
+        subdomain: str,
+        path: str = "",
+        base_url: str = None,
+        protocol: str = "https",
+    ):
         """
         Returns a full URl, given a subdomain name, protocol, and each.
         """
+        if base_url is None:
+            base_url = self.base_url
         return f"{protocol}://{subdomain}.{self.base_url}/{path}"
