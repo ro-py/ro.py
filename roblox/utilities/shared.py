@@ -8,6 +8,7 @@ if TYPE_CHECKING:
     from ..client import Client
     from ..presence import PresenceProvider
     from ..thumbnails import ThumbnailProvider
+    from ..delivery import DeliveryProvider
 
 
 class ClientSharedObject:
@@ -21,3 +22,4 @@ class ClientSharedObject:
         self.url_generator: URLGenerator = url_generator
         self.presence_provider: PresenceProvider
         self.thumbnail_provider: ThumbnailProvider
+        self.delivery_provider: DeliveryProvider

@@ -10,8 +10,10 @@ from .groups import Group
 from .universes import Universe
 from .places import Place
 from .assets import EconomyAsset
+
 from .presence import PresenceProvider
 from .thumbnails import ThumbnailProvider
+from .delivery import DeliveryProvider
 
 from .bases.baseuser import BaseUser
 from .bases.basegroup import BaseGroup
@@ -53,9 +55,14 @@ class Client:
         """
         The thumbnail provider object.
         """
+        self.delivery: DeliveryProvider = DeliveryProvider(shared=self._shared)
+        """
+        The delivery provider object.
+        """
 
         self._shared.presence_provider = self.presence  # TODO: Improve this hack
         self._shared.thumbnail_provider = self.thumbnails
+        self._shared.delivery_provider = self.delivery
 
         if token:
             self.set_token(token)
