@@ -61,3 +61,10 @@ class BaseUser:
         )
         friends_data = friends_response.json()["data"]
         return [Friend(shared=self._shared, data=friend_data) for friend_data in friends_data]
+
+    async def get_currency(self) -> int:
+        currency_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("economy", f"v1/users/{self.id}/currency")
+        )
+        currency_data = currency_response.json()
+        return currency_data["robux"]
