@@ -28,4 +28,4 @@ class URLGenerator:
         """
         if base_url is None:
             base_url = self.base_url
-        return f"{protocol}://{subdomain}.{self.base_url}/{path}"
+        return f"{protocol}://{subdomain}.{base_url}/{path}"

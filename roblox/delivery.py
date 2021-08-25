@@ -22,3 +22,9 @@ class DeliveryProvider:
         cdn: int = self.get_hash_cdn(hash)
         url: str = self._shared.url_generator.get_url(f"t{cdn}", hash, cdn_site)
         return url
+
+    def get_hash_from_url(self, url: str) -> str:
+        """
+        Returns the hash for the given Roblox CDN url.
+        """
+        return url.split(f"{cdn_site}/")[1]
