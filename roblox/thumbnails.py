@@ -16,6 +16,7 @@ class ThumbnailState(Enum):
     pending = "Pending"
     error = "Error"
     moderated = "Moderated"
+    blocked = "Blocked"
 
 
 class ThumbnailReturnPolicy(Enum):
