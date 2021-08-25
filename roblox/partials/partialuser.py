@@ -25,3 +25,5 @@ class RequestedUsernamePartialUser(PartialUser):
         super().__init__(shared=shared, data=data)
 
         self.requested_username = data.get("requestedUsername")
+
+
