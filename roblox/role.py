@@ -9,14 +9,9 @@ from typing import List,Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .bases.basegroup import BaseGroup
-def member_handler(shared, data, dict) -> List[Member]:
-    members = []
-    for member in data:
-        role = Role(shared, dict['group'], member['role'])
-        user = PartialUser(shared, member['user'])
-        members.append(Member(shared, user, dict['group'], role))
-    return members
-
+def member_handler(shared, data, group, role) -> Member:
+    user = PartialUser(shared, data)
+    return Member(shared, user, group, role)
 
 class Role:
     """
@@ -57,7 +52,7 @@ class Role:
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.group.id}/roles/{self.id}/users"),
             sort_order=sort_order,
             limit=limit,
-            handler_kwargs={'group': self.group},
+            handler_kwargs={'group': self.group,'role': self},
             item_handler=member_handler
         )
         await pages.next()

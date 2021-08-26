@@ -20,29 +20,18 @@ if TYPE_CHECKING:
     from ..groups import Group
 
 
-def member_handler(shared, data, dict) -> List[Member]:
-    members = []
-    for member in data:
-        role = Role(shared, dict['group'], member['role'])
-        user = PartialUser(shared, member['user'])
-        members.append(Member(shared, user, dict['group'], role))
-    return members
+def member_handler(shared, data, group) -> Member:
+    role = Role(shared, group, data['role'])
+    user = PartialUser(shared, data['user'])
+    return Member(shared, user, group, role)
 
 
-def action_handler(cso, data, dict) -> List[Action]:
-    actions = []
-    for action in data:
-        actions.append(Action(cso, dict['group'], action))
-    return actions
+def action_handler(cso, data, group) -> Action:
+    return Action(cso, group, data)
 
-
-def join_request_handler(cso, data, dict) -> List[JoinRequest]:
-    join_requests = []
-    for join_request in data:
-        user: PartialUser = PartialUser(cso, join_request['requester'])
-        join_requests.append(JoinRequest(cso, join_request, dict['group'], user))
-    return join_requests
-
+def join_request_handler(cso, data, group) -> JoinRequest:
+        user: PartialUser = PartialUser(cso, data['requester'])
+        return JoinRequest(cso, data, group, user)
 
 class Settings:
     def __init__(self, shared: ClientSharedObject, data: dict):
@@ -272,7 +261,7 @@ class BaseGroup:
             sort_order=sort_order,
             limit=limit,
             item_handler=join_request_handler,
-            extra_parameters={'group': self}
+            handler_kwargs={'group': self}
         )
 
         await pages.next()
