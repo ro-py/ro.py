@@ -54,7 +54,7 @@ class Role:
 
             shared=self._shared,
 
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/roles/{self.id}/users"),
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.group.id}/roles/{self.id}/users"),
             sort_order=sort_order,
             limit=limit,
             extra_parameters={'group': self.group},
