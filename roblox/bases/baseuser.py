@@ -41,7 +41,7 @@ class BaseUser:
             ),
             limit=limit,
             sort_order=sort_order,
-            item_handler=lambda data: data["name"],
+            item_handler=lambda shared, data: data["name"],
         )
 
     async def get_presence(self) -> Optional[Presence]:
