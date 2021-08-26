@@ -1,4 +1,6 @@
+from __future__ import annotations
 from typing import TYPE_CHECKING
+
 from ..utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:
