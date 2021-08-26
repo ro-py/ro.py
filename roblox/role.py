@@ -1,13 +1,14 @@
+from __future__ import annotations
 from .utilities.requests import Requests
 from .utilities.shared import ClientSharedObject
 from .utilities.iterators import SortOrder, PageIterator
 from .partials.partialuser import PartialUser
-from .bases.basegroup import BaseGroup
 from .member import Member
 
-from typing import List,Optional
+from typing import List,Optional, TYPE_CHECKING
 
-
+if TYPE_CHECKING:
+    from .bases.basegroup import BaseGroup
 def member_handler(cso, data, dict) -> List[Member]:
     members = []
     for member in data:
