@@ -13,3 +13,18 @@ class BasePlugin(BaseAsset):
 
         self._shared: ClientSharedObject = shared
         self.id: int = plugin_id
+
+    async def update(self, name: str = None, description: str = None, comments_enabled: str = None):
+        """
+        Updates the plugin's data.
+        """
+        await self._shared.requests.patch(
+            url=self._shared.url_generator.get_url(
+                "develop", f"v1/plugins/{self.id}"
+            ),
+            json={
+                "name": name,
+                "description": description,
+                "commentsEnabled": comments_enabled
+            }
+        )
