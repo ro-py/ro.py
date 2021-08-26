@@ -5,8 +5,8 @@ from enum import Enum
 
 
 class RelationshipType(Enum):
-    allys = "Allys"
-    enemies = "Enemies"
+    ALLYS = "Allys"
+    ENEMIES = "Enemies"
 
 
 class RelationshipRequest:
