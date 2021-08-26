@@ -176,8 +176,8 @@ class Client:
         """
         return BaseUser(shared=self._shared, user_id=user_id)
 
-    def _user_search_handler(self, data: dict) -> RequestedUsernamePartialUser:
-        return RequestedUsernamePartialUser(shared=self._shared, data=data)
+    def _user_search_handler(self, shared: ClientSharedObject, data: dict) -> RequestedUsernamePartialUser:
+        return RequestedUsernamePartialUser(shared=shared, data=data)
 
     def user_search(self, keyword: str, limit: int = 10) -> PageIterator:
         """
