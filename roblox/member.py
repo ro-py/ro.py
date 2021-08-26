@@ -9,13 +9,15 @@ from typing import Union, Tuple, TYPE_CHECKING
 if TYPE_CHECKING:
     from .bases.basegroup import BaseGroup
     from .role import Role
+
+
 class Member:
     """
     Represents a user in a group.
     """
 
     def __init__(self, shared: ClientSharedObject,
-                 user: Union[PartialUser,User],
+                 user: Union[PartialUser, User],
                  group: BaseGroup,
                  role: Role):
         self._shared = shared
@@ -121,7 +123,7 @@ class Member:
         """
 
         await self._requests.patch(
-            url= self._shared.url_generator.get_url("groups", f"v1/groups/{self.group.id}/users/{self.user.id}"),
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.group.id}/users/{self.user.id}"),
             json={
                 "roleId": rank
             }

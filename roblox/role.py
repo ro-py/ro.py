@@ -5,10 +5,12 @@ from .utilities.iterators import SortOrder, PageIterator
 from .partials.partialuser import PartialUser
 from .member import Member
 
-from typing import List,Optional, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .bases.basegroup import BaseGroup
+
+
 def member_handler(cso, data, dict) -> List[Member]:
     members = []
     for member in data:
