@@ -5,7 +5,7 @@ from .baseasset import BaseAsset
 
 class BasePlugin(BaseAsset):
     """
-    Represents a plugin ID, with no extra data.
+    Represents a plugin's ID, with no extra data.
     Plugins are a form of Asset and as such this object derives from BaseAsset.
     """
     def __init__(self, shared: ClientSharedObject, plugin_id: int):

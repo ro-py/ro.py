@@ -40,7 +40,7 @@ class ThumbnailFormat(Enum):
 
 class AvatarThumbnailType(Enum):
     """
-    Type of avatar thumbnail.
+    Types of avatar thumbnails.
     """
 
     full_body = 1
@@ -96,7 +96,7 @@ class ThumbnailProvider:
         is_circular: bool = False,
     ) -> list[Thumbnail]:
         """
-        Returns asset thumbnails for the asset ID passed.
+        Returns asset thumbnails for the asset's ID passed.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/assets"),
@@ -116,7 +116,7 @@ class ThumbnailProvider:
 
     async def get_asset_thumbnail_3d(self, asset_id: int) -> Thumbnail:
         """
-        Returns a 3d asset thumbnail for the user ID passed.
+        Returns a 3D asset thumbnail for the user's ID passed.
         """
         thumbnail_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url(
@@ -135,7 +135,7 @@ class ThumbnailProvider:
         is_circular: bool = False,
     ) -> list[Thumbnail]:
         """
-        Returns badge icons for each badge ID passed.
+        Returns badge icons for each badge's ID passed.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/badges/icons"),
@@ -160,7 +160,7 @@ class ThumbnailProvider:
         is_circular: bool = False,
     ) -> list[Thumbnail]:
         """
-        Returns bundle thumbnails for each bundle ID passed.
+        Returns bundle thumbnails for each bundle's ID passed.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url(
@@ -187,7 +187,7 @@ class ThumbnailProvider:
         is_circular: bool = False,
     ) -> list[Thumbnail]:
         """
-        Returns gamepass icons for each gamepass ID passed.
+        Returns gamepass icons for each gamepass' ID passed.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/game-passes"),
@@ -213,7 +213,7 @@ class ThumbnailProvider:
         is_circular: bool = False,
     ) -> list[Thumbnail]:
         """
-        Returns universe icons for each universe ID passed.
+        Returns universe icons for each universe's ID passed.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/games/icons"),
@@ -241,7 +241,7 @@ class ThumbnailProvider:
         defaults: bool = None,
     ) -> list[UniverseThumbnails]:
         """
-        Returns universe thumbnails for each universe ID passed.
+        Returns universe thumbnails for each universe's ID passed.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url(
@@ -270,7 +270,7 @@ class ThumbnailProvider:
         is_circular: bool = False,
     ) -> list[Thumbnail]:
         """
-        Returns icons for each group ID passed.
+        Returns icons for each group's ID passed.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/groups/icons"),
@@ -296,7 +296,7 @@ class ThumbnailProvider:
         is_circular: bool = False,
     ) -> list[Thumbnail]:
         """
-        Returns icons for each place ID passed.
+        Returns icons for each place's ID passed.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/places/gameicons"),
@@ -323,7 +323,7 @@ class ThumbnailProvider:
         is_circular: bool = False,
     ) -> list[Thumbnail]:
         """
-        Returns avatars for each user ID passed.
+        Returns avatars for each user's ID passed.
         """
         uri: str
         if type == AvatarThumbnailType.full_body:
@@ -356,8 +356,8 @@ class ThumbnailProvider:
 
     async def get_user_avatar_3d(self, user_id: int) -> Thumbnail:
         """
-        Returns the user's thumbnail in 3d.
-        TODO: Add special 3d features
+        Returns the user's thumbnail in 3D.
+        TODO: Add special 3D features
         """
         thumbnail_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/users/avatar-3d"),

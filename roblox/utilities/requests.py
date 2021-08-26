@@ -48,7 +48,7 @@ class Requests:
             "delete": True,
         }
         """
-        A dictionary where the keys are HTTP method types and values are whether the X-CSRF-Token should be handled for
+        A dictionary where the keys are HTTP methods/verbs and values are whether the X-CSRF-Token should be handled for
         that method. Keys must be in lowercase.
         """
 

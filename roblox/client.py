@@ -34,7 +34,7 @@ class Client:
         !!! note
             It is not recommended to initialize this object alone without a Client.
             Ideally, you should always generate a client, even when sending requests, as it allows you to use our
-            builtin authentication methods and still recieve fixes in case of API changes that break existing code.            
+            built-in authentication methods and still receive fixes in case of API changes that break existing code.            
         """
 
         self._url_generator: URLGenerator = URLGenerator(base_url=base_url)
@@ -77,7 +77,7 @@ class Client:
 
     async def get_user(self, user_id: int) -> User:
         """
-        Returns a user with the specified user ID.
+        Returns a user with the specified user's ID.
         """
         user_response = await self._requests.get(
             url=self._shared.url_generator.get_url("users", f"v1/users/{user_id}")
@@ -90,7 +90,7 @@ class Client:
     ) -> Union[User, PartialUser]:
         """
         Returns the authenticated user.
-        If the "expand" property is True, returns a User. If not, it returns a PartialUser.
+        If the "expand" property is True, returns a User. If not, returns a PartialUser.
         """
         authenticated_user_response = await self._requests.get(
             url=self._shared.url_generator.get_url("users", f"v1/users/authenticated")
@@ -109,7 +109,7 @@ class Client:
         expand: bool = False,
     ) -> Union[list[PartialUser], list[User]]:
         """
-        Returns a list of users corresponding to each user ID in the list.
+        Returns a list of users corresponding to each user's ID in the list.
         If the "expand" property is True, returns a list of User. If not, returns a list of PartialUser.
         """
         users_response = await self._requests.post(
@@ -171,7 +171,7 @@ class Client:
         """
         Gets a base user.
         This method does not send any requests - it just generates a BaseUser object.
-        Passing an invalid user ID to this method will not raise an error until you use one of the BaseUser methods.
+        Passing an invalid user's ID to this method will not raise an error until you use one of the BaseUser methods.
         Use this method when you want to use one of the BaseUser methods without grabbing information about the user.
         """
         return BaseUser(shared=self._shared, user_id=user_id)
@@ -205,7 +205,7 @@ class Client:
         """
         Gets a base group.
         This method does not send any requests - it just generates a BaseGroup object.
-        Passing an invalid group ID to this method will not raise an error until you use one of the BaseGroup methods.
+        Passing an invalid group's ID to this method will not raise an error until you use one of the BaseGroup methods.
         Use this method when you want to use one of the BaseGroup methods without grabbing information about the group.
         """
         return BaseGroup(shared=self._shared, group_id=group_id)

@@ -6,7 +6,7 @@ from .shared import ClientSharedObject
 
 class SortOrder(Enum):
     """
-    Order in which page data should load in.
+    Orders in which page data should load in.
     """
 
     Ascending = "Asc"
