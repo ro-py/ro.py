@@ -11,9 +11,7 @@ class BaseUniverse:
         Returns the universe's favorite count.
         """
         favorite_count_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url(
-                "games", f"v1/games/{self.id}/favorites/count"
-            )
+            url=self._shared.url_generator.get_url("games", f"v1/games/{self.id}/favorites/count")
         )
         favorite_count_data = favorite_count_response.json()
         return favorite_count_data["favoritesCount"]
@@ -23,9 +21,7 @@ class BaseUniverse:
         Returns true if the authenticated user has favorited the universe.
         """
         is_favorited_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url(
-                "games", f"v1/games/{self.id}/favorites"
-            )
+            url=self._shared.url_generator.get_url("games", f"v1/games/{self.id}/favorites")
         )
         is_favorited_data = is_favorited_response.json()
         return is_favorited_data["isFavorited"]

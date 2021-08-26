@@ -27,7 +27,6 @@ class Requests:
     """
     A special request object that implements special functionality required to connect to some Roblox endpoints.
     """
-
     def __init__(self):
         self.session: CleanAsyncClient = CleanAsyncClient()
         """
@@ -45,7 +44,7 @@ class Requests:
             "post": True,
             "put": True,
             "patch": True,
-            "delete": True,
+            "delete": True
         }
         """
         A dictionary where the keys are HTTP method types and values are whether the X-CSRF-Token should be handled for
@@ -67,14 +66,8 @@ class Requests:
 
         method = method.lower()
 
-        if (
-            handle_xcsrf_token
-            and self.xcsrf_token_name in response.headers
-            and self.xcsrf_allowed_methods.get(method)
-        ):
-            self.session.headers[self.xcsrf_token_name] = response.headers[
-                self.xcsrf_token_name
-            ]
+        if handle_xcsrf_token and self.xcsrf_token_name in response.headers and self.xcsrf_allowed_methods.get(method):
+            self.session.headers[self.xcsrf_token_name] = response.headers[self.xcsrf_token_name]
             if response.status_code == 403:  # Request failed, send it again
                 response = await self.session.request(method, *args, **kwargs)
 
@@ -110,9 +103,7 @@ class Requests:
 
                     if error_user_facing_message:
                         # Add the parenthesis-wrapped user facing message
-                        error_messages.append(
-                            f"User-facing message: {error_user_facing_message})"
-                        )
+                        error_messages.append(f"User-facing message: {error_user_facing_message})")
 
                     if error_field:
                         # Add the field, which is the name of the key in the request body that caused the error
@@ -135,13 +126,13 @@ class Requests:
 {parsed_error_string}""",
                     request=response.request,
                     response=response,
-                    errors=errors,
+                    errors=errors
                 )
             else:
                 exception = HTTPStatusError(
                     message=f"{response.status_code} {response.reason_phrase}: {response.url}",
                     request=response.request,
-                    response=response,
+                    response=response
                 )
             raise exception
         else:

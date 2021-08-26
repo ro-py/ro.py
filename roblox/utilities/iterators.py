@@ -8,7 +8,6 @@ class SortOrder(Enum):
     """
     Order in which page data should load in.
     """
-
     Ascending = "Asc"
     Descending = "Desc"
 
@@ -23,13 +22,13 @@ class PageIterator:
     """
 
     def __init__(
-        self,
-        shared: ClientSharedObject,
-        url: str,
-        sort_order: SortOrder = SortOrder.Ascending,
-        limit: int = 10,
-        extra_parameters: dict = None,
-        item_handler: Callable[[dict], any] = None,
+            self,
+            shared: ClientSharedObject,
+            url: str,
+            sort_order: SortOrder = SortOrder.Ascending,
+            limit: int = 10,
+            extra_parameters: dict = None,
+            item_handler: Callable[[dict], any] = None
     ):
         self._shared: ClientSharedObject = shared
 
@@ -66,21 +65,22 @@ class PageIterator:
         parameters = {
             "cursor": self.next_page_cursor,
             "limit": self.limit,
-            "sortOrder": self.sort_order,
+            "sortOrder": self.sort_order
         }
 
         if self.extra_parameters:
             parameters.update(self.extra_parameters)
 
-        page_response = await self._shared.requests.get(url=self.url, params=parameters)
+        page_response = await self._shared.requests.get(
+            url=self.url,
+            params=parameters
+        )
         page_data = page_response.json()
 
         self.next_page_cursor = page_data["nextPageCursor"]
         self.previous_page_cursor = page_data["previousPageCursor"]
         if self.item_handler:
-            self.data += [
-                self.item_handler(item_data) for item_data in page_data["data"]
-            ]
+            self.data += [self.item_handler(item_data) for item_data in page_data["data"]]
         else:
             self.data += page_data["data"]
 
