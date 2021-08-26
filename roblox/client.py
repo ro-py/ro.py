@@ -10,6 +10,7 @@ from .groups import Group
 from .universes import Universe
 from .places import Place
 from .assets import EconomyAsset
+from .plugins import Plugin
 
 from .presence import PresenceProvider
 from .thumbnails import ThumbnailProvider
@@ -20,6 +21,7 @@ from .bases.basegroup import BaseGroup
 from .bases.baseuniverse import BaseUniverse
 from .bases.baseplace import BasePlace
 from .bases.baseasset import BaseAsset
+from .bases.baseplugin import BasePlugin
 
 from .partials.partialuser import PartialUser, RequestedUsernamePartialUser
 
@@ -286,3 +288,28 @@ class Client:
         Gets a base asset.
         """
         return BaseAsset(shared=self._shared, asset_id=asset_id)
+
+    async def get_plugins(self, plugin_ids: list[int]) -> list[Plugin]:
+        plugins_response = await self._requests.get(
+            url=self._shared.url_generator.get_url(
+                "develop", "v1/plugins"
+            ),
+            params={
+                "pluginIds": plugin_ids
+            }
+        )
+        plugins_data = plugins_response.json()["data"]
+        return [Plugin(shared=self._shared, data=plugin_data) for plugin_data in plugins_data]
+
+    async def get_plugin(self, plugin_id: int) -> Optional[Plugin]:
+        plugins = await self.get_plugins([plugin_id])
+        try:
+            return plugins[0]
+        except IndexError:
+            return None
+
+    def get_base_plugin(self, plugin_id: int) -> BasePlugin:
+        """
+        Gets a base plugin.
+        """
+        return BasePlugin(shared=self._shared, plugin_id=plugin_id)
