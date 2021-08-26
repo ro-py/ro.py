@@ -9,12 +9,12 @@ from typing import List,Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .bases.basegroup import BaseGroup
-def member_handler(cso, data, dict) -> List[Member]:
+def member_handler(shared, data, dict) -> List[Member]:
     members = []
     for member in data:
-        role = Role(cso, dict['group'], member['role'])
-        user = PartialUser(cso, member['user'])
-        members.append(Member(cso, user, dict['group'], role))
+        role = Role(shared, dict['group'], member['role'])
+        user = PartialUser(shared, member['user'])
+        members.append(Member(shared, user, dict['group'], role))
     return members
 
 
@@ -57,7 +57,7 @@ class Role:
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.group.id}/roles/{self.id}/users"),
             sort_order=sort_order,
             limit=limit,
-            extra_parameters={'group': self.group},
+            handler_kwargs={'group': self.group},
             item_handler=member_handler
         )
         await pages.next()

@@ -131,7 +131,7 @@ class BaseGroup:
             sort_order=sort_order,
             limit=limit,
             item_handler=member_handler,
-            extra_parameters={'group': self}
+            handler_kwargs={'group': self}
         )
 
         await pages.next()
@@ -218,7 +218,7 @@ class BaseGroup:
             sort_order=sort_order,
             limit=limit,
             item_handler=action_handler,
-            extra_parameters={'group': self}
+            handler_kwargs={'group': self}
         )
 
         await pages.next()
