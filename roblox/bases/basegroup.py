@@ -295,13 +295,13 @@ class BaseGroup:
             json=json
         )
 
-    async def batch_deny_join_requests(self, join_requests: List[JoinRequest]) -> None:
+    async def batch_decline_join_requests(self, join_requests: List[JoinRequest]) -> None:
         """
-        Denys a batch of users in to the group
+        Declines a batch of users in to the group
         Parameters
         ----------
         join_requests : List[roblox.joinrequest.JoinRequest]
-                All the join requests you want to deny
+                All the join requests you want to decline
         """
         json = {}
         user_ids = []
@@ -395,14 +395,14 @@ class BaseGroup:
             json=json
         )
 
-    async def batch_deny_relationships(self, join_requests: List[RelationshipRequest],
+    async def batch_decline_relationships(self, join_requests: List[RelationshipRequest],
                                        relationship_type: RelationshipType) -> None:
         """
-        Denys a batch of users in to the group
+        Declines a batch of users in to the group
         Parameters
         ----------
         join_requests : List[roblox.joinrequest.JoinRequest]
-                All the join requests you want to deny
+                All the join requests you want to decline
         relationship_type : roblox.relationship.RelationshipType
                Type of relationship the requests are
         """
