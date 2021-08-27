@@ -212,7 +212,7 @@ class BaseGroup:
             extra_parameters["userId"] = user.id
         pages = PageIterator(
             shared=self._shared,
-            url=self._shared.url_generator.get_url(f"v1/groups/{self.id}/audit-log"),
+            url=self._shared.url_generator.get_url("groups",f"v1/groups/{self.id}/audit-log"),
             sort_order=sort_order,
             limit=limit,
             item_handler=action_handler,
