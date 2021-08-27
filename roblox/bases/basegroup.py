@@ -3,7 +3,7 @@ from __future__ import annotations
 import imghdr
 
 from .basesociallink import BaseSocialLink, SocialLinkType
-from ..auditlogs import Action
+from ..auditlogs import Action, ActionTypes
 from ..joinrequest import JoinRequest
 from ..shout import Shout
 from ..utilities.shared import ClientSharedObject
@@ -19,6 +19,7 @@ from pathlib import Path
 if TYPE_CHECKING:
     from ..relationship import RelationshipType, RelationshipRequest
     from ..groups import Group
+    from ..bases.baseuser import BaseUser
 
 
 def member_handler(shared, data, group) -> Member:
@@ -203,14 +204,20 @@ class BaseGroup:
         )
 
     async def get_audit_logs(self, sort_order=SortOrder.Ascending,
-                             limit=100) -> PageIterator:
+                             limit=100, action_type: ActionTypes = None, user: BaseUser = None) -> PageIterator:
+        extra_parameters = {}
+        if action_type is not None:
+            extra_parameters["actionType"] = action_type.value
+        if user is not None:
+            extra_parameters["userId"] = user.id
         pages = PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url(f"v1/groups/{self.id}/audit-log"),
             sort_order=sort_order,
             limit=limit,
             item_handler=action_handler,
-            handler_kwargs={'group': self}
+            handler_kwargs={'group': self},
+            extra_parameters=extra_parameters
         )
 
         await pages.next()

@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from .bases.basegroup import BaseGroup
 
 
-class Actions(Enum):
+class ActionTypes(Enum):
     delete_post = "deletePost"
     remove_member = "removeMember"
     accept_join_request = "acceptJoinRequest"
