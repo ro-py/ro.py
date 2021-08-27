@@ -5,11 +5,11 @@ from ..utilities.shared import ClientSharedObject
 
 
 class SocialLinkType(Enum):
-    FACEBOOK = "Facebook"
-    TWITTER = "Twitter"
-    YOUTUBE = "Youtube"
-    TWITCH = "Twitch"
-    DISCORD = "Discord"
+    facebook = "Facebook"
+    twitter = "Twitter"
+    youtube = "Youtube"
+    twitch = "Twitch"
+    discord = "Discord"
 
 
 class BaseSocialLink(ABC):
