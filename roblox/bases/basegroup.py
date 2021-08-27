@@ -37,7 +37,7 @@ def join_request_handler(shared, data, group) -> JoinRequest:
     return JoinRequest(shared, data, group, user)
 
 
-class Settings:
+class GroupSettings:
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
         self.is_approval_required: bool = data["isApprovalRequired"]
@@ -412,7 +412,7 @@ class BaseGroup:
             json=json
         )
 
-    async def get_settings(self) -> Settings:
+    async def get_settings(self) -> GroupSettings:
         """
         Sets the description of the group
         Returns
@@ -423,13 +423,13 @@ class BaseGroup:
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/settings"),
         )
         data = response.json()
-        return Settings(self._shared, data)
+        return GroupSettings(self._shared, data)
 
     async def update_settings(self, is_approval_required: Optional[bool] = None,
                               is_builders_club_required: Optional[bool] = None,
                               are_enemies_allowed: Optional[bool] = None,
                               are_group_funds_visible: Optional[bool] = None,
-                              are_group_games_visible: Optional[bool] = None, ) -> Settings:
+                              are_group_games_visible: Optional[bool] = None, ) -> None:
         """
         Sets the group settings
         """
@@ -444,4 +444,3 @@ class BaseGroup:
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/settings"),
             json=json
         )
-        return Settings(self._shared, response.json())
