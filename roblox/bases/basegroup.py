@@ -228,7 +228,7 @@ class BaseGroup:
         Sets the authenticated user his primary group.
         """
         await self._requests.post(
-            url=self._shared.url_generator.get_url("v2/users/groups/primary"),
+            url=self._shared.url_generator.get_url("groups","v1/users/groups/primary"),
             json={
                 "groupId": self.id
             }
