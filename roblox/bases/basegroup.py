@@ -291,7 +291,7 @@ class BaseGroup:
             user_ids.append(join_request.user.id)
         json["UserIds"] = user_ids
         await self._requests.post(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups{self.id}/join-requests"),
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests"),
             json=json
         )
 
@@ -310,7 +310,7 @@ class BaseGroup:
         json["UserIds"] = user_ids
 
         await self._requests.delete(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups{self.id}/join-requests"),
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests"),
             json=json
         )
 
@@ -322,7 +322,7 @@ class BaseGroup:
         List[roblox.bases.basegroup.SociaLink]
         """
         response = await self._requests.get(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups{self.id}/social-links"),
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/social-links"),
         )
         json = response.json()
         join_requests: List[SociaLink] = []
@@ -347,7 +347,7 @@ class BaseGroup:
         roblox.bases.basegroup.SociaLink
         """
         responce = await self._requests.post(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups{self.id}/social-links"),
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/social-links"),
             json={
                 "type": type.value,
                 "url": url,
