@@ -32,9 +32,9 @@ def action_handler(shared, data, group) -> Action:
     return Action(shared, group, data)
 
 
-def join_request_handler(cso, data, group) -> JoinRequest:
-    user: PartialUser = PartialUser(cso, data['requester'])
-    return JoinRequest(cso, data, group, user)
+def join_request_handler(shared, data, group) -> JoinRequest:
+    user: PartialUser = PartialUser(shared, data['requester'])
+    return JoinRequest(shared, data, group, user)
 
 
 class Settings:
