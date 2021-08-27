@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from .utilities.shared import ClientSharedObject
 from enum import Enum
 
