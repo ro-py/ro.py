@@ -126,8 +126,6 @@ class BaseGroup:
             item_handler=member_handler,
             handler_kwargs={'group': self}
         )
-
-        await pages.next()
         return pages
 
     async def get_member_by_user(self, user: User) -> Member:
@@ -219,8 +217,6 @@ class BaseGroup:
             handler_kwargs={'group': self},
             extra_parameters=extra_parameters
         )
-
-        await pages.next()
         return pages
 
     async def set_primary_group(self) -> None:
@@ -274,7 +270,6 @@ class BaseGroup:
             handler_kwargs={'group': self}
         )
 
-        await pages.next()
         return pages
 
     async def batch_accept_join_requests(self, join_requests: List[JoinRequest]) -> None:
