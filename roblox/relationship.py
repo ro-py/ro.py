@@ -5,6 +5,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .bases.basegroup import BaseGroup
+    from .groups import Group
 
 
 class RelationshipType(Enum):
