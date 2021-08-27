@@ -356,7 +356,7 @@ class BaseGroup:
                                 start_row_index: int = 0) -> List[RelationshipRequest]:
         response = await self._requests.get(
             url=self._shared.url_generator.get_url("groups",
-                                                   f"v1/groups{self.id}/relationships/{relationship_type.value}/requests"),
+                                                   f"v1/groups/{self.id}/relationships/{relationship_type.value}/requests"),
             params={
                 "model.startRowIndex": start_row_index,
                 "model.maxRows": 100
