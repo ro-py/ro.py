@@ -15,6 +15,7 @@ from ..utilities.iterators import SortOrder, PageIterator
 from typing import List, Union, BinaryIO, Optional, TYPE_CHECKING
 
 from pathlib import Path
+
 if TYPE_CHECKING:
     from ..relationship import RelationshipType, RelationshipRequest
     from ..groups import Group
@@ -29,9 +30,11 @@ def member_handler(shared, data, group) -> Member:
 def action_handler(cso, data, group) -> Action:
     return Action(cso, group, data)
 
+
 def join_request_handler(cso, data, group) -> JoinRequest:
-        user: PartialUser = PartialUser(cso, data['requester'])
-        return JoinRequest(cso, data, group, user)
+    user: PartialUser = PartialUser(cso, data['requester'])
+    return JoinRequest(cso, data, group, user)
+
 
 class Settings:
     def __init__(self, shared: ClientSharedObject, data: dict):
@@ -317,7 +320,7 @@ class BaseGroup:
         json = response.json()
         join_requests: List[SociaLink] = []
         for join_request in json["data"]:
-            join_requests.append(SociaLink(self.cso, join_request, self))
+            join_requests.append(SociaLink(self._shared, join_request, self))
         return join_requests
 
     async def create_social_link(self, type: SocialLinkType, url: str,
