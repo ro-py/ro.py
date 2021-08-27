@@ -212,7 +212,7 @@ class BaseGroup:
             extra_parameters["userId"] = user.id
         pages = PageIterator(
             shared=self._shared,
-            url=self._shared.url_generator.get_url("groups",f"v1/groups/{self.id}/audit-log"),
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/audit-log"),
             sort_order=sort_order,
             limit=limit,
             item_handler=action_handler,
@@ -228,7 +228,7 @@ class BaseGroup:
         Sets the authenticated user his primary group.
         """
         await self._requests.post(
-            url=self._shared.url_generator.get_url("groups","v1/users/groups/primary"),
+            url=self._shared.url_generator.get_url("groups", "v1/users/groups/primary"),
             json={
                 "groupId": self.id
             }
@@ -242,7 +242,7 @@ class BaseGroup:
             raise TypeError("File type is wrong only allowed types are jpg, png and jpeg")
         file: BinaryIO
         await self._requests.post(
-            url=self._shared.url_generator.get_url("v2/groups/icon"),
+            url=self._shared.url_generator.get_url("groups", "v1/groups/icon"),
             json={
                 "groupId": self.id
             },
@@ -267,7 +267,7 @@ class BaseGroup:
         """
         pages = PageIterator(
             shared=self._shared,
-            url=self._shared.url_generator.get_url("groups", f"/v1/groups/{self.id}/join-requests"),
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests"),
             sort_order=sort_order,
             limit=limit,
             item_handler=join_request_handler,
