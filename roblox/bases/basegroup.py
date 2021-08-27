@@ -386,7 +386,7 @@ class BaseGroup:
         json["GroupIds"] = group_ids
         await self._requests.post(
             url=self._shared.url_generator.get_url("groups",
-                                                   f"v1/groups{self.id}/relationships/{relationship_type.value}/requests"),
+                                                   f"v1/groups/{self.id}/relationships/{relationship_type.value}/requests"),
             json=json
         )
 
@@ -408,7 +408,7 @@ class BaseGroup:
         json["GroupIds"] = group_ids
         await self._requests.delete(
             url=self._shared.url_generator.get_url("groups",
-                                                   f"v1/groups{self.id}/relationships/{relationship_type.value}/requests"),
+                                                   f"v1/groups/{self.id}/relationships/{relationship_type.value}/requests"),
             json=json
         )
 
@@ -420,7 +420,7 @@ class BaseGroup:
         roblox.bases.basegroup.RecurringPayout
         """
         response = await self._requests.get(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups{self.id}/settings"),
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/settings"),
         )
         data = response.json()
         return Settings(self._shared, data)
@@ -445,7 +445,7 @@ class BaseGroup:
         if are_group_games_visible:
             json["areGroupGamesVisible"] = are_group_games_visible
         response = await self._requests.patch(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups{self.id}/settings"),
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/settings"),
             json=json
         )
         return Settings(self._shared, response.json())
