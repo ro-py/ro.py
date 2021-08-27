@@ -152,7 +152,7 @@ class BaseGroup:
             raise IndexError(f"user {user.name} is not part of the group {self.id}")
 
         role = Role(self._shared, self, member['role'])
-        return Member(self._shared, user, self, Role(self._shared, self, role))
+        return Member(self._shared, user, self, role)
 
     async def get_member_by_id(self, user_id: int = 0) -> Member:
         """
