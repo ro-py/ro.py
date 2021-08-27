@@ -198,7 +198,7 @@ class BaseGroup:
         await self._requests.patch(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/description"),
             json={
-                "newDescription": new_body
+                "description": new_body
             }
         )
 
