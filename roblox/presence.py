@@ -17,22 +17,24 @@ class Presence:
         self.last_location: str = data["lastLocation"]
 
         self.place: Optional[BasePlace] = data.get("placeId") and BasePlace(
-            shared=shared, place_id=data["placeId"]
+            shared=shared,
+            place_id=data["placeId"]
         )
 
         self.root_place: Optional[BasePlace] = data.get("rootPlaceId") and BasePlace(
-            shared=shared, place_id=data["rootPlaceId"]
+            shared=shared,
+            place_id=data["rootPlaceId"]
         )
 
         self.game_id: Optional[str] = data["gameId"]
 
         self.universe: Optional[BaseUniverse] = data.get("universeId") and BaseUniverse(
-            shared=shared, universe_id=data["universeId"]
+            shared=shared,
+            universe_id=data["universeId"]
         )
 
         self.user_id: int = data["userId"]
         self.last_online: datetime = parse(data["lastOnline"])
-
 
 class PresenceProvider:
     """
@@ -48,10 +50,9 @@ class PresenceProvider:
         """
         presences_response = await self._shared.requests.post(
             url=self._shared.url_generator.get_url("presence", "v1/presence/users"),
-            json={"userIds": user_ids},
+            json={
+                "userIds": user_ids
+            }
         )
         presences_data = presences_response.json()["userPresences"]
-        return [
-            Presence(shared=self._shared, data=presence_data)
-            for presence_data in presences_data
-        ]
+        return [Presence(shared=self._shared, data=presence_data) for presence_data in presences_data]

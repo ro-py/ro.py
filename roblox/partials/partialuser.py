@@ -11,12 +11,7 @@ class PartialUser(BaseUser):
 
         super().__init__(shared=shared, user_id=self.id)
 
-        self.name: str = (
-            data.get("name")
-            or data.get("Name")
-            or data.get("username")
-            or data.get("Username")
-        )
+        self.name: str = data.get("name") or data.get("Name") or data.get("username") or data.get("Username")
         self.display_name: str = data.get("displayName")
 
 

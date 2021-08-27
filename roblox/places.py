@@ -21,12 +21,8 @@ class Place(BasePlace):
 
         self.is_playable: bool = data["isPlayable"]
         self.reason_prohibited: str = data["reasonProhibited"]
-        self.universe: BaseUniverse = BaseUniverse(
-            shared=self._shared, universe_id=data["universeId"]
-        )
-        self.universe_root_place: BasePlace = BasePlace(
-            shared=self._shared, place_id=data["universeRootPlaceId"]
-        )
+        self.universe: BaseUniverse = BaseUniverse(shared=self._shared, universe_id=data["universeId"])
+        self.universe_root_place: BasePlace = BasePlace(shared=self._shared, place_id=data["universeRootPlaceId"])
 
         self.price: int = data["price"]
         self.image_token: str = data["imageToken"]
