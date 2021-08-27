@@ -433,17 +433,13 @@ class BaseGroup:
         """
         Sets the group settings
         """
-        json = {}
-        if is_approval_required:
-            json["isApprovalRequired"] = is_approval_required,
-        if is_builders_club_required:
-            json["isBuildersClubRequired"] = is_builders_club_required
-        if are_enemies_allowed:
-            json["areEnemiesAllowed"] = are_enemies_allowed,
-        if are_group_funds_visible:
-            json["areGroupFundsVisible"] = are_group_funds_visible,
-        if are_group_games_visible:
-            json["areGroupGamesVisible"] = are_group_games_visible
+        json = {
+            "isApprovalRequired": is_approval_required,
+            "isBuildersClubRequired": is_builders_club_required,
+            "areEnemiesAllowed": are_enemies_allowed,
+            "areGroupFundsVisible": are_group_funds_visible,
+            "areGroupGamesVisible": are_group_games_visible,
+        }
         response = await self._requests.patch(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/settings"),
             json=json
