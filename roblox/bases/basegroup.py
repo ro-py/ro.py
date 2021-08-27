@@ -28,8 +28,8 @@ def member_handler(shared, data, group) -> Member:
     return Member(shared, user, group, role)
 
 
-def action_handler(cso, data, group) -> Action:
-    return Action(cso, group, data)
+def action_handler(shared, data, group) -> Action:
+    return Action(shared, group, data)
 
 
 def join_request_handler(cso, data, group) -> JoinRequest:
