@@ -1,17 +1,21 @@
 from .utilities.shared import ClientSharedObject
-from .groups import Group
-import roblox.bases.basegroup
 from enum import Enum
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .bases.basegroup import BaseGroup
 
 
 class RelationshipType(Enum):
-    allys = "Allys"
+    allys = "Allies"
     enemies = "Enemies"
 
 
 class RelationshipRequest:
     def __init__(self, shared: ClientSharedObject, data: dict,
-                 group: roblox.bases.basegroup, relationship_type: RelationshipType):
+                 group: BaseGroup, relationship_type: RelationshipType):
+        from .groups import Group
         self.relationship_type: str = relationship_type.value
         self._shared = shared
         self._requests = shared.requests
@@ -20,10 +24,12 @@ class RelationshipRequest:
 
     async def accept(self) -> None:
         await self._requests.post(
-            self._shared.url_generator.get_url("groups",f"v1/groups/{self.group.id}/relationships/{self.relationship_type}/requests/{self.requester.id}")
+            self._shared.url_generator.get_url("groups",
+                                               f"v1/groups/{self.group.id}/relationships/{self.relationship_type}/requests/{self.requester.id}")
         )
 
     async def decline(self) -> None:
         await self._requests.delete(
-            self._shared.url_generator.get_url("groups",f"v1/groups/{self.group.id}/relationships/{self.relationship_type}/requests/{self.requester.id}")
+            self._shared.url_generator.get_url("groups",
+                                               f"v1/groups/{self.group.id}/relationships/{self.relationship_type}/requests/{self.requester.id}")
         )
