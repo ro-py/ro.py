@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from dateutil.parser import parse
 
@@ -73,7 +73,7 @@ class UniverseThumbnails:
 
         self.universe_id: int = data["universeId"]
         self.error: Optional[str] = data["error"]
-        self.thumbnails: list[Thumbnail] = [
+        self.thumbnails: List[Thumbnail] = [
             Thumbnail(shared=self._shared, data=thumbnail_data)
             for thumbnail_data in data["thumbnails"]
         ]
@@ -89,12 +89,12 @@ class ThumbnailProvider:
 
     async def get_asset_thumbnails(
         self,
-        asset_ids: list[int],
+        asset_ids: List[int],
         return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
         size: str = "30x30",
         format: ThumbnailFormat = ThumbnailFormat.png,
         is_circular: bool = False,
-    ) -> list[Thumbnail]:
+    ) -> List[Thumbnail]:
         """
         Returns asset thumbnails for the asset ID passed.
         """
@@ -129,11 +129,11 @@ class ThumbnailProvider:
 
     async def get_badge_icons(
         self,
-        badge_ids: list[int],
+        badge_ids: List[int],
         size: str = "150x150",
         format: ThumbnailFormat = ThumbnailFormat.png,
         is_circular: bool = False,
-    ) -> list[Thumbnail]:
+    ) -> List[Thumbnail]:
         """
         Returns badge icons for each badge ID passed.
         """
@@ -154,11 +154,11 @@ class ThumbnailProvider:
 
     async def get_bundle_thumbnails(
         self,
-        bundle_ids: list[int],
+        bundle_ids: List[int],
         size: str = "150x150",
         format: ThumbnailFormat = ThumbnailFormat.png,
         is_circular: bool = False,
-    ) -> list[Thumbnail]:
+    ) -> List[Thumbnail]:
         """
         Returns bundle thumbnails for each bundle ID passed.
         """
@@ -181,11 +181,11 @@ class ThumbnailProvider:
 
     async def get_gamepass_icons(
         self,
-        gamepass_ids: list[int],
+        gamepass_ids: List[int],
         size: str = "150x150",
         format: ThumbnailFormat = ThumbnailFormat.png,
         is_circular: bool = False,
-    ) -> list[Thumbnail]:
+    ) -> List[Thumbnail]:
         """
         Returns gamepass icons for each gamepass ID passed.
         """
@@ -206,12 +206,12 @@ class ThumbnailProvider:
 
     async def get_universe_icons(
         self,
-        universe_ids: list[int],
+        universe_ids: List[int],
         return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
         size: str = "50x50",
         format: ThumbnailFormat = ThumbnailFormat.png,
         is_circular: bool = False,
-    ) -> list[Thumbnail]:
+    ) -> List[Thumbnail]:
         """
         Returns universe icons for each universe ID passed.
         """
@@ -233,13 +233,13 @@ class ThumbnailProvider:
 
     async def get_universe_thumbnails(
         self,
-        universe_ids: list[int],
+        universe_ids: List[int],
         size: str = "768x432",
         format: ThumbnailFormat = ThumbnailFormat.png,
         is_circular: bool = False,
         count_per_universe: int = None,
         defaults: bool = None,
-    ) -> list[UniverseThumbnails]:
+    ) -> List[UniverseThumbnails]:
         """
         Returns universe thumbnails for each universe ID passed.
         """
@@ -264,11 +264,11 @@ class ThumbnailProvider:
 
     async def get_group_icons(
         self,
-        group_ids: list[int],
+        group_ids: List[int],
         size: str = "150x150",
         format: ThumbnailFormat = ThumbnailFormat.png,
         is_circular: bool = False,
-    ) -> list[Thumbnail]:
+    ) -> List[Thumbnail]:
         """
         Returns icons for each group ID passed.
         """
@@ -289,12 +289,12 @@ class ThumbnailProvider:
 
     async def get_place_icons(
         self,
-        place_ids: list[int],
+        place_ids: List[int],
         return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
         size: str = "50x50",
         format: ThumbnailFormat = ThumbnailFormat.png,
         is_circular: bool = False,
-    ) -> list[Thumbnail]:
+    ) -> List[Thumbnail]:
         """
         Returns icons for each place ID passed.
         """
@@ -316,12 +316,12 @@ class ThumbnailProvider:
 
     async def get_user_avatars(
         self,
-        user_ids: list[int],
+        user_ids: List[int],
         type: AvatarThumbnailType = AvatarThumbnailType.full_body,
         size: str = None,
         format: ThumbnailFormat = ThumbnailFormat.png,
         is_circular: bool = False,
-    ) -> list[Thumbnail]:
+    ) -> List[Thumbnail]:
         """
         Returns avatars for each user ID passed.
         """

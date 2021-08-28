@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from dateutil.parser import parse
 
@@ -44,7 +44,7 @@ class PresenceProvider:
     def __init__(self, shared: ClientSharedObject):
         self._shared: ClientSharedObject = shared
 
-    async def get_user_presences(self, user_ids: list[int]) -> list[Presence]:
+    async def get_user_presences(self, user_ids: List[int]) -> List[Presence]:
         """
         Returns a list of Presence objects corresponding to each user in the list.
         """

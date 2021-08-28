@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Union, Optional, List
 
 from .utilities.shared import ClientSharedObject
 from .utilities.url import URLGenerator
@@ -38,6 +38,7 @@ class Client:
         thumbnails: The thumbnail provider object.
         delivery: The delivery provider object.
     """
+
     def __init__(self, token: str = None, base_url: str = "roblox.com"):
         """
         Arguments:
@@ -106,10 +107,10 @@ class Client:
 
     async def get_users(
         self,
-        user_ids: list[int],
+        user_ids: List[int],
         exclude_banned_users: bool = False,
         expand: bool = False,
-    ) -> Union[list[PartialUser], list[User]]:
+    ) -> Union[List[PartialUser], List[User]]:
         """
         Grabs a list of users corresponding to each user ID in the list.
 
@@ -134,10 +135,10 @@ class Client:
 
     async def get_users_by_usernames(
         self,
-        usernames: list[str],
+        usernames: List[str],
         exclude_banned_users: bool = False,
         expand: bool = False,
-    ) -> Union[list[RequestedUsernamePartialUser], list[User]]:
+    ) -> Union[List[RequestedUsernamePartialUser], List[User]]:
         """
         Grabs a list of users corresponding to each username in the list.
 
@@ -165,7 +166,7 @@ class Client:
 
     async def get_user_by_username(
         self, username: str, exclude_banned_users: bool = False, expand: bool = False
-    ) -> Optional[Union[list[RequestedUsernamePartialUser], list[User]]]:
+    ) -> Optional[Union[List[RequestedUsernamePartialUser], List[User]]]:
         """
         Grabs a user corresponding to the passed username.
 
@@ -263,7 +264,7 @@ class Client:
         """
         return BaseGroup(shared=self._shared, group_id=group_id)
 
-    async def get_universes(self, universe_ids: list[int]) -> list[Universe]:
+    async def get_universes(self, universe_ids: List[int]) -> List[Universe]:
         """
         Grabs a list of universes corresponding to each ID in the list.
 
@@ -313,7 +314,7 @@ class Client:
         """
         return BaseUniverse(shared=self._shared, universe_id=universe_id)
 
-    async def get_places(self, place_ids: list[int]) -> list[Place]:
+    async def get_places(self, place_ids: List[int]) -> List[Place]:
         """
         Grabs a list of places corresponding to each ID in the list.
 
@@ -396,7 +397,7 @@ class Client:
         """
         return BaseAsset(shared=self._shared, asset_id=asset_id)
 
-    async def get_plugins(self, plugin_ids: list[int]) -> list[Plugin]:
+    async def get_plugins(self, plugin_ids: List[int]) -> List[Plugin]:
         """
         Grabs a list of plugins corresponding to each ID in the list.
 

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from dateutil.parser import parse
 
@@ -25,8 +25,8 @@ class Universe(BaseUniverse):
         self.description: str = data["description"]
         # creator is missing because I have not completed it yet
         self.price: Optional[int] = data["price"]
-        self.allowed_gear_genres: list[str] = data["allowedGearGenres"]
-        self.allowed_gear_categories: list[str] = data["allowedGearCategories"]
+        self.allowed_gear_genres: List[str] = data["allowedGearGenres"]
+        self.allowed_gear_categories: List[str] = data["allowedGearCategories"]
         self.is_genre_enforced: bool = data["isGenreEnforced"]
         self.copying_allowed: bool = data["copyingAllowed"]
         self.playing: int = data["playing"]

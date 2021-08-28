@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, List, TYPE_CHECKING
 
 from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator, SortOrder
@@ -12,13 +12,30 @@ if TYPE_CHECKING:
 
 
 class BaseUser:
+    """
+    Represents a Roblox user ID.
+
+    Attributes:
+        _shared: The ClientSharedObject.
+        id: The user ID.
+    """
+
     def __init__(self, shared: ClientSharedObject, user_id: int):
+        """
+        Arguments:
+            shared: The ClientSharedObject.
+            user_id: The user ID.
+        """
+
         self._shared: ClientSharedObject = shared
         self.id: int = user_id
 
     async def get_status(self) -> str:
         """
-        Returns the user's status.
+        Grabs the user's status.
+
+        Returns:
+            The user's status.
         """
         status_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url(
@@ -32,7 +49,10 @@ class BaseUser:
             self, limit: int = 10, sort_order: SortOrder = SortOrder.Ascending
     ) -> PageIterator:
         """
-        Returns a PageIterator containing the user's username history.
+        Grabs the user's username history.
+
+        Returns:
+            A PageIterator containing the user's username history.
         """
         return PageIterator(
             shared=self._shared,
@@ -46,7 +66,10 @@ class BaseUser:
 
     async def get_presence(self) -> Optional[Presence]:
         """
-        Returns the user's presence.
+        Grabs the user's presence.
+
+        Returns:
+            The user's presence
         """
         presences = await self._shared.presence_provider.get_user_presences([self.id])
         try:
@@ -54,7 +77,14 @@ class BaseUser:
         except IndexError:
             return None
 
-    async def get_friends(self) -> list[Friend]:
+    async def get_friends(self) -> List[Friend]:
+        """
+        Grabs the user's friends.
+
+        Returns:
+            A list of the user's friends.
+        """
+
         from ..friends import Friend
         friends_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("friends", f"v1/users/{self.id}/friends")
@@ -63,6 +93,14 @@ class BaseUser:
         return [Friend(shared=self._shared, data=friend_data) for friend_data in friends_data]
 
     async def get_currency(self) -> int:
+        """
+        Grabs the user's current Robux amount. Only works on the authenticated user.
+        "but jmk,,, why is this method in the baseuser and not the client!?!?"
+        That's how the API is structured. That's why.
+
+        Returns:
+            The user's Robux amount.
+        """
         currency_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("economy", f"v1/users/{self.id}/currency")
         )

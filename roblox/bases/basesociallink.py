@@ -13,9 +13,15 @@ class SocialLinkType(Enum):
 
 
 class BaseSocialLink(ABC):
+    """
+    Represents a Roblox base social link.
+    FIXME - this is horrible!!! please fix
+    """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
         self._requests = self._shared.requests
+
         self.id = data["id"]
         self.type = data["type"]
         self.url = data["url"]

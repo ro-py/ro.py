@@ -40,8 +40,25 @@ def join_request_handler(shared, data, group) -> JoinRequest:
 class GroupSettings:
     """
     Represents a group's settings.
+
+    Attributes:
+        _shared: The ClientSharedObject.
+        is_approval_required: Whether approval is required to join this group.
+        is_builders_club_required: Whether a membership is required to join this group.
+        are_enemies_allowed: Whether group enemies are allowed.
+        are_group_funds_visible: Whether group funds are visible.
+        are_group_games_visible: Whether group games are visible.
+        is_group_name_change_enabled: Whether group name changes are enabled.
+        can_change_group_name: Whether the name of this group can be changed.
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
+        """
+        Arguments:
+            shared: The ClientSharedObject.
+            data: The group settings data.
+        """
+
         self._shared: ClientSharedObject = shared
         self.is_approval_required: bool = data["isApprovalRequired"]
         self.is_builders_club_required: bool = data["isBuildersClubRequired"]
@@ -52,13 +69,34 @@ class GroupSettings:
         self.can_change_group_name: bool = data["canChangeGroupName"]
 
 
-class SociaLink(BaseSocialLink):
+class SocialLink(BaseSocialLink):
+    """
+    Represents a group's social link.
+
+    Attributes:
+        group: The social link's parent group.
+    """
+
     def __init__(self, shared: ClientSharedObject, data: dict, group: BaseGroup):
+        """
+        Arguments:
+            shared: The ClientSharedObject.
+            data: The social link data.
+            group: The parent group.
+        """
         super().__init__(shared, data)
         self.group: BaseGroup = group
 
     async def set(self, type: Optional[SocialLinkType] = None, url: Optional[str] = None,
                   title: Optional[str] = None) -> None:
+        """
+        Updates the social link.
+
+        Arguments:
+            type: Type of the social link.
+            url: URL of the social link.
+            title: Social link title.
+        """
         if type:
             type = type.value
         else:
@@ -80,6 +118,9 @@ class SociaLink(BaseSocialLink):
         self.title = json['title']
 
     async def delete(self) -> None:
+        """
+        Deletes this social link.
+        """
         await self._requests.delete(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.group}/social-links/{self.id}"),
         )
@@ -87,22 +128,33 @@ class SociaLink(BaseSocialLink):
 
 class BaseGroup:
     """
-    Represents a group's ID on Roblox.
+    Represents a Roblox group ID.
+
+    Attributes:
+        _shared: The ClientSharedObject.
+        _requests: The requests object.
+        id: The group's ID.
+        shout: The group's current shout, if present.
     """
+
     def __init__(self, shared: ClientSharedObject, group_id: int):
+        """
+        Parameters:
+            shared: The ClientSharedObject.
+            group_id: The group's ID.
+        """
         self._shared: ClientSharedObject = shared
         self._requests = shared.requests
+
         self.id: int = group_id
-        """The groups id."""
         self.shout: Optional[Shout] = Shout(self._shared, self)
-        """The current shout of the group."""
 
     async def expand(self) -> Group:
         """
-        Expands into a full User object.
-        Returns
-        ------
-        ro_py.users.User
+        Expands into a full Group object.
+
+        Returns:
+            A Group.
         """
         return await self._shared.client.get_group(self.id)
 
@@ -110,28 +162,36 @@ class BaseGroup:
         """
         Gets the roles of the group.
 
-        Returns
-        -------
-        roblox.role.Role
+        Returns:
+            A list of Roles.
         """
         response = await self._requests.get(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/roles"),
         )
         data: dict = response.json()
         roles: List[Role] = []
-        for role in data['roles']:
+
+        for role in data["roles"]:
             roles.append(Role(self._shared, self, role))
+
         return roles
 
-    async def get_members(self, sort_order=SortOrder.Ascending,
-                          limit=100) -> PageIterator:
+    def get_members(self, sort_order=SortOrder.Ascending,
+                    limit=100) -> PageIterator:
+        """
+        Returns a PageIterator containing the group's members.
+
+        Arguments:
+            sort_order: The sort order.
+            limit: Limit of how many members should be returned per-page.
+        """
         pages = PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users"),
             sort_order=sort_order,
             limit=limit,
             item_handler=member_handler,
-            handler_kwargs={'group': self}
+            handler_kwargs={"group": self.id}
         )
         return pages
 
@@ -164,7 +224,7 @@ class BaseGroup:
         role = Role(self._shared, self, member['role'])
         return Member(self._shared, user, self, role)
 
-    async def get_member_by_id(self, user_id: int = 0) -> Member:
+    async def get_member_by_id(self, user_id: int) -> Member:
         """
         Gets a user in a group
         Parameters
@@ -317,24 +377,24 @@ class BaseGroup:
             json=json
         )
 
-    async def get_social_links(self) -> List[SociaLink]:
+    async def get_social_links(self) -> List[SocialLink]:
         """
         Gets you all curent social links
         Returns
         -------
-        List[roblox.bases.basegroup.SociaLink]
+        List[roblox.bases.basegroup.SocialLink]
         """
         response = await self._requests.get(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/social-links"),
         )
         json = response.json()
-        join_requests: List[SociaLink] = []
+        join_requests: List[SocialLink] = []
         for join_request in json["data"]:
-            join_requests.append(SociaLink(self._shared, join_request, self))
+            join_requests.append(SocialLink(self._shared, join_request, self))
         return join_requests
 
     async def create_social_link(self, type: SocialLinkType, url: str,
-                                 title: str) -> SociaLink:
+                                 title: str) -> SocialLink:
         """
         creates a social link
         Parameters
@@ -347,7 +407,7 @@ class BaseGroup:
                 Titile you want to give it
         Returns
         -------
-        roblox.bases.basegroup.SociaLink
+        roblox.bases.basegroup.SocialLink
         """
         responce = await self._requests.post(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/social-links"),
@@ -358,7 +418,7 @@ class BaseGroup:
             }
         )
         raw_data = responce.json()
-        return SociaLink(self._shared, raw_data, self)
+        return SocialLink(self._shared, raw_data, self)
 
     async def get_relationships(self, relationship_type: RelationshipType,
                                 start_row_index: int = 0) -> List[RelationshipRequest]:
@@ -399,7 +459,7 @@ class BaseGroup:
         )
 
     async def batch_decline_relationships(self, join_requests: List[RelationshipRequest],
-                                       relationship_type: RelationshipType) -> None:
+                                          relationship_type: RelationshipType) -> None:
         """
         Declines a batch of users in to the group
         Parameters
