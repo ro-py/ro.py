@@ -20,7 +20,11 @@ __version__ = "2.0.0a"
 # __path__ = __import__("pkgutil").extend_path(__path__, __name__)
 
 import logging
-from typing import NamedTuple, Literal
+from typing import NamedTuple
+try:
+    from typing import Literal
+except ImportError:
+    from typing_extensions import Literal
 
 from .client import Client
 from .utilities.exceptions import *
