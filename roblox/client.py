@@ -27,42 +27,35 @@ from .partials.partialuser import PartialUser, RequestedUsernamePartialUser
 
 
 class Client:
+    """
+    Represents a Roblox client.
+
+    Attributes:
+        _requests: The requests object, which is used to send requests to Roblox endpoints.
+        _url_generator: The URL generator object, which is used to generate URLs to send requests to endpoints.
+        _shared: The shared object, which is passed to all objects this client generates.
+        presence: The presence provider object.
+        thumbnails: The thumbnail provider object.
+        delivery: The delivery provider object.
+    """
     def __init__(self, token: str = None, base_url: str = "roblox.com"):
+        """
+        Arguments:
+            token: A .ROBLOSECURITY token to authenticate the client with.
+            base_url: The base URL to use when sending requests.
+        """
         self._requests: Requests = Requests()
-        """
-        The requests object, which is used to send requests to Roblox endpoints.
-        !!! note
-            It is not recommended to initialize this object alone without a Client.
-            Ideally, you should always generate a client, even when sending requests, as it allows you to use our
-            builtin authentication methods and still recieve fixes in case of API changes that break existing code.            
-        """
-
         self._url_generator: URLGenerator = URLGenerator(base_url=base_url)
-        """
-        The URL generator object, which is used to generate URLs to send requests to endpoints.
-        """
-
         self._shared: ClientSharedObject = ClientSharedObject(
             client=self, requests=self._requests, url_generator=self._url_generator
         )
-        """
-        The shared object, which is shared between all objects the client generates.
-        """
 
         self.presence: PresenceProvider = PresenceProvider(shared=self._shared)
-        """
-        The presence provider object.
-        """
         self.thumbnails: ThumbnailProvider = ThumbnailProvider(shared=self._shared)
-        """
-        The thumbnail provider object.
-        """
         self.delivery: DeliveryProvider = DeliveryProvider(shared=self._shared)
-        """
-        The delivery provider object.
-        """
 
-        self._shared.presence_provider = self.presence  # TODO: Improve this hack
+        # TODO: Improve this hack
+        self._shared.presence_provider = self.presence
         self._shared.thumbnail_provider = self.thumbnails
         self._shared.delivery_provider = self.delivery
 
@@ -71,13 +64,20 @@ class Client:
 
     def set_token(self, token: str):
         """
-        Sets the .ROBLOSECURITY token.
+        Authenticates the client with the passed .ROBLOSECURITY token.
+        This method does not send any requests and will not throw if the token is invalid.
+
+        Arguments:
+            token: A .ROBLOSECURITY token to authenticate the client with.
         """
         self._requests.session.cookies[".ROBLOSECURITY"] = token
 
     async def get_user(self, user_id: int) -> User:
         """
-        Returns a user with the specified user ID.
+        Gets a user with the specified user ID.
+
+        Arguments:
+            user_id: A Roblox user ID.
         """
         user_response = await self._requests.get(
             url=self._shared.url_generator.get_url("users", f"v1/users/{user_id}")
@@ -89,8 +89,10 @@ class Client:
         self, expand: bool = True
     ) -> Union[User, PartialUser]:
         """
-        Returns the authenticated user.
-        If the "expand" property is True, returns a User. If not, it returns a PartialUser.
+        Grabs the authenticated user.
+
+        Arguments:
+            expand: Whether to return a User (2 requests) rather than a PartialUser (1 request)
         """
         authenticated_user_response = await self._requests.get(
             url=self._shared.url_generator.get_url("users", f"v1/users/authenticated")
@@ -109,8 +111,12 @@ class Client:
         expand: bool = False,
     ) -> Union[list[PartialUser], list[User]]:
         """
-        Returns a list of users corresponding to each user ID in the list.
-        If the "expand" property is True, returns a list of User. If not, returns a list of PartialUser.
+        Grabs a list of users corresponding to each user ID in the list.
+
+        Arguments:
+            user_ids: A list of Roblox user IDs.
+            exclude_banned_users: Whether to exclude banned users from the data.
+            expand: Whether to return a list of Users (2 requests) rather than PartialUsers (1 request)
         """
         users_response = await self._requests.post(
             url=self._shared.url_generator.get_url("users", f"v1/users"),
@@ -133,8 +139,15 @@ class Client:
         expand: bool = False,
     ) -> Union[list[RequestedUsernamePartialUser], list[User]]:
         """
-        Returns a list of users corresponding to each username in the list.
-        If the "expand" property is True, returns a list of User. If not, returns a list of PartialUser.
+        Grabs a list of users corresponding to each username in the list.
+
+        Arguments:
+            usernames: A list of Roblox usernames.
+            exclude_banned_users: Whether to exclude banned users from the data.
+            expand: Whether to return a list of Users (2 requests) rather than RequestedUsernamePartialUsers (1 request)
+
+        Returns:
+            A list of User or RequestedUsernamePartialUser, depending on the expand argument.
         """
         users_response = await self._requests.post(
             url=self._shared.url_generator.get_url("users", f"v1/usernames/users"),
@@ -154,8 +167,15 @@ class Client:
         self, username: str, exclude_banned_users: bool = False, expand: bool = False
     ) -> Optional[Union[list[RequestedUsernamePartialUser], list[User]]]:
         """
-        Returns a user corresponding to the passed username.
-        If the "expand" property is True, returns a User. If not, returns a PartialUser.
+        Grabs a user corresponding to the passed username.
+
+        Arguments:
+            username: A Roblox username.
+            exclude_banned_users: Whether to exclude banned users from the data.
+            expand: Whether to return a User (2 requests) rather than a RequestedUsernamePartialUser (1 request)
+
+        Returns:
+            A User, RequestedUsernamePartialUser, or None, depending on the expand argument.
         """
         users = await self.get_users_by_usernames(
             usernames=[username],
@@ -170,18 +190,40 @@ class Client:
     def get_base_user(self, user_id: int) -> BaseUser:
         """
         Gets a base user.
+        FIXME
         This method does not send any requests - it just generates a BaseUser object.
-        Passing an invalid user ID to this method will not raise an error until you use one of the BaseUser methods.
-        Use this method when you want to use one of the BaseUser methods without grabbing information about the user.
+
+        Arguments:
+            user_id: A Roblox user ID.
+
+        Returns:
+            A BaseUser.
         """
         return BaseUser(shared=self._shared, user_id=user_id)
 
     def _user_search_handler(self, shared: ClientSharedObject, data: dict) -> RequestedUsernamePartialUser:
+        """
+        Handler for converting data from users/v1/users/search to a RequestedUsernamePartialUser.
+
+        Arguments:
+            shared: A ClientSharedObject to pass to the output object.
+            data: One item from users/v1/users/search.
+
+        Returns:
+            A RequestedUsernamePartialUser.
+        """
         return RequestedUsernamePartialUser(shared=shared, data=data)
 
     def user_search(self, keyword: str, limit: int = 10) -> PageIterator:
         """
         Search for users with a keyword.
+
+        Arguments:
+            keyword: A keyword to search for.
+            limit: How many users should be returned for each page
+
+        Returns:
+            A PageIterator containing RequestedUsernamePartialUser.
         """
         return PageIterator(
             shared=self._shared,
@@ -194,6 +236,12 @@ class Client:
     async def get_group(self, group_id: int) -> Group:
         """
         Gets a group by its ID.
+
+        Arguments:
+            group_id: A Roblox group ID.
+
+        Returns:
+            A Group.
         """
         group_response = await self._requests.get(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{group_id}")
@@ -204,15 +252,26 @@ class Client:
     def get_base_group(self, group_id: int) -> BaseGroup:
         """
         Gets a base group.
-        This method does not send any requests - it just generates a BaseGroup object.
-        Passing an invalid group ID to this method will not raise an error until you use one of the BaseGroup methods.
-        Use this method when you want to use one of the BaseGroup methods without grabbing information about the group.
+        FIXME
+        This method does not send any requests - it just generates a BaseGroup object. Learn more about bases here.
+
+        Arguments:
+            group_id: A Roblox group ID.
+
+        Returns:
+            A BaseGroup.
         """
         return BaseGroup(shared=self._shared, group_id=group_id)
 
     async def get_universes(self, universe_ids: list[int]) -> list[Universe]:
         """
-        Returns a list of universes corresponding to each ID in the list.
+        Grabs a list of universes corresponding to each ID in the list.
+
+        Arguments:
+            universe_ids: A list of Roblox universe IDs.
+
+        Returns:
+            A list of Universes.
         """
         universes_response = await self._requests.get(
             url=self._shared.url_generator.get_url("games", f"v1/games"),
@@ -227,6 +286,12 @@ class Client:
     async def get_universe(self, universe_id: int) -> Optional[Universe]:
         """
         Gets a universe with the passed ID.
+
+        Arguments:
+            universe_id: A Roblox universe ID.
+
+        Returns:
+            A Universe.
         """
         universes = await self.get_universes(universe_ids=[universe_id])
         try:
@@ -237,12 +302,26 @@ class Client:
     def get_base_universe(self, universe_id: int) -> BaseUniverse:
         """
         Gets a base universe.
+        FIXME
+        This method does not send any requests - it just generates a BaseGroup object. Learn more about bases here.
+
+        Arguments:
+            universe_id: A Roblox universe ID.
+
+        Returns:
+            A BaseUniverse.
         """
         return BaseUniverse(shared=self._shared, universe_id=universe_id)
 
     async def get_places(self, place_ids: list[int]) -> list[Place]:
         """
-        Returns a list of places corresponding to each ID in the list.
+        Grabs a list of places corresponding to each ID in the list.
+
+        Arguments:
+            place_ids: A list of Roblox place IDs.
+
+        Returns:
+            A list of Places.
         """
         places_response = await self._requests.get(
             url=self._shared.url_generator.get_url(
@@ -258,6 +337,12 @@ class Client:
     async def get_place(self, place_id: int) -> Optional[Place]:
         """
         Gets a place with the passed ID.
+
+        Arguments:
+            place_id: A Roblox place ID.
+
+        Returns:
+            A Place.
         """
         places = await self.get_places(place_ids=[place_id])
         try:
@@ -268,12 +353,26 @@ class Client:
     def get_base_place(self, place_id: int) -> BasePlace:
         """
         Gets a base place.
+        FIXME
+        This method does not send any requests - it just generates a BaseGroup object. Learn more about bases here.
+
+        Arguments:
+            place_id: A Roblox place ID.
+
+        Returns:
+            A BasePlace.
         """
         return BasePlace(shared=self._shared, place_id=place_id)
 
     async def get_asset(self, asset_id: int) -> EconomyAsset:
         """
         Gets an asset with the passed ID.
+
+        Arguments:
+            asset_id: A Roblox asset ID.
+
+        Returns:
+            An Asset.
         """
         asset_response = await self._requests.get(
             url=self._shared.url_generator.get_url(
@@ -286,10 +385,27 @@ class Client:
     def get_base_asset(self, asset_id: int) -> BaseAsset:
         """
         Gets a base asset.
+        FIXME
+        This method does not send any requests - it just generates a BaseGroup object. Learn more about bases here.
+
+        Arguments:
+            asset_id: A Roblox asset ID.
+
+        Returns:
+            A BaseAsset.
         """
         return BaseAsset(shared=self._shared, asset_id=asset_id)
 
     async def get_plugins(self, plugin_ids: list[int]) -> list[Plugin]:
+        """
+        Grabs a list of plugins corresponding to each ID in the list.
+
+        Arguments:
+            plugin_ids: A list of Roblox plugin IDs.
+
+        Returns:
+            A list of Plugins.
+        """
         plugins_response = await self._requests.get(
             url=self._shared.url_generator.get_url(
                 "develop", "v1/plugins"
@@ -302,6 +418,15 @@ class Client:
         return [Plugin(shared=self._shared, data=plugin_data) for plugin_data in plugins_data]
 
     async def get_plugin(self, plugin_id: int) -> Optional[Plugin]:
+        """
+        Grabs a plugin with the passed ID.
+
+        Arguments:
+            plugin_id: A Roblox plugin ID.
+
+        Returns:
+            A Plugin.
+        """
         plugins = await self.get_plugins([plugin_id])
         try:
             return plugins[0]
@@ -311,5 +436,13 @@ class Client:
     def get_base_plugin(self, plugin_id: int) -> BasePlugin:
         """
         Gets a base plugin.
+        FIXME
+        This method does not send any requests - it just generates a BaseUser object.
+
+        Arguments:
+            plugin_id: A Roblox plugin ID.
+
+        Returns:
+            A BasePlugin.
         """
         return BasePlugin(shared=self._shared, plugin_id=plugin_id)

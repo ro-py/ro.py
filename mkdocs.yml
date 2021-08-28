@@ -34,6 +34,10 @@ plugins:
   - literate-nav:
       nav_file: SUMMARY.md
   - mkdocstrings:
+      watch:
+        - roblox
+        - ro
+        - ro_py
       handlers:
         python:
           setup_commands:

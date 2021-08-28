@@ -38,6 +38,9 @@ def join_request_handler(shared, data, group) -> JoinRequest:
 
 
 class GroupSettings:
+    """
+    Represents a group's settings.
+    """
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
         self.is_approval_required: bool = data["isApprovalRequired"]
@@ -83,6 +86,9 @@ class SociaLink(BaseSocialLink):
 
 
 class BaseGroup:
+    """
+    Represents a group's ID on Roblox.
+    """
     def __init__(self, shared: ClientSharedObject, group_id: int):
         self._shared: ClientSharedObject = shared
         self._requests = shared.requests
@@ -103,6 +109,7 @@ class BaseGroup:
     async def get_roles(self) -> List[Role]:
         """
         Gets the roles of the group.
+
         Returns
         -------
         roblox.role.Role
@@ -131,6 +138,7 @@ class BaseGroup:
     async def get_member_by_user(self, user: User) -> Member:
         """
         Gets a user in a group
+
         Parameters
         ----------
         user : User
