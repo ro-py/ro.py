@@ -106,3 +106,16 @@ class BaseUser:
         )
         currency_data = currency_response.json()
         return currency_data["robux"]
+
+    async def has_premium(self) -> bool:
+        """
+        Checks if the user has a Roblox Premium membership.
+
+        Returns:
+            Whether the user has Premium or not.
+        """
+        premium_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("premiumfeatures", f"v1/users/{self.id}/validate-membership")
+        )
+        premium_data = premium_response.text
+        return premium_data == "true"
