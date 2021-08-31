@@ -5,8 +5,8 @@ from .partials.partialuser import PartialUser
 from .users import User
 
 from typing import Union, Tuple, TYPE_CHECKING
-from bases.baseuser import BaseUser
 if TYPE_CHECKING:
+    from bases.baseuser import BaseUser
     from .bases.basegroup import BaseGroup
     from .role import Role
 
