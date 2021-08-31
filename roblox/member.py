@@ -110,7 +110,7 @@ class Member:
 
         return await self.change_rank(-abs(rank))
 
-    async def __set_rank(self, rank: int) -> None:
+    async def set_rank(self, rank: int) -> None:
         """
         Sets the users role to specified role using rank id.
         Parameters
@@ -128,10 +128,6 @@ class Member:
                 "roleId": rank
             }
         )
-
-    async def set_rank(self, rank: int) -> None:
-        await self.__set_rank(rank)
-        await self.update_role()
 
     async def set_role(self, role_num: int):
         """
