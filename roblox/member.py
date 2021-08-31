@@ -5,17 +5,19 @@ from .partials.partialuser import PartialUser
 from .users import User
 
 from typing import Union, Tuple, TYPE_CHECKING
-
+from bases.baseuser import BaseUser
 if TYPE_CHECKING:
     from .bases.basegroup import BaseGroup
     from .role import Role
+
+
 class Member:
     """
     Represents a user in a group.
     """
 
     def __init__(self, shared: ClientSharedObject,
-                 user: Union[PartialUser,User],
+                 user: Union[BaseUser,PartialUser,User],
                  group: BaseGroup,
                  role: Role):
         self._shared = shared
