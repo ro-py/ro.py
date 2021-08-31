@@ -20,3 +20,4 @@ class Group(BaseGroup):
         self.member_count: int = data["memberCount"]
         self.is_builders_club_only: bool = data["isBuildersClubOnly"]
         self.public_entry_allowed: bool = data["publicEntryAllowed"]
+        self.is_locked: bool = data.get("isLocked") or False

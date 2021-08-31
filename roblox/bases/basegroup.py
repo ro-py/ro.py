@@ -16,6 +16,8 @@ from typing import List, Union, BinaryIO, Optional, TYPE_CHECKING
 
 from pathlib import Path
 
+from ..wall import Wall
+
 if TYPE_CHECKING:
     from ..relationship import RelationshipType, RelationshipRequest
     from ..groups import Group
@@ -134,6 +136,7 @@ class BaseGroup:
         _shared: The ClientSharedObject.
         _requests: The requests object.
         id: The group's ID.
+        wall: The group's wall
         shout: The group's current shout, if present.
     """
 
@@ -147,6 +150,8 @@ class BaseGroup:
         self._requests = shared.requests
 
         self.id: int = group_id
+
+        self.wall: Wall = Wall(shared, self.id)
         self.shout: Optional[Shout] = Shout(self._shared, self)
 
     async def expand(self) -> Group:
