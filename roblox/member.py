@@ -77,7 +77,7 @@ class Member:
         # if not roles:
         #    raise NotFound(f"User {self.user.id} is not in group {self.group.id}")
 
-        await self.__set_rank(roles[role_counter].id)
+        await self.set_rank(roles[role_counter].id)
         self.role = roles[role_counter]
 
         return old_role, self.role
@@ -152,7 +152,7 @@ class Member:
         if not rank_role:
             raise IndexError(f"Role {role_num} not found")
 
-        return await self.__set_rank(rank_role.id)
+        return await self.set_rank(rank_role.id)
 
     async def exile(self) -> None:
         await self._requests.delete(
