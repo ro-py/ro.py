@@ -151,7 +151,7 @@ class BaseGroup:
 
         self.id: int = group_id
 
-        self.wall: Wall = Wall(shared, self.id)
+        self.wall: Wall = Wall(shared, self)
         self.shout: Optional[Shout] = Shout(self._shared, self)
 
     async def expand(self) -> Group:
