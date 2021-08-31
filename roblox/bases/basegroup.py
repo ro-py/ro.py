@@ -195,7 +195,7 @@ class BaseGroup:
         )
         return pages
 
-    async def get_member_by_user(self, user: User) -> Member:
+    async def get_member_by_user(self, user: BaseUser) -> Member:
         """
         Gets a user in a group
 
@@ -219,7 +219,7 @@ class BaseGroup:
                 member = roles
                 break
         if len(member) == 0:
-            raise IndexError(f"user {user.name} is not part of the group {self.id}")
+            raise IndexError(f"user {user.id} is not part of the group {self.id}")
 
         role = Role(self._shared, self, member['role'])
         return Member(self._shared, user, self, role)
@@ -236,7 +236,7 @@ class BaseGroup:
         roblox.member.Member
         """
 
-        user: User = await self._shared.client.get_user(user_id)
+        user: BaseUser = self._shared.client.get_base_user(user_id)
         return await self.get_member_by_user(user)
 
     async def get_member_by_name(self, name: str) -> Member:

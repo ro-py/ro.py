@@ -166,7 +166,7 @@ class Client:
 
     async def get_user_by_username(
         self, username: str, exclude_banned_users: bool = False, expand: bool = False
-    ) -> Optional[Union[List[RequestedUsernamePartialUser], List[User]]]:
+    ) -> Optional[Union[RequestedUsernamePartialUser, User]]:
         """
         Grabs a user corresponding to the passed username.
 

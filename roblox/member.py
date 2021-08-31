@@ -5,17 +5,19 @@ from .partials.partialuser import PartialUser
 from .users import User
 
 from typing import Union, Tuple, TYPE_CHECKING
-
 if TYPE_CHECKING:
+    from bases.baseuser import BaseUser
     from .bases.basegroup import BaseGroup
     from .role import Role
+
+
 class Member:
     """
     Represents a user in a group.
     """
 
     def __init__(self, shared: ClientSharedObject,
-                 user: Union[PartialUser,User],
+                 user: Union[BaseUser,PartialUser,User],
                  group: BaseGroup,
                  role: Role):
         self._shared = shared
@@ -75,7 +77,7 @@ class Member:
         # if not roles:
         #    raise NotFound(f"User {self.user.id} is not in group {self.group.id}")
 
-        await self.__set_rank(roles[role_counter].id)
+        await self.set_rank(roles[role_counter].id)
         self.role = roles[role_counter]
 
         return old_role, self.role
@@ -108,7 +110,7 @@ class Member:
 
         return await self.change_rank(-abs(rank))
 
-    async def __set_rank(self, rank: int) -> None:
+    async def set_rank(self, rank: int) -> None:
         """
         Sets the users role to specified role using rank id.
         Parameters
@@ -126,10 +128,6 @@ class Member:
                 "roleId": rank
             }
         )
-
-    async def set_rank(self, rank: int) -> None:
-        await self.__set_rank(rank)
-        await self.update_role()
 
     async def set_role(self, role_num: int):
         """
@@ -154,7 +152,7 @@ class Member:
         if not rank_role:
             raise IndexError(f"Role {role_num} not found")
 
-        return await self.__set_rank(rank_role.id)
+        return await self.set_rank(rank_role.id)
 
     async def exile(self) -> None:
         await self._requests.delete(
