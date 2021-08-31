@@ -514,7 +514,7 @@ class BaseGroup:
             json=json
         )
 
-    async def get_posts(self, sort_order=SortOrder.Ascending, limit: int = 100) -> PageIterator:
+    async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit: int = 100) -> PageIterator:
         """
         Gets a user in a group
 
