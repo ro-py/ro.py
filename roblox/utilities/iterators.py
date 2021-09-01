@@ -98,7 +98,6 @@ class PageIterator:
             "limit": self.limit,
             "sortOrder": self.sort_order,
         }
-        print(self.next_page_cursor)
         if self.extra_parameters:
             parameters.update(self.extra_parameters)
 
