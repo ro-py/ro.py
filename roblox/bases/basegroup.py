@@ -5,6 +5,7 @@ import imghdr
 from .basesociallink import BaseSocialLink, SocialLinkType
 from ..auditlogs import Action, ActionTypes
 from ..joinrequest import JoinRequest
+from ..wallpost import WallPost
 from ..shout import Shout
 from ..utilities.shared import ClientSharedObject
 from ..partials.partialuser import PartialUser
@@ -12,9 +13,7 @@ from ..role import Role
 from ..member import Member
 from ..users import User
 from ..utilities.iterators import SortOrder, PageIterator
-from typing import List, Union, BinaryIO, Optional, TYPE_CHECKING
-
-from pathlib import Path
+from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..relationship import RelationshipType, RelationshipRequest
@@ -35,6 +34,10 @@ def action_handler(shared, data, group) -> Action:
 def join_request_handler(shared, data, group) -> JoinRequest:
     user: PartialUser = PartialUser(shared, data['requester'])
     return JoinRequest(shared, data, group, user)
+
+
+def wall_post_handler(shared, data, group) -> WallPost:
+    return WallPost(shared, data, group)
 
 
 class GroupSettings:
@@ -145,7 +148,6 @@ class BaseGroup:
         """
         self._shared: ClientSharedObject = shared
         self._requests = shared.requests
-
         self.id: int = group_id
         self.shout: Optional[Shout] = Shout(self._shared, self)
 
@@ -176,14 +178,17 @@ class BaseGroup:
 
         return roles
 
-    def get_members(self, sort_order=SortOrder.Ascending,
-                    limit=100) -> PageIterator:
+    def get_members(self, sort_order: SortOrder = SortOrder.Ascending,
+                    limit: int = 100) -> PageIterator:
         """
         Returns a PageIterator containing the group's members.
 
         Arguments:
             sort_order: The sort order.
             limit: Limit of how many members should be returned per-page.
+
+        Returns:
+            A PageIterator.
         """
         pages = PageIterator(
             shared=self._shared,
@@ -199,15 +204,12 @@ class BaseGroup:
         """
         Gets a user in a group
 
-        Parameters
-        ----------
-        user : User
-                The users object.
-        Returns
-        -------
-        roblox.member.Member
-        """
+        Arguments:
+            user: The users object.
 
+        Returns:
+            A Member.
+        """
         response = await self._requests.get(
             url=self._shared.url_generator.get_url("groups", f"v2/users/{user.id}/groups/roles"),
         )
@@ -227,13 +229,12 @@ class BaseGroup:
     async def get_member_by_id(self, user_id: int) -> Member:
         """
         Gets a user in a group
-        Parameters
-        ----------
-        user_id : int
-                The users id.
-        Returns
-        -------
-        roblox.member.Member
+
+        Arguments:
+            user_id: The id of the user you want to get the member object from.
+
+        Returns:
+            A Member.
         """
 
         user: BaseUser = self._shared.client.get_base_user(user_id)
@@ -242,13 +243,12 @@ class BaseGroup:
     async def get_member_by_name(self, name: str) -> Member:
         """
         Gets a user in a group
-        Parameters
-        ----------
-        name : str
-                The user's name.
-        Returns
-        -------
-        roblox.member.Member
+
+        Arguments:
+            name: The name of the user you want to get the member object from.
+
+        Returns:
+            A Member.
         """
 
         user = await self._shared.client.get_user_by_username(name)
@@ -256,11 +256,10 @@ class BaseGroup:
 
     async def set_description(self, new_body: str) -> None:
         """
-        Sets the description of the group
-        Parameters
-        ----------
-        new_body : str
-            What the description will be updated to.
+        Gets a user in a group
+
+        Arguments:
+            new_body: What the description will be updated to.
         """
         await self._requests.patch(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/description"),
@@ -269,8 +268,20 @@ class BaseGroup:
             }
         )
 
-    async def get_audit_logs(self, sort_order=SortOrder.Ascending,
-                             limit=100, action_type: ActionTypes = None, user: BaseUser = None) -> PageIterator:
+    async def get_audit_logs(self, sort_order: SortOrder = SortOrder.Ascending,
+                             limit: int = 100, action_type: Optional[ActionTypes] = None, user: Optional[BaseUser] = None) -> PageIterator:
+        """
+        Returns a PageIterator containing the group's members.
+
+        Arguments:
+            sort_order: The sort order.
+            limit: Limit of how many members should be returned per-page.
+            action_type: Type of actions you want all the logs to be.
+            user: the user who created the log you want to see.
+
+        Returns:
+            A PageIterator.
+        """
         extra_parameters = {}
         if action_type is not None:
             extra_parameters["actionType"] = action_type.value
@@ -298,36 +309,17 @@ class BaseGroup:
             }
         )
 
-    async def set_icon(self, file_path: Union[str, Path]) -> None:
-        """
-        Sets the authenticated user his primary group.
-        """
-        if imghdr.what(file_path) in ["jpg", "png", "jpeg"]:
-            raise TypeError("File type is wrong only allowed types are jpg, png and jpeg")
-        file: BinaryIO
-        await self._requests.post(
-            url=self._shared.url_generator.get_url("groups", "v1/groups/icon"),
-            json={
-                "groupId": self.id
-            },
-            files={
-                "upload-file": open(file_path, 'rb')
-            }
-        )
-
-    async def get_join_requests(self, sort_order=SortOrder.Ascending,
-                                limit=100) -> PageIterator:
+    async def get_join_requests(self, sort_order: SortOrder = SortOrder.Ascending,
+                                limit: int = 100) -> PageIterator:
         """
         Gets a user in a group
-        Parameters
-        ----------
-        sort_order : roblox.utilities.pages.SortOrder
-               The order you want it to be in.
-        limit : int
-                The limit on the request
-        Returns
-        -------
-        PageIterator
+
+        Arguments:
+            sort_order: The order you want it to be in.
+            limit: The limit on the request
+
+        Returns:
+            A PageIterator.
         """
         pages = PageIterator(
             shared=self._shared,
@@ -343,10 +335,9 @@ class BaseGroup:
     async def batch_accept_join_requests(self, join_requests: List[JoinRequest]) -> None:
         """
         Accepts a batch of users in to the group
-        Parameters
-        ----------
-        join_requests : List[roblox.joinrequest.JoinRequest]
-               All the join requests you want to accept
+
+        Arguments:
+            join_requests : All the join requests you want to acceptThe order you want it to be in.
         """
         json = {}
         user_ids = []
@@ -361,10 +352,9 @@ class BaseGroup:
     async def batch_decline_join_requests(self, join_requests: List[JoinRequest]) -> None:
         """
         Declines a batch of users in to the group
-        Parameters
-        ----------
-        join_requests : List[roblox.joinrequest.JoinRequest]
-                All the join requests you want to decline
+
+        Arguments:
+            join_requests : All the join requests you want to decline
         """
         json = {}
         user_ids = []
@@ -379,10 +369,10 @@ class BaseGroup:
 
     async def get_social_links(self) -> List[SocialLink]:
         """
-        Gets you all curent social links
-        Returns
-        -------
-        List[roblox.bases.basegroup.SocialLink]
+        Get all of the current social links
+
+        Returns:
+            A List of Social Link.
         """
         response = await self._requests.get(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/social-links"),
@@ -396,18 +386,15 @@ class BaseGroup:
     async def create_social_link(self, type: SocialLinkType, url: str,
                                  title: str) -> SocialLink:
         """
-        creates a social link
-        Parameters
-        ----------
-        type : roblox.bases.basesociallink.SocialLinkType
-               LinkType
-        url : str
-                Url you want to use
-        title : str
-                Titile you want to give it
-        Returns
-        -------
-        roblox.bases.basegroup.SocialLink
+        Creates a social link.
+
+        Arguments:
+            type: LinkType
+            url: Url you want to use
+            title: Title you want to give it
+
+        Returns:
+            A SocialLink.
         """
         responce = await self._requests.post(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/social-links"),
@@ -421,13 +408,23 @@ class BaseGroup:
         return SocialLink(self._shared, raw_data, self)
 
     async def get_relationships(self, relationship_type: RelationshipType,
-                                start_row_index: int = 0) -> List[RelationshipRequest]:
+                                start_row_index: int = 0, max_row_index: int = 100) -> List[RelationshipRequest]:
+        """
+        Creates a social link.
+
+        Arguments:
+            relationship_type: Type or relationship you want to get
+            start_row_index: The row you want to start indexing at
+            max_row_index: The max amount of rows you want to show max is 100
+        Returns:
+            A List of RelationshipRequest.
+        """
         response = await self._requests.get(
             url=self._shared.url_generator.get_url("groups",
                                                    f"v1/groups/{self.id}/relationships/{relationship_type.value}/requests"),
             params={
                 "model.startRowIndex": start_row_index,
-                "model.maxRows": 100
+                "model.maxRows": max_row_index
             }
         )
         data = response.json()
@@ -440,12 +437,10 @@ class BaseGroup:
                                          relationship_type: RelationshipType) -> None:
         """
         Accepts a batch of users in to the group
-        Parameters
-        ----------
-        join_requests : List[roblox.joinrequest.JoinRequest]
-               All the join requests you want to accept
-        relationship_type : roblox.relationship.RelationshipType
-               Type of relationship the requests are
+
+        Arguments:
+            join_requests: All the join requests you want to accept
+            relationship_type: Type of relationship the requests are
         """
         json = {}
         group_ids = []
@@ -462,12 +457,10 @@ class BaseGroup:
                                           relationship_type: RelationshipType) -> None:
         """
         Declines a batch of users in to the group
-        Parameters
-        ----------
-        join_requests : List[roblox.joinrequest.JoinRequest]
-                All the join requests you want to decline
-        relationship_type : roblox.relationship.RelationshipType
-               Type of relationship the requests are
+
+        Arguments:
+            join_requests: All the join requests you want to decline
+            relationship_type: Type of relationship the requests are
         """
         json = {}
         group_ids = []
@@ -482,10 +475,10 @@ class BaseGroup:
 
     async def get_settings(self) -> GroupSettings:
         """
-        Sets the description of the group
-        Returns
-        -------
-        roblox.bases.basegroup.RecurringPayout
+        Gets all the settings of the selected group
+
+        Returns:
+            GroupSettings.
         """
         response = await self._requests.get(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/settings"),
@@ -500,6 +493,14 @@ class BaseGroup:
                               are_group_games_visible: Optional[bool] = None, ) -> None:
         """
         Sets the group settings
+
+
+        Arguments:
+            is_approval_required: If someone needs to be approve before joining the group
+            is_builders_club_required: If bundlers club is required to join the group
+            are_enemies_allowed: Are other groups allowed to send enemy requests to your group?
+            are_group_funds_visible: Can everyone see your group funds?
+            are_group_games_visible: Are your group games visible?
         """
         json = {
             "isApprovalRequired": is_approval_required,
@@ -508,7 +509,28 @@ class BaseGroup:
             "areGroupFundsVisible": are_group_funds_visible,
             "areGroupGamesVisible": are_group_games_visible,
         }
-        response = await self._requests.patch(
+        await self._requests.patch(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/settings"),
             json=json
         )
+
+    async def get_wall_posts(self, sort_order=SortOrder.Ascending, limit: int = 100) -> PageIterator:
+        """
+        Gets a user in a group
+
+        Arguments:
+            sort_order: The order you want it to be in.
+            limit: The limit on the request
+
+        Returns:
+            A PageIterator.
+        """
+        page = PageIterator(
+            shared=self._shared,
+            url=self._shared.url_generator.get_url("groups", f"/v2/groups/{self.id}/wall/posts"),
+            sort_order=sort_order,
+            limit=limit,
+            item_handler=wall_post_handler,
+            handler_kwargs={"group": self}
+        )
+        return page
