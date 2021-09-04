@@ -37,7 +37,7 @@ class PageIterator:
             extra_parameters: dict = None,
             item_handler: Callable = None,
             handler_kwargs: dict = None,
-            max_retrys: int = 3
+            max_retires: int = 3
     ):
         self._shared: ClientSharedObject = shared
 
@@ -57,7 +57,7 @@ class PageIterator:
         self.next_page_cursor: str = ""
         self.data: list = []
         self.first = True
-        self.max_retrys: int = max_retrys
+        self.max_retires: int = max_retires
 
     async def flatten(self):
         """
@@ -67,16 +67,16 @@ class PageIterator:
             await self.next()
         return self.data
 
-    async def _do_request(self,parameters,retrys: Optional[int ]= None):
-        if retrys == None:
-            retrys = self.max_retrys
+    async def _do_request(self, parameters, retires: Optional[int] = None):
+        if retires is None:
+            retires = self.max_retires
         try:
             return await self._shared.requests.get(url=self.url, params=parameters)
         except HTTPStatusError as e:
             if e.errors[0]["message"] == "InternalServerError":
-                if retrys <= 0:
+                if retires <= 0:
                     raise RetryLimitReached(e)
-                return await self._do_request(parameters,retrys=retrys - 1)
+                return await self._do_request(parameters, retires=retires - 1)
             else:
                 raise e
 
