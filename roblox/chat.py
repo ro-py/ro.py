@@ -127,7 +127,6 @@ class Conversation:
         self._shared: ClientSharedObject = shared
         self._requests: Requests = shared.requests
         self._data: dict = data
-        print(data)
         self.id: int = data["id"]
         self.title: str = data["title"]
         self.initiator: PartialUser = PartialUser(shared, data["initiator"])
