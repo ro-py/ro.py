@@ -161,7 +161,7 @@ class Conversation:
         data = message_req.json()
         return Message(self._shared, data, self)
 
-    async def get_messages(self, page_number: int = 0, page_size: int = 30) -> ChatPageIterator:
+    def get_messages(self, page_number: int = 0, page_size: int = 30) -> ChatPageIterator:
         """
         Attributes:
             page_number: The number of the page you start on
@@ -227,7 +227,7 @@ class ChatProvider:
         conversation_data = conversation_req.json()
         return Conversation(self._shared, conversation_data)
 
-    async def get_conversations(self, page_number: int = 0, page_size: int = 30) -> ChatPageIterator:
+    def get_conversations(self, page_number: int = 0, page_size: int = 30) -> ChatPageIterator:
         """
         Gets the list of conversations.
 
