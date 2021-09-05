@@ -5,46 +5,60 @@ from .utilities.iterators import SortOrder, PageIterator
 from .partials.partialuser import PartialUser
 from .member import Member
 
-from typing import List,Optional, TYPE_CHECKING
+from typing import List, Optional, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .bases.basegroup import BaseGroup
+
+
 def member_handler(shared, data, group, role) -> Member:
     user = PartialUser(shared, data)
     return Member(shared, user, group, role)
 
+
 class Role:
     """
     Represents a role
-    Parameters
-    ----------
-    cso : ClientSharedObject
-            Requests object to use for API requests.
-    group : Group
-            Group the role belongs to.
-    role_data : dict
-            Dictionary containing role information.
+
+    Attributes:
+        _shared: The shared object, which is passed to all objects this client generates.
+        _requests: The request object.
+        group: The group object the shout is coming from.
+        id: Id of the role.
+        name: Name of the role.
+        description: Description of the role.
+        rank: The rank you set for this role.
+        member_count: The amount of members this role has.
     """
 
-    def __init__(self, shared: ClientSharedObject, group: BaseGroup, role_data: dict):
+    def __init__(self, shared: ClientSharedObject, group: BaseGroup, data: dict):
+        """
+        Attributes:
+            shared: The shared object, which is passed to all objects this client generates.
+            group: The group object the shout is coming from.
+            data: data to make the magic happen.
+        """
         self._shared: ClientSharedObject = shared
-        """Client shared object."""
         self._requests: Requests = shared.requests
-        """Requests object for internal use."""
         self.group: BaseGroup = group
-        """The group the role belongs to."""
-        self.id: int = role_data['id']
-        """The id of the role."""
-        self.name: str = role_data['name']
-        """The name of the role."""
-        self.description: Optional[str] = role_data.get('description')
-        """The description of the role."""
-        self.rank: int = role_data['rank']
-        """The rank of the role."""
-        self.member_count: Optional[int] = role_data.get('memberCount')
+        self.id: int = data['id']
+        self.name: str = data['name']
+        self.description: Optional[str] = data.get('description')
+        self.rank: int = data['rank']
+        self.member_count: Optional[int] = data.get('memberCount')
 
     async def get_members(self, sort_order: SortOrder = SortOrder.Ascending,
                           limit: int = 100) -> PageIterator:
+        """
+        Returns a PageIterator containing the role's members.
+
+        Arguments:
+            sort_order: The sort order.
+            limit: Limit of how many members should be returned per-page.
+
+        Returns:
+            A PageIterator.
+        """
         pages = PageIterator(
 
             shared=self._shared,
@@ -52,7 +66,7 @@ class Role:
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.group.id}/roles/{self.id}/users"),
             sort_order=sort_order,
             limit=limit,
-            handler_kwargs={'group': self.group,'role': self},
+            handler_kwargs={'group': self.group, 'role': self},
             item_handler=member_handler
         )
         await pages.next()

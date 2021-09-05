@@ -5,7 +5,29 @@ from .bases.baseuniverse import BaseUniverse
 
 
 class Place(BasePlace):
+    """
+    Represents a Roblox place.
+
+     Attributes:
+        id: id of the place.
+        name: name of the place.
+        description: description of the place.
+        url: url to the place
+        builder: player object
+        builder_id: player id
+        is_playable: can you play the game
+        reason_prohibited: why you can't play the game
+        universe: universe object
+        universe_root_place: root place of the universe
+        price: price to play the game
+        image_token: token to get the image
+    """
     def __init__(self, shared: ClientSharedObject, data: dict):
+        """
+        Attributes:
+            shared: The shared object, which is passed to all objects this client generates.
+            data: data to make the magic happen.
+        """
         super().__init__(shared=shared, place_id=data["placeId"])
 
         self._shared: ClientSharedObject = shared

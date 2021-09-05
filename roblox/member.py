@@ -11,6 +11,10 @@ if TYPE_CHECKING:
     from .role import Role
 
 
+class NotFound(Exception):
+    pass
+
+
 class Member:
     """
     Represents a user in a group.
@@ -74,8 +78,8 @@ class Member:
         if role_counter < 1 or role_counter >= len(roles):
             raise IndexError(f"Index is out of range")
 
-        # if not roles:
-        #    raise NotFound(f"User {self.user.id} is not in group {self.group.id}")
+        if not roles:
+            raise NotFound(f"User {self.user.id} is not in group {self.group.id}")
 
         await self.set_rank(roles[role_counter].id)
         self.role = roles[role_counter]

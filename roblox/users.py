@@ -7,7 +7,25 @@ from .bases.baseuser import BaseUser
 
 
 class User(BaseUser):
+    """
+    Represents a single conversation.
+
+    Attributes:
+        _shared: The shared object, which is passed to all objects this client generates.
+        id: The id of the current user
+        name: The name of the current user
+        display_name: The display name of the current user
+        external_app_display_name: The external app display name of the current user
+        is_banned: If the user is banned
+        description: The description the current user wrote for himself
+        created: When the user created his account
+    """
     def __init__(self, shared: ClientSharedObject, data: dict):
+        """
+        Arguments:
+            shared: Shared object.
+            data: The data form the request.
+        """
         super().__init__(shared=shared, user_id=data["id"])
 
         self._shared: ClientSharedObject = shared
