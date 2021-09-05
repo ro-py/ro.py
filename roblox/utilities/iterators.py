@@ -36,9 +36,9 @@ class PageIterator:
             url: str,
             sort_order: SortOrder = SortOrder.Ascending,
             limit: int = 100,
-            extra_parameters: dict = None,
+            extra_parameters: Optional[dict] = None,
             item_handler: Callable = None,
-            handler_kwargs: dict = None,
+            handler_kwargs: Optional[dict] = None,
             max_retires: int = 3
     ):
         self._shared: ClientSharedObject = shared
@@ -49,7 +49,7 @@ class PageIterator:
         self.url: str = url
         self.sort_order: SortOrder = sort_order.value
         self.limit: int = limit
-        self.extra_parameters: dict = extra_parameters
+        self.extra_parameters: Optional[dict] = extra_parameters
         self.item_handler: Callable = item_handler
         self.handler_kwargs: dict = handler_kwargs
 
@@ -170,7 +170,8 @@ class ChatPageIterator:
             page_number: int = 0,
             page_size: int = 30,
             item_handler: Callable = None,
-            handler_kwargs: dict = None,
+            handler_kwargs: Optional[dict] = None,
+            extra_parameters: Optional[dict] = None
     ):
         self._shared: ClientSharedObject = shared
 
@@ -181,7 +182,8 @@ class ChatPageIterator:
         self.page_number: int = page_number
         self.page_size: int = page_size
         self.item_handler: Callable = item_handler
-        self.handler_kwargs: dict = handler_kwargs
+        self.handler_kwargs: Optional[dict] = handler_kwargs
+        self.extra_parameters: Optional[dict] = extra_parameters
         self.highest_page_count = 0
         self.data: list = []
         self.first = True
@@ -210,20 +212,21 @@ class ChatPageIterator:
             "pageNumber": self.page_number,
             "pageSize": self.page_size,
         }
+        if self.extra_parameters:
+            parameters.update(self.extra_parameters)
+
         page_response = await self._shared.requests.get(url=self.url, params=parameters)
         page_data = page_response.json()
-        if not page_data:
-            raise NoMoreData("No more data.")
         if self.item_handler:
             current_data = [
                 self.item_handler(
                     shared=self._shared,
                     data=item_data,
                     **self.handler_kwargs
-                ) for item_data in page_data["data"]
+                ) for item_data in page_data
             ]
         else:
-            current_data = page_data["data"]
+            current_data = page_data
         if self.page_number > self.highest_page_count:
             self.highest_page_count = self.page_number
             self.data = self.data + current_data
@@ -245,20 +248,20 @@ class ChatPageIterator:
             "pageNumber": self.page_number,
             "pageSize": self.page_size,
         }
+        if self.extra_parameters:
+            parameters.update(self.extra_parameters)
         page_response = await self._shared.requests.get(url=self.url, params=parameters)
         page_data = page_response.json()
-        if not page_data:
-            raise NoMoreData("No more data.")
         if self.item_handler:
             current_data = [
                 self.item_handler(
                     shared=self._shared,
                     data=item_data,
                     **self.handler_kwargs
-                ) for item_data in page_data["data"]
+                ) for item_data in page_data
             ]
         else:
-            current_data = page_data["data"]
+            current_data = page_data
         return current_data
 
     async def previous(self) -> Union[List, dict]:
@@ -267,26 +270,24 @@ class ChatPageIterator:
         Raises a NoMoreData error if there is no more data.
         """
         self.page_number -= 1
-        if self.page_number <= 0:
-            raise NoMoreData("No more data.")
         parameters = {
             "pageNumber": self.page_number,
             "pageSize": self.page_size,
         }
+        if self.extra_parameters:
+            parameters.update(self.extra_parameters)
 
         page_response = await self._shared.requests.get(url=self.url, params=parameters)
         page_data = page_response.json()
-        if not page_data:
-            raise NoMoreData("No more data.")
         if self.item_handler:
             current_data = [
                 self.item_handler(
                     shared=self._shared,
                     data=item_data,
                     **self.handler_kwargs
-                ) for item_data in page_data["data"]
+                ) for item_data in page_data
             ]
         else:
-            current_data = page_data["data"]
+            current_data = page_data
 
         return current_data

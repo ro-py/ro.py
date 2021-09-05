@@ -127,7 +127,7 @@ class Conversation:
         self._shared: ClientSharedObject = shared
         self._requests: Requests = shared.requests
         self._data: dict = data
-
+        print(data)
         self.id: int = data["id"]
         self.title: str = data["title"]
         self.initiator: PartialUser = PartialUser(shared, data["initiator"])
@@ -145,7 +145,7 @@ class Conversation:
 
         # conversationUniverse not added since it always seems to be null
 
-    async def get_message(self, message_id: int) -> Message:
+    async def get_message(self, message_id: str) -> Message:
         """
         Attributes:
             message_id: The id of the message you want to get.
@@ -159,7 +159,7 @@ class Conversation:
             }
         )
         data = message_req.json()
-        return Message(self._shared, data, self)
+        return Message(self._shared, data[0], self)
 
     def get_messages(self, page_number: int = 0, page_size: int = 30) -> ChatPageIterator:
         """
@@ -169,7 +169,8 @@ class Conversation:
         """
         return ChatPageIterator(
             shared=self._shared,
-            url=self._shared.url_generator.get_url("chat", f"v2/get-user-conversations"),
+            url=self._shared.url_generator.get_url("chat", f"v2/get-messages"),
+            extra_parameters={"conversationId": self.id},
             page_number=page_number,
             page_size=page_size,
             item_handler=message_handler,
@@ -225,7 +226,7 @@ class ChatProvider:
             }
         )
         conversation_data = conversation_req.json()
-        return Conversation(self._shared, conversation_data)
+        return Conversation(self._shared, conversation_data[0])
 
     def get_conversations(self, page_number: int = 0, page_size: int = 30) -> ChatPageIterator:
         """
