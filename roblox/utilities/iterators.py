@@ -17,6 +17,8 @@ class SortOrder(Enum):
 class NoMoreData(Exception):
     pass
 
+class RefreshBeforeNextError(Exception):
+    pass
 
 class RetryLimitReached(Exception):
     def __init__(self, error):
@@ -142,6 +144,140 @@ class PageIterator:
         page_data = page_response.json()
         self.next_page_cursor = page_data["nextPageCursor"]
         self.previous_page_cursor = page_data["previousPageCursor"]
+        if self.item_handler:
+            current_data = [
+                self.item_handler(
+                    shared=self._shared,
+                    data=item_data,
+                    **self.handler_kwargs
+                ) for item_data in page_data["data"]
+            ]
+        else:
+            current_data = page_data["data"]
+
+        return current_data
+
+
+class ChatPageIterator:
+    """
+    Represents a paginated Roblox endpoint for chat.
+    """
+
+    def __init__(
+            self,
+            shared: ClientSharedObject,
+            url: str,
+            page_number: int = 0,
+            page_size: int = 30,
+            item_handler: Callable = None,
+            handler_kwargs: dict = None,
+    ):
+        self._shared: ClientSharedObject = shared
+
+        if handler_kwargs is None:
+            handler_kwargs = {}
+
+        self.url: str = url
+        self.page_number: int = page_number
+        self.page_size: int = page_size
+        self.item_handler: Callable = item_handler
+        self.handler_kwargs: dict = handler_kwargs
+        self.highest_page_count = 0
+        self.data: list = []
+        self.first = True
+
+    async def flatten(self):
+        """
+        Flattens the data into a list.
+        """
+        length: int = 0
+        while length == self.page_size or self.first:
+            data = await self.next()
+            length = len(data)
+        return self.data
+
+    async def next(self) -> Union[List, dict]:
+        """
+        Grabs the next page of data and appends it to self.data if page has not been indexed yet.
+        Raises a NoMoreData error if there is no more data.
+
+        Returns:
+
+        """
+        self.first = False
+        self.page_number += 1
+        parameters = {
+            "pageNumber": self.page_number,
+            "pageSize": self.page_size,
+        }
+        page_response = await self._shared.requests.get(url=self.url, params=parameters)
+        page_data = page_response.json()
+        if not page_data:
+            raise NoMoreData("No more data.")
+        if self.item_handler:
+            current_data = [
+                self.item_handler(
+                    shared=self._shared,
+                    data=item_data,
+                    **self.handler_kwargs
+                ) for item_data in page_data["data"]
+            ]
+        else:
+            current_data = page_data["data"]
+        if self.page_number > self.highest_page_count:
+            self.highest_page_count = self.page_number
+            self.data = self.data + current_data
+
+        return current_data
+
+    async def refresh(self) -> Union[List, dict]:
+        """
+        Grabs the next page of data and appends it to self.data if page has not been indexed yet.
+        Raises a NoMoreData error if there is no more data.
+
+        Returns:
+
+        """
+        if self.page_number == 0:
+            raise RefreshBeforeNextError("You first need to call next before you can refresh your data")
+        self.first = False
+        parameters = {
+            "pageNumber": self.page_number,
+            "pageSize": self.page_size,
+        }
+        page_response = await self._shared.requests.get(url=self.url, params=parameters)
+        page_data = page_response.json()
+        if not page_data:
+            raise NoMoreData("No more data.")
+        if self.item_handler:
+            current_data = [
+                self.item_handler(
+                    shared=self._shared,
+                    data=item_data,
+                    **self.handler_kwargs
+                ) for item_data in page_data["data"]
+            ]
+        else:
+            current_data = page_data["data"]
+        return current_data
+
+    async def previous(self) -> Union[List, dict]:
+        """
+        Grabs the previous page of data and appends it to self.data.
+        Raises a NoMoreData error if there is no more data.
+        """
+        self.page_number -= 1
+        if self.page_number <= 0:
+            raise NoMoreData("No more data.")
+        parameters = {
+            "pageNumber": self.page_number,
+            "pageSize": self.page_size,
+        }
+
+        page_response = await self._shared.requests.get(url=self.url, params=parameters)
+        page_data = page_response.json()
+        if not page_data:
+            raise NoMoreData("No more data.")
         if self.item_handler:
             current_data = [
                 self.item_handler(

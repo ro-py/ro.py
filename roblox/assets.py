@@ -3,6 +3,7 @@ from typing import Union, Optional
 from datetime import datetime
 from dateutil.parser import parse
 
+from .sharedenums import CreatorType
 from .utilities.shared import ClientSharedObject
 
 from .partials.partialuser import PartialUser
@@ -110,12 +111,12 @@ class EconomyAsset(BaseAsset):
         self.description: str = data["Description"]
         self.type: AssetType = AssetType(shared=self._shared, type_id=data["AssetTypeId"])
 
-        self.creator_type: str = data["Creator"]["CreatorType"]
+        self.creator_type: CreatorType = CreatorType(data["Creator"]["CreatorType"])
         self.creator: Union[PartialUser, AssetPartialGroup]
 
-        if self.creator_type == "User":
+        if self.creator_type == CreatorType.user:
             self.creator: PartialUser = PartialUser(shared=shared, data=data["Creator"])
-        elif self.creator_type == "Group":
+        elif self.creator_type == CreatorType.group:
             self.creator: AssetPartialGroup = AssetPartialGroup(shared=shared, data=data["Creator"])
 
         self.icon_image: BaseAsset = BaseAsset(shared=shared, asset_id=data["IconImageAssetId"])
