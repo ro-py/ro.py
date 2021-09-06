@@ -134,6 +134,9 @@ class ThumbnailProvider:
             size: size of the image.
             format: Format of the image.
             is_circular: if the image is a circle yes or no.
+
+        Returns:
+            A List of Thumbnails.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/assets"),
@@ -157,6 +160,9 @@ class ThumbnailProvider:
 
         Arguments:
             asset_id: Id of the asset you want the thumbnails of.
+
+        Returns:
+            A Thumbnail.
         """
         thumbnail_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url(
@@ -183,6 +189,8 @@ class ThumbnailProvider:
             format: Format of the image.
             is_circular: if the image is a circle yes or no.
 
+        Returns:
+            A List of Thumbnails.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/badges/icons"),
@@ -209,11 +217,14 @@ class ThumbnailProvider:
         """
         Returns bundle thumbnails for each bundle ID passed.
 
-         Arguments:
+        Arguments:
             badge_ids: Id of the badge you want the thumbnails of.
             size: size of the image.
             format: Format of the image.
             is_circular: if the image is a circle yes or no.
+
+        Returns:
+            A List of Thumbnails.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url(
@@ -248,6 +259,9 @@ class ThumbnailProvider:
             size: size of the image.
             format: Format of the image.
             is_circular: if the image is a circle yes or no.
+
+        Returns:
+            A List of Thumbnails.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/game-passes"),
@@ -281,6 +295,9 @@ class ThumbnailProvider:
             size: size of the image.
             format: Format of the image.
             is_circular: if the image is a circle yes or no.
+
+        Returns:
+            A List of Thumbnails.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/games/icons"),
@@ -316,6 +333,9 @@ class ThumbnailProvider:
             format: Format of the image.
             count_per_universe: Unknown.
             is_circular: if the image is a circle yes or no.
+
+        Returns:
+            A List of Thumbnails.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url(
@@ -351,6 +371,9 @@ class ThumbnailProvider:
             size: size of the image.
             format: Format of the image.
             is_circular: if the image is a circle yes or no.
+
+        Returns:
+            A List of Thumbnails.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/groups/icons"),
@@ -384,6 +407,8 @@ class ThumbnailProvider:
             size: size of the image.
             format: Format of the image.
             is_circular: if the image is a circle yes or no.
+        Returns:
+            A List of Thumbnails.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/places/gameicons"),
@@ -418,6 +443,9 @@ class ThumbnailProvider:
             size: size of the image.
             format: Format of the image.
             is_circular: if the image is a circle yes or no.
+
+        Returns:
+            A List of Thumbnails.
         """
         uri: str
         if type == AvatarThumbnailType.full_body:
@@ -455,6 +483,9 @@ class ThumbnailProvider:
 
         Arguments:
             user_id: Id of the user you want the 3d thumbnail of.
+
+        Returns:
+            A Thumbnail.
         """
         thumbnail_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/users/avatar-3d"),

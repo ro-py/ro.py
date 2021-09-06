@@ -49,23 +49,22 @@ class Shout:
             self.poster: PartialUser = PartialUser(self._shared, data['poster'])
             """The user who posted the shout."""
 
-    async def set(self, new_body: str) -> int:
+    async def set(self, new_body: str) -> None:
         """
         set the current shout.
 
         Arguments:
             new_body: Text you want the new shout to have.
         """
-        response = await self._requests.post(
+        await self._requests.post(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.group.id}/status"),
             json={
                 "message": new_body
             }
         )
-        return response.status_code
 
-    async def delete(self) -> int:
+    async def delete(self) -> None:
         """
         Delete the shout.
         """
-        return await self.set("")
+        await self.set("")

@@ -72,8 +72,11 @@ class PresenceProvider:
         """
         Returns a list of Presence objects corresponding to each user in the list.
 
-        Attributes:
+        Arguments:
             user_ids: The list of users you want to presences form.
+
+        Returns:
+            A List of Presence.
         """
 
         presences_response = await self._shared.requests.post(

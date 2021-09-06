@@ -27,7 +27,7 @@ class ConversationTyping:
     """
     def __init__(self, shared, conversation_id):
         """
-        Attributes:
+        Arguments:
             shared: The shared object, which is passed to all objects this client generates.
             conversation_id: The id of the current conversation
         """
@@ -61,17 +61,17 @@ class Message:
     Attributes:
         _requests: The requests object, which is used to send requests to Roblox endpoints.
         _shared: The shared object, which is passed to all objects this client generates.
-        conversation: The conversation object above it
-        id: The id of the current message
-        sender_type: The current sender type
-        sent: Time the message was send
+        conversation: The conversation object above it.
+        id: The id of the current message.
+        sender_type: The current sender type.
+        sent: Time the message was send.
         read: If the user read the message.
         message_type: type of the message.
-        decorators: Unknown
-        sender: BaseUser object of the user you send it to
+        decorators: Unknown.
+        sender: BaseUser object of the user you send it to.
         content: Contact of the message.
-        link: link data if any
-        eventBased: Unknown
+        link: link data if any.
+        eventBased: Unknown.
     """
 
     def __init__(self, shared, data, conversation):
@@ -107,16 +107,16 @@ class Conversation:
     Attributes:
         _requests: The requests object, which is used to send requests to Roblox endpoints.
         _shared: The shared object, which is passed to all objects this client generates.
-        id: The id of the current conversation
-        title: The title of the current conversation
-        initiator: initiator of the conversation
+        id: The id of the current conversation.
+        title: The title of the current conversation.
+        initiator: initiator of the conversation.
         has_unread_messages: If the user read the message.
-        participants: all people participating in the conversation
-        title_for_viewer: title for you
+        participants: all people participating in the conversation.
+        title_for_viewer: title for you.
         is_default_title: Is it the default title?
         type: What is the type of the message?
-        typing: typing object
-        last_updated: When it was updated for the last time
+        typing: typing object.
+        last_updated: When it was updated for the last time.
     """
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
@@ -146,7 +146,7 @@ class Conversation:
 
     async def get_message(self, message_id: str) -> Message:
         """
-        Attributes:
+        Arguments:
             message_id: The id of the message you want to get.
         """
         message_req = await self._requests.get(
@@ -162,9 +162,9 @@ class Conversation:
 
     def get_messages(self, page_number: int = 0, page_size: int = 30) -> ChatPageIterator:
         """
-        Attributes:
-            page_number: The number of the page you start on
-            page_size: the maximum amount of messages per page
+        Arguments:
+            page_number: The number of the page you start on.
+            page_size: the maximum amount of messages per page.
         """
         return ChatPageIterator(
             shared=self._shared,
@@ -178,7 +178,7 @@ class Conversation:
 
     async def send_message(self, content: str) -> None:
         """
-        Attributes:
+        Arguments:
             content: content of the message you want to send
         """
         send_message_req = await self._requests.post(
@@ -231,9 +231,9 @@ class ChatProvider:
         """
         Gets the list of conversations.
 
-        Attributes:
-            page_number: The number of the page you start on
-            page_size: the maximum amount of messages per page
+        Arguments:
+            page_number: The number of the page you start on.
+            page_size: the maximum amount of messages per page.
         """
         return ChatPageIterator(
             shared=self._shared,

@@ -66,13 +66,14 @@ class Client:
         if token:
             self.set_token(token)
 
-    def set_token(self, token: str):
+    def set_token(self, token: str) -> None:
         """
         Authenticates the client with the passed .ROBLOSECURITY token.
         This method does not send any requests and will not throw if the token is invalid.
 
         Arguments:
             token: A .ROBLOSECURITY token to authenticate the client with.
+
         """
         self._requests.session.cookies[".ROBLOSECURITY"] = token
 
@@ -82,6 +83,9 @@ class Client:
 
         Arguments:
             user_id: A Roblox user ID.
+
+        Returns:
+            A user object.
         """
         user_response = await self._requests.get(
             url=self._shared.url_generator.get_url("users", f"v1/users/{user_id}")
@@ -97,6 +101,9 @@ class Client:
 
         Arguments:
             expand: Whether to return a User (2 requests) rather than a PartialUser (1 request)
+
+        Returns:
+            The authenticated user.
         """
         authenticated_user_response = await self._requests.get(
             url=self._shared.url_generator.get_url("users", f"v1/users/authenticated")
@@ -121,6 +128,9 @@ class Client:
             user_ids: A list of Roblox user IDs.
             exclude_banned_users: Whether to exclude banned users from the data.
             expand: Whether to return a list of Users (2 requests) rather than PartialUsers (1 request)
+
+        Returns:
+            A List of Users or partial users.
         """
         users_response = await self._requests.post(
             url=self._shared.url_generator.get_url("users", f"v1/users"),

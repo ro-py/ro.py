@@ -15,7 +15,11 @@ class AssetPartialGroup(BaseGroup):
         name:
     """
     def __init__(self, shared: ClientSharedObject, data: dict):
-
+        """
+        Arguments:
+            shared: The ClientSharedObject.
+            data: The data form the endpoint.
+        """
         self._shared: ClientSharedObject = shared
         self._data: dict = data
 
@@ -27,8 +31,19 @@ class AssetPartialGroup(BaseGroup):
 
 
 class UniversePartialGroup(BaseGroup):
+    """
+    Attributes:
+        _data: The data we get back from the endpoint.
+        _shared: The shared object, which is passed to all objects this client generates.
+        id: Id of the group
+        name: Name of the group
+    """
     def __init__(self, shared: ClientSharedObject, data: dict):
-
+        """
+        Arguments:
+            shared: The ClientSharedObject.
+            data: The data form the endpoint.
+        """
         self._shared: ClientSharedObject = shared
         self._data: dict = data
         self.id = data["id"]

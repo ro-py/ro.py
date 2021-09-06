@@ -85,8 +85,18 @@ asset_type_names = {
 class AssetType:
     """
     Represents a Roblox asset type.
-    """
+
+    Attributes:
+        _shared: The shared object, which is passed to all objects this client generates.
+        id: Id of the Asset
+        name: Name of the Asset
+        """
     def __init__(self, shared: ClientSharedObject, type_id: int):
+        """
+        Arguments:
+            shared: Shared object.
+            type_id: Id of the type?
+        """
         self._shared: ClientSharedObject = shared
 
         self.id: int = type_id
@@ -97,8 +107,38 @@ class EconomyAsset(BaseAsset):
     """
     Represents a Roblox asset.
     It is intended to parse data from https://economy.roblox.com/v2/assets/ASSETID/details.
-    """
+
+    Attributes:
+        _shared: The shared object, which is passed to all objects this client generates.
+        _data: the data we got form the endpoint.
+        id: Id of the Asset
+        product_id: Product id of the asset
+        name: Name of the Asset
+        description: Description of the Asset
+        type: Type of the Asset
+        creator_type: Type of creator can be user or group see enum
+        creator: creator can be a user or group object
+        icon_image: BaseAsset
+        created: When the asset was created
+        updated:  When the asset was updated for the las time
+        price: price of the asset
+        sales: amount of sales of the asset
+        is_new: if the asset it new
+        is_for_sale: if the asset is for sale
+        is_public_domain: if the asset is public domain
+        is_limited: if the asset is a limited item
+        is_limited_unique: if the asset is a unique limited item
+        remaining: How many items there are remaining if it is limited
+        minimum_membership_level: minimum membership level required to buy item
+        content_rating_type_id: Unknown
+        sale_availability_locations: Unknown
+        """
     def __init__(self, shared: ClientSharedObject, data: dict):
+        """
+        Arguments:
+            shared: Shared object.
+            data: The data form the request.
+        """
         super().__init__(shared=shared, asset_id=data["AssetId"])
 
         self._shared: ClientSharedObject = shared

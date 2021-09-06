@@ -28,7 +28,7 @@ class RelationshipRequest:
     def __init__(self, shared: ClientSharedObject, data: dict,
                  group: BaseGroup, relationship_type: RelationshipType):
         """
-        Attributes:
+        Arguments:
             shared: The shared object, which is passed to all objects this client generates.
             group: The group object the shout is coming from.
             data: data to make the magic happen.

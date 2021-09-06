@@ -16,20 +16,20 @@ class JoinRequest:
 
     Attributes:
         _shared: The shared object, which is passed to all objects this client generates.
-        _requests:
-        group: The ID of this specific universe
+        _requests: The request object we use to send requests.
+        group: The ID of this specific universe.
         user: The thumbnail provider object.
         created: The delivery provider object..
     """
     def __init__(self, shared: ClientSharedObject,
                  data: dict, group: BaseGroup, user: PartialUser):
         """
-        Attributes:
+        Arguments:
             data: The data we get back from the endpoint.
             shared: The shared object, which is passed to all objects this client generates.
             group: The group object.
             user: The user object.
-            created:
+            user: The user object.
         """
         self._shared: ClientSharedObject = shared
         self._requests: Requests = shared.requests

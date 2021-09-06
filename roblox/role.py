@@ -33,7 +33,7 @@ class Role:
 
     def __init__(self, shared: ClientSharedObject, group: BaseGroup, data: dict):
         """
-        Attributes:
+        Arguments:
             shared: The shared object, which is passed to all objects this client generates.
             group: The group object the shout is coming from.
             data: data to make the magic happen.

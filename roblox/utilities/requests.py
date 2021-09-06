@@ -7,6 +7,7 @@ from .exceptions import HTTPStatusError
 class CleanAsyncClient(AsyncClient):
     """
     This is a clean-on-delete version of httpx.AsyncClient.
+
     """
 
     def __init__(self):
@@ -26,6 +27,12 @@ def status_code_error(status_code):
 class Requests:
     """
     A special request object that implements special functionality required to connect to some Roblox endpoints.
+
+    Attributes:
+        session: the session
+        xcsrf_token_name: name of the xcrf token
+        xcsrf_allowed_methods: allowed methods with xcrf
+
     """
     def __init__(self):
         self.session: CleanAsyncClient = CleanAsyncClient()
@@ -55,6 +62,15 @@ class Requests:
         self.session.headers["Referer"] = "www.roblox.com"
 
     async def request(self, method: str, *args, **kwargs) -> Response:
+        """
+        Arguments:
+            method: method used for the request
+            *args: Everything and noting.
+            **kwargs: Everything and noting.
+
+        Returns:
+            Response
+        """
         skip_roblox = kwargs.pop("skip_roblox", False)
         handle_xcsrf_token = kwargs.pop("handle_xcsrf_token", True)
         skip_roblox = kwargs.pop("skip_roblox", False)
@@ -141,6 +157,13 @@ class Requests:
     def get(self, *args, **kwargs):
         """
         Shortcut to self.request using the GET method.
+
+        Arguments:
+            *args: Everything and noting.
+            **kwargs: Everything and noting.
+
+        Returns:
+            Response
         """
 
         return self.request("GET", *args, **kwargs)
@@ -148,6 +171,10 @@ class Requests:
     def post(self, *args, **kwargs):
         """
         Shortcut to self.request using the POST method.
+
+        Arguments:
+            *args: Everything and noting.
+            **kwargs: Everything and noting.
         """
 
         return self.request("post", *args, **kwargs)
@@ -155,6 +182,13 @@ class Requests:
     def patch(self, *args, **kwargs):
         """
         Shortcut to self.request using the PATCH method.
+
+        Arguments:
+            *args: Everything and noting.
+            **kwargs: Everything and noting.
+
+        Returns:
+            Response
         """
 
         return self.request("patch", *args, **kwargs)
@@ -162,6 +196,13 @@ class Requests:
     def delete(self, *args, **kwargs):
         """
         Shortcut to self.request using the DELETE method.
+
+        Arguments:
+            *args: Everything and noting.
+            **kwargs: Everything and noting.
+
+        Returns:
+            Response
         """
 
         return self.request("delete", *args, **kwargs)

@@ -9,6 +9,8 @@ class Place(BasePlace):
     Represents a Roblox place.
 
      Attributes:
+        _shared: The shared object, which is passed to all objects this client generates.
+        _data: The data form the request.
         id: id of the place.
         name: name of the place.
         description: description of the place.
@@ -24,7 +26,7 @@ class Place(BasePlace):
     """
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
-        Attributes:
+        Arguments:
             shared: The shared object, which is passed to all objects this client generates.
             data: data to make the magic happen.
         """
