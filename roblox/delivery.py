@@ -3,12 +3,24 @@ from .utilities.url import cdn_site
 
 
 class DeliveryProvider:
+    """
+    Attributes:
+        _shared: The shared object, which is passed to all objects this client generates.
+    """
     def __init__(self, shared: ClientSharedObject):
+        """
+        Arguments:
+            shared: The shared object, which is passed to all objects this client generates.
+        """
         self._shared: ClientSharedObject = shared
 
     def get_hash_cdn(self, hash: str) -> int:
         """
-        Returns the CDN number for the given Roblox CDN hash.
+        Arguments:
+            hash: The has you want the cdn number of.
+
+        Returns:
+            cdn number
         """
         i = 31
         for char in hash[:32]:
@@ -17,7 +29,11 @@ class DeliveryProvider:
 
     def get_hash_url(self, hash: str) -> str:
         """
-        Returns the full URL for the given Roblox CDN hash.
+        Arguments:
+            hash: The has you want the cdn number of.
+
+        Returns:
+           full URL for the given Roblox CDN hash.
         """
         cdn: int = self.get_hash_cdn(hash)
         url: str = self._shared.url_generator.get_url(f"t{cdn}", hash, cdn_site)
@@ -25,6 +41,10 @@ class DeliveryProvider:
 
     def get_hash_from_url(self, url: str) -> str:
         """
-        Returns the hash for the given Roblox CDN url.
+        Arguments:
+            url: The url you want to get the hash from.
+
+        Returns:
+           hash for the given Roblox CDN url.
         """
         return url.split(f"{cdn_site}/")[1]

@@ -59,14 +59,32 @@ class ActionTypes(Enum):
 
 
 class Action:
+    """
+    Represents a single Auditlog/Action.
+
+    Attributes:
+        _shared: The shared object, which is passed to all objects this client generates.
+        group: The group this action is part of
+        actor: the person who did the action
+        action: the action done
+        created: when the action was done
+        description: extra data from the action
+    """
+
     def __init__(self, shared: ClientSharedObject,
-                 group: BaseGroup, raw_data: dict):
+                 group: BaseGroup, data: dict):
+        """
+        Arguments:
+            data: The data we get back from the endpoint.
+            shared: The shared object, which is passed to all objects this client generates.
+            group: The Group this action is part of
+        """
         self._shared: ClientSharedObject = shared
         self.group: BaseGroup = group
 
-        actor_user = PartialUser(self._shared, raw_data["actor"]["user"])
-        actor_role = Role(self._shared, self.group, raw_data["actor"]["role"])
+        actor_user = PartialUser(self._shared, data["actor"]["user"])
+        actor_role = Role(self._shared, self.group, data["actor"]["role"])
         self.actor: Member = Member(self._shared, actor_user, self.group, actor_role)
-        self.action: str = raw_data['actionType']
-        self.created: datetime = parse(raw_data['created'])
-        self.data: dict = raw_data['description']
+        self.action: str = data['actionType']
+        self.created: datetime = parse(data['created'])
+        self.description: dict = data['description']

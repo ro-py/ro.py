@@ -18,6 +18,12 @@ class WallPost:
 
     """
     def __init__(self, shared, data, group):
+        """
+        Arguments:
+            shared: Shared object.
+            data: The data form the request.
+            group: The group object
+        """
         self._shared = shared
         self._requests = shared.requests
         self.group = group

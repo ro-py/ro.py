@@ -16,9 +16,22 @@ class BaseSocialLink(ABC):
     """
     Represents a Roblox base social link.
     FIXME - this is horrible!!! please fix
-    """
 
+    Attributes:
+        _shared: The ClientSharedObject.
+        _requests: Request object.
+        id: Id of the SocialLink.
+        type: type of the social link.
+        url: where the social link links to.
+        title: title of the social.
+
+    """
     def __init__(self, shared: ClientSharedObject, data: dict):
+        """
+        Arguments:
+            shared: The ClientSharedObject.
+            data: The data form the endpoint.
+        """
         self._shared: ClientSharedObject = shared
         self._requests = self._shared.requests
 
