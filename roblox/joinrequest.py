@@ -5,6 +5,7 @@ from .utilities.shared import ClientSharedObject
 from dateutil.parser import parse
 from typing import TYPE_CHECKING
 from datetime import datetime
+
 if TYPE_CHECKING:
     from .bases.basegroup import BaseGroup
     from .partials.partialuser import PartialUser
@@ -12,7 +13,7 @@ if TYPE_CHECKING:
 
 class JoinRequest:
     """
-    Represents a Join Request
+    Represents a group join request.
 
     Attributes:
         _shared: The shared object, which is passed to all objects this client generates.
@@ -21,6 +22,7 @@ class JoinRequest:
         user: The thumbnail provider object.
         created: The delivery provider object..
     """
+
     def __init__(self, shared: ClientSharedObject,
                  data: dict, group: BaseGroup, user: PartialUser):
         """

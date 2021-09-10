@@ -94,7 +94,7 @@ class Client:
         return User(shared=self._shared, data=user_data)
 
     async def get_authenticated_user(
-        self, expand: bool = True
+            self, expand: bool = True
     ) -> Union[User, PartialUser]:
         """
         Grabs the authenticated user.
@@ -116,10 +116,10 @@ class Client:
             return PartialUser(shared=self._shared, data=authenticated_user_data)
 
     async def get_users(
-        self,
-        user_ids: List[int],
-        exclude_banned_users: bool = False,
-        expand: bool = False,
+            self,
+            user_ids: List[int],
+            exclude_banned_users: bool = False,
+            expand: bool = False,
     ) -> Union[List[PartialUser], List[User]]:
         """
         Grabs a list of users corresponding to each user ID in the list.
@@ -147,10 +147,10 @@ class Client:
             ]
 
     async def get_users_by_usernames(
-        self,
-        usernames: List[str],
-        exclude_banned_users: bool = False,
-        expand: bool = False,
+            self,
+            usernames: List[str],
+            exclude_banned_users: bool = False,
+            expand: bool = False,
     ) -> Union[List[RequestedUsernamePartialUser], List[User]]:
         """
         Grabs a list of users corresponding to each username in the list.
@@ -178,7 +178,7 @@ class Client:
             ]
 
     async def get_user_by_username(
-        self, username: str, exclude_banned_users: bool = False, expand: bool = False
+            self, username: str, exclude_banned_users: bool = False, expand: bool = False
     ) -> Optional[Union[RequestedUsernamePartialUser, User]]:
         """
         Grabs a user corresponding to the passed username.

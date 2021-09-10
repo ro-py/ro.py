@@ -10,7 +10,8 @@ from .bases.baseplace import BasePlace
 
 class Presence:
     """
-    The PresenceProvider is an object that represents https://presence.roblox.com/ and provides multiple functions for fetching user presence information.
+    The PresenceProvider is an object that represents https://presence.roblox.com/ and provides multiple functions
+    for fetching user presence information.
 
     Attributes:
         _shared: The shared object, which is passed to all objects this client generates.

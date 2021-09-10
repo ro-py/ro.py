@@ -26,6 +26,7 @@ class BaseSocialLink(ABC):
         title: title of the social.
 
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:

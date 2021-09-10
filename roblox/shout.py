@@ -25,6 +25,7 @@ class Shout:
         updated: When the shout was updated.
         poster: Who posted the shout.
     """
+
     def __init__(self, shared: ClientSharedObject,
                  group: BaseGroup, data: dict = None):
         """

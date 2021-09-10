@@ -11,6 +11,7 @@ class PartialUser(BaseUser):
         name: Name of the user
         display_name: display name of the user
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:
@@ -33,6 +34,7 @@ class RequestedUsernamePartialUser(PartialUser):
     Attributes:
         requested_username: Username they requested
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:
@@ -42,5 +44,3 @@ class RequestedUsernamePartialUser(PartialUser):
         super().__init__(shared=shared, data=data)
 
         self.requested_username = data.get("requestedUsername")
-
-

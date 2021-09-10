@@ -21,6 +21,7 @@ __version__ = "2.0.0a"
 
 import logging
 from typing import NamedTuple
+
 try:
     from typing import Literal
 except ImportError:

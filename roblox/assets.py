@@ -91,6 +91,7 @@ class AssetType:
         id: Id of the Asset
         name: Name of the Asset
         """
+
     def __init__(self, shared: ClientSharedObject, type_id: int):
         """
         Arguments:
@@ -133,6 +134,7 @@ class EconomyAsset(BaseAsset):
         content_rating_type_id: Unknown
         sale_availability_locations: Unknown
         """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:

@@ -14,6 +14,7 @@ class AssetPartialGroup(BaseGroup):
         creator:
         name:
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:
@@ -38,6 +39,7 @@ class UniversePartialGroup(BaseGroup):
         id: Id of the group
         name: Name of the group
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:
@@ -50,4 +52,3 @@ class UniversePartialGroup(BaseGroup):
         self.name: str = data["name"]
 
         super().__init__(shared, self.id)
-

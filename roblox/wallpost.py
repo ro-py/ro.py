@@ -15,8 +15,8 @@ class WallPost:
         created: When the Wall Post was created.
         updated: When the Wall Post was lasted edited.
         poster: The person who posted the wall post.
-
     """
+
     def __init__(self, shared, data, group):
         """
         Arguments:
@@ -35,7 +35,7 @@ class WallPost:
 
     async def delete(self):
         """
-        function to delete a wall post
+        Deletes the wall post.
         """
 
         await self._requests.delete(

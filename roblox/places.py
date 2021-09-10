@@ -8,22 +8,23 @@ class Place(BasePlace):
     """
     Represents a Roblox place.
 
-     Attributes:
+    Attributes:
         _shared: The shared object, which is passed to all objects this client generates.
         _data: The data form the request.
         id: id of the place.
-        name: name of the place.
-        description: description of the place.
-        url: url to the place
-        builder: player object
-        builder_id: player id
-        is_playable: can you play the game
-        reason_prohibited: why you can't play the game
-        universe: universe object
-        universe_root_place: root place of the universe
-        price: price to play the game
-        image_token: token to get the image
+        name: Name of the place.
+        description: Description of the place.
+        url: URL for the place.
+        builder: The name of the user or group who owns the place.
+        builder_id: The ID of the player or group who owns the place.
+        is_playable: Whether the authenticated user can play this game.
+        reason_prohibited: If the place is not playable, contains the reason why the user cannot play the game.
+        universe: The BaseUniverse that contains this place.
+        universe_root_place: The root place that the universe contains.
+        price: How much it costs to play the game.
+        image_token: Can be used to generate thumbnails for this place.
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:

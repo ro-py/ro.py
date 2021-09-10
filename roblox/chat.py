@@ -25,6 +25,7 @@ class ConversationTyping:
         _shared: The shared object, which is passed to all objects this client generates.
         id: The id of the current conversation
     """
+
     def __init__(self, shared, conversation_id):
         """
         Arguments:
@@ -71,7 +72,7 @@ class Message:
         sender: BaseUser object of the user you send it to.
         content: Contact of the message.
         link: link data if any.
-        eventBased: Unknown.
+        event_based: Unknown.
     """
 
     def __init__(self, shared, data, conversation):
@@ -93,7 +94,7 @@ class Message:
         self.sender: BaseUser = BaseUser(shared, data["senderTargetId"])
         self.content: str = data["content"]
         self.link: Optional[dict] = data.get("link")
-        self.eventBased: Optional[dict] = data.get("eventBased")
+        self.event_based: Optional[dict] = data.get("eventBased")
 
 
 def message_handler(shared, data, conversation) -> Message:
@@ -118,6 +119,7 @@ class Conversation:
         typing: typing object.
         last_updated: When it was updated for the last time.
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:

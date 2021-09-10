@@ -269,7 +269,8 @@ class BaseGroup:
         )
 
     async def get_audit_logs(self, sort_order: SortOrder = SortOrder.Ascending,
-                             limit: int = 100, action_type: Optional[ActionTypes] = None, user: Optional[BaseUser] = None) -> PageIterator:
+                             limit: int = 100, action_type: Optional[ActionTypes] = None,
+                             user: Optional[BaseUser] = None) -> PageIterator:
         """
         Returns a PageIterator containing the group's members.
 

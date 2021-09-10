@@ -6,6 +6,7 @@ class HTTPStatusError(_HTTPStatusError):
     Attributes:
         errors: The error codes
     """
+
     def __init__(self, message: str, *, request: Request, response: Response, errors=None):
         """
         Arguments:

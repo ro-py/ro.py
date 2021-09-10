@@ -20,6 +20,7 @@ class User(BaseUser):
         description: The description the current user wrote for himself
         created: When the user created his account
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:

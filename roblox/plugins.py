@@ -12,13 +12,13 @@ class Plugin(BasePlugin):
     It is intended to parse data from https://develop.roblox.com/v1/plugins.
 
      Attributes:
-        id: id of the plugin.
-        name: name of the plugin.
-        description: description of the plugin.
-        comments_enabled: if you can place comments.
-        version_id: version id of the plugin.
-        created: when it was created.
-        updated: when it was updated for the last time.
+        id: The ID of the plugin.
+        name: The name of the plugin.
+        description: The plugin's description.
+        comments_enabled: Whether comments are enabled or disabled.
+        version_id: The plugin's current version ID.
+        created: When the plugin was created.
+        updated: When the plugin was updated.
     """
 
     def __init__(self, shared: ClientSharedObject, data: dict):

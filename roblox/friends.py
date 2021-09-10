@@ -5,14 +5,15 @@ from .users import User
 
 class Friend(User):
     """
-    Represents a Join Request
+    Represents a friend.
 
     Attributes:
-        is_online: Is the player currently online?
-        presence_type: Unknown
-        is_deleted: Is your friend account deleted
+        is_online: Whether the user is currently online.
+        presence_type: Their presence type. Don't use this.
+        is_deleted: Whether the account is deleted.
         friend_frequent_rank: Unknown
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:

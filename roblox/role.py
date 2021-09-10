@@ -18,7 +18,7 @@ def member_handler(shared, data, group, role) -> Member:
 
 class Role:
     """
-    Represents a role
+    Represents a group role.
 
     Attributes:
         _shared: The shared object, which is passed to all objects this client generates.

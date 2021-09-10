@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 class RelationshipType(Enum):
-    allys = "Allies"
+    allies = "Allies"
     enemies = "Enemies"
 
 
@@ -25,6 +25,7 @@ class RelationshipRequest:
         group: The group object the shout is coming from.
         requester: The group who send the request.
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict,
                  group: BaseGroup, relationship_type: RelationshipType):
         """

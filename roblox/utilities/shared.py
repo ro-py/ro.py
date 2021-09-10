@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 
 from .requests import Requests
 from .url import URLGenerator
+
 if TYPE_CHECKING:
     from ..client import Client
     from ..presence import PresenceProvider

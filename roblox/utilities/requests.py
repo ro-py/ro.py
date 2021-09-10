@@ -34,6 +34,7 @@ class Requests:
         xcsrf_allowed_methods: allowed methods with xcrf
 
     """
+
     def __init__(self):
         self.session: CleanAsyncClient = CleanAsyncClient()
         """

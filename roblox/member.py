@@ -1,17 +1,20 @@
 from __future__ import annotations
 
 from .utilities.shared import ClientSharedObject
+from .utilities.exceptions import HTTPStatusError
+
 from .partials.partialuser import PartialUser
 from .users import User
 
 from typing import Union, Tuple, TYPE_CHECKING
+
 if TYPE_CHECKING:
     from bases.baseuser import BaseUser
     from .bases.basegroup import BaseGroup
     from .role import Role
 
 
-class NotFound(Exception):
+class NotFound(HTTPStatusError):
     pass
 
 
@@ -28,7 +31,7 @@ class Member:
     """
 
     def __init__(self, shared: ClientSharedObject,
-                 user: Union[BaseUser,PartialUser,User],
+                 user: Union[BaseUser, PartialUser, User],
                  group: BaseGroup,
                  role: Role):
         """
@@ -133,7 +136,7 @@ class Member:
         """
 
         await self._requests.patch(
-            url= self._shared.url_generator.get_url("groups", f"v1/groups/{self.group.id}/users/{self.user.id}"),
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.group.id}/users/{self.user.id}"),
             json={
                 "roleId": role_id
             }

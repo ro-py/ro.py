@@ -23,6 +23,7 @@ class Group(BaseGroup):
         public_entry_allowed: can you join without your join request having to be accepted.
         is_locked: Is the group locked?
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:

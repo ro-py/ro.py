@@ -3,7 +3,7 @@ from enum import Enum
 
 class CreatorType(Enum):
     """
-    The current type of creator.
+    Represents the type of creator for objects that can be owned by either a group or a user, like Assets.
     """
 
     group = "Group"
