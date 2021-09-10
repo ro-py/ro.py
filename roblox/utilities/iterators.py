@@ -46,6 +46,8 @@ class PageIterator:
         data: list of all data collected until now
         first: is it the first page
         max_retries: amount of times you are allowed to retry
+        iterate_position: Used when iterating over the object.
+        iteration_complete: Help me, please
     """
 
     def __init__(
@@ -77,7 +79,6 @@ class PageIterator:
 
         self.url: str = url
         self.sort_order: SortOrder = sort_order.value
-        # TODO make limit a enum since it can only have 10, 25, 50, 100 as values
         self.limit: int = limit
         self.extra_parameters: Optional[dict] = extra_parameters
         self.item_handler: Callable = item_handler
@@ -90,6 +91,30 @@ class PageIterator:
         self.data: list = []
         self.first: bool = True
         self.max_retries: int = max_retries
+
+        self.iteration_in_progress: bool = False
+        self.iteration_complete: bool = False
+        self.iterate_position: int = 0
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        if not self.iteration_in_progress:
+            self.iteration_in_progress = True
+            await self.next()
+
+        if self.iterate_position == len(self.data):
+            try:
+                await self.next()
+            except NoMoreData:
+                raise StopAsyncIteration
+
+            self.iterate_position = 0
+
+        item: dict = self.data[self.iterate_position]
+        self.iterate_position += 1
+        return item
 
     async def flatten(self):
         """
@@ -197,6 +222,7 @@ class PageIterator:
             current_data = page_data["data"]
 
         return current_data
+
 
 
 class ChatPageIterator:
@@ -360,3 +386,4 @@ class ChatPageIterator:
             current_data = page_data
 
         return current_data
+
