@@ -29,12 +29,9 @@ except ImportError:
 
 from .client import Client
 from .utilities.exceptions import *
-from .auditlogs import ActionTypes
-from .relationship import RelationshipType
 from .thumbnails import ThumbnailState, ThumbnailFormat, ThumbnailReturnPolicy, AvatarThumbnailType
 from .universes import UniverseGenre, UniverseAvatarType
 from .sharedenums import *
-from .bases.basesociallink import SocialLinkType
 
 
 class VersionInfo(NamedTuple):
