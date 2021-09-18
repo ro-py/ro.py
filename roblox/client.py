@@ -44,6 +44,7 @@ class Client:
         Arguments:
             token: A .ROBLOSECURITY token to authenticate the client with.
             base_url: The base URL to use when sending requests.
+            parse_bans: Whether to show parsed ban messages in errors. Turn this off if you want to keep ban information hidden.
         """
         self._url_generator: URLGenerator = URLGenerator(base_url=base_url)
         self._requests: Requests = Requests(
