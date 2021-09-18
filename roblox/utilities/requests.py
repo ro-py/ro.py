@@ -110,7 +110,7 @@ class Requests:
                     error_code = error["code"]
                     error_message = error.get("message")
 
-                    parsed_error = f"{error_code}: {error_message}"
+                    parsed_error = f"\t{error_code}: {error_message}"
 
                     error_messages = []
 
@@ -120,7 +120,7 @@ class Requests:
 
                     if error_user_facing_message:
                         # Add the parenthesis-wrapped user facing message
-                        error_messages.append(f"User-facing message: {error_user_facing_message})")
+                        error_messages.append(f"User-facing message: {error_user_facing_message}")
 
                     if error_field:
                         # Add the field, which is the name of the key in the request body that caused the error
@@ -130,8 +130,8 @@ class Requests:
                         error_messages.append(f"Retryable: {error_retryable}")
 
                     if error_messages:
-                        error_message_string = ", ".join(error_messages)
-                        parsed_error += f" ({error_message_string})"
+                        error_message_string = "\n\t\t".join(error_messages)
+                        parsed_error += f"\n\t\t{error_message_string}"
 
                     parsed_errors.append(parsed_error)
 
@@ -139,7 +139,7 @@ class Requests:
                 parsed_error_string = "\n".join(parsed_errors)
 
                 exception = HTTPStatusError(
-                    message=f"""{response.status_code} {response.reason_phrase}: {response.url}. Errors:
+                    message=f"""{response.status_code} {response.reason_phrase}: {response.url}.\n\nErrors:
 {parsed_error_string}""",
                     request=response.request,
                     response=response,
