@@ -29,24 +29,16 @@ class Requests:
     A special request object that implements special functionality required to connect to some Roblox endpoints.
 
     Attributes:
-        session: the session
-        xcsrf_token_name: name of the xcrf token
-        xcsrf_allowed_methods: allowed methods with xcrf
+        session: Base session object to use when sending requests.
+        xcsrf_token_name: The header that will contain the Cross-Site Request Forgery token. Should be set to `X-CSRF-Token` under most circumstances.
+        xcsrf_allowed_methods: A dictionary where the keys are HTTP method types and values are whether the X-CSRF-Token should be handled for
+        that method. Keys must be in lowercase.
 
     """
 
     def __init__(self):
         self.session: CleanAsyncClient = CleanAsyncClient()
-        """
-        Base session object to use when sending requests.
-        By default, this is an instance of CleanAsyncClient.
-        """
-
         self.xcsrf_token_name: str = "X-CSRF-Token"
-        """
-        The header that will contain the Cross-Site Request Forgery token.
-        Should be set to `X-CSRF-Token` under most circumstances.
-        """
 
         self.xcsrf_allowed_methods: dict[str, bool] = {
             "post": True,
@@ -54,11 +46,7 @@ class Requests:
             "patch": True,
             "delete": True
         }
-        """
-        A dictionary where the keys are HTTP method types and values are whether the X-CSRF-Token should be handled for
-        that method. Keys must be in lowercase.
-        """
-
+        
         self.session.headers["User-Agent"] = "Roblox/WinInet"
         self.session.headers["Referer"] = "www.roblox.com"
 
@@ -72,7 +60,7 @@ class Requests:
         Returns:
             Response
         """
-        skip_roblox = kwargs.pop("skip_roblox", False)
+
         handle_xcsrf_token = kwargs.pop("handle_xcsrf_token", True)
         skip_roblox = kwargs.pop("skip_roblox", False)
 
