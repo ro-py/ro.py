@@ -1,7 +1,14 @@
+from __future__ import annotations
 import asyncio
+
+from typing import Optional
 from httpx import AsyncClient, Response
 from json import JSONDecodeError
+from datetime import datetime
+from dateutil.parser import parse
+
 from .exceptions import HTTPStatusError
+from ..utilities.url import URLGenerator
 
 
 class CleanAsyncClient(AsyncClient):
@@ -33,12 +40,33 @@ class Requests:
         xcsrf_token_name: The header that will contain the Cross-Site Request Forgery token. Should be set to `X-CSRF-Token` under most circumstances.
         xcsrf_allowed_methods: A dictionary where the keys are HTTP method types and values are whether the X-CSRF-Token should be handled for
         that method. Keys must be in lowercase.
-
+        parse_bans: Whether to parse ban data.
+        url_generator: URL generator for ban parsing.
     """
 
-    def __init__(self):
-        self.session: CleanAsyncClient = CleanAsyncClient()
-        self.xcsrf_token_name: str = "X-CSRF-Token"
+    def __init__(
+            self,
+            url_generator: URLGenerator = None,
+            session: CleanAsyncClient = None,
+            xcsrf_token_name: str = "X-CSRF-Token",
+            parse_bans: bool = True
+    ):
+        """
+        Arguments:
+            session: A custom session object to use for sending requests. Must have an asynchronous, requests-like `request` function.
+            xcsrf_token_name: The header to place X-CSRF-Token data into.
+            parse_bans: Whether to give extra information about a banned user.
+            url_generator: URL generator for ban parsing.
+        """
+        self._url_generator: Optional[URLGenerator] = url_generator
+        self.session: CleanAsyncClient
+
+        if session is None:
+            self.session = CleanAsyncClient()
+        else:
+            self.session = session
+
+        self.xcsrf_token_name: str = xcsrf_token_name
 
         self.xcsrf_allowed_methods: dict[str, bool] = {
             "post": True,
@@ -46,7 +74,9 @@ class Requests:
             "patch": True,
             "delete": True
         }
-        
+
+        self.parse_bans: bool = parse_bans
+
         self.session.headers["User-Agent"] = "Roblox/WinInet"
         self.session.headers["Referer"] = "www.roblox.com"
 
@@ -116,6 +146,53 @@ class Requests:
 
                     if error_retryable is not None:
                         error_messages.append(f"Retryable: {error_retryable}")
+
+                    if error_message == "User is moderated":
+                        # This is a ban error message, send another request for data.
+                        # This request needs to be safe and no errors can be raised here.
+                        try:
+                            ban_response = await self.session.get(
+                                url=self._url_generator.get_url("usermoderation", "v1/not-approved")
+                            )
+                            ban_data = ban_response.json()
+
+                            punished_user_id: int = ban_data["punishedUserId"]
+                            message_to_user: str = ban_data["messageToUser"]
+                            punishment_type_description: str = ban_data["punishmentTypeDescription"]
+                            punishment_id: int = ban_data["punishmentId"]
+                            begin_date: Optional[datetime] = None
+                            end_date: Optional[datetime] = None
+
+                            if ban_data["beginDate"]:
+                                begin_date = parse(ban_data["beginDate"])
+
+                            if ban_data["endDate"]:
+                                end_date = parse(ban_data["endDate"])
+
+                            error_messages.append(f"Punished User ID: {punished_user_id}")
+                            error_messages.append(f"Punishment Type: {punishment_type_description}")
+                            error_messages.append(f"Punishment ID: {punishment_id}")
+                            error_messages.append(f"Ban Message: {message_to_user}")
+
+                            if begin_date:
+                                parsed_begin_date = begin_date.strftime("%m/%d/%Y, %H:%M:%S")
+                                error_messages.append(f"Begin Date: {parsed_begin_date}")
+                            else:
+                                error_messages.append(f"Begin Date: None")
+
+                            if end_date:
+                                parsed_end_date = end_date.strftime("%m/%d/%Y, %H:%M:%S")
+                                error_messages.append(f"End Date: {parsed_end_date}")
+                            else:
+                                error_messages.append(f"End Date: None")
+
+                            not_approved_url = self._url_generator.get_url("www", "not-approved")
+                            error_messages.append(f"For more information, please see {not_approved_url}.")
+                            error_messages.append(f"If you wish to appeal, please contact Roblox: https://www.roblox.com/support")
+
+                        except Exception:
+                            # don't throw errors
+                            pass
 
                     if error_messages:
                         error_message_string = "\n\t\t".join(error_messages)

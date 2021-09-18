@@ -39,16 +39,21 @@ class Client:
         delivery: The delivery provider object.
     """
 
-    def __init__(self, token: str = None, base_url: str = "roblox.com"):
+    def __init__(self, token: str = None, base_url: str = "roblox.com", parse_bans: bool = True):
         """
         Arguments:
             token: A .ROBLOSECURITY token to authenticate the client with.
             base_url: The base URL to use when sending requests.
         """
-        self._requests: Requests = Requests()
         self._url_generator: URLGenerator = URLGenerator(base_url=base_url)
+        self._requests: Requests = Requests(
+            url_generator=self._url_generator,
+            parse_bans=parse_bans
+        )
         self._shared: ClientSharedObject = ClientSharedObject(
-            client=self, requests=self._requests, url_generator=self._url_generator
+            client=self,
+            requests=self._requests,
+            url_generator=self._url_generator
         )
 
         self.presence: PresenceProvider = PresenceProvider(shared=self._shared)
