@@ -147,7 +147,7 @@ class Requests:
                     if error_retryable is not None:
                         error_messages.append(f"Retryable: {error_retryable}")
 
-                    if error_message == "User is moderated":
+                    if self.parse_bans and error_message == "User is moderated":
                         # This is a ban error message, send another request for data.
                         # This request needs to be safe and no errors can be raised here.
                         try:
