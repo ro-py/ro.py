@@ -6,6 +6,7 @@ from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator, SortOrder
 
 from ..presence import Presence
+from ..assetinstance import AssetInstance
 
 if TYPE_CHECKING:
     from ..friends import Friend
@@ -119,3 +120,22 @@ class BaseUser:
         )
         premium_data = premium_response.text
         return premium_data == "true"
+
+    async def get_asset_instance(self, asset_id: int) -> Optional[AssetInstance]:
+        """
+        Checks if a user owns the asset, and returns details about the asset if they do.
+
+        Returns:
+            An AssetInstance object containing some asset details or None.
+        """
+        instance_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("inventory", f"v1/users/{self.id}/items/Asset/{asset_id}")
+        )
+        instance_data = instance_response.json()["data"]
+        if len(instance_data) > 0:
+            return AssetInstance(
+                shared=self._shared,
+                data=instance_data[0]
+            )
+        else:
+            return None
