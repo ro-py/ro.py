@@ -248,7 +248,7 @@ class Client:
             url=self._shared.url_generator.get_url("users", f"v1/users/search"),
             limit=limit,
             extra_parameters={"keyword": keyword},
-            item_handler=self._user_search_handler,
+            handler=self._user_search_handler,
         )
 
     async def get_group(self, group_id: int) -> Group:
