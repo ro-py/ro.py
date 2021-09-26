@@ -23,6 +23,7 @@ from .bases.baseuniverse import BaseUniverse
 from .bases.baseplace import BasePlace
 from .bases.baseasset import BaseAsset
 from .bases.baseplugin import BasePlugin
+from .bases.basebadge import BaseBadge
 
 from .partials.partialuser import PartialUser, RequestedUsernamePartialUser
 
@@ -482,3 +483,17 @@ class Client:
         )
         badge_data = badge_response.json()
         return Badge(shared=self._shared, data=badge_data)
+
+    def get_base_badge(self, badge_id: int) -> BaseBadge:
+        """
+        Gets a base badge.
+        FIXME
+        This method does not send any requests - it just generates a BaseUser object.
+
+        Arguments:
+            badge_id: A Roblox badge ID.
+
+        Returns:
+            A BaseBadge.
+        """
+        return BaseBadge(shared=self._shared, badge_id=badge_id)

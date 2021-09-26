@@ -5,6 +5,9 @@ from typing import Optional, List, TYPE_CHECKING
 from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator, SortOrder
 
+from ..bases.basebadge import BaseBadge
+from ..partials.partialbadge import PartialBadge
+
 from ..presence import Presence
 from ..assetinstance import AssetInstance
 
@@ -62,7 +65,7 @@ class BaseUser:
             ),
             limit=limit,
             sort_order=sort_order,
-            item_handler=lambda shared, data: data["name"],
+            handler=lambda shared, data: data["name"],
         )
 
     async def get_presence(self) -> Optional[Presence]:
@@ -139,3 +142,22 @@ class BaseUser:
             )
         else:
             return None
+
+    async def get_badge_awarded_dates(self, badges: list[BaseBadge]) -> List[PartialBadge]:
+        """
+        Returns:
+            A list of Partial Badges containing badge awarded dates.
+        """
+        awarded_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("badges", f"v1/users/{self.id}/badges/awarded-dates"),
+            params={
+                "badgeIds": [badge.id for badge in badges]
+            }
+        )
+        awarded_data: list = awarded_response.json()["data"]
+        return [
+            PartialBadge(
+                shared=self._shared,
+                data=partial_data
+            ) for partial_data in awarded_data
+        ]
