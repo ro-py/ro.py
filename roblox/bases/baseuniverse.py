@@ -68,5 +68,5 @@ class BaseUniverse:
             shared=self._shared,
             url=self._shared.url_generator.get_url("badges", f"v1/universes/{self.id}/badges"),
             limit=limit,
-            item_handler=self._universe_badges_handler,
+            handler=self._universe_badges_handler,
         )

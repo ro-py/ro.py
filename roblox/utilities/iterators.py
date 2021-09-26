@@ -109,7 +109,18 @@ class PageIterator:
         self.next_cursor = page_data["nextPageCursor"]
         self.previous_cursor = page_data["previousPageCursor"]
 
-        return page_data["data"]
+        data = page_data["data"]
+
+        if self.handler:
+            data = [
+                self.handler(
+                    shared=self._shared,
+                    data=item_data,
+                    **self.handler_kwargs
+                ) for item_data in data
+            ]
+
+        return data
 
     async def flatten(self) -> list:
         """
