@@ -2,7 +2,7 @@ from ..utilities.shared import ClientSharedObject
 from .baseasset import BaseAsset
 
 
-class BaseBadge(BaseAsset):
+class BaseBadge:
     """
     Represents a Roblox badge ID.
 
@@ -20,8 +20,3 @@ class BaseBadge(BaseAsset):
 
         self._shared: ClientSharedObject = shared
         self.id: int = badge_id
-
-        super().__init__(
-            shared=self._shared,
-            asset_id=self.id
-        )
