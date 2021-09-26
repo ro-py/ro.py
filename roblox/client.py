@@ -11,6 +11,7 @@ from .universes import Universe
 from .places import Place
 from .assets import EconomyAsset
 from .plugins import Plugin
+from .badges import Badge
 
 from .presence import PresenceProvider
 from .thumbnails import ThumbnailProvider
@@ -463,3 +464,21 @@ class Client:
             A BasePlugin.
         """
         return BasePlugin(shared=self._shared, plugin_id=plugin_id)
+
+    async def get_badge(self, badge_id: int) -> Badge:
+        """
+        Gets a badge with the passed ID.
+
+        Arguments:
+            badge_id: A Roblox badge ID.
+
+        Returns:
+            A Badge.
+        """
+        badge_response = await self._requests.get(
+            url=self._shared.url_generator.get_url(
+                "badges", f"v1/badges/{badge_id}"
+            )
+        )
+        badge_data = badge_response.json()
+        return Badge(shared=self._shared, data=badge_data)

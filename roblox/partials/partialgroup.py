@@ -10,9 +10,9 @@ class AssetPartialGroup(BaseGroup):
     Attributes:
         _data: The data we get back from the endpoint.
         _shared: The shared object, which is passed to all objects this client generates.
-        id: The name of the ID
-        creator:
-        name:
+        id: The group's name.
+        creator: The group's owner.
+        name: The group's name.
     """
 
     def __init__(self, shared: ClientSharedObject, data: dict):
