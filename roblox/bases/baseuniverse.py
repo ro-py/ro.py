@@ -1,4 +1,12 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from ..badges import Badge
+
 from ..utilities.shared import ClientSharedObject
+from ..utilities.iterators import PageIterator
 
 
 class BaseUniverse:
@@ -45,3 +53,20 @@ class BaseUniverse:
         )
         is_favorited_data = is_favorited_response.json()
         return is_favorited_data["isFavorited"]
+
+    def _universe_badges_handler(self, shared: ClientSharedObject, data: dict) -> Badge:
+        from ..badges import Badge  # Fixme 🥺🥺🥺
+
+        return Badge(shared=shared, data=data)
+
+    def get_badges(self, limit: int = 10) -> PageIterator:
+        """
+        Gets the universe's badges.
+        """
+
+        return PageIterator(
+            shared=self._shared,
+            url=self._shared.url_generator.get_url("badges", f"v1/universes/{self.id}/badges"),
+            limit=limit,
+            item_handler=self._universe_badges_handler,
+        )
