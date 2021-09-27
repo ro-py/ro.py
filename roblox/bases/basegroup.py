@@ -1,11 +1,12 @@
 from __future__ import annotations
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, List, TYPE_CHECKING
 
 from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator
 
 from ..members import Member
 from ..shout import Shout
+from ..roles import Role
 
 if TYPE_CHECKING:
     from ..groups import Group
@@ -129,5 +130,13 @@ class BaseGroup:
             handler=lambda shared, data: Member(shared=shared, data=data)
         )
 
-
+    async def get_roles(self) -> List[Role]:
+        roles_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/roles")
+        )
+        roles_data = roles_response.json()
+        return [Role(
+            shared=self._shared,
+            data=role_data
+        ) for role_data in roles_data["roles"]]
 
