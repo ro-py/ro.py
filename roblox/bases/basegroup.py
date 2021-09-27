@@ -1,8 +1,11 @@
 from __future__ import annotations
-
-from ..shout import Shout
-from ..utilities.shared import ClientSharedObject
 from typing import Optional, TYPE_CHECKING
+
+from ..utilities.shared import ClientSharedObject
+from ..utilities.iterators import PageIterator
+
+from ..members import Member
+from ..shout import Shout
 
 if TYPE_CHECKING:
     from ..groups import Group
@@ -62,7 +65,7 @@ class BaseGroup:
         self.id: int = group_id
         self.shout: Optional[Shout] = Shout(self._shared, self)
 
-    async def expand(self) -> Group:
+    async def to_group(self) -> Group:
         """
         Expands into a full Group object.
 
@@ -78,20 +81,25 @@ class BaseGroup:
         Returns:
             GroupSettings.
         """
-        response = await self._requests.get(
+        settings_response = await self._requests.get(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/settings"),
         )
-        data = response.json()
-        return GroupSettings(self._shared, data)
+        settings_data = settings_response.json()
+        return GroupSettings(
+            shared=self._shared,
+            data=settings_data
+        )
 
-    async def update_settings(self, is_approval_required: Optional[bool] = None,
-                              is_builders_club_required: Optional[bool] = None,
-                              are_enemies_allowed: Optional[bool] = None,
-                              are_group_funds_visible: Optional[bool] = None,
-                              are_group_games_visible: Optional[bool] = None, ) -> None:
+    async def update_settings(
+            self,
+            is_approval_required: Optional[bool] = None,
+            is_builders_club_required: Optional[bool] = None,
+            are_enemies_allowed: Optional[bool] = None,
+            are_group_funds_visible: Optional[bool] = None,
+            are_group_games_visible: Optional[bool] = None,
+    ) -> None:
         """
         Sets the group settings
-
 
         Arguments:
             is_approval_required: If someone needs to be approve before joining the group
@@ -100,14 +108,26 @@ class BaseGroup:
             are_group_funds_visible: Can everyone see your group funds?
             are_group_games_visible: Are your group games visible?
         """
-        json = {
+        settings_data = {
             "isApprovalRequired": is_approval_required,
             "isBuildersClubRequired": is_builders_club_required,
             "areEnemiesAllowed": are_enemies_allowed,
             "areGroupFundsVisible": are_group_funds_visible,
             "areGroupGamesVisible": are_group_games_visible,
         }
+
         await self._requests.patch(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/settings"),
-            json=json
+            json=settings_data
         )
+
+    def get_members(self, limit: int = 10) -> PageIterator:
+        return PageIterator(
+            shared=self._shared,
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users"),
+            limit=limit,
+            handler=lambda shared, data: Member(shared=shared, data=data)
+        )
+
+
+

@@ -78,7 +78,8 @@ asset_type_names = {
     71: "Right Shoe Accessory",
     72: "Dress Skirt Accessory",
     73: "Font Family",
-    74: "Font Face"
+    74: "Font Face",
+    75: "MeshHiddenSurfaceRemoval"
 }
 
 
