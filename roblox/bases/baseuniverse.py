@@ -1,12 +1,34 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict
 
 if TYPE_CHECKING:
     from ..badges import Badge
 
 from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator
+
+
+class UniverseLiveStatsDevice:
+    def __init__(self, name: str, count: int):
+        self.name: str = name
+        self.count: int = count
+
+
+class UniverseLiveStats:
+    def __init__(self, data: dict):
+        self.total_player_count: int = data["totalPlayerCount"]
+        self.game_count: int = data["gameCount"]
+        self.player_counts_by_device_type: Dict[str, int] = data["playerCountsByDeviceType"]
+
+        # todo: debate whether this is something we should do 👇👇👇
+        """
+        self.player_counts = [
+            UniverseLiveStatsDevice(
+                name=name,
+                count=count
+            ) for name, count in data["playerCountsByDeviceType"].items()
+        ]"""
 
 
 class BaseUniverse:
@@ -70,3 +92,15 @@ class BaseUniverse:
             limit=limit,
             handler=self._universe_badges_handler,
         )
+
+    async def get_live_stats(self) -> UniverseLiveStats:
+        """
+        Gets the universe's live stats.
+        These won't actually update live - these are just the stats that are shown on the Roblox website's live stats display.
+        Call this method on a regular basis to get updated information.
+        """
+        stats_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("develop", f"v1/universes/{self.id}/live-stats")
+        )
+        stats_data = stats_response.json()
+        return UniverseLiveStats(data=stats_data)

@@ -23,7 +23,7 @@ class UniverseAvatarType(Enum):
 
 class UniverseGenre(Enum):
     """
-    The current genre the universe is in
+    The universe's genre.
     """
 
     all = "All"
@@ -91,7 +91,7 @@ class Universe(BaseUniverse):
         self.name: str = data["name"]
         self.description: str = data["description"]
         self.creator_type: Enum = CreatorType(data["creator"]["type"])
-        # isRNVAccount is not part or PartialUser,UniversePartialGroup
+        # isRNVAccount is not part of PartialUser, UniversePartialGroup
         self.creator: Union[PartialUser, UniversePartialGroup]
         if self.creator_type == CreatorType.group:
             self.creator = UniversePartialGroup(shared, data["creator"])
