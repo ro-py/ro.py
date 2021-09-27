@@ -137,6 +137,7 @@ class BaseGroup:
         roles_data = roles_response.json()
         return [Role(
             shared=self._shared,
-            data=role_data
+            data=role_data,
+            group=self
         ) for role_data in roles_data["roles"]]
 

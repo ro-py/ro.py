@@ -156,7 +156,11 @@ class PageIterator:
                 raise StopAsyncIteration
 
         # if we got here we know there are more items
-        item = self.iterator_items[self.iterator_position]
+        try:
+            item = self.iterator_items[self.iterator_position]
+        except IndexError:
+            # edge case for group roles
+            raise StopAsyncIteration
         # we advance the iterator by one for the next iteration
         self.iterator_position += 1
         return item
