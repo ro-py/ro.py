@@ -64,7 +64,6 @@ class BaseGroup:
         self._shared: ClientSharedObject = shared
         self._requests = shared.requests
         self.id: int = group_id
-        self.shout: Optional[Shout] = Shout(self._shared, self)
 
     async def to_group(self) -> Group:
         """
@@ -140,4 +139,3 @@ class BaseGroup:
             data=role_data,
             group=self
         ) for role_data in roles_data["roles"]]
-

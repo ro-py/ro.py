@@ -1,9 +1,10 @@
-from .shout import Shout
+from typing import Optional, Tuple
+
 from .utilities.shared import ClientSharedObject
-
 from .partials.partialuser import PartialUser
-
 from .bases.basegroup import BaseGroup
+
+from .shout import Shout
 
 
 class Group(BaseGroup):
@@ -33,14 +34,44 @@ class Group(BaseGroup):
         super().__init__(shared, data["id"])
 
         self._shared: ClientSharedObject = shared
-        self._data: dict = data
 
         self.id: int = data["id"]
         self.name: str = data["name"]
         self.description: str = data["description"]
         self.owner: PartialUser = PartialUser(shared=shared, data=data["owner"])
-        self.shout: Shout = Shout(shared, self, data["shout"])
+        self.shout: Optional[Shout] = data["shout"] and Shout(
+            shared=self._shared,
+            data=data["shout"]
+        ) or None
         self.member_count: int = data["memberCount"]
         self.is_builders_club_only: bool = data["isBuildersClubOnly"]
         self.public_entry_allowed: bool = data["publicEntryAllowed"]
         self.is_locked: bool = data.get("isLocked") or False
+
+    async def update_shout(self, message: str, update_self: bool = True) -> Tuple[Optional[Shout], Optional[Shout]]:
+        """
+        Updates the shout.
+
+        Arguments:
+            message: The new shout message.
+            update_self: Whether to update self.shout automatically.
+        """
+        shout_response = await self._requests.patch(
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/status"),
+            json={
+                "message": message
+            }
+        )
+
+        shout_data = shout_response.json()
+
+        old_shout: Optional[Shout] = self.shout
+        new_shout: Optional[Shout] = shout_data and Shout(
+            shared=self._shared,
+            data=shout_data
+        ) or None
+
+        if update_self:
+            self.shout = new_shout
+
+        return old_shout, new_shout
