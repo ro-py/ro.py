@@ -16,6 +16,7 @@ class BadgeStatistics:
         awarded_count: How many instances of this badge have been awarded.
         win_rate_percentage: Percentage of how many users who have joined the parent universe have been awarded this badge.
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:
