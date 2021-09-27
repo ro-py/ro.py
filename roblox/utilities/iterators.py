@@ -1,11 +1,11 @@
-from typing import Callable, List, Union, Optional
+from typing import Callable, Optional
 from enum import Enum
 from .shared import ClientSharedObject
-from ..utilities.exceptions import HTTPStatusError
 
 
 class NoMoreItems(Exception):
     pass
+
 
 class SortOrder(Enum):
     """
@@ -160,5 +160,3 @@ class PageIterator:
         # we advance the iterator by one for the next iteration
         self.iterator_position += 1
         return item
-
-

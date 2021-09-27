@@ -23,3 +23,28 @@ class BasePlace(BaseAsset):
 
         self._shared: ClientSharedObject = shared
         self.id: int = place_id
+
+    async def get_instances(self, start_index: int = 0):
+        """
+        Returns a list of this place's current instances (servers).
+        This list always contains 10 items or fewer.
+        For more items, add 10 to the start index and repeat until no more items are available.
+        fixme please! at some point you should add an iterator for this.
+
+        Arguments:
+            start_index: Where to start in the server index.
+        """
+        from ..jobs import GameInstances  # FIXME
+
+        instances_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("www", f"games/getgameinstancesjson"),
+            params={
+                "placeId": self.id,
+                "startIndex": start_index
+            }
+        )
+        instances_data = instances_response.json()
+        return GameInstances(
+            shared=self._shared,
+            data=instances_data
+        )
