@@ -13,6 +13,7 @@ from ..assetinstance import AssetInstance
 
 if TYPE_CHECKING:
     from ..friends import Friend
+    from ..roles import Role
 
 
 class BaseUser:
@@ -160,4 +161,22 @@ class BaseUser:
                 shared=self._shared,
                 data=partial_data
             ) for partial_data in awarded_data
+        ]
+
+    async def get_group_roles(self) -> List[Role]:
+        from ..roles import Role
+        from ..groups import Group
+        roles_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("groups", f"v1/users/{self.id}/groups/roles")
+        )
+        roles_data = roles_response.json()["data"]
+        return [
+            Role(
+                shared=self._shared,
+                data=role_data["role"],
+                group=Group(
+                    shared=self._shared,
+                    data=role_data["group"]
+                )
+            ) for role_data in roles_data
         ]

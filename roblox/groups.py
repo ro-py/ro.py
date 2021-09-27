@@ -13,7 +13,6 @@ class Group(BaseGroup):
 
     Attributes:
         _shared: The shared object, which is passed to all objects this client generates.
-        _data: The raw data we got back form the endpoint.
         id: the id of the group.
         name: name of the group.
         description: description of the group.

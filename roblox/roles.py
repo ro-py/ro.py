@@ -39,7 +39,7 @@ class Role(BaseRole):
         self.name: str = data["name"]
         self.description: Optional[str] = data.get("description")
         self.rank: int = data["rank"]
-        self.member_count: int = data["memberCount"]
+        self.member_count: Optional[int] = data.get("memberCount")
 
     def get_members(self, limit: int = 10) -> PageIterator:
         """
