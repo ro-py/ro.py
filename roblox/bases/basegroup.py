@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from ..roles import Role
 from ..shout import Shout
 from ..utilities.shared import ClientSharedObject
 from typing import Optional, TYPE_CHECKING
@@ -111,3 +112,17 @@ class BaseGroup:
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/settings"),
             json=json
         )
+
+    async def get_roles(self):
+        """
+        Gets every role in a group
+        """
+        req = await self._requests.get(
+            url=self._shared.url_generator.get_url("groups", f"v1/group/{self.id}/")
+        )
+        req = req.json()
+
+        roles = []
+        for role in req['roles']:
+            roles.append(Role(self._shared, self, role))
+        return roles
