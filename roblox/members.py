@@ -1,11 +1,16 @@
-from .bases.basegroup import BaseGroup
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 from .partials.partialuser import PartialUser
 from .partials.partialrole import PartialRole
 from .utilities.shared import ClientSharedObject
 
+if TYPE_CHECKING:
+    from .bases.basegroup import BaseGroup
+
 
 class Member(PartialUser):
-    def __init__(self, shared: ClientSharedObject, data: dict, group: BaseGroup):
+    def __init__(self, shared: ClientSharedObject, data: dict, group):
         self._shared: ClientSharedObject = shared
 
         super().__init__(shared=self._shared, data=data["user"])
