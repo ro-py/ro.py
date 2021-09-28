@@ -20,3 +20,10 @@ class HTTPStatusError(_HTTPStatusError):
         if errors is None:
             errors = []
         self.errors = errors
+
+
+class RoleNonexistent(Exception):
+    """
+    Raised when a role doesn't exist.
+    """
+    pass
