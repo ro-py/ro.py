@@ -1,7 +1,6 @@
 from __future__ import annotations
-from typing import Optional, List, TYPE_CHECKING, Tuple
+from typing import Optional, List, TYPE_CHECKING
 
-from .. import RoleNonexistent
 from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator
 
@@ -11,8 +10,6 @@ from ..roles import Role
 
 if TYPE_CHECKING:
     from ..groups import Group
-    from ..partials.partialrole import PartialRole
-    from .baseuser import BaseUser
 
 
 class GroupSettings:
@@ -125,46 +122,14 @@ class BaseGroup:
         )
 
     def get_members(self, limit: int = 10) -> PageIterator:
-        """
-        Gets all members of a group.
-        Arguments:
-            limit: How many members will be grabbed.
-
-        Returns: A PageIterator.
-        """
         return PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users"),
             limit=limit,
-            handler=lambda shared, data: Member(shared=shared, data=data, group=self)
+            handler=lambda shared, data: Member(shared=shared, data=data)
         )
-
-    async def get_member(self, user_id: int) -> Member:
-        """
-        Gets a member of a group.
-        Arguments:
-            user_id: The id of the user.
-
-        Returns: A member.
-        """
-        groups_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("groups", f"v2/users/{user_id}/groups/roles")
-        )
-        groups_data = groups_response.json()
-
-        member_data = None
-        for member in groups_data['data']:
-            if member['group']['id'] == self.id:
-                member_data = member
-                break
-
-        return Member(shared=self._shared, data=member_data, group=self)
 
     async def get_roles(self) -> List[Role]:
-        """
-        Gets all roles of the group.
-        Returns: List of roles.
-        """
         roles_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/roles")
         )
@@ -174,65 +139,3 @@ class BaseGroup:
             data=role_data,
             group=self
         ) for role_data in roles_data["roles"]]
-
-    async def set_role(self, user: BaseUser, role_id: int) -> None:
-        """
-        Sets a users role.
-        Arguments:
-            user: The user who's rank will be changed.
-            role_id: The id of the new role.
-        """
-        await self._shared.requests.patch(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users/{user.id}"),
-            json={
-                "roleId": role_id
-            }
-        )
-
-    async def set_rank(self, user: BaseUser, rank: int) -> None:
-        """
-        Changes a member's role using a rank number.
-        Arguments:
-            user: The user who's rank will be changed.
-            rank: The rank number to change to. (1-255)
-        """
-        roles = await self.get_roles()
-        member = await self.get_member(user.id)
-
-        role = next((x for x in roles if x.rank == rank), None)
-        if not role:
-            raise RoleNonexistent(f"Role {rank} does not exist.")
-
-        await self.set_rank(user, role.id)
-
-    async def offset_role(self, user: BaseUser, offset: int) -> None:
-        """
-        Offsets a member's role by a certain number.
-        Arguments:
-            user: The user who's rank will be changed.
-            offset: How much the rank will be offset by.
-        """
-        member = await self.get_member(user.id)
-        roles = await self.get_roles()
-        role_num = next((i for i, _ in enumerate(roles) if roles[i].id == member.role.id), None)
-
-        if role_num + offset < 0:
-            raise RoleNonexistent("Role doesn't exist.")
-
-        await self.set_rank(user, roles[role_num + offset].id)
-
-    async def promote(self, user: BaseUser):
-        """
-        Offsets a member's rank by +1
-        Arguments:
-            user: The user who will be promoted.
-        """
-        await self.offset_role(user, 1)
-
-    async def demote(self, user: BaseUser):
-        """
-        Offsets a member's rank by -1
-        Arguments:
-            user: The user who will be demoted.
-        """
-        await self.offset_role(user, -1)
