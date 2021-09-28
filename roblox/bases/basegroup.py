@@ -1,15 +1,17 @@
 from __future__ import annotations
 from typing import Optional, List, TYPE_CHECKING, Tuple
 
-from ..utilities.exceptions import RoleNonexistent
+from .. import RoleNonexistent
 from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator
 
 from ..members import Member
+from ..shout import Shout
 from ..roles import Role
 
 if TYPE_CHECKING:
     from ..groups import Group
+    from ..partials.partialrole import PartialRole
     from .baseuser import BaseUser
 
 
