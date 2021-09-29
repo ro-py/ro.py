@@ -14,7 +14,6 @@ class Member(PartialUser):
     def __init__(self, shared: ClientSharedObject, data: dict, group: BaseGroup):
         self._shared: ClientSharedObject = shared
 
-        print(data)
         super().__init__(shared=self._shared, data=data["user"])
 
         self.role: PartialRole = PartialRole(shared=self._shared, data=data["role"])

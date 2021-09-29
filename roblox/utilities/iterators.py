@@ -16,7 +16,58 @@ class SortOrder(Enum):
     Descending = "Desc"
 
 
-class PageIterator:
+class Iterator:
+    def __init__(self):
+        pass
+
+    async def next(self):
+        raise NotImplementedError
+
+    async def flatten(self) -> list:
+        """
+        Flattens the data into a list.
+        """
+        items: list = []
+
+        while True:
+            try:
+                new_items = await self.next()
+                items += new_items
+            except NoMoreItems:
+                break
+
+        return items
+
+    def __aiter__(self):
+        self.iterator_position = 0
+        self.iterator_items = []
+        return self
+
+    async def __anext__(self):
+        if self.iterator_position == len(self.iterator_items):
+            # we are at the end of our current page of items. start again with a new page
+            self.iterator_position = 0
+            try:
+                # get new items
+                self.iterator_items = await self.next()
+            except NoMoreItems:
+                # if there aren't any more items, reset and break the loop
+                self.iterator_position = 0
+                self.iterator_items = []
+                raise StopAsyncIteration
+
+        # if we got here we know there are more items
+        try:
+            item = self.iterator_items[self.iterator_position]
+        except IndexError:
+            # edge case for group roles
+            raise StopAsyncIteration
+        # we advance the iterator by one for the next iteration
+        self.iterator_position += 1
+        return item
+
+
+class PageIterator(Iterator):
     """
     Represents a cursor-based, paginated Roblox object.
     For more information about how cursor-based pagination works, see https://robloxapi.wiki/wiki/Pagination.
@@ -60,6 +111,8 @@ class PageIterator:
             handler: A callable object to use to convert raw endpoint data to parsed objects.
             handler_kwargs: Extra keyword arguments to pass to the handler.
         """
+
+        super().__init__()
 
         self._shared: ClientSharedObject = shared
 
@@ -122,45 +175,44 @@ class PageIterator:
 
         return data
 
-    async def flatten(self) -> list:
-        """
-        Flattens the data into a list.
-        """
-        items: list = []
 
-        while True:
-            try:
-                new_items = await self.next()
-                items += new_items
-            except NoMoreItems:
-                break
+class PageNumberIterator(Iterator):
+    def __init__(
+            self,
+            shared: ClientSharedObject,
+            url: str,
+            page_size: int = 10,
+            extra_parameters: Optional[dict] = None,
+            handler: Optional[Callable] = None,
+            handler_kwargs: Optional[dict] = None
+    ):
+        super().__init__()
 
-        return items
+        self._shared: ClientSharedObject = shared
 
-    def __aiter__(self):
+        self.url: str = url
+        self.page_number: int = 1
+        self.page_size: int = page_size
+
+        self.extra_parameters: dict = extra_parameters or {}
+        self.handler: Callable = handler
+        self.handler_kwargs: dict = handler_kwargs or {}
+
         self.iterator_position = 0
         self.iterator_items = []
-        return self
 
-    async def __anext__(self):
-        if self.iterator_position == len(self.iterator_items):
-            # we are at the end of our current page of items. start again with a new page
-            self.iterator_position = 0
-            try:
-                # get new items
-                self.iterator_items = await self.next()
-            except NoMoreItems:
-                # if there aren't any more items, reset and break the loop
-                self.iterator_position = 0
-                self.iterator_items = []
-                raise StopAsyncIteration
+    async def next(self):
+        page_response = await self._shared.requests.get(
+            url=self.url,
+            params={
+                "pageNumber": self.page_number,
+                "pageSize": self.page_size,
+                **self.extra_parameters
+            }
+        )
+        page_data = page_response.json()
 
-        # if we got here we know there are more items
-        try:
-            item = self.iterator_items[self.iterator_position]
-        except IndexError:
-            # edge case for group roles
-            raise StopAsyncIteration
-        # we advance the iterator by one for the next iteration
-        self.iterator_position += 1
-        return item
+        if len(page_data) == 0:
+            raise NoMoreItems("No more items.")
+
+        self.page_number += 1
