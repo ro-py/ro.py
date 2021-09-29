@@ -9,6 +9,7 @@ if TYPE_CHECKING:
     from ..presence import PresenceProvider
     from ..thumbnails import ThumbnailProvider
     from ..delivery import DeliveryProvider
+    from ..chat import ChatProvider
 
 
 class ClientSharedObject:
@@ -22,6 +23,7 @@ class ClientSharedObject:
         presence_provider: provider for all presence stuff
         thumbnail_provider: provider for all thumbnail stuff
         delivery_provider: provider for all delivery stuff
+        chat_provider: provider  for chat
     """
 
     def __init__(self, client: Client, requests: Requests, url_generator: URLGenerator):
@@ -37,3 +39,4 @@ class ClientSharedObject:
         self.presence_provider: PresenceProvider
         self.thumbnail_provider: ThumbnailProvider
         self.delivery_provider: DeliveryProvider
+        self.chat_provider: ChatProvider

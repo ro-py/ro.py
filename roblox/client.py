@@ -17,6 +17,7 @@ from .badges import Badge
 from .presence import PresenceProvider
 from .thumbnails import ThumbnailProvider
 from .delivery import DeliveryProvider
+from .chat import ChatProvider
 
 from .bases.baseuser import BaseUser
 from .bases.basegroup import BaseGroup
@@ -41,6 +42,7 @@ class Client:
         presence: The presence provider object.
         thumbnails: The thumbnail provider object.
         delivery: The delivery provider object.
+        chat: The chat provider object.
     """
 
     def __init__(self, token: str = None, base_url: str = "roblox.com", parse_bans: bool = True):
@@ -64,11 +66,13 @@ class Client:
         self.presence: PresenceProvider = PresenceProvider(shared=self._shared)
         self.thumbnails: ThumbnailProvider = ThumbnailProvider(shared=self._shared)
         self.delivery: DeliveryProvider = DeliveryProvider(shared=self._shared)
+        self.chat: ChatProvider = ChatProvider(shared=self._shared)
 
         # TODO: Improve this hack
         self._shared.presence_provider = self.presence
         self._shared.thumbnail_provider = self.thumbnails
         self._shared.delivery_provider = self.delivery
+        self._shared.chat_provider = self.chat
 
         if token:
             self.set_token(token)
