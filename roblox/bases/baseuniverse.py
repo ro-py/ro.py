@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator
-from ..passes import Pass
+from ..gamepasses import GamePass
 
 
 class UniverseLiveStatsDevice:
@@ -107,7 +107,7 @@ class BaseUniverse:
         return UniverseLiveStats(data=stats_data)
 
     def _gamepasses_handler(self, shared: ClientSharedObject, data: dict):
-        return Pass(shared=shared, data=data)
+        return GamePass(shared=shared, data=data)
 
     def get_gamepasses(self, limit: int = 10) -> PageIterator:
         """

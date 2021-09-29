@@ -12,6 +12,7 @@ from .places import Place
 from .assets import EconomyAsset
 from .plugins import Plugin
 from .badges import Badge
+# from .gamepasses import GamePass
 
 from .presence import PresenceProvider
 from .thumbnails import ThumbnailProvider
@@ -24,6 +25,7 @@ from .bases.baseplace import BasePlace
 from .bases.baseasset import BaseAsset
 from .bases.baseplugin import BasePlugin
 from .bases.basebadge import BaseBadge
+from .bases.basegamepass import BaseGamePass
 
 from .partials.partialuser import PartialUser, RequestedUsernamePartialUser
 
@@ -497,3 +499,6 @@ class Client:
             A BaseBadge.
         """
         return BaseBadge(shared=self._shared, badge_id=badge_id)
+
+    def get_base_gamepass(self, gamepass_id: int) -> BaseGamePass:
+        return BaseGamePass(shared=self._shared, gamepass_id=gamepass_id)

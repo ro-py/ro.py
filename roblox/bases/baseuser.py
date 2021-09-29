@@ -5,11 +5,13 @@ from typing import Optional, List, TYPE_CHECKING
 from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator, SortOrder
 
+from ..bases.basegamepass import BaseGamePass
+from ..bases.baseasset import BaseAsset
 from ..bases.basebadge import BaseBadge
 from ..partials.partialbadge import PartialBadge
 
 from ..presence import Presence
-from ..assetinstance import AssetInstance
+from ..instances import ItemInstance, InstanceType, AssetInstance, BadgeInstance, GamePassInstance, instance_classes
 
 if TYPE_CHECKING:
     from ..friends import Friend
@@ -125,24 +127,43 @@ class BaseUser:
         premium_data = premium_response.text
         return premium_data == "true"
 
-    async def get_asset_instance(self, asset_id: int) -> Optional[AssetInstance]:
-        """
-        Checks if a user owns the asset, and returns details about the asset if they do.
+    async def get_item_instance(self, item_type: InstanceType, item_id: int) -> Optional[ItemInstance]:
+        item_type: str = item_type.value.lower()
+        
+        # this is so we can have special classes for other types
+        item_class = instance_classes.get(item_type) or ItemInstance
 
-        Returns:
-            An AssetInstance object containing some asset details or None.
-        """
         instance_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("inventory", f"v1/users/{self.id}/items/Asset/{asset_id}")
+            url=self._shared.url_generator.get_url("inventory", f"v1/users/{self.id}/items/{item_type}/{item_id}")
         )
         instance_data = instance_response.json()["data"]
         if len(instance_data) > 0:
-            return AssetInstance(
+            return item_class(
                 shared=self._shared,
                 data=instance_data[0]
             )
         else:
             return None
+
+    async def get_asset_instance(self, asset: BaseAsset) -> Optional[AssetInstance]:
+        """
+        Checks if a user owns the asset, and returns details about the asset if they do.
+        Returns: An AssetInstance object containing some asset details or None.
+        """
+        return await self.get_item_instance(
+            item_type=InstanceType.asset,
+            item_id=asset.id
+        )
+
+    async def get_gamepass_instance(self, gamepass: BaseGamePass) -> Optional[GamePassInstance]:
+        """
+        Checks if a user owns the gamepass, and returns details about the asset if they do.
+        Returns: A GamePassInstance object containing some details or None.
+        """
+        return await self.get_item_instance(
+            item_type=InstanceType.gamepass,
+            item_id=gamepass.id
+        )
 
     async def get_badge_awarded_dates(self, badges: list[BaseBadge]) -> List[PartialBadge]:
         """
