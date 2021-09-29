@@ -7,6 +7,7 @@ if TYPE_CHECKING:
 
 from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator
+from ..passes import Pass
 
 
 class UniverseLiveStatsDevice:
@@ -104,3 +105,18 @@ class BaseUniverse:
         )
         stats_data = stats_response.json()
         return UniverseLiveStats(data=stats_data)
+
+    def _gamepasses_handler(self, shared: ClientSharedObject, data: dict):
+        return Pass(shared=shared, data=data)
+
+    def get_gamepasses(self, limit: int = 10) -> PageIterator:
+        """
+        Gets the universe's gamepasses.
+        """
+
+        return PageIterator(
+            shared=self._shared,
+            url=self._shared.url_generator.get_url("games", f"v1/games/{self.id}/game-passes"),
+            limit=limit,
+            handler=self._gamepasses_handler,
+        )
