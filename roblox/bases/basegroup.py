@@ -1,9 +1,11 @@
 from __future__ import annotations
-from typing import Optional, List, TYPE_CHECKING, Tuple
+from typing import Optional, List, TYPE_CHECKING
 
-from ..utilities.exceptions import RoleNonexistent
+from ..utilities.exceptions import InvalidRole
 from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator
+
+from ..bases.baserole import BaseRole
 
 from ..members import Member
 from ..roles import Role
@@ -161,6 +163,7 @@ class BaseGroup:
     async def get_roles(self) -> List[Role]:
         """
         Gets all roles of the group.
+
         Returns: List of roles.
         """
         roles_response = await self._shared.requests.get(
@@ -173,17 +176,17 @@ class BaseGroup:
             group=self
         ) for role_data in roles_data["roles"]]
 
-    async def set_role(self, user: BaseUser, role_id: int) -> None:
+    async def set_role(self, user: BaseUser, role: BaseRole) -> None:
         """
         Sets a users role.
         Arguments:
             user: The user who's rank will be changed.
-            role_id: The id of the new role.
+            role: The new role.
         """
         await self._shared.requests.patch(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users/{user.id}"),
             json={
-                "roleId": role_id
+                "roleId": role.id
             }
         )
 
@@ -195,42 +198,9 @@ class BaseGroup:
             rank: The rank number to change to. (1-255)
         """
         roles = await self.get_roles()
-        member = await self.get_member(user.id)
 
-        role = next((x for x in roles if x.rank == rank), None)
+        role = next((role for role in roles if role.rank == rank), None)
         if not role:
-            raise RoleNonexistent(f"Role {rank} does not exist.")
+            raise InvalidRole(f"Role with rank number {rank} does not exist.")
 
-        await self.set_rank(user, role.id)
-
-    async def offset_role(self, user: BaseUser, offset: int) -> None:
-        """
-        Offsets a member's role by a certain number.
-        Arguments:
-            user: The user who's rank will be changed.
-            offset: How much the rank will be offset by.
-        """
-        member = await self.get_member(user.id)
-        roles = await self.get_roles()
-        role_num = next((i for i, _ in enumerate(roles) if roles[i].id == member.role.id), None)
-
-        if role_num + offset < 0:
-            raise RoleNonexistent("Role doesn't exist.")
-
-        await self.set_rank(user, roles[role_num + offset].id)
-
-    async def promote(self, user: BaseUser):
-        """
-        Offsets a member's rank by +1
-        Arguments:
-            user: The user who will be promoted.
-        """
-        await self.offset_role(user, 1)
-
-    async def demote(self, user: BaseUser):
-        """
-        Offsets a member's rank by -1
-        Arguments:
-            user: The user who will be demoted.
-        """
-        await self.offset_role(user, -1)
+        await self.set_role(user, role)

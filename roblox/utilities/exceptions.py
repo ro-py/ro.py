@@ -22,7 +22,7 @@ class HTTPStatusError(_HTTPStatusError):
         self.errors = errors
 
 
-class RoleNonexistent(Exception):
+class InvalidRole(Exception):
     """
     Raised when a role doesn't exist.
     """
