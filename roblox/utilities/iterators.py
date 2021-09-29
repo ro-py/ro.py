@@ -18,7 +18,8 @@ class SortOrder(Enum):
 
 class Iterator:
     def __init__(self):
-        pass
+        self.iterator_position = 0
+        self.iterator_items = []
 
     async def next(self):
         raise NotImplementedError
@@ -210,9 +211,22 @@ class PageNumberIterator(Iterator):
                 **self.extra_parameters
             }
         )
-        page_data = page_response.json()
+        data = page_response.json()
 
-        if len(page_data) == 0:
+        if len(data) == 0:
             raise NoMoreItems("No more items.")
 
         self.page_number += 1
+
+        if self.handler:
+            data = [
+                self.handler(
+                    shared=self._shared,
+                    data=item_data,
+                    **self.handler_kwargs
+                ) for item_data in data
+            ]
+
+        return data
+
+
