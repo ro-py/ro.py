@@ -1,21 +1,21 @@
 from ..utilities.shared import ClientSharedObject
 
 
-class BaseBadge:
+class BaseConversation:
     """
-    Represents a Roblox badge ID.
+    Represents a Roblox Conversation ID.
 
     Attributes:
         _shared: The ClientSharedObject.
-        id: The badge ID.
+        id: The conversation ID.
     """
 
-    def __init__(self, shared: ClientSharedObject, badge_id: int):
+    def __init__(self, shared: ClientSharedObject, conversation_id: int):
         """
         Arguments:
             shared: The ClientSharedObject.
-            badge_id: The badge ID.
+            conversation_id: The Conversation ID.
         """
 
         self._shared: ClientSharedObject = shared
-        self.id: int = badge_id
+        self.id: int = conversation_id

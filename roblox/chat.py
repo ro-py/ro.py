@@ -1,4 +1,6 @@
 from .utilities.shared import ClientSharedObject
+from .utilities.iterators import PageNumberIterator
+from .conversations import Conversation
 
 
 class ChatSettings:
@@ -26,3 +28,9 @@ class ChatProvider:
         settings_data = settings_response.json()
         return ChatSettings(data=settings_data)
 
+    def get_user_conversations(self):
+        return PageNumberIterator(
+            shared=self._shared,
+            url=self._shared.url_generator.get_url("chat", "v2/get-user-conversations"),
+            handler=lambda shared, data: Conversation(shared=shared, data=data)
+        )
