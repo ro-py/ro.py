@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Callable, Optional, AsyncIterator
 from enum import Enum
 from .shared import ClientSharedObject
 
@@ -16,7 +16,7 @@ class SortOrder(Enum):
     Descending = "Desc"
 
 
-class Iterator:
+class Iterator(AsyncIterator):
     def __init__(self):
         self.iterator_position = 0
         self.iterator_items = []
