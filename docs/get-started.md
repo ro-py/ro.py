@@ -8,26 +8,7 @@ client = Client()
 ```
 
 Great, we've got a client! But how can we use it?  
-We start by calling `await client.get_OBJECT()` where `OBJECT` is a Roblox datatype. Here are some examples: 
-??? example "Examples of ro.py datatypes"
-    ```python
-    # Users
-    client.get_base_user()
-    await client.get_user()
-    await client.get_users()
-    await client.get_user_by_username()
-    await client.get_users_by_username()
-    await client.get_authenticated_user()
-    await client.user_search()
-    # Groups
-    client.get_base_group()
-    await client.get_group()
-    # Universe
-    client.get_base_universe()
-    await client.get_universe()
-    await client.get_universes()
-    ```
-
+We start by calling `await client.get_OBJECT()` where `OBJECT` is a Roblox datatype, like a User, Group or Universe.
 But wait - if you tried to run code like this:
 ```python
 from roblox import Client
@@ -63,5 +44,11 @@ print("Display Name:", user.display_name)
 print("Description:", user.description)
 ```
 
-Great! We now have a program that prints out a user's name, display name, and description.
-But what if we want to log in and get our *own* username?
+Great! We now have a program that prints out a user's name, display name, and description. This same basic concept works for other kinds of objects on Roblox, like groups:
+```python
+group = await client.get_group(1)
+print("Name:", group.name)
+print("Description:", group.description)
+```
+But what if we want to send requests as if we are an actual, logged-in user browsing the site? For example, what if I wanted to change the group's shout?
+Because only users with permission to change the group shout can actually change it, we need to tell Roblox that we can change that shout by "authenticating".
