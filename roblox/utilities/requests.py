@@ -1,11 +1,12 @@
 from __future__ import annotations
-import asyncio
 
-from typing import Optional
-from httpx import AsyncClient, Response
-from json import JSONDecodeError
+import asyncio
 from datetime import datetime
+from json import JSONDecodeError
+from typing import Optional
+
 from dateutil.parser import parse
+from httpx import AsyncClient, Response
 
 from .exceptions import HTTPStatusError
 from ..utilities.url import URLGenerator
@@ -27,18 +28,14 @@ class CleanAsyncClient(AsyncClient):
             pass
 
 
-def status_code_error(status_code):
-    pass
-
-
 class Requests:
     """
     A special request object that implements special functionality required to connect to some Roblox endpoints.
 
     Attributes:
         session: Base session object to use when sending requests.
-        xcsrf_token_name: The header that will contain the Cross-Site Request Forgery token. Should be set to `X-CSRF-Token` under most circumstances.
-        xcsrf_allowed_methods: A dictionary where the keys are HTTP method types and values are whether the X-CSRF-Token should be handled for
+        xcsrf_token_name: The header that will contain the Cross-Site Request Forgery token
+        xcsrf_allowed_methods: The methods allowed for
         that method. Keys must be in lowercase.
         parse_bans: Whether to parse ban data.
         url_generator: URL generator for ban parsing.
@@ -53,7 +50,7 @@ class Requests:
     ):
         """
         Arguments:
-            session: A custom session object to use for sending requests. Must have an asynchronous, requests-like `request` function.
+            session: A custom session object to use for sending requests, compatible with httpx.AsyncClient.
             xcsrf_token_name: The header to place X-CSRF-Token data into.
             parse_bans: Whether to give extra information about a banned user.
             url_generator: URL generator for ban parsing.

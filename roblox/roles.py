@@ -1,10 +1,11 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING, Optional
 
-from .utilities.shared import ClientSharedObject
-from .utilities.iterators import PageIterator
 from .bases.baserole import BaseRole
 from .partials.partialuser import PartialUser
+from .utilities.iterators import PageIterator
+from .utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:
     from .bases.basegroup import BaseGroup

@@ -1,3 +1,9 @@
+"""
+
+This file contains the BaseGamePass object, which represents a Roblox gamepass ID.
+
+"""
+
 from ..utilities.shared import ClientSharedObject
 
 

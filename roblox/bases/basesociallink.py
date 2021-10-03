@@ -1,3 +1,9 @@
+"""
+
+This file contains the BaseUniverseSocialLink object, which represents a Roblox social link ID.
+
+"""
+
 from ..utilities.shared import ClientSharedObject
 
 

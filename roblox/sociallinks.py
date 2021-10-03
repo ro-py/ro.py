@@ -1,6 +1,7 @@
 from enum import Enum
-from .utilities.shared import ClientSharedObject
+
 from .bases.basesociallink import BaseUniverseSocialLink
+from .utilities.shared import ClientSharedObject
 
 
 class SocialLinkType(Enum):

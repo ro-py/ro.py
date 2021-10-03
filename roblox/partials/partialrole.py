@@ -1,5 +1,5 @@
-from ..utilities.shared import ClientSharedObject
 from ..bases.baserole import BaseRole
+from ..utilities.shared import ClientSharedObject
 
 
 class PartialRole(BaseRole):

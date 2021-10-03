@@ -1,3 +1,9 @@
+"""
+
+This file contains the BaseJob object, which represents a Roblox job ID.
+
+"""
+
 from ..utilities.shared import ClientSharedObject
 
 
@@ -6,7 +12,7 @@ class BaseJob:
     Represents Roblox job ID.
 
     Job IDs are UUIDs that represent a single game server instance.
-    Learn more on the Roblox Developer Hub [here](https://developer.roblox.com/en-us/api-reference/property/DataModel/JobId).
+    Learn more on the Developer Hub [here](https://developer.roblox.com/en-us/api-reference/property/DataModel/JobId).
 
     Attributes:
         _shared: The ClientSharedObject.

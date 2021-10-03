@@ -1,4 +1,11 @@
+"""
+
+This file contains the BaseAsset object, which represents a Roblox asset ID.
+
+"""
+
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from ..utilities.shared import ClientSharedObject

@@ -1,9 +1,9 @@
 from typing import List
 
-from .utilities.shared import ClientSharedObject
 from .bases.basejob import BaseJob
 from .bases.baseplace import BasePlace
 from .bases.baseuser import BaseUser
+from .utilities.shared import ClientSharedObject
 
 
 class GameInstancePlayerThumbnail:

@@ -1,13 +1,19 @@
+"""
+
+This file contains the BaseRobloxBadge object, which represents a Roblox roblox badge ID.
+
+"""
+
 from ..utilities.shared import ClientSharedObject
 
 
 class BaseRobloxBadge:
     """
-    Represents a Roblox roblox_badge ID.
+    Represents a Roblox Roblox badge ID.
 
     Attributes:
         _shared: The ClientSharedObject.
-        id: The roblox_badge ID.
+        id: The Roblox Badge ID.
     """
 
     def __init__(self, shared: ClientSharedObject, roblox_badge_id: int):

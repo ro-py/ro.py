@@ -1,14 +1,20 @@
+"""
+
+This file contains the BaseGroup object, which represents a Roblox group ID.
+It also contains the GroupSettings object, which represents a group's settings.
+
+"""
+
 from __future__ import annotations
+
 from typing import Optional, List, TYPE_CHECKING
 
-from ..utilities.exceptions import InvalidRole
-from ..utilities.shared import ClientSharedObject
-from ..utilities.iterators import PageIterator
-
 from ..bases.baserole import BaseRole
-
 from ..members import Member
 from ..roles import Role
+from ..utilities.exceptions import InvalidRole
+from ..utilities.iterators import PageIterator
+from ..utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:
     from ..groups import Group
@@ -55,7 +61,6 @@ class BaseGroup:
         _shared: The ClientSharedObject.
         _requests: The requests object.
         id: The group's ID.
-        shout: The group's current shout, if present.
     """
 
     def __init__(self, shared: ClientSharedObject, group_id: int):

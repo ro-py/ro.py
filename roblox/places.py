@@ -1,7 +1,6 @@
-from .utilities.shared import ClientSharedObject
-
 from .bases.baseplace import BasePlace
 from .bases.baseuniverse import BaseUniverse
+from .utilities.shared import ClientSharedObject
 
 
 class Place(BasePlace):

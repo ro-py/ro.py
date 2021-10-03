@@ -1,14 +1,14 @@
-from typing import Optional, List, Union
 from datetime import datetime
-from dateutil.parser import parse
 from enum import Enum
+from typing import Optional, List, Union
 
+from dateutil.parser import parse
+
+from .bases.baseuniverse import BaseUniverse
 from .partials.partialgroup import UniversePartialGroup
 from .partials.partialuser import PartialUser
 from .sharedenums import CreatorType
 from .utilities.shared import ClientSharedObject
-
-from .bases.baseuniverse import BaseUniverse
 
 
 class UniverseAvatarType(Enum):

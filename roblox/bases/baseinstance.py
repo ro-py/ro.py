@@ -1,3 +1,9 @@
+"""
+
+This file contains the BaseInstance object, which represents a Roblox instance ID.
+
+"""
+
 from ..utilities.shared import ClientSharedObject
 
 

@@ -1,3 +1,9 @@
+"""
+
+Contains exceptions used by ro.py.
+
+"""
+
 from httpx import HTTPStatusError as _HTTPStatusError, Request, Response
 
 

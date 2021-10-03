@@ -1,34 +1,52 @@
+"""
+
+Contains the Client, which is the core object at the center of all ro.py applications.
+
+"""
+
 from typing import Union, Optional, List
 
-from .utilities.shared import ClientSharedObject
-from .utilities.url import URLGenerator
-from .utilities.requests import Requests
-from .utilities.iterators import PageIterator
-
-from .users import User
-from .groups import Group
-from .universes import Universe
-from .places import Place
 from .assets import EconomyAsset
-from .plugins import Plugin
 from .badges import Badge
-# from .gamepasses import GamePass
-
-from .presence import PresenceProvider
-from .thumbnails import ThumbnailProvider
-from .delivery import DeliveryProvider
-from .chat import ChatProvider
-
-from .bases.baseuser import BaseUser
-from .bases.basegroup import BaseGroup
-from .bases.baseuniverse import BaseUniverse
-from .bases.baseplace import BasePlace
 from .bases.baseasset import BaseAsset
-from .bases.baseplugin import BasePlugin
 from .bases.basebadge import BaseBadge
 from .bases.basegamepass import BaseGamePass
-
+from .bases.basegroup import BaseGroup
+from .bases.baseplace import BasePlace
+from .bases.baseplugin import BasePlugin
+from .bases.baseuniverse import BaseUniverse
+from .bases.baseuser import BaseUser
+from .chat import ChatProvider
+from .delivery import DeliveryProvider
+from .groups import Group
 from .partials.partialuser import PartialUser, RequestedUsernamePartialUser
+from .places import Place
+from .plugins import Plugin
+from .presence import PresenceProvider
+from .thumbnails import ThumbnailProvider
+from .universes import Universe
+from .users import User
+from .utilities.iterators import PageIterator
+from .utilities.requests import Requests
+from .utilities.shared import ClientSharedObject
+from .utilities.url import URLGenerator
+
+
+# from .gamepasses import GamePass
+
+
+def _user_search_handler(shared: ClientSharedObject, data: dict) -> RequestedUsernamePartialUser:
+    """
+    Handler for converting data from users/v1/users/search to a RequestedUsernamePartialUser.
+
+    Arguments:
+        shared: A ClientSharedObject to pass to the output object.
+        data: One item from users/v1/users/search.
+
+    Returns:
+        A RequestedUsernamePartialUser.
+    """
+    return RequestedUsernamePartialUser(shared=shared, data=data)
 
 
 class Client:
@@ -50,7 +68,7 @@ class Client:
         Arguments:
             token: A .ROBLOSECURITY token to authenticate the client with.
             base_url: The base URL to use when sending requests.
-            parse_bans: Whether to show parsed ban messages in errors. Turn this off if you want to keep ban information hidden.
+            parse_bans: Whether to show parsed ban messages in errors.
         """
         self._url_generator: URLGenerator = URLGenerator(base_url=base_url)
         self._requests: Requests = Requests(
@@ -226,19 +244,6 @@ class Client:
         """
         return BaseUser(shared=self._shared, user_id=user_id)
 
-    def _user_search_handler(self, shared: ClientSharedObject, data: dict) -> RequestedUsernamePartialUser:
-        """
-        Handler for converting data from users/v1/users/search to a RequestedUsernamePartialUser.
-
-        Arguments:
-            shared: A ClientSharedObject to pass to the output object.
-            data: One item from users/v1/users/search.
-
-        Returns:
-            A RequestedUsernamePartialUser.
-        """
-        return RequestedUsernamePartialUser(shared=shared, data=data)
-
     def user_search(self, keyword: str, limit: int = 10) -> PageIterator:
         """
         Search for users with a keyword.
@@ -255,7 +260,7 @@ class Client:
             url=self._shared.url_generator.get_url("users", f"v1/users/search"),
             limit=limit,
             extra_parameters={"keyword": keyword},
-            handler=self._user_search_handler,
+            handler=_user_search_handler,
         )
 
     async def get_group(self, group_id: int) -> Group:
@@ -505,4 +510,12 @@ class Client:
         return BaseBadge(shared=self._shared, badge_id=badge_id)
 
     def get_base_gamepass(self, gamepass_id: int) -> BaseGamePass:
+        """
+        Gets a base gamepass.
+
+        Arguments:
+            gamepass_id: A Roblox gamepass ID.
+
+        Returns: A BaseGamePass.
+        """
         return BaseGamePass(shared=self._shared, gamepass_id=gamepass_id)

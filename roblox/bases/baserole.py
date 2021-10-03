@@ -1,3 +1,9 @@
+"""
+
+This file contains the BaseRole object, which represents a Roblox role ID.
+
+"""
+
 from ..utilities.shared import ClientSharedObject
 
 

@@ -1,19 +1,23 @@
+"""
+
+This file contains the BaseUser object, which represents a Roblox user ID.
+
+"""
+
 from __future__ import annotations
 
 from typing import Optional, List, TYPE_CHECKING
 
-from ..utilities.shared import ClientSharedObject
-from ..utilities.iterators import PageIterator, SortOrder
-
-from ..bases.basegamepass import BaseGamePass
 from ..bases.baseasset import BaseAsset
 from ..bases.basebadge import BaseBadge
+from ..bases.basegamepass import BaseGamePass
+from ..instances import ItemInstance, InstanceType, AssetInstance, GamePassInstance, instance_classes
 from ..partials.partialbadge import PartialBadge
-
 from ..presence import Presence
-from ..instances import ItemInstance, InstanceType, AssetInstance, BadgeInstance, GamePassInstance, instance_classes
-from ..robloxbadges import RobloxBadge
 from ..promotionchannels import UserPromotionChannels
+from ..robloxbadges import RobloxBadge
+from ..utilities.iterators import PageIterator, SortOrder
+from ..utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:
     from ..friends import Friend
@@ -130,8 +134,18 @@ class BaseUser:
         return premium_data == "true"
 
     async def get_item_instance(self, item_type: InstanceType, item_id: int) -> Optional[ItemInstance]:
+        """
+        Gets an item instance for a specific user.
+
+        Arguments:
+            item_type: The type of item to get an instance for.
+            item_id: The item's ID.
+
+        Returns: An ItemInstance, or None.
+        """
+
         item_type: str = item_type.value.lower()
-        
+
         # this is so we can have special classes for other types
         item_class = instance_classes.get(item_type) or ItemInstance
 
@@ -187,6 +201,11 @@ class BaseUser:
         ]
 
     async def get_group_roles(self) -> List[Role]:
+        """
+        Gets the group's roles.
+
+        Returns: A list of the group's roles.
+        """
         from ..roles import Role
         from ..groups import Group
         roles_response = await self._shared.requests.get(
@@ -205,6 +224,12 @@ class BaseUser:
         ]
 
     async def get_roblox_badges(self) -> List[RobloxBadge]:
+        """
+        Gets the user's Roblox badges.
+
+        Returns: A lsit of Roblox badges.
+        """
+
         badges_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("accountinformation", f"v1/users/{self.id}/roblox-badges")
         )
@@ -212,6 +237,11 @@ class BaseUser:
         return [RobloxBadge(shared=self._shared, data=badge_data) for badge_data in badges_data]
 
     async def get_promotion_channels(self) -> UserPromotionChannels:
+        """
+        Gets the user's promotion channels.
+
+        Returns: The user's promotion channels.
+        """
         channels_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("accountinformation", f"v1/users/{self.id}/promotion-channels")
         )

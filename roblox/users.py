@@ -1,9 +1,9 @@
 from datetime import datetime
+
 from dateutil.parser import parse
 
-from .utilities.shared import ClientSharedObject
-
 from .bases.baseuser import BaseUser
+from .utilities.shared import ClientSharedObject
 
 
 class User(BaseUser):

@@ -1,5 +1,6 @@
-from typing import Callable, Optional, AsyncIterator
 from enum import Enum
+from typing import Callable, Optional, AsyncIterator
+
 from .shared import ClientSharedObject
 
 
@@ -228,5 +229,3 @@ class PageNumberIterator(Iterator):
             ]
 
         return data
-
-

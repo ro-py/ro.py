@@ -1,3 +1,9 @@
+"""
+
+This file contains the BaseBadge object, which represents a Roblox badge ID.
+
+"""
+
 from ..utilities.shared import ClientSharedObject
 
 

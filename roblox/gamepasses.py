@@ -1,9 +1,27 @@
+"""
+
+Contains classes related to Roblox gamepass data and parsing.
+
+"""
+
 from typing import Optional
+
 from .bases.basegamepass import BaseGamePass
 from .utilities.shared import ClientSharedObject
 
 
 class GamePass(BaseGamePass):
+    """
+    Represents a Roblox gamepass.
+
+    Attributes:
+        _shared: The shared object.
+        id: The gamepass ID.
+        name: The gamepass name.
+        display_name: The gamepass display name.
+        price: The gamepass price.
+    """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
         self.id: int = data["id"]

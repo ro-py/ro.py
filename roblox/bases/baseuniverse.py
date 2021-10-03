@@ -1,3 +1,10 @@
+"""
+
+This file contains the BaseUniverse object, which represents a Roblox universe ID.
+It also contains the UniverseLiveStats object, which represents a universe's live stats.
+
+"""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Dict, List
@@ -11,26 +18,19 @@ from ..gamepasses import GamePass
 from ..sociallinks import UniverseSocialLink
 
 
-class UniverseLiveStatsDevice:
-    def __init__(self, name: str, count: int):
-        self.name: str = name
-        self.count: int = count
-
-
 class UniverseLiveStats:
+    """
+    Represents a universe's live stats.
+    """
+
     def __init__(self, data: dict):
         self.total_player_count: int = data["totalPlayerCount"]
         self.game_count: int = data["gameCount"]
         self.player_counts_by_device_type: Dict[str, int] = data["playerCountsByDeviceType"]
 
-        # todo: debate whether this is something we should do 👇👇👇
-        """
-        self.player_counts = [
-            UniverseLiveStatsDevice(
-                name=name,
-                count=count
-            ) for name, count in data["playerCountsByDeviceType"].items()
-        ]"""
+
+def _gamepasses_handler(shared: ClientSharedObject, data: dict):
+    return GamePass(shared=shared, data=data)
 
 
 class BaseUniverse:
@@ -98,17 +98,13 @@ class BaseUniverse:
     async def get_live_stats(self) -> UniverseLiveStats:
         """
         Gets the universe's live stats.
-        These won't actually update live - these are just the stats that are shown on the Roblox website's live stats display.
-        Call this method on a regular basis to get updated information.
+        This data does not update live. These are just the stats that are shown on the website's live stats display.
         """
         stats_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("develop", f"v1/universes/{self.id}/live-stats")
         )
         stats_data = stats_response.json()
         return UniverseLiveStats(data=stats_data)
-
-    def _gamepasses_handler(self, shared: ClientSharedObject, data: dict):
-        return GamePass(shared=shared, data=data)
 
     def get_gamepasses(self, limit: int = 10) -> PageIterator:
         """
@@ -119,10 +115,18 @@ class BaseUniverse:
             shared=self._shared,
             url=self._shared.url_generator.get_url("games", f"v1/games/{self.id}/game-passes"),
             limit=limit,
-            handler=self._gamepasses_handler,
+            handler=_gamepasses_handler,
         )
 
     async def get_social_links(self) -> List[UniverseSocialLink]:
+        """
+
+        Gets a universe's social links;
+
+        Returns: A list of the universe's social links.
+
+        """
+
         links_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("games", f"v1/games/{self.id}/social-links/list")
         )

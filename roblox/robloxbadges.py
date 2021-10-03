@@ -1,5 +1,5 @@
-from .utilities.shared import ClientSharedObject
 from .bases.baserobloxbadge import BaseRobloxBadge
+from .utilities.shared import ClientSharedObject
 
 
 class RobloxBadge(BaseRobloxBadge):

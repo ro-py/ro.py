@@ -1,7 +1,5 @@
 from enum import Enum
 from typing import Optional, List
-from datetime import datetime
-from dateutil.parser import parse
 
 from .utilities.shared import ClientSharedObject
 
@@ -105,7 +103,7 @@ class UniverseThumbnails:
 
 class ThumbnailProvider:
     """
-    The ThumbnailProvider is an object that represents https://thumbnails.roblox.com/ and provides multiple functions for generating user thumbnails.
+    The ThumbnailProvider that provides multiple functions for generating user thumbnails.
 
     Attributes:
         _shared: The shared object, which is passed to all objects this client generates.
@@ -220,7 +218,7 @@ class ThumbnailProvider:
         Returns bundle thumbnails for each bundle ID passed.
 
         Arguments:
-            badge_ids: Id of the badge you want the thumbnails of.
+            bundle_ids: Id of the bundles you want the thumbnails of.
             size: size of the image.
             format: Format of the image.
             is_circular: if the image is a circle yes or no.

@@ -1,11 +1,10 @@
 from enum import Enum
-from .utilities.shared import ClientSharedObject
 
 from .bases.baseasset import BaseAsset
 from .bases.basebadge import BaseBadge
 from .bases.basegamepass import BaseGamePass
-
 from .bases.baseinstance import BaseInstance
+from .utilities.shared import ClientSharedObject
 
 
 class InstanceType(Enum):

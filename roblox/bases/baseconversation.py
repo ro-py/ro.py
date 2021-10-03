@@ -1,3 +1,9 @@
+"""
+
+This file contains the BaseConversation object, which represents a Roblox conversation ID.
+
+"""
+
 from ..utilities.shared import ClientSharedObject
 
 

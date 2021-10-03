@@ -1,11 +1,11 @@
-from typing import Optional, List
 from datetime import datetime
+from typing import Optional, List
+
 from dateutil.parser import parse
 
-from .utilities.shared import ClientSharedObject
-
-from .bases.baseuniverse import BaseUniverse
 from .bases.baseplace import BasePlace
+from .bases.baseuniverse import BaseUniverse
+from .utilities.shared import ClientSharedObject
 
 
 class Presence:
@@ -61,7 +61,8 @@ class Presence:
 
 class PresenceProvider:
     """
-    The PresenceProvider is an object that represents https://presence.roblox.com/ and provides multiple functions for fetching user presence information.
+    The PresenceProvider provides multiple functions for fetching user presence information.
+
     Attributes:
         _shared: The shared object, which is passed to all objects this client generates.
     """

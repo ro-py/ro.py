@@ -1,6 +1,11 @@
-from ..utilities.shared import ClientSharedObject
+"""
+
+This file contains the BasePlace object, which represents a Roblox place ID.
+
+"""
 
 from ..bases.baseasset import BaseAsset
+from ..utilities.shared import ClientSharedObject
 
 
 class BasePlace(BaseAsset):

@@ -1,10 +1,15 @@
+"""
+
+Contains classes related to Roblox group data and parsing.
+
+"""
+
 from typing import Optional, Tuple
 
-from .utilities.shared import ClientSharedObject
-from .partials.partialuser import PartialUser
 from .bases.basegroup import BaseGroup
-
+from .partials.partialuser import PartialUser
 from .shout import Shout
+from .utilities.shared import ClientSharedObject
 
 
 class Group(BaseGroup):

@@ -1,6 +1,6 @@
-from ..utilities.shared import ClientSharedObject
 from ..bases.basegroup import BaseGroup
 from ..bases.baseuser import BaseUser
+from ..utilities.shared import ClientSharedObject
 
 
 class AssetPartialGroup(BaseGroup):

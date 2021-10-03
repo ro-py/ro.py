@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
-from .partials.partialuser import PartialUser
 from .partials.partialrole import PartialRole
+from .partials.partialuser import PartialUser
 from .utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:

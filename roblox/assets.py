@@ -1,15 +1,19 @@
-from enum import Enum
-from typing import Union, Optional
+"""
+
+This module contains classes intended to parse and deal with data from Roblox asset information endpoints.
+
+"""
+
 from datetime import datetime
+from typing import Union, Optional
+
 from dateutil.parser import parse
 
+from .bases.baseasset import BaseAsset
+from .partials.partialgroup import AssetPartialGroup
+from .partials.partialuser import PartialUser
 from .sharedenums import CreatorType
 from .utilities.shared import ClientSharedObject
-
-from .partials.partialuser import PartialUser
-from .partials.partialgroup import AssetPartialGroup
-
-from .bases.baseasset import BaseAsset
 
 asset_type_names = {
     1: "Image",
@@ -97,7 +101,7 @@ class AssetType:
         """
         Arguments:
             shared: Shared object.
-            type_id: Id of the type?
+            type_id: Type ID.
         """
         self._shared: ClientSharedObject = shared
 

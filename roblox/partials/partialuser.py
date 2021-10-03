@@ -1,5 +1,5 @@
-from ..utilities.shared import ClientSharedObject
 from ..bases.baseuser import BaseUser
+from ..utilities.shared import ClientSharedObject
 
 
 class PartialUser(BaseUser):

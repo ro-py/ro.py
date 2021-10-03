@@ -1,12 +1,17 @@
+"""
+
+This module contains classes intended to parse and deal with data from Roblox badge information endpoints.
+
+"""
+
 from datetime import datetime
+
 from dateutil.parser import parse
 
-from .utilities.shared import ClientSharedObject
-
-from .partials.partialuniverse import PartialUniverse
-
-from .bases.basebadge import BaseBadge
 from .bases.baseasset import BaseAsset
+from .bases.basebadge import BaseBadge
+from .partials.partialuniverse import PartialUniverse
+from .utilities.shared import ClientSharedObject
 
 
 class BadgeStatistics:
@@ -14,7 +19,7 @@ class BadgeStatistics:
     Attributes:
         past_day_awarded_count: How many instances of this badge were awarded in the last day.
         awarded_count: How many instances of this badge have been awarded.
-        win_rate_percentage: Percentage of how many users who have joined the parent universe have been awarded this badge.
+        win_rate_percentage: Percentage of players who have joined the parent universe have been awarded this badge.
     """
 
     def __init__(self, shared: ClientSharedObject, data: dict):

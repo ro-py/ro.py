@@ -1,6 +1,11 @@
-from ..utilities.shared import ClientSharedObject
+"""
+
+This file contains the BasePlugin object, which represents a Roblox plugin ID.
+
+"""
 
 from .baseasset import BaseAsset
+from ..utilities.shared import ClientSharedObject
 
 
 class BasePlugin(BaseAsset):
