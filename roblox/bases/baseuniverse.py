@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict
+from typing import TYPE_CHECKING, Dict, List
 
 if TYPE_CHECKING:
     from ..badges import Badge
@@ -8,6 +8,7 @@ if TYPE_CHECKING:
 from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator
 from ..gamepasses import GamePass
+from ..sociallinks import UniverseSocialLink
 
 
 class UniverseLiveStatsDevice:
@@ -120,3 +121,10 @@ class BaseUniverse:
             limit=limit,
             handler=self._gamepasses_handler,
         )
+
+    async def get_social_links(self) -> List[UniverseSocialLink]:
+        links_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("games", f"v1/games/{self.id}/social-links/list")
+        )
+        links_data = links_response.json()["data"]
+        return [UniverseSocialLink(shared=self._shared, data=link_data) for link_data in links_data]

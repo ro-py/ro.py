@@ -13,6 +13,7 @@ from ..partials.partialbadge import PartialBadge
 from ..presence import Presence
 from ..instances import ItemInstance, InstanceType, AssetInstance, BadgeInstance, GamePassInstance, instance_classes
 from ..robloxbadges import RobloxBadge
+from ..promotionchannels import UserPromotionChannels
 
 if TYPE_CHECKING:
     from ..friends import Friend
@@ -209,3 +210,12 @@ class BaseUser:
         )
         badges_data = badges_response.json()
         return [RobloxBadge(shared=self._shared, data=badge_data) for badge_data in badges_data]
+
+    async def get_promotion_channels(self) -> UserPromotionChannels:
+        channels_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("accountinformation", f"v1/users/{self.id}/promotion-channels")
+        )
+        channels_data = channels_response.json()
+        return UserPromotionChannels(
+            data=channels_data
+        )
