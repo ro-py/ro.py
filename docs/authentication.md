@@ -5,21 +5,23 @@ Every single time your computer asks Roblox to do anything - for example, "give 
 
 Let's say you're asking Roblox to give you a list of your friends. It'll look at that token and know who you are, and can use that to give you your friends list.
 
-```mermaid
-sequenceDiagram
-    participant Client
-    participant Server
-    Client->>Server: Hello, can I log in? Here's my username and password.
-    Note left of Server: Server makes a token and stores it, and then gives it to the client.
-    Server->>Client: Okay! Here's your token.
-    Note right of Client: Token is stored in the cookies.
-    Client->>Server: Hello! Can you give me a list of my friends? Here is my cookie.
-    Note left of Server: Server sees token in cookies and uses it to get their friend list.
-    Server->>Client: Okay! Here is your friends list.
-```
+??? info "Diagram explaining client-server communication"
+    ```mermaid
+        sequenceDiagram
+        participant Client
+        participant Server
+        Client->>Server: Hello, can I log in? Here's my username and password.
+        Note left of Server: Server makes a token and stores it, and then gives it to the client.
+        Server->>Client: Okay! Here's your token.
+        Note right of Client: Token is stored in the cookies.
+        Client->>Server: Hello! Can you give me a list of my friends? Here is my cookie.
+        Note left of Server: Server sees token in cookies and uses it to get their friend list.
+        Server->>Client: Okay! Here is your friends list.
+    ```
 
 When you log out, that token is invalidated. Even if the client holds on to the token, it won't be valid after logging out.
 
+??? info "Diagram explaining logging out"
 ```mermaid
 sequenceDiagram
     participant Client
@@ -34,22 +36,21 @@ sequenceDiagram
 ```
 
 This token is called the `.ROBLOSECURITY` token and you will need one to do anything that you need to be logged in to do on Roblox, including:  
-
-- getting information about yourself (name, description, id, etc)  
+- getting information about yourself (name, description, ID, etc)  
 - changing avatar  
 - getting friends list  
 - playing games  
 
-With ro.py, we're going to skip actually asking the server to log us in.
-We're just going to log in on the Roblox website and then copy the cookie from our web browser and use it in our code.  
-
 !!! danger
-    Make sure you do not share this token! Anyone with the token essentially has full access to your account.
+    You may have heard of this token before and have been told that you should never, under any circumstances, share this token with anyone - and this is true! This token does give an attacker access to your Roblox account, but they will still need to solve all the same 2-factor, PIN, captcha, and password prompts that they normally do.
+    We recommend using some sort of alternate account with only the permissions it needs to reduce the destruction a possible attacker can do.
+
+We're going to skip asking the server to log us in. We're just going to log in on the Roblox website and then copy the cookie from our web browser and use it in our code.  
 
 !!! warning
-    As stated earlier, pressing the "Log out" button invalidates your token, so you should not press this button after grabbing your token.
+    Pressing the "Log out" button on the Roblox website invalidates your token, so you should not press this button after grabbing your token. Use a private window and close it afterwards to avoid pressing this button.
 
-To grab your .ROBLOSECURITY cookie, follow the instructions below for your web browser.
+To grab your .ROBLOSECURITY cookie, log into your account and follow the instructions below.
 
 === "Chrome/Chromium-based"
     You can access the cookie by going to https://www.roblox.com/, pressing the padlock icon next to the URL in your
