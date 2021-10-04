@@ -1,3 +1,9 @@
+"""
+
+This file contains partial objects related to Roblox universes.
+
+"""
+
 from ..bases.baseplace import BasePlace
 from ..bases.baseuniverse import BaseUniverse
 from ..utilities.shared import ClientSharedObject

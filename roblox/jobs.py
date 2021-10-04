@@ -1,3 +1,9 @@
+"""
+
+This module contains classes intended to parse and deal with data from Roblox server instance (or "job") endpoints.
+
+"""
+
 from typing import List
 
 from .bases.basejob import BaseJob
@@ -40,6 +46,28 @@ class GameInstancePlayer(BaseUser):
 
 
 class GameInstance(BaseJob):
+    """
+    Represents a game (or place) instance, or "job".
+
+    Attributes:
+        _shared: The shared object.
+        id: The instance's job ID.
+        capacity: The server's capacity.
+        ping: The server's ping.
+        fps: The server's FPS.
+        show_slow_game_message: Whether to show the "slow game" message.
+        place: The server's place.
+        current_players: A list of the players in this server.
+        can_join: Whether the authenticated user can join this server.
+        show_shutdown_button: Whether to show the shutdown button on this server.
+        friends_description: What text should be shown if this server is a "friends are in" server.
+        friends_mouseover: What text should be shown on mouseover if this server is a "friends are in" server.
+        capacity_message: The server's capacity as a parsed message.
+        join_script: JavaScript code that, when evaluated on a /games page on the Roblox website, launches this game.
+        app_join_script: JavaScript code that, when evaluated on a /games page on the Roblox website, launches this game
+                         through the Roblox mobile app.
+    """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
         self.id: str = data["Guid"]
@@ -70,6 +98,17 @@ class GameInstance(BaseJob):
 
 
 class GameInstances:
+    """
+    Represents a game/place's active server instances.
+
+    Attributes:
+        place: The place.
+        show_shutdown_all_button: Whether to show the "Shutdown All" button on the server list.
+        is_game_instance_list_unavailable: Whether the list is unavailable.
+        collection: A list of the game instances.
+        total_collection_size: How many active servers there are.
+    """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
 

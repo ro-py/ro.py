@@ -1,6 +1,13 @@
+"""
+
+This module contains the ClientSharedObject, which is shared between the client and all objects it generates.
+
+"""
+
+
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from .requests import Requests
 from .url import URLGenerator
@@ -37,7 +44,7 @@ class ClientSharedObject:
         self.client: Client = client
         self.requests: Requests = requests
         self.url_generator: URLGenerator = url_generator
-        self.presence_provider: PresenceProvider
-        self.thumbnail_provider: ThumbnailProvider
-        self.delivery_provider: DeliveryProvider
-        self.chat_provider: ChatProvider
+        self.presence_provider: Optional[PresenceProvider] = None
+        self.thumbnail_provider: Optional[ThumbnailProvider] = None
+        self.delivery_provider: Optional[DeliveryProvider] = None
+        self.chat_provider: Optional[ChatProvider] = None

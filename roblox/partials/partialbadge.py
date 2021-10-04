@@ -1,3 +1,10 @@
+"""
+
+This file contains partial objects related to Roblox badges.
+
+"""
+
+
 from datetime import datetime
 
 from dateutil.parser import parse

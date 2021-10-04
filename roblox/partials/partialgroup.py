@@ -1,3 +1,9 @@
+"""
+
+This file contains partial objects related to Roblox groups.
+
+"""
+
 from ..bases.basegroup import BaseGroup
 from ..bases.baseuser import BaseUser
 from ..utilities.shared import ClientSharedObject

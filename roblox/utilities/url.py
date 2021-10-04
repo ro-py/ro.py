@@ -1,3 +1,9 @@
+"""
+
+This module contains functions and objects used internally by ro.py to generate URLs.
+
+"""
+
 root_site = "roblox.com"
 cdn_site = "rbxcdn.com"
 

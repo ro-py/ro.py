@@ -1,3 +1,10 @@
+"""
+
+Contains shared enums.
+fixme: this should be deprecated!
+
+"""
+
 from enum import Enum
 
 

@@ -1,3 +1,9 @@
+"""
+
+This module contains classes intended to parse and deal with data from Roblox presence endpoints.
+
+"""
+
 from datetime import datetime
 from typing import Optional, List
 

@@ -1,3 +1,9 @@
+"""
+
+This module contains iterators used internally by ro.py to provide paginated information.
+
+"""
+
 from enum import Enum
 from typing import Callable, Optional, AsyncIterator
 
@@ -5,6 +11,9 @@ from .shared import ClientSharedObject
 
 
 class NoMoreItems(Exception):
+    """
+    Raised when there are no more items left to iterate through.
+    """
     pass
 
 
@@ -18,17 +27,25 @@ class SortOrder(Enum):
 
 
 class Iterator(AsyncIterator):
+    """
+    Represents a basic iterator which all iterators should implement.
+    """
     def __init__(self):
         self.iterator_position = 0
         self.iterator_items = []
 
     async def next(self):
+        """
+        Moves to the next page and returns that page's data.
+        """
+
         raise NotImplementedError
 
     async def flatten(self) -> list:
         """
         Flattens the data into a list.
         """
+
         items: list = []
 
         while True:
@@ -179,6 +196,10 @@ class PageIterator(Iterator):
 
 
 class PageNumberIterator(Iterator):
+    """
+    Represents an iterator that is advanced with page numbers and sizes, like those seen on chat.roblox.com.
+    """
+
     def __init__(
             self,
             shared: ClientSharedObject,
@@ -204,6 +225,9 @@ class PageNumberIterator(Iterator):
         self.iterator_items = []
 
     async def next(self):
+        """
+        Advances the iterator to the next page.
+        """
         page_response = await self._shared.requests.get(
             url=self.url,
             params={

@@ -1,3 +1,9 @@
+"""
+
+This module contains classes intended to parse and deal with data from Roblox promotion channel endpoints.
+
+"""
+
 from typing import Optional
 
 

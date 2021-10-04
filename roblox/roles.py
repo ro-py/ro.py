@@ -1,3 +1,9 @@
+"""
+
+This module contains classes intended to parse and deal with data from Roblox group role endpoints.
+
+"""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional

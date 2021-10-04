@@ -1,3 +1,9 @@
+"""
+
+This module contains classes intended to parse and deal with data from Roblox universe information endpoints.
+
+"""
+
 from datetime import datetime
 from enum import Enum
 from typing import Optional, List, Union

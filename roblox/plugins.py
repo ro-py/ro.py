@@ -1,3 +1,9 @@
+"""
+
+This module contains classes intended to parse and deal with data from Roblox plugin information endpoints.
+
+"""
+
 from datetime import datetime
 
 from dateutil.parser import parse

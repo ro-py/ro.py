@@ -1,8 +1,23 @@
+"""
+
+This file contains partial objects related to Roblox group roles.
+
+"""
+
 from ..bases.baserole import BaseRole
 from ..utilities.shared import ClientSharedObject
 
 
 class PartialRole(BaseRole):
+    """
+    Represents partial role information.
+
+    Attributes:
+        _shared: The shared object.
+        id: The role's ID.
+        name: The role's name.
+        rank: The role's rank ID.
+    """
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
 

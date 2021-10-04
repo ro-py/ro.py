@@ -1,3 +1,9 @@
+"""
+
+This module contains classes intended to parse and deal with data from Roblox item instance information endpoints.
+
+"""
+
 from enum import Enum
 
 from .bases.baseasset import BaseAsset
@@ -8,6 +14,9 @@ from .utilities.shared import ClientSharedObject
 
 
 class InstanceType(Enum):
+    """
+    Represents an asset instance type.
+    """
     asset = "Asset"
     gamepass = "GamePass"
     # badge = "Badge"
@@ -15,6 +24,8 @@ class InstanceType(Enum):
 
 class ItemInstance(BaseInstance):
     """
+    Represents an instance of a Roblox item of some kind.
+
     Attributes:
         _shared: The shared object, which is passed to all objects this client generates.
     """
@@ -34,6 +45,10 @@ class ItemInstance(BaseInstance):
 
 
 class AssetInstance(ItemInstance):
+    """
+    Represents an instance of a Roblox asset.
+    """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
         super().__init__(shared=self._shared, data=data)
@@ -42,6 +57,10 @@ class AssetInstance(ItemInstance):
 
 
 class BadgeInstance(ItemInstance):
+    """
+    Represents an instance of a Roblox badge.
+    """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
         super().__init__(shared=self._shared, data=data)
@@ -50,6 +69,10 @@ class BadgeInstance(ItemInstance):
 
 
 class GamePassInstance(ItemInstance):
+    """
+    Represents an instance of a Roblox gamepass.
+    """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
         super().__init__(shared=self._shared, data=data)

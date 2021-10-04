@@ -1,3 +1,9 @@
+"""
+
+This module contains classes used internally by ro.py for sending requests to Roblox endpoints.
+
+"""
+
 from __future__ import annotations
 
 import asyncio

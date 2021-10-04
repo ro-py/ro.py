@@ -33,6 +33,12 @@ def _gamepasses_handler(shared: ClientSharedObject, data: dict):
     return GamePass(shared=shared, data=data)
 
 
+def _universe_badges_handler(shared: ClientSharedObject, data: dict) -> Badge:
+    from ..badges import Badge  # Fixme 🥺🥺🥺
+
+    return Badge(shared=shared, data=data)
+
+
 class BaseUniverse:
     """
     Represents a Roblox universe ID.
@@ -78,11 +84,6 @@ class BaseUniverse:
         is_favorited_data = is_favorited_response.json()
         return is_favorited_data["isFavorited"]
 
-    def _universe_badges_handler(self, shared: ClientSharedObject, data: dict) -> Badge:
-        from ..badges import Badge  # Fixme 🥺🥺🥺
-
-        return Badge(shared=shared, data=data)
-
     def get_badges(self, limit: int = 10) -> PageIterator:
         """
         Gets the universe's badges.
@@ -92,7 +93,7 @@ class BaseUniverse:
             shared=self._shared,
             url=self._shared.url_generator.get_url("badges", f"v1/universes/{self.id}/badges"),
             limit=limit,
-            handler=self._universe_badges_handler,
+            handler=_universe_badges_handler,
         )
 
     async def get_live_stats(self) -> UniverseLiveStats:

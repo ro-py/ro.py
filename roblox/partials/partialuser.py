@@ -1,3 +1,9 @@
+"""
+
+This file contains partial objects related to Roblox users.
+
+"""
+
 from ..bases.baseuser import BaseUser
 from ..utilities.shared import ClientSharedObject
 

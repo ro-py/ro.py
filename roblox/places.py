@@ -1,3 +1,9 @@
+"""
+
+This module contains classes intended to parse and deal with data from Roblox place information endpoints.
+
+"""
+
 from .bases.baseplace import BasePlace
 from .bases.baseuniverse import BaseUniverse
 from .utilities.shared import ClientSharedObject

@@ -1,3 +1,9 @@
+"""
+
+Contains objects related to Roblox thumbnails.
+
+"""
+
 from enum import Enum
 from typing import Optional, List
 
@@ -333,6 +339,7 @@ class ThumbnailProvider:
             format: Format of the image.
             count_per_universe: Unknown.
             is_circular: if the image is a circle yes or no.
+            defaults: Whether to return default thumbnails.
 
         Returns:
             A List of Thumbnails.

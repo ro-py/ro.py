@@ -1,3 +1,9 @@
+"""
+
+Contains the Shout object, which represents a group's shout.
+
+"""
+
 from datetime import datetime
 
 from dateutil.parser import parse
