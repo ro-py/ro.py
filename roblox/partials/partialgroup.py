@@ -36,6 +36,9 @@ class AssetPartialGroup(BaseGroup):
 
         super().__init__(shared, self.id)
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"
+
 
 class UniversePartialGroup(BaseGroup):
     """
@@ -58,3 +61,7 @@ class UniversePartialGroup(BaseGroup):
         self.name: str = data["name"]
 
         super().__init__(shared, self.id)
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"
+

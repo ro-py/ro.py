@@ -45,3 +45,6 @@ class User(BaseUser):
         self.is_banned: bool = data["isBanned"]
         self.description: str = data["description"]
         self.created: datetime = parse(data["created"])
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} display_name={self.display_name!r}>"
