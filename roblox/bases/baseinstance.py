@@ -4,10 +4,11 @@ This file contains the BaseInstance object, which represents a Roblox instance I
 
 """
 
+from .baseitem import BaseItem
 from ..utilities.shared import ClientSharedObject
 
 
-class BaseInstance:
+class BaseInstance(BaseItem):
     """
     Represents an instance of a Roblox item.
 

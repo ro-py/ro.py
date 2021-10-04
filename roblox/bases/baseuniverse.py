@@ -12,6 +12,7 @@ from typing import TYPE_CHECKING, Dict, List
 if TYPE_CHECKING:
     from ..badges import Badge
 
+from .baseitem import BaseItem
 from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator
 from ..gamepasses import GamePass
@@ -39,7 +40,7 @@ def _universe_badges_handler(shared: ClientSharedObject, data: dict) -> Badge:
     return Badge(shared=shared, data=data)
 
 
-class BaseUniverse:
+class BaseUniverse(BaseItem):
     """
     Represents a Roblox universe ID.
 

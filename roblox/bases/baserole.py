@@ -4,10 +4,11 @@ This file contains the BaseRole object, which represents a Roblox role ID.
 
 """
 
+from .baseitem import BaseItem
 from ..utilities.shared import ClientSharedObject
 
 
-class BaseRole:
+class BaseRole(BaseItem):
     """
     Represents a Roblox role ID.
 

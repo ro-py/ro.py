@@ -4,10 +4,11 @@ This file contains the BaseUniverseSocialLink object, which represents a Roblox 
 
 """
 
+from .baseitem import BaseItem
 from ..utilities.shared import ClientSharedObject
 
 
-class BaseUniverseSocialLink:
+class BaseUniverseSocialLink(BaseItem):
     """
     Represents a Roblox roblox_badge ID.
 

@@ -4,10 +4,11 @@ This file contains the BaseBadge object, which represents a Roblox badge ID.
 
 """
 
+from .baseitem import BaseItem
 from ..utilities.shared import ClientSharedObject
 
 
-class BaseBadge:
+class BaseBadge(BaseItem):
     """
     Represents a Roblox badge ID.
 

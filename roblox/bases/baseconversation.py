@@ -4,10 +4,11 @@ This file contains the BaseConversation object, which represents a Roblox conver
 
 """
 
+from .baseitem import BaseItem
 from ..utilities.shared import ClientSharedObject
 
 
-class BaseConversation:
+class BaseConversation(BaseItem):
     """
     Represents a Roblox Conversation ID.
 

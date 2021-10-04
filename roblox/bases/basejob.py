@@ -4,10 +4,11 @@ This file contains the BaseJob object, which represents a Roblox job ID.
 
 """
 
+from .baseitem import BaseItem
 from ..utilities.shared import ClientSharedObject
 
 
-class BaseJob:
+class BaseJob(BaseItem):
     """
     Represents Roblox job ID.
 

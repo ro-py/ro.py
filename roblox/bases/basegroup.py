@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import Optional, List, TYPE_CHECKING
 
+from .baseitem import BaseItem
 from ..bases.baserole import BaseRole
 from ..members import Member
 from ..roles import Role
@@ -53,7 +54,7 @@ class GroupSettings:
         self.can_change_group_name: bool = data["canChangeGroupName"]
 
 
-class BaseGroup:
+class BaseGroup(BaseItem):
     """
     Represents a Roblox group ID.
 

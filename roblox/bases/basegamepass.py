@@ -4,10 +4,11 @@ This file contains the BaseGamePass object, which represents a Roblox gamepass I
 
 """
 
+from .baseitem import BaseItem
 from ..utilities.shared import ClientSharedObject
 
 
-class BaseGamePass:
+class BaseGamePass(BaseItem):
     """
     Represents a Roblox gamepass ID.
 

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from typing import Optional, List, TYPE_CHECKING
 
+from .baseitem import BaseItem
 from ..bases.baseasset import BaseAsset
 from ..bases.basebadge import BaseBadge
 from ..bases.basegamepass import BaseGamePass
@@ -24,7 +25,7 @@ if TYPE_CHECKING:
     from ..roles import Role
 
 
-class BaseUser:
+class BaseUser(BaseItem):
     """
     Represents a Roblox user ID.
 
