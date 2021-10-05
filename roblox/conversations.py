@@ -31,6 +31,9 @@ class ConversationTitle:
         self.title_for_viewer: str = data["titleForViewer"]
         self.is_default_title: bool = data["isDefaultTitle"]
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} title_for_viewer={self.title_for_viewer!r}>"
+
 
 class Conversation(BaseConversation):
     """
@@ -80,3 +83,6 @@ class Conversation(BaseConversation):
             shared=self._shared,
             data=data["conversationUniverse"]
         )
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} title={self.title!r}>"

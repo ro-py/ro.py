@@ -64,6 +64,9 @@ class Presence:
         self.user_id: int = data["userId"]
         self.last_online: datetime = parse(data["lastOnline"])
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} user_presence_type={self.user_presence_type}>"
+
 
 class PresenceProvider:
     """

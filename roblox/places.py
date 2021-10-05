@@ -56,3 +56,6 @@ class Place(BasePlace):
 
         self.price: int = data["price"]
         self.image_token: str = data["imageToken"]
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"

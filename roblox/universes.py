@@ -124,4 +124,4 @@ class Universe(BaseUniverse):
         self.favorited_count: int = data["favoritedCount"]
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} creator={self.display_name!r}>"
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} creator={self.creator}>"

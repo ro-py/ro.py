@@ -52,6 +52,9 @@ class Group(BaseGroup):
         self.public_entry_allowed: bool = data["publicEntryAllowed"]
         self.is_locked: bool = data.get("isLocked") or False
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} owner={self.owner}>"
+
     async def update_shout(self, message: str, update_self: bool = True) -> Tuple[Optional[Shout], Optional[Shout]]:
         """
         Updates the shout.

@@ -108,6 +108,9 @@ class AssetType:
         self.id: int = type_id
         self.name: Optional[str] = asset_type_names.get(type_id)
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"
+
 
 class EconomyAsset(BaseAsset):
     """
@@ -185,3 +188,6 @@ class EconomyAsset(BaseAsset):
         self.minimum_membership_level: int = data["MinimumMembershipLevel"]
         self.content_rating_type_id: int = data["ContentRatingTypeId"]
         self.sale_availability_locations = data["SaleAvailabilityLocations"]
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} type={self.type}>"

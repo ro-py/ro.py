@@ -40,6 +40,9 @@ class BaseCDNHash:
         self._shared: ClientSharedObject = shared
         self.cdn_hash: str = cdn_hash
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} cdn_hash={self.cdn_hash}>"
+
     def get_cdn_number(self) -> int:
         """
         Returns the CDN number of this CDN hash.

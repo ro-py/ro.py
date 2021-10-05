@@ -43,6 +43,9 @@ class ItemInstance(BaseInstance):
 
         super().__init__(shared=self._shared, instance_id=data["instanceId"])
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} type={self.type}>"
+
 
 class AssetInstance(ItemInstance):
     """
@@ -54,6 +57,9 @@ class AssetInstance(ItemInstance):
         super().__init__(shared=self._shared, data=data)
 
         self.asset: BaseAsset = BaseAsset(shared=self._shared, asset_id=data["id"])
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} type={self.type} asset={self.asset}>"
 
 
 class BadgeInstance(ItemInstance):
@@ -67,6 +73,9 @@ class BadgeInstance(ItemInstance):
 
         self.badge: BaseBadge = BaseBadge(shared=self._shared, badge_id=data["id"])
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} type={self.type} badge={self.badge}>"
+
 
 class GamePassInstance(ItemInstance):
     """
@@ -78,6 +87,9 @@ class GamePassInstance(ItemInstance):
         super().__init__(shared=self._shared, data=data)
 
         self.gamepass: BaseGamePass = BaseGamePass(shared=self._shared, gamepass_id=data["id"])
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} type={self.type} gamepass={self.gamepass}>"
 
 
 instance_classes = {

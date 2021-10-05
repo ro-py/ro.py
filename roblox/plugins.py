@@ -42,3 +42,6 @@ class Plugin(BasePlugin):
         self.version_id: int = data["versionId"]
         self.created: datetime = parse(data["created"])
         self.updated: datetime = parse(data["updated"])
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"

@@ -25,6 +25,9 @@ class GameInstancePlayerThumbnail:
         self.url: str = data["Url"]
         self.final: bool = data["IsFinal"]
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} url={self.url!r} final={self.final}"
+
 
 class GameInstancePlayer(BaseUser):
     """
@@ -43,6 +46,9 @@ class GameInstancePlayer(BaseUser):
             shared=self._shared,
             data=data["Thumbnail"]
         )
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"
 
 
 class GameInstance(BaseJob):
@@ -95,6 +101,9 @@ class GameInstance(BaseJob):
 
         self.join_script: str = data["JoinScript"]
         self.app_join_script: str = data["RobloxAppJoinScript"]
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id!r} capacity{self.capacity}>"
 
 
 class GameInstances:

@@ -19,6 +19,9 @@ class ChatSettings:
         self.is_active_chat_user: bool = data["isActiveChatUser"]
         self.is_connect_tab_enabled: bool = data["isConnectTabEnabled"]
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} chat_enabled={self.chat_enabled}>"
+
 
 class ChatProvider:
     """
@@ -27,6 +30,9 @@ class ChatProvider:
 
     def __init__(self, shared: ClientSharedObject):
         self._shared: ClientSharedObject = shared
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__}>"
 
     async def get_unread_conversation_count(self) -> int:
         """

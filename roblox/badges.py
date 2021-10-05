@@ -33,6 +33,9 @@ class BadgeStatistics:
         self.awarded_count: int = data["awardedCount"]
         self.win_rate_percentage: int = data["winRatePercentage"]
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} awarded_count={self.awarded_count}>"
+
 
 class Badge(BaseBadge):
     """
@@ -68,3 +71,6 @@ class Badge(BaseBadge):
 
         self.statistics: BadgeStatistics = BadgeStatistics(shared=shared, data=data["statistics"])
         self.awarding_universe: PartialUniverse = PartialUniverse(shared=shared, data=data["awardingUniverse"])
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"

@@ -77,6 +77,10 @@ class Thumbnail:
         self.state: ThumbnailState = ThumbnailState(data["state"])
         self.image_url: Optional[str] = data["imageUrl"]
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} target_id={self.target_id} name={self.state!r} " \
+               f"image_url={self.image_url!r}>"
+
 
 class UniverseThumbnails:
     """

@@ -52,3 +52,6 @@ class Member(PartialUser):
             rank: The new rank this member should be assigned. Should be in the range of 0-255.
         """
         await self.group.set_rank(self, rank)
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} role={self.role}>"

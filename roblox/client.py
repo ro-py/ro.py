@@ -95,6 +95,9 @@ class Client:
         if token:
             self.set_token(token)
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__}>"
+
     def set_token(self, token: str) -> None:
         """
         Authenticates the client with the passed .ROBLOSECURITY token.
