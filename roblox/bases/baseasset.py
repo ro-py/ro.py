@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 
 from .baseitem import BaseItem
 from ..utilities.shared import ClientSharedObject
+from ..resale import AssetResaleData
 
 if TYPE_CHECKING:
     from ..assets import EconomyAsset
@@ -41,3 +42,14 @@ class BaseAsset(BaseItem):
             An EconomyAsset.
         """
         return await self._shared.client.get_asset(self.id)
+
+    async def get_resale_data(self) -> AssetResaleData:
+        """
+        Gets the asset's resale data.
+        Returns: The asset's resale data.
+        """
+        resale_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("economy", f"v1/assets/{self.id}/resale-data")
+        )
+        resale_data = resale_response.json()
+        return AssetResaleData(data=resale_data)
