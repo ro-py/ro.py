@@ -6,8 +6,6 @@ Contains the Client, which is the core object at the center of all ro.py applica
 
 from typing import Union, Optional, List
 
-from .assets import EconomyAsset
-from .badges import Badge
 from .bases.baseasset import BaseAsset
 from .bases.basebadge import BaseBadge
 from .bases.basegamepass import BaseGamePass
@@ -16,6 +14,9 @@ from .bases.baseplace import BasePlace
 from .bases.baseplugin import BasePlugin
 from .bases.baseuniverse import BaseUniverse
 from .bases.baseuser import BaseUser
+
+from .assets import EconomyAsset
+from .badges import Badge
 from .chat import ChatProvider
 from .delivery import DeliveryProvider
 from .groups import Group
@@ -26,6 +27,8 @@ from .presence import PresenceProvider
 from .thumbnails import ThumbnailProvider
 from .universes import Universe
 from .users import User
+from .account import AccountProvider
+
 from .utilities.iterators import PageIterator
 from .utilities.requests import Requests
 from .utilities.shared import ClientSharedObject
@@ -85,12 +88,14 @@ class Client:
         self.thumbnails: ThumbnailProvider = ThumbnailProvider(shared=self._shared)
         self.delivery: DeliveryProvider = DeliveryProvider(shared=self._shared)
         self.chat: ChatProvider = ChatProvider(shared=self._shared)
+        self.account: AccountProvider = AccountProvider(shared=self._shared)
 
         # TODO: Improve this hack
         self._shared.presence_provider = self.presence
         self._shared.thumbnail_provider = self.thumbnails
         self._shared.delivery_provider = self.delivery
         self._shared.chat_provider = self.chat
+        self._shared.account_provider = self.account
 
         if token:
             self.set_token(token)
