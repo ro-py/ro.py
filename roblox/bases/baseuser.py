@@ -228,7 +228,7 @@ class BaseUser(BaseItem):
         """
         Gets the user's Roblox badges.
 
-        Returns: A lsit of Roblox badges.
+        Returns: A list of Roblox badges.
         """
 
         badges_response = await self._shared.requests.get(
