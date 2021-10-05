@@ -40,12 +40,12 @@ class AccountProvider:
         Changes the authenticated user's birthday.
         This endpoint *may* require your password, and requires an unlocked PIN.
         """
-        self._shared.requests.post(
+        await self._shared.requests.post(
             url=self._shared.url_generator.get_url("accountinformation", "v1/birthdate"),
             json={
-                "birthMonth": date.month,
-                "birthDay": date.day,
-                "birthYear": date.year,
+                "birthMonth": birthday.month,
+                "birthDay": birthday.day,
+                "birthYear": birthday.year,
                 "password": password
             }
         )
