@@ -5,7 +5,7 @@ Contains objects related to Roblox thumbnails.
 """
 
 from enum import Enum
-from typing import Optional, List, Union
+from typing import Optional, List
 
 from .bases.basebadge import BaseBadge
 from .bases.baseasset import BaseAsset
@@ -14,6 +14,7 @@ from .bases.basegamepass import BaseGamePass
 from .bases.baseuniverse import BaseUniverse
 from .bases.basegroup import BaseGroup
 from .bases.baseplace import BasePlace
+from .delivery import ThumbnailCDNHash
 
 from .utilities.shared import ClientSharedObject
 
@@ -60,6 +61,39 @@ class AvatarThumbnailType(Enum):
     bust = 3
 
 
+class ThreeDThumbnailVector3:
+    def __init__(self, data: dict):
+        self.x: float = data["x"]
+        self.y: float = data["y"]
+        self.z: float = data["z"]
+
+
+class ThreeDThumbnailCamera:
+    def __init__(self, data: dict):
+        self.fov: float = data["fov"]
+        self.position: ThreeDThumbnailVector3 = ThreeDThumbnailVector3(data["position"])
+        self.direction: ThreeDThumbnailVector3 = ThreeDThumbnailVector3(data["direction"])
+
+
+class ThreeDThumbnailAABB:
+    def __init__(self, data: dict):
+        self.min: ThreeDThumbnailVector3 = ThreeDThumbnailVector3(data["min"])
+        self.max: ThreeDThumbnailVector3 = ThreeDThumbnailVector3(data["max"])
+
+
+class ThreeDThumbnail:
+    def __init__(self, shared: ClientSharedObject, data: dict):
+        self._shared: ClientSharedObject = shared
+
+        self.mtl: ThumbnailCDNHash = self._shared.delivery_provider.get_thumbnail_cdn_hash(data["mtl"])
+        self.obj: ThumbnailCDNHash = self._shared.delivery_provider.get_thumbnail_cdn_hash(data["obj"])
+        self.textures: List[ThumbnailCDNHash] = [
+            self._shared.delivery_provider.get_thumbnail_cdn_hash(cdn_hash) for cdn_hash in data["textures"]
+        ]
+        self.camera: ThreeDThumbnailCamera = ThreeDThumbnailCamera(data["camera"])
+        self.aabb: ThreeDThumbnailAABB = ThreeDThumbnailAABB(data["aabb"])
+
+
 class Thumbnail:
     """
     Represents a Roblox thumbnail as returned by almost all endpoints on https://thumbnails.roblox.com/.
@@ -88,6 +122,16 @@ class Thumbnail:
     def __repr__(self):
         return f"<{self.__class__.__name__} target_id={self.target_id} name={self.state!r} " \
                f"image_url={self.image_url!r}>"
+
+    async def get_3d_data(self):
+        threed_response = await self._shared.requests.get(
+            url=self.image_url
+        )
+        threed_data = threed_response.json()
+        return ThreeDThumbnail(
+            shared=self._shared,
+            data=threed_data
+        )
 
 
 class UniverseThumbnails:

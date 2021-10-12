@@ -137,7 +137,7 @@ class DeliveryProvider:
             cdn_hash=url.split(f".{site}/")[1]
         )
 
-    def get_thumbnail_cdn_hash(self, cdn_hash: str) -> BaseCDNHash:
+    def get_thumbnail_cdn_hash(self, cdn_hash: str) -> ThumbnailCDNHash:
         """
         Gets a Roblox CDN cdn_hash.
 
@@ -152,7 +152,7 @@ class DeliveryProvider:
             cdn_hash=cdn_hash
         )
 
-    def get_content_cdn_hash(self, cdn_hash: str) -> BaseCDNHash:
+    def get_content_cdn_hash(self, cdn_hash: str) -> ContentCDNHash:
         """
         Gets a Roblox CDN cdn_hash.
 
