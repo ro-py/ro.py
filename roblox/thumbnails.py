@@ -5,7 +5,15 @@ Contains objects related to Roblox thumbnails.
 """
 
 from enum import Enum
-from typing import Optional, List
+from typing import Optional, List, Union
+
+from .bases.basebadge import BaseBadge
+from .bases.baseasset import BaseAsset
+from .bases.baseuser import BaseUser
+from .bases.basegamepass import BaseGamePass
+from .bases.baseuniverse import BaseUniverse
+from .bases.basegroup import BaseGroup
+from .bases.baseplace import BasePlace
 
 from .utilities.shared import ClientSharedObject
 
@@ -128,7 +136,7 @@ class ThumbnailProvider:
 
     async def get_asset_thumbnails(
             self,
-            asset_ids: List[int],
+            assets: List[BaseAsset],
             return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
             # TODO MAKE SIZE ENUM
             size: str = "30x30",
@@ -151,7 +159,7 @@ class ThumbnailProvider:
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/assets"),
             params={
-                "assetIds": asset_ids,
+                "assetIds": list(map(int, assets)),
                 "returnPolicy": return_policy.value,
                 "size": size,
                 "format": format.value,
@@ -164,7 +172,7 @@ class ThumbnailProvider:
             for thumbnail_data in thumbnails_data
         ]
 
-    async def get_asset_thumbnail_3d(self, asset_id: int) -> Thumbnail:
+    async def get_asset_thumbnail_3d(self, asset: BaseAsset) -> Thumbnail:
         """
         Returns a 3d asset thumbnail for the user ID passed.
 
@@ -178,14 +186,14 @@ class ThumbnailProvider:
             url=self._shared.url_generator.get_url(
                 "thumbnails", "v1/assets-thumbnail-3d"
             ),
-            params={"assetId": asset_id},
+            params={"assetId": int(asset)},
         )
         thumbnail_data = thumbnail_response.json()
         return Thumbnail(shared=self._shared, data=thumbnail_data)
 
     async def get_badge_icons(
             self,
-            badge_ids: List[int],
+            badges: List[BaseBadge],
             size: str = "150x150",
             format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
@@ -205,43 +213,7 @@ class ThumbnailProvider:
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/badges/icons"),
             params={
-                "badgeIds": badge_ids,
-                "size": size,
-                "format": format.value,
-                "isCircular": is_circular,
-            },
-        )
-        thumbnails_data = thumbnails_response.json()["data"]
-        return [
-            Thumbnail(shared=self._shared, data=thumbnail_data)
-            for thumbnail_data in thumbnails_data
-        ]
-
-    async def get_bundle_thumbnails(
-            self,
-            bundle_ids: List[int],
-            size: str = "150x150",
-            format: ThumbnailFormat = ThumbnailFormat.png,
-            is_circular: bool = False,
-    ) -> List[Thumbnail]:
-        """
-        Returns bundle thumbnails for each bundle ID passed.
-
-        Arguments:
-            bundle_ids: Id of the bundles you want the thumbnails of.
-            size: size of the image.
-            format: Format of the image.
-            is_circular: if the image is a circle yes or no.
-
-        Returns:
-            A List of Thumbnails.
-        """
-        thumbnails_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url(
-                "thumbnails", "v1/bundles/thumbnails"
-            ),
-            params={
-                "bundleIds": bundle_ids,
+                "badgeIds": list(map(int, badges)),
                 "size": size,
                 "format": format.value,
                 "isCircular": is_circular,
@@ -255,7 +227,7 @@ class ThumbnailProvider:
 
     async def get_gamepass_icons(
             self,
-            gamepass_ids: List[int],
+            gamepasses: List[BaseGamePass],
             # TODO Make size enum
             size: str = "150x150",
             format: ThumbnailFormat = ThumbnailFormat.png,
@@ -276,7 +248,7 @@ class ThumbnailProvider:
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/game-passes"),
             params={
-                "gamePassIds": gamepass_ids,
+                "gamePassIds": list(map(int, gamepasses)),
                 "size": size,
                 "format": format.value,
                 "isCircular": is_circular,
@@ -290,7 +262,7 @@ class ThumbnailProvider:
 
     async def get_universe_icons(
             self,
-            universe_ids: List[int],
+            universes: List[BaseUniverse],
             return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
             size: str = "50x50",
             format: ThumbnailFormat = ThumbnailFormat.png,
@@ -312,7 +284,7 @@ class ThumbnailProvider:
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/games/icons"),
             params={
-                "universeIds": universe_ids,
+                "universeIds": list(map(int, universes)),
                 "returnPolicy": return_policy.value,
                 "size": size,
                 "format": format.value,
@@ -327,7 +299,7 @@ class ThumbnailProvider:
 
     async def get_universe_thumbnails(
             self,
-            universe_ids: List[int],
+            universes: List[BaseUniverse],
             size: str = "768x432",
             format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
@@ -353,7 +325,7 @@ class ThumbnailProvider:
                 "thumbnails", "v1/games/multiget/thumbnails"
             ),
             params={
-                "universeIds": universe_ids,
+                "universeIds": list(map(int, universes)),
                 "countPerUniverse": count_per_universe,
                 "defaults": defaults,
                 "size": size,
@@ -369,7 +341,7 @@ class ThumbnailProvider:
 
     async def get_group_icons(
             self,
-            group_ids: List[int],
+            groups: List[BaseGroup],
             size: str = "150x150",
             format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
@@ -389,7 +361,7 @@ class ThumbnailProvider:
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/groups/icons"),
             params={
-                "groupIds": group_ids,
+                "groupIds": list(map(int, groups)),
                 "size": size,
                 "format": format.value,
                 "isCircular": is_circular,
@@ -403,7 +375,7 @@ class ThumbnailProvider:
 
     async def get_place_icons(
             self,
-            place_ids: List[int],
+            places: List[BasePlace],
             return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
             size: str = "50x50",
             format: ThumbnailFormat = ThumbnailFormat.png,
@@ -424,7 +396,7 @@ class ThumbnailProvider:
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/places/gameicons"),
             params={
-                "placeIds": place_ids,
+                "placeIds": list(map(int, places)),
                 "returnPolicy": return_policy.value,
                 "size": size,
                 "format": format.value,
@@ -439,7 +411,7 @@ class ThumbnailProvider:
 
     async def get_user_avatars(
             self,
-            user_ids: List[int],
+            users: List[BaseUser],
             type: AvatarThumbnailType = AvatarThumbnailType.full_body,
             size: str = None,
             format: ThumbnailFormat = ThumbnailFormat.png,
@@ -449,7 +421,7 @@ class ThumbnailProvider:
         Returns avatars for each user ID passed.
 
         Arguments:
-            user_ids: Id of the users you want the thumbnails of.
+            users: Id of the users you want the thumbnails of.
             type: Type of avatar thumbnail you want look at enum.
             size: size of the image.
             format: Format of the image.
@@ -474,7 +446,7 @@ class ThumbnailProvider:
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", f"v1/users/{uri}"),
             params={
-                "userIds": user_ids,
+                "userIds": list(map(int, users)),
                 "size": size,
                 "format": format.value,
                 "isCircular": is_circular,
@@ -487,20 +459,20 @@ class ThumbnailProvider:
             for thumbnail_data in thumbnails_data
         ]
 
-    async def get_user_avatar_3d(self, user_id: int) -> Thumbnail:
+    async def get_user_avatar_3d(self, user: BaseUser) -> Thumbnail:
         """
         Returns the user's thumbnail in 3d.
         TODO: Add special 3d features
 
         Arguments:
-            user_id: Id of the user you want the 3d thumbnail of.
+            user: User you want the 3d thumbnail of.
 
         Returns:
             A Thumbnail.
         """
         thumbnail_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/users/avatar-3d"),
-            params={"userId": user_id},
+            params={"userId": int(user)},
         )
         thumbnail_data = thumbnail_response.json()
         return Thumbnail(shared=self._shared, data=thumbnail_data)
