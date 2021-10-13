@@ -4,6 +4,7 @@ This module contains iterators used internally by ro.py to provide paginated inf
 
 """
 
+from __future__ import annotations
 from enum import Enum
 from typing import Callable, Optional, AsyncIterator
 
@@ -26,13 +27,47 @@ class SortOrder(Enum):
     Descending = "Desc"
 
 
-class Iterator(AsyncIterator):
+class IteratorItems(AsyncIterator):
+    def __init__(self, iterator: Iterator):
+        self._iterator = iterator
+        self._position: int = 0
+        self._items: list = []
+
+    def __aiter__(self):
+        self._position = 0
+        self._items = []
+        return self
+
+    async def __anext__(self):
+        if self._position == len(self._items):
+            # we are at the end of our current page of items. start again with a new page
+            self._position = 0
+            try:
+                # get new items
+                self._items = await self._iterator.next()
+            except NoMoreItems:
+                # if there aren't any more items, reset and break the loop
+                self._position = 0
+                self._items = []
+                raise StopAsyncIteration
+
+        # if we got here we know there are more items
+        try:
+            item = self._items[self._position]
+        except IndexError:
+            # edge case for group roles
+            raise StopAsyncIteration
+        # we advance the iterator by one for the next iteration
+        self._position += 1
+        return item
+
+
+class Iterator:
     """
     Represents a basic iterator which all iterators should implement.
     """
     def __init__(self):
-        self.iterator_position = 0
-        self.iterator_items = []
+        self.items = IteratorItems(self)
 
     async def next(self):
         """
@@ -58,32 +93,7 @@ class Iterator(AsyncIterator):
         return items
 
     def __aiter__(self):
-        self.iterator_position = 0
-        self.iterator_items = []
-        return self
-
-    async def __anext__(self):
-        if self.iterator_position == len(self.iterator_items):
-            # we are at the end of our current page of items. start again with a new page
-            self.iterator_position = 0
-            try:
-                # get new items
-                self.iterator_items = await self.next()
-            except NoMoreItems:
-                # if there aren't any more items, reset and break the loop
-                self.iterator_position = 0
-                self.iterator_items = []
-                raise StopAsyncIteration
-
-        # if we got here we know there are more items
-        try:
-            item = self.iterator_items[self.iterator_position]
-        except IndexError:
-            # edge case for group roles
-            raise StopAsyncIteration
-        # we advance the iterator by one for the next iteration
-        self.iterator_position += 1
-        return item
+        return self.items
 
 
 class PageIterator(Iterator):
