@@ -62,12 +62,28 @@ class IteratorItems(AsyncIterator):
         return item
 
 
+class IteratorPages(AsyncIterator):
+    def __init__(self, iterator: Iterator):
+        self._iterator = iterator
+
+    def __aiter__(self):
+        return self
+
+    async def __anext__(self):
+        try:
+            page = await self._iterator.next()
+            return page
+        except NoMoreItems:
+            raise StopAsyncIteration
+
+
 class Iterator:
     """
     Represents a basic iterator which all iterators should implement.
     """
     def __init__(self):
-        self.items = IteratorItems(self)
+        self._items = IteratorItems(self)
+        self._pages = IteratorPages(self)
 
     async def next(self):
         """
@@ -93,7 +109,13 @@ class Iterator:
         return items
 
     def __aiter__(self):
-        return self.items
+        return self._items
+
+    def items(self):
+        return self._items
+
+    def pages(self):
+        return self._pages
 
 
 class PageIterator(Iterator):
