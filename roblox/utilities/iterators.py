@@ -28,6 +28,9 @@ class SortOrder(Enum):
 
 
 class IteratorItems(AsyncIterator):
+    """
+    Represents the items inside of an iterator.
+    """
     def __init__(self, iterator: Iterator):
         self._iterator = iterator
         self._position: int = 0
@@ -63,6 +66,9 @@ class IteratorItems(AsyncIterator):
 
 
 class IteratorPages(AsyncIterator):
+    """
+    Represents the pages inside of an iterator.
+    """
     def __init__(self, iterator: Iterator):
         self._iterator = iterator
 
@@ -111,10 +117,16 @@ class Iterator:
     def __aiter__(self):
         return self._items
 
-    def items(self):
+    def items(self) -> IteratorItems:
+        """
+        Returns an AsyncIterable containing each iterator item.
+        """
         return self._items
 
-    def pages(self):
+    def pages(self) -> IteratorPages:
+        """
+        Returns an AsyncIterable containing each iterator page. Each page is a list of items.
+        """
         return self._pages
 
 

@@ -62,6 +62,9 @@ class AvatarThumbnailType(Enum):
 
 
 class ThreeDThumbnailVector3:
+    """
+    Represents a Vector3 used on a 3D thumbnail.
+    """
     def __init__(self, data: dict):
         self.x: float = data["x"]
         self.y: float = data["y"]
@@ -69,6 +72,9 @@ class ThreeDThumbnailVector3:
 
 
 class ThreeDThumbnailCamera:
+    """
+    Represents a camera in a 3D thumbnail.
+    """
     def __init__(self, data: dict):
         self.fov: float = data["fov"]
         self.position: ThreeDThumbnailVector3 = ThreeDThumbnailVector3(data["position"])
@@ -76,12 +82,34 @@ class ThreeDThumbnailCamera:
 
 
 class ThreeDThumbnailAABB:
+    """
+    Represents AABB data in a 3D thumbnail.
+    Roblox uses this data to calculate the maximum render distance used when rendering 3D thumbnails.
+    ```js
+    THREE.Vector3(json.aabb.max.x, json.aabb.max.y, json.aabb.max.z).length() * 4;
+    ```
+
+    Attributes:
+        min: The minimum render position.
+        max: The maximum render position.
+    """
     def __init__(self, data: dict):
         self.min: ThreeDThumbnailVector3 = ThreeDThumbnailVector3(data["min"])
         self.max: ThreeDThumbnailVector3 = ThreeDThumbnailVector3(data["max"])
 
 
 class ThreeDThumbnail:
+    """
+    Represents a user's 3D Thumbnail data.
+    For more info, see https://robloxapi.wiki/wiki/3D_Thumbnails.
+
+    Attributes:
+        mtl: A CDN hash pointing to the MTL data.
+        obj: A CDN hash pointing to the OBJ data.
+        textures: A list of CDN hashes pointing to PNG texture data.
+        camera: The camera object.
+        aabb: The AABB object.
+    """
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
 
@@ -124,6 +152,9 @@ class Thumbnail:
                f"image_url={self.image_url!r}>"
 
     async def get_3d_data(self):
+        """
+        Generates 3D thumbnail data for this endpoint.
+        """
         threed_response = await self._shared.requests.get(
             url=self.image_url
         )
@@ -191,7 +222,7 @@ class ThumbnailProvider:
         Returns asset thumbnails for the asset ID passed.
 
         Arguments:
-            asset_ids: Id of the asset you want the thumbnails of.
+            assets: Assets you want the thumbnails of.
             return_policy: How you want it returns look at enum.
             size: size of the image.
             format: Format of the image.
@@ -221,7 +252,7 @@ class ThumbnailProvider:
         Returns a 3d asset thumbnail for the user ID passed.
 
         Arguments:
-            asset_id: Id of the asset you want the thumbnails of.
+            asset: Asset you want the thumbnails of.
 
         Returns:
             A Thumbnail.
@@ -246,7 +277,7 @@ class ThumbnailProvider:
         Returns badge icons for each badge ID passed.
 
         Arguments:
-            badge_ids: Id of the badge you want the thumbnails of.
+            badges: Badges you want the thumbnails of.
             size: size of the image.
             format: Format of the image.
             is_circular: if the image is a circle yes or no.
@@ -281,7 +312,7 @@ class ThumbnailProvider:
         Returns gamepass icons for each gamepass ID passed.
 
         Arguments:
-            gamepass_ids: Id of the gamepass you want the thumbnails of.
+            gamepasses: Gamepasses you want the thumbnails of.
             size: size of the image.
             format: Format of the image.
             is_circular: if the image is a circle yes or no.
@@ -316,7 +347,7 @@ class ThumbnailProvider:
         Returns universe icons for each universe ID passed.
 
         Arguments:
-            universe_ids: Id of the universe you want the thumbnails of.
+            universes: Universes you want the thumbnails of.
             return_policy: How you want it returns look at enum.
             size: size of the image.
             format: Format of the image.
@@ -354,7 +385,7 @@ class ThumbnailProvider:
         Returns universe thumbnails for each universe ID passed.
 
         Arguments:
-            universe_ids: Id of the universe you want the thumbnails of.
+            universes: Universes you want the thumbnails of.
             size: size of the image.
             format: Format of the image.
             count_per_universe: Unknown.
@@ -394,7 +425,7 @@ class ThumbnailProvider:
         Returns icons for each group ID passed.
 
         Arguments:
-            group_ids: Id of the groups you want the thumbnails of.
+            groups: Groups you want the thumbnails of.
             size: size of the image.
             format: Format of the image.
             is_circular: if the image is a circle yes or no.
@@ -429,7 +460,7 @@ class ThumbnailProvider:
         Returns icons for each place ID passed.
 
         Arguments:
-            place_ids: Id of the places you want the thumbnails of.
+            places: Places you want the thumbnails of.
             return_policy: How you want it returns look at enum.
             size: size of the image.
             format: Format of the image.

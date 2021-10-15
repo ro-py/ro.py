@@ -193,7 +193,6 @@ class Requests:
                             error_messages.append(f"For more information, please see {not_approved_url}.")
                             error_messages.append(
                                 f"If you wish to appeal, please contact Roblox: https://www.roblox.com/support")
-
                         except Exception:
                             # don't throw errors
                             pass
