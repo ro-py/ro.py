@@ -7,15 +7,18 @@ It also contains the GroupSettings object, which represents a group's settings.
 
 from __future__ import annotations
 
-from typing import Optional, List, TYPE_CHECKING
+from typing import Optional, List, Union, TYPE_CHECKING
 
 from .baseitem import BaseItem
 from ..bases.baserole import BaseRole
-from ..members import Member
+from ..members import Member, MemberRelationship
 from ..roles import Role
+
 from ..utilities.exceptions import InvalidRole
 from ..utilities.iterators import PageIterator
 from ..utilities.shared import ClientSharedObject
+
+from ..partials.partialuser import RequestedUsernamePartialUser
 
 if TYPE_CHECKING:
     from ..groups import Group
@@ -145,26 +148,41 @@ class BaseGroup(BaseItem):
             handler=lambda shared, data: Member(shared=shared, data=data, group=self)
         )
 
-    async def get_member(self, user_id: int) -> Member:
+    def get_member(self, user: Union[int, BaseUser]) -> MemberRelationship:
         """
         Gets a member of a group.
         Arguments:
-            user_id: The id of the user.
+            user: A BaseUser or a User ID.
 
         Returns: A member.
         """
-        groups_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("groups", f"v2/users/{user_id}/groups/roles")
+        return MemberRelationship(
+            shared=self._shared,
+            user=user,
+            group=self
         )
-        groups_data = groups_response.json()
 
-        member_data = None
-        for member in groups_data['data']:
-            if member['group']['id'] == self.id:
-                member_data = member
-                break
+    async def get_member_by_username(self, username: str, exclude_banned_users: bool = False) -> MemberRelationship:
+        """
+        Gets a member of a group by username.
+        Arguments:
+            username: A Roblox username.
+            exclude_banned_users: Whether to exclude banned users from the data.
 
-        return Member(shared=self._shared, data=member_data, group=self)
+        Returns: A member.
+        """
+
+        user: RequestedUsernamePartialUser = await self._shared.client.get_user_by_username(
+            username=username,
+            exclude_banned_users=exclude_banned_users,
+            expand=False
+        )
+
+        return MemberRelationship(
+            shared=self._shared,
+            user=user,
+            group=self
+        )
 
     async def get_roles(self) -> List[Role]:
         """

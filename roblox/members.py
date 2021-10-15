@@ -7,10 +7,10 @@ This module contains classes intended to parse and deal with data from Roblox gr
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import Union, TYPE_CHECKING
 
+from .bases.baseuser import BaseUser
 from .partials.partialrole import PartialRole
-from .partials.partialuser import PartialUser
 from .utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:
@@ -18,22 +18,20 @@ if TYPE_CHECKING:
     from .bases.baserole import BaseRole
 
 
-class Member(PartialUser):
+class MemberRelationship(BaseUser):
     """
-    Represents a group member.
-
-    Attributes:
-        _shared: The shared object.
-        role: The member's role.
-        group: The member's group.
+    Represents a relationship between a user and a group.
     """
-    def __init__(self, shared: ClientSharedObject, data: dict, group: BaseGroup):
+    def __init__(self, shared: ClientSharedObject, user: Union[BaseUser, int], group: Union[BaseGroup, int]):
         self._shared: ClientSharedObject = shared
+        super().__init__(shared=self._shared, user_id=int(user))
 
-        super().__init__(shared=self._shared, data=data["user"])
+        self.group: BaseGroup
 
-        self.role: PartialRole = PartialRole(shared=self._shared, data=data["role"])
-        self.group: BaseGroup = group
+        if isinstance(group, int):
+            self.group = BaseGroup(shared=self._shared, group_id=group)
+        else:
+            self.group = group
 
     async def set_role(self, role: BaseRole):
         """
@@ -52,6 +50,28 @@ class Member(PartialUser):
             rank: The new rank this member should be assigned. Should be in the range of 0-255.
         """
         await self.group.set_rank(self, rank)
+
+
+class Member(MemberRelationship):
+    """
+    Represents a group member.
+
+    Attributes:
+        _shared: The shared object.
+        role: The member's role.
+        group: The member's group.
+    """
+    def __init__(self, shared: ClientSharedObject, data: dict, group: BaseGroup):
+        self._shared: ClientSharedObject = shared
+
+        self.id: int = data["user"]["userId"]
+        self.name: str = data["user"]["username"]
+        self.display_name: str = data["user"]["displayName"]
+
+        super().__init__(shared=self._shared, user=self.id, group=group)
+
+        self.role: PartialRole = PartialRole(shared=self._shared, data=data["role"])
+        self.group: BaseGroup = group
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id} name={self.name!r} role={self.role}>"
