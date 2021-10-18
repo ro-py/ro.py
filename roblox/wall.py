@@ -41,6 +41,17 @@ class WallPostRelationship:
         else:
             self.group = group
 
+    async def delete(self):
+        """
+        Deletes this wall post.
+        """
+        await self._shared.requests.delete(
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.group.id}/wall/posts/{self.id}")
+        )
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} group={self.group}>"
+
 
 class WallPost(WallPostRelationship):
     """
@@ -65,3 +76,6 @@ class WallPost(WallPostRelationship):
         self.body: str = data["body"]
         self.created: datetime = parse(data["created"])
         self.updated: datetime = parse(data["updated"])
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} body={self.body!r} group={self.group}>"

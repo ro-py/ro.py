@@ -248,3 +248,17 @@ class BaseGroup(BaseItem):
             limit=limit,
             handler=lambda shared, data: WallPost(shared=shared, data=data, group=self)
         )
+
+    def get_wall_post(self, post_id: int) -> WallPostRelationship:
+        """
+        Gets a wall post from an ID.
+        Arguments:
+            post_id: A post ID.
+
+        Returns: A very basic wall post..
+        """
+        return WallPostRelationship(
+            shared=self._shared,
+            post_id=post_id,
+            group=self
+        )
