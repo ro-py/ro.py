@@ -13,9 +13,10 @@ from .baseitem import BaseItem
 from ..bases.baserole import BaseRole
 from ..members import Member, MemberRelationship
 from ..roles import Role
+from ..wall import WallPost, WallPostRelationship
 
 from ..utilities.exceptions import InvalidRole
-from ..utilities.iterators import PageIterator
+from ..utilities.iterators import PageIterator, SortOrder
 from ..utilities.shared import ClientSharedObject
 
 from ..partials.partialuser import RequestedUsernamePartialUser
@@ -133,17 +134,19 @@ class BaseGroup(BaseItem):
             json=settings_data
         )
 
-    def get_members(self, limit: int = 10) -> PageIterator:
+    def get_members(self, sort_order: SortOrder = SortOrder.Ascending, limit: int = 10) -> PageIterator:
         """
         Gets all members of a group.
         Arguments:
-            limit: How many members will be grabbed.
+            sort_order: Order in which data should be grabbed.
+            limit: Size of each page.
 
         Returns: A PageIterator.
         """
         return PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users"),
+            sort_order=sort_order,
             limit=limit,
             handler=lambda shared, data: Member(shared=shared, data=data, group=self)
         )
@@ -228,3 +231,20 @@ class BaseGroup(BaseItem):
             raise InvalidRole(f"Role with rank number {rank} does not exist.")
 
         await self.set_role(user, role)
+
+    def get_wall_posts(self, sort_order: SortOrder = SortOrder.Ascending, limit: int = 10) -> PageIterator:
+        """
+        Gets all members of a group.
+        Arguments:
+            sort_order: Order in which data should be grabbed.
+            limit: How many posts will be returned per page.
+
+        Returns: A PageIterator.
+        """
+        return PageIterator(
+            shared=self._shared,
+            url=self._shared.url_generator.get_url("groups", f"v2/groups/{self.id}/wall/posts"),
+            sort_order=sort_order,
+            limit=limit,
+            handler=lambda shared, data: WallPost(shared=shared, data=data, group=self)
+        )
