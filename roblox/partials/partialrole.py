@@ -18,6 +18,7 @@ class PartialRole(BaseRole):
         name: The role's name.
         rank: The role's rank ID.
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
 

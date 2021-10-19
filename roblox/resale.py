@@ -19,6 +19,7 @@ class AssetResaleData:
         original_price: What price this item waas originally sold at.
         price_data_points: A list of tuples containing
     """
+
     def __init__(self, data: dict):
         self.asset_stock: int = data["assetStock"]
         self.sales: int = data["sales"]

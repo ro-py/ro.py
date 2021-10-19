@@ -4,7 +4,6 @@ This module contains the ClientSharedObject, which is shared between the client 
 
 """
 
-
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional

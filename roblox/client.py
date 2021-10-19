@@ -6,6 +6,9 @@ Contains the Client, which is the core object at the center of all ro.py applica
 
 from typing import Union, Optional, List
 
+from .account import AccountProvider
+from .assets import EconomyAsset
+from .badges import Badge
 from .bases.baseasset import BaseAsset
 from .bases.basebadge import BaseBadge
 from .bases.basegamepass import BaseGamePass
@@ -14,9 +17,6 @@ from .bases.baseplace import BasePlace
 from .bases.baseplugin import BasePlugin
 from .bases.baseuniverse import BaseUniverse
 from .bases.baseuser import BaseUser
-
-from .assets import EconomyAsset
-from .badges import Badge
 from .chat import ChatProvider
 from .delivery import DeliveryProvider
 from .groups import Group
@@ -27,8 +27,6 @@ from .presence import PresenceProvider
 from .thumbnails import ThumbnailProvider
 from .universes import Universe
 from .users import User
-from .account import AccountProvider
-
 from .utilities.iterators import PageIterator
 from .utilities.requests import Requests
 from .utilities.shared import ClientSharedObject

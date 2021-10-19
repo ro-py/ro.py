@@ -3,13 +3,14 @@ Contains objects related to Roblox group walls.
 """
 
 from __future__ import annotations
-from typing import Optional, Union, TYPE_CHECKING
 
 from datetime import datetime
+from typing import Optional, Union, TYPE_CHECKING
+
 from dateutil.parser import parse
 
-from .utilities.shared import ClientSharedObject
 from .members import Member
+from .utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:
     from .bases.basegroup import BaseGroup
@@ -57,6 +58,7 @@ class WallPost(WallPostRelationship):
     """
     Represents a post on a Roblox group wall.
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict, group: BaseGroup):
         self._shared: ClientSharedObject = shared
 

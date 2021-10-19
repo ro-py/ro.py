@@ -7,15 +7,14 @@ Contains objects related to Roblox thumbnails.
 from enum import Enum
 from typing import Optional, List
 
-from .bases.basebadge import BaseBadge
 from .bases.baseasset import BaseAsset
-from .bases.baseuser import BaseUser
+from .bases.basebadge import BaseBadge
 from .bases.basegamepass import BaseGamePass
-from .bases.baseuniverse import BaseUniverse
 from .bases.basegroup import BaseGroup
 from .bases.baseplace import BasePlace
+from .bases.baseuniverse import BaseUniverse
+from .bases.baseuser import BaseUser
 from .threedthumbnails import ThreeDThumbnail
-
 from .utilities.shared import ClientSharedObject
 
 

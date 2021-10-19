@@ -6,6 +6,7 @@ Not to be confused with users.py or the Account system.
 """
 
 from datetime import date
+
 from .utilities.shared import ClientSharedObject
 
 
@@ -13,6 +14,7 @@ class AccountProvider:
     """
     Provides methods that control the authenticated user's account.
     """
+
     def __init__(self, shared: ClientSharedObject):
         self._shared: ClientSharedObject = shared
 
@@ -49,4 +51,3 @@ class AccountProvider:
                 "password": password
             }
         )
-

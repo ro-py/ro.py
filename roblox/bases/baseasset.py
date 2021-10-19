@@ -5,11 +5,12 @@ This file contains the BaseAsset object, which represents a Roblox asset ID.
 """
 
 from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from .baseitem import BaseItem
-from ..utilities.shared import ClientSharedObject
 from ..resale import AssetResaleData
+from ..utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:
     from ..assets import EconomyAsset

@@ -5,6 +5,7 @@ This module contains iterators used internally by ro.py to provide paginated inf
 """
 
 from __future__ import annotations
+
 from enum import Enum
 from typing import Callable, Optional, AsyncIterator
 
@@ -31,6 +32,7 @@ class IteratorItems(AsyncIterator):
     """
     Represents the items inside of an iterator.
     """
+
     def __init__(self, iterator: Iterator):
         self._iterator = iterator
         self._position: int = 0
@@ -69,6 +71,7 @@ class IteratorPages(AsyncIterator):
     """
     Represents the pages inside of an iterator.
     """
+
     def __init__(self, iterator: Iterator):
         self._iterator = iterator
 
@@ -87,6 +90,7 @@ class Iterator:
     """
     Represents a basic iterator which all iterators should implement.
     """
+
     def __init__(self):
         self._items = IteratorItems(self)
         self._pages = IteratorPages(self)
