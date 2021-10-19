@@ -4,7 +4,6 @@ This module contains classes intended to parse and deal with data from Roblox gr
 
 """
 
-
 from __future__ import annotations
 
 from typing import Union, TYPE_CHECKING
@@ -22,6 +21,7 @@ class MemberRelationship(BaseUser):
     """
     Represents a relationship between a user and a group.
     """
+
     def __init__(self, shared: ClientSharedObject, user: Union[BaseUser, int], group: Union[BaseGroup, int]):
         self._shared: ClientSharedObject = shared
         super().__init__(shared=self._shared, user_id=int(user))
@@ -51,6 +51,9 @@ class MemberRelationship(BaseUser):
         """
         await self.group.set_rank(self, rank)
 
+    async def kick(self):
+        await self.group.kick_user(self)
+
 
 class Member(MemberRelationship):
     """
@@ -61,6 +64,7 @@ class Member(MemberRelationship):
         role: The member's role.
         group: The member's group.
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict, group: BaseGroup):
         self._shared: ClientSharedObject = shared
 

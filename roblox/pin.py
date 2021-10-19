@@ -11,6 +11,7 @@ class PinStatus:
     """
     Represents the current PIN status.
     """
+
     def __init__(self, data: dict):
         self.is_enabled: bool = data["isEnabled"]
         self.unlocked_until: int = data["unlockedUntil"]
@@ -20,6 +21,7 @@ class PinProvider:
     """
     Provides methods affecting the Roblox PIN.
     """
+
     def __init__(self, shared: ClientSharedObject):
         self._shared: ClientSharedObject = shared
 

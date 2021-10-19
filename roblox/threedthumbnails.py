@@ -3,14 +3,16 @@ Contains classes related to 3D thumbnails.
 """
 
 from typing import List
-from .utilities.shared import ClientSharedObject
+
 from .delivery import ThumbnailCDNHash
+from .utilities.shared import ClientSharedObject
 
 
 class ThreeDThumbnailVector3:
     """
     Represents a Vector3 used on a 3D thumbnail.
     """
+
     def __init__(self, data: dict):
         self.x: float = data["x"]
         self.y: float = data["y"]
@@ -21,6 +23,7 @@ class ThreeDThumbnailCamera:
     """
     Represents a camera in a 3D thumbnail.
     """
+
     def __init__(self, data: dict):
         self.fov: float = data["fov"]
         self.position: ThreeDThumbnailVector3 = ThreeDThumbnailVector3(data["position"])
@@ -39,6 +42,7 @@ class ThreeDThumbnailAABB:
         min: The minimum render position.
         max: The maximum render position.
     """
+
     def __init__(self, data: dict):
         self.min: ThreeDThumbnailVector3 = ThreeDThumbnailVector3(data["min"])
         self.max: ThreeDThumbnailVector3 = ThreeDThumbnailVector3(data["max"])
@@ -56,6 +60,7 @@ class ThreeDThumbnail:
         camera: The camera object.
         aabb: The AABB object.
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
 

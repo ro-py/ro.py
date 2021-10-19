@@ -34,6 +34,7 @@ class UniverseSocialLink(BaseUniverseSocialLink):
         url: The social link's URL.
         type: The social link's type.
     """
+
     def __init__(self, shared: ClientSharedObject, data: dict):
         self._shared: ClientSharedObject = shared
         self.id: int = data["id"]

@@ -7,23 +7,54 @@ It also contains the GroupSettings object, which represents a group's settings.
 
 from __future__ import annotations
 
+from datetime import datetime
 from typing import Optional, List, Union, TYPE_CHECKING
+
+from dateutil.parser import parse
 
 from .baseitem import BaseItem
 from ..bases.baserole import BaseRole
 from ..members import Member, MemberRelationship
+from ..partials.partialuser import PartialUser, RequestedUsernamePartialUser
 from ..roles import Role
-from ..wall import WallPost, WallPostRelationship
-
 from ..utilities.exceptions import InvalidRole
 from ..utilities.iterators import PageIterator, SortOrder
 from ..utilities.shared import ClientSharedObject
-
-from ..partials.partialuser import RequestedUsernamePartialUser
+from ..wall import WallPost, WallPostRelationship
 
 if TYPE_CHECKING:
     from ..groups import Group
     from .baseuser import BaseUser
+
+
+class JoinRequest(PartialUser):
+    """
+    Represents a group join request.
+    """
+
+    def __init__(self, shared: ClientSharedObject, data: dict, group: Union[BaseGroup, int]):
+        self._shared: ClientSharedObject = shared
+        super().__init__(shared=self._shared, data=data["requester"])
+        self.created: datetime = parse(data["created"])
+
+        self.group: BaseGroup
+
+        if isinstance(group, int):
+            self.group = BaseGroup(shared=self._shared, group_id=group)
+        else:
+            self.group = group
+
+    async def accept(self):
+        """
+        Accepts this join request.
+        """
+        await self.group.accept_user(self)
+
+    async def decline(self):
+        """
+        Declines this join request.
+        """
+        await self.group.decline_user(self)
 
 
 class GroupSettings:
@@ -273,4 +304,47 @@ class BaseGroup(BaseItem):
             shared=self._shared,
             post_id=post_id,
             group=self
+        )
+
+    def get_join_requests(self, sort_order: SortOrder = SortOrder.Ascending, limit: int = 10) -> PageIterator:
+        """
+        Gets all of this group's join requests.
+        """
+        return PageIterator(
+            shared=self._shared,
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests"),
+            sort_order=sort_order,
+            limit=limit,
+            handler=lambda shared, data: JoinRequest(shared=shared, data=data, group=self)
+        )
+
+    async def get_join_request(self, user: Union[int, BaseUser]) -> Optional[JoinRequest]:
+        """
+        Gets a specific user's join request to your group.
+        Returns None if the user does not have an active join request.
+        """
+        join_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests/users/{int(user)}")
+        )
+        join_data = join_response.json()
+        return join_data and JoinRequest(
+            shared=self._shared,
+            data=join_data,
+            group=self
+        ) or None
+
+    async def accept_user(self, user: Union[int, BaseUser]):
+        """
+        Accepts a user's request to join this group.
+        """
+        await self._shared.requests.post(
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests/users/{int(user)}")
+        )
+
+    async def decline_user(self, user: Union[int, BaseUser]):
+        """
+        Declines a user's request to join this group.
+        """
+        await self._shared.requests.delete(
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests/users/{int(user)}")
         )
