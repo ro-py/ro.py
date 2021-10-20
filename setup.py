@@ -8,7 +8,7 @@ setup_info = {
     "version": "2.0.0",
     "author": "jmkdev",
     "author_email": "jmk@jmksite.dev",
-    "description": "ro.py is a modern object-oriented asynchronous Python wrapper for the Roblox Web API.",
+    "description": "ro.py is a modern object-oriented asynchronous Python wrapper for the Roblox web API.",
     "long_description": long_description,
     "long_description_content_type": "text/markdown",
     "url": "https://github.com/rbx-libdev/ro.py",
