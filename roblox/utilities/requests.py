@@ -14,7 +14,7 @@ from typing import Optional
 from dateutil.parser import parse
 from httpx import AsyncClient, Response
 
-from .exceptions import HTTPStatusError
+from .exceptions import HTTPException
 from ..utilities.url import URLGenerator
 
 
@@ -124,101 +124,11 @@ class Requests:
                 except JSONDecodeError:
                     pass
                 errors = data and data.get("errors")
-            if errors:
-                parsed_errors = []
-                for error in errors:
-                    # Make each error into a parsed string
-                    error_code = error["code"]
-                    error_message = error.get("message")
 
-                    parsed_error = f"\t{error_code}: {error_message}"
-
-                    error_messages = []
-
-                    error_user_facing_message = error.get("userFacingMessage")
-                    error_field = error.get("field")
-                    error_retryable = error.get("retryable")
-
-                    if error_user_facing_message:
-                        # Add the parenthesis-wrapped user facing message
-                        error_messages.append(f"User-facing message: {error_user_facing_message}")
-
-                    if error_field:
-                        # Add the field, which is the name of the key in the request body that caused the error
-                        error_messages.append(f"Field: {error_field}")
-
-                    if error_retryable is not None:
-                        error_messages.append(f"Retryable: {error_retryable}")
-
-                    if self.parse_bans and error_message == "User is moderated":
-                        # This is a ban error message, send another request for data.
-                        # This request needs to be safe and no errors can be raised here.
-                        try:
-                            ban_response = await self.session.get(
-                                url=self._url_generator.get_url("usermoderation", "v1/not-approved")
-                            )
-                            ban_data = ban_response.json()
-
-                            punished_user_id: int = ban_data["punishedUserId"]
-                            message_to_user: str = ban_data["messageToUser"]
-                            punishment_type_description: str = ban_data["punishmentTypeDescription"]
-                            punishment_id: int = ban_data["punishmentId"]
-                            begin_date: Optional[datetime] = None
-                            end_date: Optional[datetime] = None
-
-                            if ban_data["beginDate"]:
-                                begin_date = parse(ban_data["beginDate"])
-
-                            if ban_data["endDate"]:
-                                end_date = parse(ban_data["endDate"])
-
-                            error_messages.append(f"Punished User ID: {punished_user_id}")
-                            error_messages.append(f"Punishment Type: {punishment_type_description}")
-                            error_messages.append(f"Punishment ID: {punishment_id}")
-                            error_messages.append(f"Ban Message: {message_to_user}")
-
-                            if begin_date:
-                                parsed_begin_date = begin_date.strftime("%m/%d/%Y, %H:%M:%S")
-                                error_messages.append(f"Begin Date: {parsed_begin_date}")
-                            else:
-                                error_messages.append(f"Begin Date: None")
-
-                            if end_date:
-                                parsed_end_date = end_date.strftime("%m/%d/%Y, %H:%M:%S")
-                                error_messages.append(f"End Date: {parsed_end_date}")
-                            else:
-                                error_messages.append(f"End Date: None")
-
-                            not_approved_url = self._url_generator.get_url("www", "not-approved")
-                            error_messages.append(f"For more information, please see {not_approved_url}.")
-                            error_messages.append(
-                                f"If you wish to appeal, please contact Roblox: https://www.roblox.com/support")
-                        except Exception:
-                            # don't throw errors
-                            pass
-
-                    if error_messages:
-                        error_message_string = "\n\t\t".join(error_messages)
-                        parsed_error += f"\n\t\t{error_message_string}"
-
-                    parsed_errors.append(parsed_error)
-
-                # Turn the parsed errors into a joined string
-                parsed_error_string = "\n".join(parsed_errors)
-
-                exception = HTTPStatusError(
-                    message=f"""{response.status_code} {response.reason_phrase}: {response.url}.\n\nErrors:
-{parsed_error_string}""",
-                    request=response.request,
-                    response=response,
-                    errors=errors
-                )
-            else:
-                exception = HTTPStatusError(
-                    message=f"{response.status_code} {response.reason_phrase}: {response.url}",
-                    request=response.request,
-                    response=response
-                )
+            exception = HTTPException(
+                response=response,
+                errors=errors
+            )
             raise exception
         else:
             return response
