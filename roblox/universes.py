@@ -115,7 +115,6 @@ class Universe(BaseUniverse):
         self.updated: datetime = parse(data["updated"])
         self.studio_access_to_apis_allowed: bool = data["studioAccessToApisAllowed"]
         self.create_vip_servers_allowed: bool = data["createVipServersAllowed"]
-        self.create_vip_servers_allowed: bool = data["createVipServersAllowed"]
         self.universe_avatar_type: UniverseAvatarType = UniverseAvatarType(data["universeAvatarType"])
         self.genre: UniverseGenre = UniverseGenre(data["genre"])
         self.is_all_genre: bool = data["isAllGenre"]
