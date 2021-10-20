@@ -7,14 +7,12 @@ This module contains classes used internally by ro.py for sending requests to Ro
 from __future__ import annotations
 
 import asyncio
-from datetime import datetime
 from json import JSONDecodeError
 from typing import Optional
 
-from dateutil.parser import parse
 from httpx import AsyncClient, Response
 
-from .exceptions import HTTPException
+from .exceptions import get_exception_from_status_code
 from ..utilities.url import URLGenerator
 
 
@@ -125,7 +123,7 @@ class Requests:
                     pass
                 errors = data and data.get("errors")
 
-            exception = HTTPException(
+            exception = get_exception_from_status_code(response.status_code)(
                 response=response,
                 errors=errors
             )

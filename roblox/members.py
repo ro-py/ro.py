@@ -52,6 +52,9 @@ class MemberRelationship(BaseUser):
         await self.group.set_rank(self, rank)
 
     async def kick(self):
+        """
+        Kicks this member from the group.
+        """
         await self.group.kick_user(self)
 
 
