@@ -64,18 +64,17 @@ class Client:
         chat: The chat provider object.
     """
 
-    def __init__(self, token: str = None, base_url: str = "roblox.com", parse_bans: bool = True):
+    def __init__(self, token: str = None, base_url: str = "roblox.com"):
         """
         Arguments:
             token: A .ROBLOSECURITY token to authenticate the client with.
             base_url: The base URL to use when sending requests.
-            parse_bans: Whether to show parsed ban messages in errors.
         """
         self._url_generator: URLGenerator = URLGenerator(base_url=base_url)
         self._requests: Requests = Requests(
-            url_generator=self._url_generator,
-            parse_bans=parse_bans
+            url_generator=self._url_generator
         )
+
         self._shared: ClientSharedObject = ClientSharedObject(
             client=self,
             requests=self._requests,
@@ -94,6 +93,8 @@ class Client:
         self._shared.delivery_provider = self.delivery
         self._shared.chat_provider = self.chat
         self._shared.account_provider = self.account
+
+        self.requests: Requests = self._requests
 
         if token:
             self.set_token(token)

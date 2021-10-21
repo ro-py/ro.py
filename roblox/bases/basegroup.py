@@ -268,11 +268,7 @@ class BaseGroup(BaseItem):
         Kicks a user from a group.
         """
         await self._shared.requests.delete(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users/{user.id}"),
-            json={
-                "groupId": self.id,
-                "userId": int(user)
-            }
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users/{user.id}")
         )
 
     def get_wall_posts(self, sort_order: SortOrder = SortOrder.Ascending, limit: int = 10) -> PageIterator:

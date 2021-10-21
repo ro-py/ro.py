@@ -10,13 +10,7 @@ from enum import Enum
 from typing import Callable, Optional, AsyncIterator
 
 from .shared import ClientSharedObject
-
-
-class NoMoreItems(Exception):
-    """
-    Raised when there are no more items left to iterate through.
-    """
-    pass
+from .exceptions import NoMoreItems
 
 
 class SortOrder(Enum):

@@ -43,10 +43,16 @@ class HTTPException(RobloxException):
         """
         self.response: Response = response
         self.status: int = response.status_code
-        self.errors: List[ResponseError] = [
-            ResponseError(data=error_data) for error_data in errors
-        ]
+        self.errors: List[ResponseError]
+
         if errors:
+            self.errors: List[ResponseError] = [
+                ResponseError(data=error_data) for error_data in errors
+            ]
+        else:
+            self.errors = []
+
+        if self.errors:
             error_string = self._generate_string()
             super().__init__(f"""{response.status_code} {response.reason_phrase}: {response.url}.\n\nErrors:
 {error_string}""")
@@ -134,5 +140,12 @@ def get_exception_from_status_code(code: int) -> Type[HTTPException]:
 class InvalidRole(RobloxException):
     """
     Raised when a role doesn't exist.
+    """
+    pass
+
+
+class NoMoreItems(Exception):
+    """
+    Raised when there are no more items left to iterate through.
     """
     pass
