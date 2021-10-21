@@ -8,12 +8,9 @@ from __future__ import annotations
 
 import asyncio
 from json import JSONDecodeError
-from typing import Optional, Union, Any
+from typing import Optional
 
-from httpx import AsyncClient, Response, USE_CLIENT_DEFAULT
-from httpx._client import UseClientDefault
-from httpx._types import RequestData, RequestContent, URLTypes, RequestFiles, QueryParamTypes, HeaderTypes, \
-    CookieTypes, AuthTypes, TimeoutTypes
+from httpx import AsyncClient, Response
 
 from .exceptions import get_exception_from_status_code
 from ..utilities.url import URLGenerator
@@ -44,6 +41,7 @@ class Requests:
         xcsrf_token_name: The header that will contain the Cross-Site Request Forgery token
         xcsrf_allowed_methods: The methods allowed for
         that method. Keys must be in lowercase.
+        parse_bans: Whether to parse ban data.
         url_generator: URL generator for ban parsing.
     """
 
@@ -79,265 +77,87 @@ class Requests:
         self.session.headers["User-Agent"] = "Roblox/WinInet"
         self.session.headers["Referer"] = "www.roblox.com"
 
-    async def request(
-            self,
-            method: str,
-            url: URLTypes,
-            *,
-            content: RequestContent = None,
-            data: RequestData = None,
-            files: RequestFiles = None,
-            json: Any = None,
-            params: QueryParamTypes = None,
-            headers: HeaderTypes = None,
-            cookies: CookieTypes = None,
-            auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-            allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
-            timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-            handle_xcsrf_token: bool = True,
-            skip_roblox: bool = False
-    ) -> Response:
+    async def request(self, method: str, *args, **kwargs) -> Response:
         """
-        For documentation on these parameters, please see httpx's docs at https://www.python-httpx.org/
-            and the Requests documentation at https://github.com/psf/requests/blob/main/requests/api.py.
+        Arguments:
+            method: method used for the request
 
         Returns:
-            A new Response.
+            Response
         """
+
+        handle_xcsrf_token = kwargs.pop("handle_xcsrf_token", True)
+        skip_roblox = kwargs.pop("skip_roblox", False)
+
+        response = await self.session.request(method, *args, **kwargs)
+
+        if skip_roblox:
+            return response
 
         method = method.lower()
 
-        response = await self.session.request(
-            method=method,
-            url=url,
-            content=content,
-            data=data,
-            files=files,
-            json=json,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-            auth=auth,
-            allow_redirects=allow_redirects,
-            timeout=timeout
-        )
-
-        if skip_roblox:
-            # Skip parsing of this request. Return the response plain.
-            return response
-
-        # if we should handle the xcsrf, the xcsrf is in the response headers, and this method requires xcsrf handling
         if handle_xcsrf_token and self.xcsrf_token_name in response.headers and self.xcsrf_allowed_methods.get(method):
             self.session.headers[self.xcsrf_token_name] = response.headers[self.xcsrf_token_name]
-            if response.status_code == 403:
-                # 403 responses mean we have to send the request again because this token became invalid
-                response = await self.session.request(
-                    method=method,
-                    url=url,
-                    content=content,
-                    data=data,
-                    files=files,
-                    json=json,
-                    params=params,
-                    headers=headers,
-                    cookies=cookies,
-                    auth=auth,
-                    allow_redirects=allow_redirects,
-                    timeout=timeout
-                )
+            if response.status_code == 403:  # Request failed, send it again
+                response = await self.session.request(method, *args, **kwargs)
+
+        if kwargs.get("stream"):
+            # Streamed responses should not be decoded, so we immediately return the response.
+            return response
 
         if response.is_error:
             # Something went wrong, parse an error
             content_type = response.headers.get("Content-Type")
             errors = None
-
             if content_type and content_type.startswith("application/json"):
-                # only parse JSON responses
                 data = None
-
                 try:
                     data = response.json()
                 except JSONDecodeError:
                     pass
-
                 errors = data and data.get("errors")
 
-            # generate an exception from this status code
             exception = get_exception_from_status_code(response.status_code)(
                 response=response,
                 errors=errors
             )
-
-            # raise the error
             raise exception
         else:
             return response
 
-    async def get(
-            self,
-            url: URLTypes,
-            *,
-            params: QueryParamTypes = None,
-            headers: HeaderTypes = None,
-            cookies: CookieTypes = None,
-            auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-            allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
-            timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-    ) -> Response:
+    def get(self, *args, **kwargs):
         """
-        Sends a GET request.
+        Shortcut to self.request using the GET method.
 
         Returns:
             Response
         """
 
-        return await self.request(
-            method="GET",
-            url=url,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-            auth=auth,
-            allow_redirects=allow_redirects,
-            timeout=timeout,
-        )
+        return self.request("GET", *args, **kwargs)
 
-    async def post(
-            self,
-            url: URLTypes,
-            *,
-            content: RequestContent = None,
-            data: RequestData = None,
-            files: RequestFiles = None,
-            json: Any = None,
-            params: QueryParamTypes = None,
-            headers: HeaderTypes = None,
-            cookies: CookieTypes = None,
-            auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-            allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
-            timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-    ) -> Response:
+    def post(self, *args, **kwargs):
         """
-        Sends a POST request.
+        Shortcut to self.request using the POST method.
+        """
+
+        return self.request("post", *args, **kwargs)
+
+    def patch(self, *args, **kwargs):
+        """
+        Shortcut to self.request using the PATCH method.
 
         Returns:
             Response
         """
 
-        return await self.request(
-            method="POST",
-            url=url,
-            content=content,
-            data=data,
-            files=files,
-            json=json,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-            auth=auth,
-            allow_redirects=allow_redirects,
-            timeout=timeout
-        )
+        return self.request("patch", *args, **kwargs)
 
-    async def put(
-            self,
-            url: URLTypes,
-            *,
-            content: RequestContent = None,
-            data: RequestData = None,
-            files: RequestFiles = None,
-            json: Any = None,
-            params: QueryParamTypes = None,
-            headers: HeaderTypes = None,
-            cookies: CookieTypes = None,
-            auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-            allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
-            timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-    ) -> Response:
+    def delete(self, *args, **kwargs):
         """
-        Sends a PUT request.
+        Shortcut to self.request using the DELETE method.
 
         Returns:
             Response
         """
 
-        return await self.request(
-            method="PUT",
-            url=url,
-            content=content,
-            data=data,
-            files=files,
-            json=json,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-            auth=auth,
-            allow_redirects=allow_redirects,
-            timeout=timeout
-        )
-
-    async def patch(
-            self,
-            url: URLTypes,
-            *,
-            content: RequestContent = None,
-            data: RequestData = None,
-            files: RequestFiles = None,
-            json: Any = None,
-            params: QueryParamTypes = None,
-            headers: HeaderTypes = None,
-            cookies: CookieTypes = None,
-            auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-            allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
-            timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-    ) -> Response:
-        """
-        Sends a PATCH request.
-
-        Returns:
-            Response
-        """
-
-        return await self.request(
-            method="PATCH",
-            url=url,
-            content=content,
-            data=data,
-            files=files,
-            json=json,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-            auth=auth,
-            allow_redirects=allow_redirects,
-            timeout=timeout
-        )
-
-    async def delete(
-            self,
-            url: URLTypes,
-            *,
-            params: QueryParamTypes = None,
-            headers: HeaderTypes = None,
-            cookies: CookieTypes = None,
-            auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-            allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
-            timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-    ) -> Response:
-        """
-        Sends a DELETE request.
-
-        Returns:
-            Response
-        """
-
-        return await self.request(
-            method="DELETE",
-            url=url,
-            params=params,
-            headers=headers,
-            cookies=cookies,
-            auth=auth,
-            allow_redirects=allow_redirects,
-            timeout=timeout,
-        )
+        return self.request("delete", *args, **kwargs)
