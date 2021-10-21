@@ -9,8 +9,8 @@ from __future__ import annotations
 from enum import Enum
 from typing import Callable, Optional, AsyncIterator
 
-from .shared import ClientSharedObject
 from .exceptions import NoMoreItems
+from .shared import ClientSharedObject
 
 
 class SortOrder(Enum):

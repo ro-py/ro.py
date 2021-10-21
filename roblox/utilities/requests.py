@@ -80,22 +80,22 @@ class Requests:
         self.session.headers["Referer"] = "www.roblox.com"
 
     async def request(
-        self,
-        method: str,
-        url: URLTypes,
-        *,
-        content: RequestContent = None,
-        data: RequestData = None,
-        files: RequestFiles = None,
-        json: Any = None,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
-        cookies: CookieTypes = None,
-        auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-        allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
-        timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-        handle_xcsrf_token: bool = True,
-        skip_roblox: bool = False
+            self,
+            method: str,
+            url: URLTypes,
+            *,
+            content: RequestContent = None,
+            data: RequestData = None,
+            files: RequestFiles = None,
+            json: Any = None,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
+            cookies: CookieTypes = None,
+            auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
+            allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
+            timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
+            handle_xcsrf_token: bool = True,
+            skip_roblox: bool = False
     ) -> Response:
         """
         For documentation on these parameters, please see httpx's docs at https://www.python-httpx.org/
@@ -174,15 +174,15 @@ class Requests:
             return response
 
     async def get(
-        self,
-        url: URLTypes,
-        *,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
-        cookies: CookieTypes = None,
-        auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-        allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
-        timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
+            self,
+            url: URLTypes,
+            *,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
+            cookies: CookieTypes = None,
+            auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
+            allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
+            timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> Response:
         """
         Sends a GET request.
@@ -203,19 +203,19 @@ class Requests:
         )
 
     async def post(
-        self,
-        url: URLTypes,
-        *,
-        content: RequestContent = None,
-        data: RequestData = None,
-        files: RequestFiles = None,
-        json: Any = None,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
-        cookies: CookieTypes = None,
-        auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-        allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
-        timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
+            self,
+            url: URLTypes,
+            *,
+            content: RequestContent = None,
+            data: RequestData = None,
+            files: RequestFiles = None,
+            json: Any = None,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
+            cookies: CookieTypes = None,
+            auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
+            allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
+            timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> Response:
         """
         Sends a POST request.
@@ -240,19 +240,19 @@ class Requests:
         )
 
     async def put(
-        self,
-        url: URLTypes,
-        *,
-        content: RequestContent = None,
-        data: RequestData = None,
-        files: RequestFiles = None,
-        json: Any = None,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
-        cookies: CookieTypes = None,
-        auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-        allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
-        timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
+            self,
+            url: URLTypes,
+            *,
+            content: RequestContent = None,
+            data: RequestData = None,
+            files: RequestFiles = None,
+            json: Any = None,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
+            cookies: CookieTypes = None,
+            auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
+            allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
+            timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> Response:
         """
         Sends a PUT request.
@@ -277,19 +277,19 @@ class Requests:
         )
 
     async def patch(
-        self,
-        url: URLTypes,
-        *,
-        content: RequestContent = None,
-        data: RequestData = None,
-        files: RequestFiles = None,
-        json: Any = None,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
-        cookies: CookieTypes = None,
-        auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-        allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
-        timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
+            self,
+            url: URLTypes,
+            *,
+            content: RequestContent = None,
+            data: RequestData = None,
+            files: RequestFiles = None,
+            json: Any = None,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
+            cookies: CookieTypes = None,
+            auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
+            allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
+            timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> Response:
         """
         Sends a PATCH request.
@@ -314,15 +314,15 @@ class Requests:
         )
 
     async def delete(
-        self,
-        url: URLTypes,
-        *,
-        params: QueryParamTypes = None,
-        headers: HeaderTypes = None,
-        cookies: CookieTypes = None,
-        auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
-        allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
-        timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
+            self,
+            url: URLTypes,
+            *,
+            params: QueryParamTypes = None,
+            headers: HeaderTypes = None,
+            cookies: CookieTypes = None,
+            auth: Union[AuthTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
+            allow_redirects: Union[bool, UseClientDefault] = USE_CLIENT_DEFAULT,
+            timeout: Union[TimeoutTypes, UseClientDefault] = USE_CLIENT_DEFAULT,
     ) -> Response:
         """
         Sends a DELETE request.

@@ -5,6 +5,7 @@ Contains exceptions used by ro.py.
 """
 
 from typing import Optional, List, Dict, Type
+
 from httpx import Response
 
 
@@ -21,6 +22,7 @@ class ResponseError:
     """
     Represents an error returned by a Roblox game server.
     """
+
     def __init__(self, data: dict):
         self.code: int = data["code"]
         self.message: Optional[str] = data.get("message")
@@ -35,6 +37,7 @@ class HTTPException(RobloxException):
     """
     Exception that's raised when an HTTP request fails.
     """
+
     def __init__(self, response: Response, errors: Optional[list] = None):
         """
         Arguments:
