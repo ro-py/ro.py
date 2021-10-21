@@ -41,7 +41,6 @@ class Requests:
         xcsrf_token_name: The header that will contain the Cross-Site Request Forgery token
         xcsrf_allowed_methods: The methods allowed for
         that method. Keys must be in lowercase.
-        parse_bans: Whether to parse ban data.
         url_generator: URL generator for ban parsing.
     """
 
@@ -125,39 +124,52 @@ class Requests:
         else:
             return response
 
-    def get(self, *args, **kwargs):
+    async def get(self, *args, **kwargs) -> Response:
         """
-        Shortcut to self.request using the GET method.
+        Sends a GET request.
 
         Returns:
             Response
         """
 
-        return self.request("GET", *args, **kwargs)
+        return await self.request("GET", *args, **kwargs)
 
-    def post(self, *args, **kwargs):
+    async def post(self, *args, **kwargs) -> Response:
         """
-        Shortcut to self.request using the POST method.
-        """
-
-        return self.request("post", *args, **kwargs)
-
-    def patch(self, *args, **kwargs):
-        """
-        Shortcut to self.request using the PATCH method.
+        Sends a POST request.
 
         Returns:
             Response
         """
 
-        return self.request("patch", *args, **kwargs)
+        return await self.request("POST", *args, **kwargs)
 
-    def delete(self, *args, **kwargs):
+    async def put(self, *args, **kwargs) -> Response:
         """
-        Shortcut to self.request using the DELETE method.
+        Sends a PATCH request.
 
         Returns:
             Response
         """
 
-        return self.request("delete", *args, **kwargs)
+        return await self.request("PUT", *args, **kwargs)
+
+    async def patch(self, *args, **kwargs) -> Response:
+        """
+        Sends a PATCH request.
+
+        Returns:
+            Response
+        """
+
+        return await self.request("PATCH", *args, **kwargs)
+
+    async def delete(self, *args, **kwargs) -> Response:
+        """
+        Sends a DELETE request.
+
+        Returns:
+            Response
+        """
+
+        return await self.request("DELETE", *args, **kwargs)
