@@ -10,6 +10,7 @@ from httpx import Response
 
 
 # Generic exceptions
+
 class RobloxException(Exception):
     """
     Base exception for all of ro.py.
@@ -18,6 +19,7 @@ class RobloxException(Exception):
 
 
 # Other objects
+
 class ResponseError:
     """
     Represents an error returned by a Roblox game server.
@@ -33,6 +35,7 @@ class ResponseError:
 
 # HTTP exceptions
 # Exceptions that Roblox endpoints do not respond with are not included here.
+
 class HTTPException(RobloxException):
     """
     Exception that's raised when an HTTP request fails.
@@ -57,10 +60,10 @@ class HTTPException(RobloxException):
 
         if self.errors:
             error_string = self._generate_string()
-            super().__init__(f"""{response.status_code} {response.reason_phrase}: {response.url}.\n\nErrors:
-{error_string}""")
+            super().__init__(
+                f"{response.status_code} {response.reason_phrase}: {response.url}.\n\nErrors:\n{error_string}")
         else:
-            super().__init__(f"""{response.status_code} {response.reason_phrase}: {response.url}""")
+            super().__init__(f"{response.status_code} {response.reason_phrase}: {response.url}")
 
     def _generate_string(self) -> str:
         parsed_errors = []
