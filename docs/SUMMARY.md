@@ -1,4 +1,4 @@
 - [Overview](index.md)
-- [Get Started](get-started.md)
+- [Tutorial](tutorial/)
 - [Authentication](authentication.md)
 - [Code Reference](reference/)
