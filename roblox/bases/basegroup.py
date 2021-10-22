@@ -17,6 +17,7 @@ from ..bases.baserole import BaseRole
 from ..members import Member, MemberRelationship
 from ..partials.partialuser import PartialUser, RequestedUsernamePartialUser
 from ..roles import Role
+from ..shout import Shout
 from ..utilities.exceptions import InvalidRole
 from ..utilities.iterators import PageIterator, SortOrder
 from ..utilities.shared import ClientSharedObject
@@ -344,3 +345,26 @@ class BaseGroup(BaseItem):
         await self._shared.requests.delete(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests/users/{int(user)}")
         )
+
+    async def update_shout(self, message: str) -> Optional[Shout]:
+        """
+        Updates the shout.
+
+        Arguments:
+            message: The new shout message.
+        """
+        shout_response = await self._requests.patch(
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/status"),
+            json={
+                "message": message
+            }
+        )
+
+        shout_data = shout_response.json()
+
+        new_shout: Optional[Shout] = shout_data and Shout(
+            shared=self._shared,
+            data=shout_data
+        ) or None
+
+        return new_shout
