@@ -1,6 +1,6 @@
 # Authentication
 To authenticate our client, we need our .ROBLOSECURITY token. To learn about why we need this and how to get it, 
-please see [Authentication](/authentication). 
+please see [ROBLOSECURITY](/roblosecurity). 
 Once we have our token, we can add it to our client by passing it as the first parameter. 
 Use this code, where TOKEN is the .ROBLOSECURITY token grabbed earlier, to authenticate your client.
 ```python
@@ -25,6 +25,13 @@ Your file should look like this, where TOKEN is the .ROBLOSECURITY token you gra
 ROBLOXTOKEN=TOKEN
 ```
 Place it in the same folder as your application's main file. 
+
+Your file structure should look like this:
+```sh
+.
+├─ .env
+└─ main.py
+```
 
 Next, install the [python-dotenv](https://github.com/theskumar/python-dotenv) library with the following command:
 ```
