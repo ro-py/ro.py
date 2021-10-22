@@ -1,5 +1,9 @@
 """
-Tests almost all ro.py functionality.
+
+Tests ro.py functionality.
+It is not possible to fully test ro.py as it relies on external conditions, so this test mostly checks parity and cannot
+be fully relied upon. Certain methods have been intentionally left out.
+
 """
 
 import os
@@ -36,12 +40,18 @@ async def test_user_id_name(user_id: int):
 
 
 async def test_user_name_id(name: str):
+    """
+    Tests to see if get_user(user.id) == get_user_by_username(user.name) in reverse
+    """
     user = await client.get_user_by_username(name)
     user2 = await client.get_user(user.id)
     return user.id == user2.id
 
 
 async def main():
+    """
+    🥺
+    """
     # set up basic authentication
     is_authenticated: bool = False
     authenticated_user: Optional[User]
@@ -73,7 +83,8 @@ async def main():
     assert await test_user_name_id("Roblox")
     assert await test_user_name_id("John Doe")
     assert await test_user_name_id("Jane Doe")
-    
+    assert await test_user_name_id("local_ip")
+
 
 if __name__ == '__main__':
     asyncio.get_event_loop().run_until_complete(main())
