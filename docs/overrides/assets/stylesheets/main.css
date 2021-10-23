@@ -1,0 +1,7 @@
+.md-announce strong {
+    white-space: nowrap;
+}
+.md-announce a {
+    color: white;
+    font-size: 0.8rem;
+}

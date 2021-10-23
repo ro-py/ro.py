@@ -25,10 +25,10 @@ ourselves without dealing with advanced Roblox-specific concepts.
 
 To install ro.py from git, install [git-scm](https://git-scm.com/downloads) and run the following:
 ```
-$ pip install git+git://github.com/ro-py/ro.py.git
+pip install git+git://github.com/ro-py/ro.py.git
 ```
 
 To install ro.py from PyPI, which is currently incompatible with this documentation, you can install with pip:
 ```
-$ pip install roblox
+pip install roblox
 ```

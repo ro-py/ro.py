@@ -8,6 +8,7 @@ edit_uri: edit/main/docs/
 
 theme:
   name: material
+  custom_dir: docs/overrides
   logo: assets/logo.svg
   favicon: assets/logo.svg
   font:
@@ -67,3 +68,15 @@ markdown_extensions:
       guess_lang: false
   - toc:
       permalink: true
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/ro-py/ro.py
+      name: ro.py on GitHub
+    - icon: fontawesome/brands/discord
+      link: https://discord.gg/N8yUdkSJwA
+      name: RoAPI Discord
+    - icon: fontawesome/brands/twitter
+      link: https://twitter.com/jmkdev
+      name: jmkdev on Twitter
