@@ -1,10 +1,8 @@
-#!/usr/bin/env python
-
 from pathlib import Path
 import mkdocs_gen_files
 nav = mkdocs_gen_files.Nav()
 
-package_names = ["roblox", "ro", "ro_py"]
+package_names = ["roblox"]
 
 for package_name in package_names:
     for path in sorted(Path(package_name).glob("**/*.py")):
