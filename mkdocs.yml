@@ -2,8 +2,8 @@
 
 site_name: ro.py
 site_url: https://ro.py.jmk.gg/
-repo_name: rbx-libdev/ro.py
-repo_url: https://github.com/rbx-libdev/ro.py
+repo_name: ro-py/ro.py
+repo_url: https://github.com/ro-py/ro.py
 edit_uri: edit/main/docs/
 
 theme:

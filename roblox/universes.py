@@ -13,7 +13,7 @@ from dateutil.parser import parse
 from .bases.baseuniverse import BaseUniverse
 from .partials.partialgroup import UniversePartialGroup
 from .partials.partialuser import PartialUser
-from .sharedenums import CreatorType
+from .creatortype import CreatorType
 from .utilities.shared import ClientSharedObject
 
 

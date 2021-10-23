@@ -12,7 +12,7 @@ from dateutil.parser import parse
 from .bases.baseasset import BaseAsset
 from .partials.partialgroup import AssetPartialGroup
 from .partials.partialuser import PartialUser
-from .sharedenums import CreatorType
+from .creatortype import CreatorType
 from .utilities.shared import ClientSharedObject
 
 asset_type_names = {
