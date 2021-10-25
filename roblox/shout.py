@@ -45,5 +45,5 @@ class Shout:
         )
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} created={self.created} updated={self.updated!r} body={self.body!r} " \
+        return f"<{self.__class__.__name__} created={self.created} updated={self.updated} body={self.body!r} " \
                f"poster={self.poster!r}>"

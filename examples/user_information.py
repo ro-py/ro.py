@@ -15,9 +15,8 @@ async def main():
     print("Name:", user.name)
     print("Display Name:", user.display_name)
     print("Created:", user.created.strftime("%m/%d/%Y, %H:%M:%S"))
-    print("Status:", status)
-    print("Description:")
-    print(user.description)
+    print(f"Status: {status!r}")
+    print(f"Description: {user.description!r}")
 
 
 asyncio.get_event_loop().run_until_complete(main())
