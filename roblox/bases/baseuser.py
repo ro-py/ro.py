@@ -250,3 +250,85 @@ class BaseUser(BaseItem):
         return UserPromotionChannels(
             data=channels_data
         )
+
+    async def _get_friend_channel_count(self, channel: str) -> int:
+        count_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("friends", f"v1/users/{self.id}/{channel}/count")
+        )
+        return count_response.json()["count"]
+
+    def _get_friend_channel_iterator(
+            self,
+            channel: str,
+            limit: int = 10,
+            sort_order: SortOrder = SortOrder.Ascending
+    ) -> PageIterator:
+        from ..friends import Friend
+        return PageIterator(
+            shared=self._shared,
+            url=self._shared.url_generator.get_url("friends", f"v1/users/{self.id}/{channel}"),
+            limit=limit,
+            sort_order=sort_order,
+            handler=lambda shared, data: Friend(shared=shared, data=data)
+        )
+
+    async def get_friend_count(self) -> int:
+        """
+        Gets the user's friend count.
+
+        Returns:
+            The user's friend count.
+        """
+        return await self._get_friend_channel_count("friends")
+
+    async def get_follower_count(self) -> int:
+        """
+        Gets the user's follower count.
+
+        Returns:
+            The user's follower count.
+        """
+        return await self._get_friend_channel_count("followers")
+
+    async def get_following_count(self) -> int:
+        """
+        Gets the user's following count.
+
+        Returns:
+            The user's following count.
+        """
+        return await self._get_friend_channel_count("followings")
+
+    def get_followers(
+            self,
+            limit: int = 10,
+            sort_order: SortOrder = SortOrder.Ascending
+    ) -> PageIterator:
+        """
+        Gets the user's followings.
+        Returns:
+            A PageIterator containing the user's followers.
+        """
+        return self._get_friend_channel_iterator(
+            channel="followers",
+            limit=limit,
+            sort_order=sort_order
+        )
+
+    def get_followings(
+            self,
+            limit: int = 10,
+            sort_order: SortOrder = SortOrder.Ascending
+    ) -> PageIterator:
+        """
+        Gets the user's followings.
+        Returns:
+            A PageIterator containing the user's followers.
+        """
+        return self._get_friend_channel_iterator(
+            channel="followings",
+            limit=limit,
+            sort_order=sort_order
+        )
+
+

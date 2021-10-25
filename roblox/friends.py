@@ -4,6 +4,7 @@ Contains classes related to Roblox friend data and parsing.
 
 """
 
+from typing import Optional
 from .users import User
 from .utilities.shared import ClientSharedObject
 
@@ -27,7 +28,7 @@ class Friend(User):
         """
         super().__init__(shared=shared, data=data)
 
-        self.is_online: bool = data["isOnline"]
+        self.is_online: Optional[bool] = data.get("isOnline")
         self.presence_type: int = data["presenceType"]
         self.is_deleted: bool = data["isDeleted"]
         self.friend_frequent_rank: int = data["friendFrequentRank"]
