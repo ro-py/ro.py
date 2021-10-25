@@ -12,6 +12,7 @@ on:
       - "roblox/**"
       - "docs/**"
       - ".github/workflows/**"
+      - "mkdocs.yml"
 
 jobs:
   deploy:
