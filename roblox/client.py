@@ -55,13 +55,13 @@ class Client:
     Represents a Roblox client.
 
     Attributes:
-        _requests: The requests object, which is used to send requests to Roblox endpoints.
-        _url_generator: The URL generator object, which is used to generate URLs to send requests to endpoints.
-        _shared: The shared object, which is passed to all objects this client generates.
+        requests: The requests object, which is used to send requests to Roblox endpoints.
+        url_generator: The URL generator object, which is used to generate URLs to send requests to endpoints.
         presence: The presence provider object.
         thumbnails: The thumbnail provider object.
         delivery: The delivery provider object.
         chat: The chat provider object.
+        account: The account provider object.
     """
 
     def __init__(self, token: str = None, base_url: str = "roblox.com"):
@@ -95,6 +95,7 @@ class Client:
         self._shared.account_provider = self.account
 
         self.requests: Requests = self._requests
+        self.url_generator: URLGenerator = self._url_generator
 
         if token:
             self.set_token(token)
