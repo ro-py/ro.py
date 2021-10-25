@@ -10,10 +10,13 @@ from .utilities.url import cdn_site
 
 def get_cdn_number(cdn_hash: str) -> int:
     """
+    Gets the number in the CDN where number represents X in tX.rbxcdn.com
+
     Arguments:
         cdn_hash: The CDN cdn_hash to generate a CDN number for.
 
-    Returns: The CDN number for the supplied cdn_hash.
+    Returns: 
+        The CDN number for the supplied cdn_hash.
     """
     i = 31
     for char in cdn_hash[:32]:
@@ -26,7 +29,6 @@ class BaseCDNHash:
     Represents a cdn_hash on a Roblox content delivery network.
 
     Attributes:
-        _shared: The shared object.
         cdn_hash: The CDN hash as a string.
     """
 
@@ -46,6 +48,9 @@ class BaseCDNHash:
     def get_cdn_number(self) -> int:
         """
         Returns the CDN number of this CDN hash.
+
+        Returns:
+            The computed number of the given cdn_hash
         """
 
         return get_cdn_number(self.cdn_hash)
@@ -57,6 +62,12 @@ class BaseCDNHash:
     def get_url(self, site: str = cdn_site) -> str:
         """
         Gets the cdn_hash's URL. This should be implemented by subclasses.
+
+        Arguments:
+            site: Represents the URL for what site it should target, be it rbxcdn.com, or roblox.com etc.
+
+        Returns:
+            The computed URL from the given cdn_hash attribute.
         """
 
         raise NotImplementedError
@@ -96,8 +107,6 @@ class ContentCDNHash(BaseCDNHash):
 
 class DeliveryProvider:
     """
-    Attributes:
-        _shared: The shared object, which is passed to all objects this client generates.
     """
 
     def __init__(self, shared: ClientSharedObject):

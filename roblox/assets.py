@@ -92,18 +92,15 @@ class AssetType:
     Represents a Roblox asset type.
 
     Attributes:
-        _shared: The shared object, which is passed to all objects this client generates.
         id: Id of the Asset
         name: Name of the Asset
-        """
+    """
 
-    def __init__(self, shared: ClientSharedObject, type_id: int):
+    def __init__(self, type_id: int):
         """
         Arguments:
-            shared: Shared object.
-            type_id: Type ID.
+            type_id: The AssetTypeID to instantiate this AssetType object with. This is used to determine the name of the AssetType.
         """
-        self._shared: ClientSharedObject = shared
 
         self.id: int = type_id
         self.name: Optional[str] = asset_type_names.get(type_id)
@@ -118,8 +115,6 @@ class EconomyAsset(BaseAsset):
     It is intended to parse data from https://economy.roblox.com/v2/assets/ASSETID/details.
 
     Attributes:
-        _shared: The shared object, which is passed to all objects this client generates.
-        _data: the data we got form the endpoint.
         id: Id of the Asset
         product_id: Product id of the asset
         name: Name of the Asset
@@ -138,28 +133,25 @@ class EconomyAsset(BaseAsset):
         is_limited: if the asset is a limited item
         is_limited_unique: if the asset is a unique limited item
         remaining: How many items there are remaining if it is limited
-        minimum_membership_level: minimum membership level required to buy item
+        minimum_membership_level: Minimum membership level required to buy item
         content_rating_type_id: Unknown
         sale_availability_locations: Unknown
-        """
+    """
 
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:
-            shared: Shared object.
+            shared: The ClientSharedObject to be used when getting information on assets.
             data: The data form the request.
         """
         super().__init__(shared=shared, asset_id=data["AssetId"])
-
-        self._shared: ClientSharedObject = shared
-        self._data: dict = data
 
         self.product_type: Optional[str] = data["ProductType"]
         self.id: int = data["AssetId"]
         self.product_id: int = data["ProductId"]  # TODO: make this a BaseProduct
         self.name: str = data["Name"]
         self.description: str = data["Description"]
-        self.type: AssetType = AssetType(shared=self._shared, type_id=data["AssetTypeId"])
+        self.type: AssetType = AssetType(type_id=data["AssetTypeId"])
 
         self.creator_type: CreatorType = CreatorType(data["Creator"]["CreatorType"])
         self.creator: Union[PartialUser, AssetPartialGroup]
