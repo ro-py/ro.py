@@ -7,7 +7,12 @@ on:
         description: "MkDocs Deploy"
   push:
     branches:
-      - main
+      - "main"
+    paths:
+      - "roblox/**"
+      - "docs/**"
+      - ".github/workflows/**"
+      - "mkdocs.yml"
 
 jobs:
   deploy:
