@@ -3,3 +3,7 @@
     <br>
 </p>
 
+| File                                           | Description                                          |
+|------------------------------------------------|------------------------------------------------------|
+| [boilerplate.py](./boilerplate.py)             | Boilerplate for a standard ro.py application.        |
+| [user_information.py](./user_information.py)   | Grabs user information and prints it to the console. |
