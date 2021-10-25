@@ -15,7 +15,8 @@
             <td>
                 <a href="./user_information.py">user_information.py</a>
             </td>
-            <td>Grabs user information and prints it to the console.</td></tr>
+            <td>Grabs user information and prints it to the console.</td>
+        </tr>
         <tr>
             <td>
                 <a href="./group_information.py">group_information.py</a>
