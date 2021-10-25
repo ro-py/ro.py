@@ -4,12 +4,23 @@
 </p>
 
 <div align="center">
-
-| File                                           | Description                                          |
-|------------------------------------------------|------------------------------------------------------|
-| [boilerplate.py](./boilerplate.py)             | Boilerplate for a standard ro.py application.        |
-| [user_information.py](./user_information.py)   | Grabs user information and prints it to the console. |
-| [group_information.py](./group_information.py) | Grabs group information and prints it to the console. |
-
-
+    <table>
+        <tr>
+            <td>
+                <a href="./boilerplate.py">boilerplate.py</a>
+            </td>
+            <td>Boilerplate for a standard ro.py application.</td>
+        </tr>
+        <tr>
+            <td>
+                <a href="./user_information.py">user_information.py</a>
+            </td>
+            <td>Grabs user information and prints it to the console.</td></tr>
+        <tr>
+            <td>
+                <a href="./group_information.py">group_information.py</a>
+            </td>
+            <td>Grabs group information and prints it to the console.</td>
+        </tr>
+    </table>
 </div>
