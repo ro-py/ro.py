@@ -22,13 +22,11 @@ class BadgeStatistics:
         win_rate_percentage: Percentage of players who have joined the parent universe have been awarded this badge.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
+    def __init__(self, data: dict):
         """
         Arguments:
-            shared: The ClientSharedObject.
-            data: The raw data.
+            data: The raw input data.
         """
-        self._shared: ClientSharedObject = shared
         self.past_day_awarded_count: int = data["pastDayAwardedCount"]
         self.awarded_count: int = data["awardedCount"]
         self.win_rate_percentage: int = data["winRatePercentage"]
@@ -39,22 +37,29 @@ class BadgeStatistics:
 
 class Badge(BaseBadge):
     """
-    Attributes:
-        _data: The data we get back from the endpoint.
-        _shared: The shared object, which is passed to all objects this client generates.
+    Represents a badge from the API.
 
-    TODO: add more attributes
+    Attributes:
+        id: The badge Id.
+        name: The name of the badge.
+        description: The badge description.
+        display_name: The localized name of the badge.
+        display_description: The localized badge description.
+        enabled: Whether or not the badge is enabled.
+        icon: The badge icon.
+        display_icon: The localized badge icon.
+        created: When the badge was created.
+        updated: When the badge was updated.
+        statistics: Badge award statistics.
+        awarding_universe: The universe the badge is being awarded from.
     """
 
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:
-            shared: The ClientSharedObject.
+            shared: The ClientSharedObject to be used when getting information on badges.
             data: The data from the endpoint.
         """
-        self._shared: ClientSharedObject = shared
-        self._data: dict = data
-
         self.id: int = data["id"]
 
         super().__init__(shared=shared, badge_id=self.id)

@@ -12,9 +12,18 @@ from .utilities.shared import ClientSharedObject
 class ChatSettings:
     """
     Represents the authenticated user's Roblox chat settings.
+
+    Attributes:
+        chat_enabled: Is chat enabled for the user.
+        is_active_chat_user: Was the Last ChatMessage Sent within the last x dats or the account was created in the last x das? Note: user is active by default unless he/she does not chat for more than x dats after account creation.
+        is_connect_tab_enabled: Is Connect Tab Enabled for this user.
     """
 
     def __init__(self, data: dict):
+        """
+        Arguments:
+            data: The raw input data.
+        """
         self.chat_enabled: bool = data["chatEnabled"]
         self.is_active_chat_user: bool = data["isActiveChatUser"]
         self.is_connect_tab_enabled: bool = data["isConnectTabEnabled"]
@@ -29,6 +38,10 @@ class ChatProvider:
     """
 
     def __init__(self, shared: ClientSharedObject):
+        """
+        Arguments:
+            shared: The ClientSharedObject for getting information about chat.
+        """
         self._shared: ClientSharedObject = shared
 
     def __repr__(self):
@@ -38,7 +51,8 @@ class ChatProvider:
         """
         Gets the authenticated user's unread conversation count.
 
-        Returns: The user's unread conversation count.
+        Returns: 
+            The user's unread conversation count.
         """
         unread_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("chat", "v2/get-unread-conversation-count")
@@ -50,7 +64,8 @@ class ChatProvider:
         """
         Gets the authenticated user's chat settings.
 
-        Returns: The user's chat settings.
+        Returns: 
+            The user's chat settings.
         """
         settings_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("chat", "v2/chat-settings")
@@ -62,7 +77,8 @@ class ChatProvider:
         """
         Gets the user's conversations.
 
-        Returns: The user's conversations as a PageNumberIterator.
+        Returns: 
+            The user's conversations as a PageNumberIterator.
         """
         return PageNumberIterator(
             shared=self._shared,

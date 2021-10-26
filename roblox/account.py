@@ -16,12 +16,18 @@ class AccountProvider:
     """
 
     def __init__(self, shared: ClientSharedObject):
+        """
+        Arguments:
+            shared: The ClientSharedObject to be used when getting information on an account.
+        """
         self._shared: ClientSharedObject = shared
 
     async def get_birthday(self) -> date:
         """
         Gets the authenticated user's birthday.
-        Returns: The authenticated user's birthday.
+        
+        Returns: 
+            The authenticated user's birthday.
         """
         birthday_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("accountinformation", "v1/birthdate")
@@ -41,6 +47,10 @@ class AccountProvider:
         """
         Changes the authenticated user's birthday.
         This endpoint *may* require your password, and requires an unlocked PIN.
+
+        Arguments:
+            birthday: A date object that represents the birthay to update the ClientSharedObject's account to.
+            password: The password to the ClientSharedObject's account, this is required when changing the birthday.
         """
         await self._shared.requests.post(
             url=self._shared.url_generator.get_url("accountinformation", "v1/birthdate"),
