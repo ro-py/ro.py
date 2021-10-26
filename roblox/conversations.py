@@ -22,7 +22,7 @@ class ConversationType(Enum):
     """
     A chat conversation's type.
 
-    Properties:
+    Attributes:
         multi_user_conversation: Represents a chat with multiples users on the WebSite.
         one_to_one_conversation: Represents a one-to-one conversation with person a and b.
         cloud_edit_conversation: Represents a chat in a team-create session.
