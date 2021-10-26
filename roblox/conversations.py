@@ -21,15 +21,14 @@ from .utilities.shared import ClientSharedObject
 class ConversationType(Enum):
     """
     A chat conversation's type.
-
-    Attributes:
-        multi_user_conversation: Represents a chat with multiples users on the WebSite.
-        one_to_one_conversation: Represents a one-to-one conversation with person a and b.
-        cloud_edit_conversation: Represents a chat in a team-create session.
     """
+
     multi_user_conversation = "MultiUserConversation"
+    """Represents a chat with multiples users on the website."""
     one_to_one_conversation = "OneToOneConversation"
+    """Represents a one-to-one conversation with person A and B."""
     cloud_edit_conversation = "CloudEditConversation"
+    """Represents a chat in a team-create session."""
 
 
 class ConversationTitle:
