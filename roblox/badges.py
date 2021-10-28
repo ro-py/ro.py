@@ -74,7 +74,7 @@ class Badge(BaseBadge):
         self.created: datetime = parse(data["created"])
         self.updated: datetime = parse(data["updated"])
 
-        self.statistics: BadgeStatistics = BadgeStatistics(shared=shared, data=data["statistics"])
+        self.statistics: BadgeStatistics = BadgeStatistics(data=data["statistics"])
         self.awarding_universe: PartialUniverse = PartialUniverse(shared=shared, data=data["awardingUniverse"])
 
     def __repr__(self):
