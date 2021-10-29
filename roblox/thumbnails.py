@@ -5,7 +5,7 @@ Contains objects related to Roblox thumbnails.
 """
 
 from enum import Enum
-from typing import Optional, List
+from typing import Optional, List, Union
 
 from .bases.baseasset import BaseAsset
 from .bases.basebadge import BaseBadge
@@ -16,6 +16,14 @@ from .bases.baseuniverse import BaseUniverse
 from .bases.baseuser import BaseUser
 from .threedthumbnails import ThreeDThumbnail
 from .utilities.shared import ClientSharedObject
+
+AssetOrAssetId = Union[BaseAsset, int]
+BadgeOrBadgeId = Union[BaseBadge, int]
+GamePassOrGamePassId = Union[BaseGamePass, int]
+GroupOrGroupId = Union[BaseGroup, int]
+PlaceOrPlaceId = Union[BasePlace, int]
+UniverseOrUniverseId = Union[BaseUniverse, int]
+UserOrUserId = Union[BaseUser, int]
 
 
 class ThumbnailState(Enum):
@@ -149,7 +157,7 @@ class ThumbnailProvider:
 
     async def get_asset_thumbnails(
             self,
-            assets: List[BaseAsset],
+            assets: List[AssetOrAssetId],
             return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
             # TODO MAKE SIZE ENUM
             size: str = "30x30",
@@ -185,7 +193,7 @@ class ThumbnailProvider:
             for thumbnail_data in thumbnails_data
         ]
 
-    async def get_asset_thumbnail_3d(self, asset: BaseAsset) -> Thumbnail:
+    async def get_asset_thumbnail_3d(self, asset: AssetOrAssetId) -> Thumbnail:
         """
         Returns a 3d asset thumbnail for the user ID passed.
 
@@ -206,7 +214,7 @@ class ThumbnailProvider:
 
     async def get_badge_icons(
             self,
-            badges: List[BaseBadge],
+            badges: List[BadgeOrBadgeId],
             size: str = "150x150",
             format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
@@ -240,7 +248,7 @@ class ThumbnailProvider:
 
     async def get_gamepass_icons(
             self,
-            gamepasses: List[BaseGamePass],
+            gamepasses: List[GamePassOrGamePassId],
             # TODO Make size enum
             size: str = "150x150",
             format: ThumbnailFormat = ThumbnailFormat.png,
@@ -275,7 +283,7 @@ class ThumbnailProvider:
 
     async def get_universe_icons(
             self,
-            universes: List[BaseUniverse],
+            universes: List[UniverseOrUniverseId],
             return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
             size: str = "50x50",
             format: ThumbnailFormat = ThumbnailFormat.png,
@@ -312,7 +320,7 @@ class ThumbnailProvider:
 
     async def get_universe_thumbnails(
             self,
-            universes: List[BaseUniverse],
+            universes: List[UniverseOrUniverseId],
             size: str = "768x432",
             format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
@@ -354,7 +362,7 @@ class ThumbnailProvider:
 
     async def get_group_icons(
             self,
-            groups: List[BaseGroup],
+            groups: List[GroupOrGroupId],
             size: str = "150x150",
             format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
@@ -388,7 +396,7 @@ class ThumbnailProvider:
 
     async def get_place_icons(
             self,
-            places: List[BasePlace],
+            places: List[PlaceOrPlaceId],
             return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
             size: str = "50x50",
             format: ThumbnailFormat = ThumbnailFormat.png,
@@ -424,7 +432,7 @@ class ThumbnailProvider:
 
     async def get_user_avatars(
             self,
-            users: List[BaseUser],
+            users: List[UserOrUserId],
             type: AvatarThumbnailType = AvatarThumbnailType.full_body,
             size: str = None,
             format: ThumbnailFormat = ThumbnailFormat.png,
