@@ -312,7 +312,7 @@ class Client:
             A list of Universes.
         """
         universes_response = await self._requests.get(
-            url=self._shared.url_generator.get_url("games", f"v1/games"),
+            url=self._shared.url_generator.get_url("games", "v1/games"),
             params={"universeIds": universe_ids},
         )
         universes_data = universes_response.json()["data"]

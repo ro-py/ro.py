@@ -21,7 +21,7 @@ class Presence:
 
     Attributes:
         _shared: The shared object, which is passed to all objects this client generates.
-        _data: The data form the request.
+        _data: The data from the request.
         user_presence_type: type of presence?
         last_location: last location the user visited.
         place: place of the last visited game.
@@ -36,7 +36,7 @@ class Presence:
         """
         Arguments:
             shared: Shared object.
-            data: The data form the request.
+            data: The data from the request.
         """
         self._shared: ClientSharedObject = shared
         self._data: dict = data
@@ -84,7 +84,7 @@ class PresenceProvider:
         Returns a list of Presence objects corresponding to each user in the list.
 
         Arguments:
-            user_ids: The list of users you want to presences form.
+            user_ids: The list of users you want to presences from.
 
         Returns:
             A List of Presence.

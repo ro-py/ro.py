@@ -31,7 +31,7 @@ class User(BaseUser):
         """
         Arguments:
             shared: Shared object.
-            data: The data form the request.
+            data: The data from the request.
         """
         super().__init__(shared=shared, user_id=data["id"])
 

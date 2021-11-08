@@ -142,7 +142,7 @@ class EconomyAsset(BaseAsset):
         """
         Arguments:
             shared: The ClientSharedObject to be used when getting information on assets.
-            data: The data form the request.
+            data: The data from the request.
         """
         super().__init__(shared=shared, asset_id=data["AssetId"])
 

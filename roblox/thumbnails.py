@@ -74,7 +74,7 @@ class Thumbnail:
 
     Attributes:
         _shared: The shared object, which is passed to all objects this client generates.
-        _data: The data form the request.
+        _data: The data from the request.
         target_id: The id of the target of the image.
         state: The current state of the image.
         image_url: Url of the image.
@@ -84,7 +84,7 @@ class Thumbnail:
         """
         Arguments:
             shared: Shared object.
-            data: The data form the request.
+            data: The data from the request.
         """
         self._shared: ClientSharedObject = shared
         self._data: dict = data
@@ -117,7 +117,7 @@ class UniverseThumbnails:
 
     Attributes:
         _shared: The shared object, which is passed to all objects this client generates.
-        _data: The data form the request.
+        _data: The data from the request.
         universe_id: The id of the target of the image.
         error: The errors you got.
         thumbnails: List of thumbnails.
@@ -127,7 +127,7 @@ class UniverseThumbnails:
         """
         Arguments:
             shared: Shared object.
-            data: The data form the request.
+            data: The data from the request.
         """
         self._shared: ClientSharedObject = shared
         self._data: dict = data

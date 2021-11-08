@@ -25,7 +25,7 @@ class AssetPartialGroup(BaseGroup):
         """
         Arguments:
             shared: The ClientSharedObject.
-            data: The data form the endpoint.
+            data: The data from the endpoint.
         """
         self._shared: ClientSharedObject = shared
         self._data: dict = data
@@ -53,7 +53,7 @@ class UniversePartialGroup(BaseGroup):
         """
         Arguments:
             shared: The ClientSharedObject.
-            data: The data form the endpoint.
+            data: The data from the endpoint.
         """
         self._shared: ClientSharedObject = shared
         self._data: dict = data
