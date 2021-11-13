@@ -3,6 +3,7 @@
     * [Get Started](tutorial/get-started.md)
     * [Authentication](tutorial/authentication.md)
 * [ROBLOSECURITY](roblosecurity.md)
+* [Bases](bases.md)
 * [Extensions](extensions.md)
 * [Migrating to v2.0](migrating.md)
 * [Code Reference](reference/)

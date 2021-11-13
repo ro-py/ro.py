@@ -6,34 +6,40 @@ Contains the Client, which is the core object at the center of all ro.py applica
 
 from typing import Union, Optional, List
 
-from .account import AccountProvider
-from .assets import EconomyAsset
-from .badges import Badge
+# Bases
+from .bases.baseuser import BaseUser
 from .bases.baseasset import BaseAsset
 from .bases.basebadge import BaseBadge
-from .bases.basegamepass import BaseGamePass
 from .bases.basegroup import BaseGroup
 from .bases.baseplace import BasePlace
 from .bases.baseplugin import BasePlugin
+from .bases.basegamepass import BaseGamePass
 from .bases.baseuniverse import BaseUniverse
-from .bases.baseuser import BaseUser
+
+# Providers
 from .chat import ChatProvider
+from .account import AccountProvider
 from .delivery import DeliveryProvider
-from .groups import Group
-from .partials.partialuser import PartialUser, RequestedUsernamePartialUser
-from .places import Place
-from .plugins import Plugin
 from .presence import PresenceProvider
 from .thumbnails import ThumbnailProvider
-from .universes import Universe
+
+# Partials
+from .partials.partialuser import PartialUser, RequestedUsernamePartialUser
+
+# Objects
 from .users import User
-from .utilities.iterators import PageIterator
-from .utilities.requests import Requests
-from .utilities.shared import ClientSharedObject
+from .groups import Group
+from .places import Place
+from .badges import Badge
+from .plugins import Plugin
+from .universes import Universe
+from .assets import EconomyAsset
+
+# Utilities
 from .utilities.url import URLGenerator
-
-
-# from .gamepasses import GamePass
+from .utilities.requests import Requests
+from .utilities.iterators import PageIterator
+from .utilities.shared import ClientSharedObject
 
 
 def _user_search_handler(shared: ClientSharedObject, data: dict) -> RequestedUsernamePartialUser:
@@ -103,6 +109,7 @@ class Client:
     def __repr__(self):
         return f"<{self.__class__.__name__}>"
 
+    # Authentication
     def set_token(self, token: str) -> None:
         """
         Authenticates the client with the passed .ROBLOSECURITY token.
@@ -114,6 +121,7 @@ class Client:
         """
         self._requests.session.cookies[".ROBLOSECURITY"] = token
 
+    # Users
     async def get_user(self, user_id: int) -> User:
         """
         Gets a user with the specified user ID.
@@ -241,8 +249,10 @@ class Client:
     def get_base_user(self, user_id: int) -> BaseUser:
         """
         Gets a base user.
-        FIXME
-        This method does not send any requests - it just generates a BaseUser object.
+
+        !!! note
+            This method does not send any requests - it just generates an object.
+            For more information on bases, please see [Bases](/bases).
 
         Arguments:
             user_id: A Roblox user ID.
@@ -271,6 +281,7 @@ class Client:
             handler=_user_search_handler,
         )
 
+    # Groups
     async def get_group(self, group_id: int) -> Group:
         """
         Gets a group by its ID.
@@ -290,8 +301,10 @@ class Client:
     def get_base_group(self, group_id: int) -> BaseGroup:
         """
         Gets a base group.
-        FIXME
-        This method does not send any requests - it just generates a BaseGroup object. Learn more about bases here.
+
+        !!! note
+            This method does not send any requests - it just generates an object.
+            For more information on bases, please see [Bases](/bases).
 
         Arguments:
             group_id: A Roblox group ID.
@@ -301,6 +314,7 @@ class Client:
         """
         return BaseGroup(shared=self._shared, group_id=group_id)
 
+    # Universes
     async def get_universes(self, universe_ids: List[int]) -> List[Universe]:
         """
         Grabs a list of universes corresponding to each ID in the list.
@@ -340,8 +354,10 @@ class Client:
     def get_base_universe(self, universe_id: int) -> BaseUniverse:
         """
         Gets a base universe.
-        FIXME
-        This method does not send any requests - it just generates a BaseGroup object. Learn more about bases here.
+
+        !!! note
+            This method does not send any requests - it just generates an object.
+            For more information on bases, please see [Bases](/bases).
 
         Arguments:
             universe_id: A Roblox universe ID.
@@ -351,6 +367,7 @@ class Client:
         """
         return BaseUniverse(shared=self._shared, universe_id=universe_id)
 
+    # Places
     async def get_places(self, place_ids: List[int]) -> List[Place]:
         """
         Grabs a list of places corresponding to each ID in the list.
@@ -391,8 +408,10 @@ class Client:
     def get_base_place(self, place_id: int) -> BasePlace:
         """
         Gets a base place.
-        FIXME
-        This method does not send any requests - it just generates a BaseGroup object. Learn more about bases here.
+
+        !!! note
+            This method does not send any requests - it just generates an object.
+            For more information on bases, please see [Bases](/bases).
 
         Arguments:
             place_id: A Roblox place ID.
@@ -402,6 +421,7 @@ class Client:
         """
         return BasePlace(shared=self._shared, place_id=place_id)
 
+    # Assets
     async def get_asset(self, asset_id: int) -> EconomyAsset:
         """
         Gets an asset with the passed ID.
@@ -423,8 +443,10 @@ class Client:
     def get_base_asset(self, asset_id: int) -> BaseAsset:
         """
         Gets a base asset.
-        FIXME
-        This method does not send any requests - it just generates a BaseGroup object. Learn more about bases here.
+
+        !!! note
+            This method does not send any requests - it just generates an object.
+            For more information on bases, please see [Bases](/bases).
 
         Arguments:
             asset_id: A Roblox asset ID.
@@ -434,6 +456,7 @@ class Client:
         """
         return BaseAsset(shared=self._shared, asset_id=asset_id)
 
+    # Plugins
     async def get_plugins(self, plugin_ids: List[int]) -> List[Plugin]:
         """
         Grabs a list of plugins corresponding to each ID in the list.
@@ -474,8 +497,10 @@ class Client:
     def get_base_plugin(self, plugin_id: int) -> BasePlugin:
         """
         Gets a base plugin.
-        FIXME
-        This method does not send any requests - it just generates a BaseUser object.
+
+        !!! note
+            This method does not send any requests - it just generates an object.
+            For more information on bases, please see [Bases](/bases).
 
         Arguments:
             plugin_id: A Roblox plugin ID.
@@ -485,6 +510,7 @@ class Client:
         """
         return BasePlugin(shared=self._shared, plugin_id=plugin_id)
 
+    # Badges
     async def get_badge(self, badge_id: int) -> Badge:
         """
         Gets a badge with the passed ID.
@@ -506,8 +532,10 @@ class Client:
     def get_base_badge(self, badge_id: int) -> BaseBadge:
         """
         Gets a base badge.
-        FIXME
-        This method does not send any requests - it just generates a BaseUser object.
+
+        !!! note
+            This method does not send any requests - it just generates an object.
+            For more information on bases, please see [Bases](/bases).
 
         Arguments:
             badge_id: A Roblox badge ID.
@@ -517,9 +545,14 @@ class Client:
         """
         return BaseBadge(shared=self._shared, badge_id=badge_id)
 
+    # Gamepasses
     def get_base_gamepass(self, gamepass_id: int) -> BaseGamePass:
         """
         Gets a base gamepass.
+
+        !!! note
+            This method does not send any requests - it just generates an object.
+            For more information on bases, please see [Bases](/bases).
 
         Arguments:
             gamepass_id: A Roblox gamepass ID.
