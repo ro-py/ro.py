@@ -3,7 +3,7 @@
 # Changes
 - The cache has been removed. When you call `client.get_XYZ`, you can guarantee that you'll always get a new object.
   Keep this in mind.
-- The events system has been removed. The polling behavior was hard to maintain and a polling solution 
+- The events system has been removed. The polling behavior was hard to maintain and is out of scope for this project.
 - ro.py's gamepersistence system has been removed. It may be added in the future.
 - ro.py's trade system has been removed. We have no plans to reimplement it.
 - `Client.filter_text()` has been removed. It may be added back in the future.
@@ -19,4 +19,5 @@
 - Some methods have been renamed.  
   `Client.get_self()` -> `Client.get_authenticated_user()`
 - The way objects were structured in ro.py has changed. In the past, objects would be responsible for their own requests
-  with an `update` method - now they take in data and parse it. If your code ever calls `.update` 
+  with an `update` method - now they take in data and parse it. If your code ever calls `.update`, please change it to
+  instead grab the object again with `Client.get_XYZ()`.
