@@ -15,7 +15,7 @@ class Place(BasePlace):
 
     Attributes:
         _shared: The shared object, which is passed to all objects this client generates.
-        _data: The data form the request.
+        _data: The data from the request.
         id: id of the place.
         name: Name of the place.
         description: Description of the place.

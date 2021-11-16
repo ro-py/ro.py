@@ -32,7 +32,7 @@ class Shout:
         """
         Arguments:
             shared: Shared object.
-            data: The data form the request.
+            data: The data from the request.
         """
         self._shared: ClientSharedObject = shared
 
