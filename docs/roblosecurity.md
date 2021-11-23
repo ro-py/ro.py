@@ -6,22 +6,29 @@ Every single time your computer asks Roblox to do anything - for example, "give 
 Let's say you're asking Roblox to give you a list of your friends. It'll look at that token and know who you are, and can use that to give you your friends list.
 When you log out, that token is invalidated. Even if the client holds on to the token, it won't be valid after logging out.
 
-This token is called the `.ROBLOSECURITY` token and you will need one to do anything that you need to be logged in to do on Roblox, including:  
-- getting information about yourself (name, description, ID, etc)  
-- changing avatar  
-- getting friends list  
-- playing games  
+This token is called the `.ROBLOSECURITY` token and you will need one to do anything that you need to be logged in to do
+on Roblox, including:  
+- getting information about yourself (name, description, ID, etc)
+- changing avatar
+- getting friends list
+- playing games
 
 !!! danger
-    You may have heard of this token before and have been told that you should never, under any circumstances, share this token with anyone - and this is true! This token does give an attacker access to your Roblox account, but they will still need to solve all the same 2-factor, PIN, captcha, and password prompts that they normally do.
-    We recommend using some sort of alternate account with only the permissions it needs to reduce the destruction a possible attacker can do.
+    You may have heard of this token before and have been told that you should never, under any circumstances, share 
+    this token with anyone - and this is true! This token does give an attacker access to your Roblox account. However,
+    this doesn't mean they gain access to *everything* - over time, more and more things are being locked behind other
+    verification methods, like 2-step verification. 
+    We recommend using an alternate account with only the permissions it needs to limit the destruction an attacker can 
+    do. [Always enable 2-step verification!](https://en.help.roblox.com/hc/articles/212459863)
 
-We're going to skip asking the server to log us in. We're just going to log in on the Roblox website and then copy the cookie from our web browser and use it in our code.  
+The best way to authenticate your ro.py application is to log in to Roblox on the website and then taking the
+.ROBLOSECURITY token from there.
 
 !!! warning
-    Pressing the "Log out" button on the Roblox website invalidates your token, so you should not press this button after grabbing your token. Use a private window and close it afterwards to avoid pressing this button.
+    Pressing the "Log out" button on the Roblox website invalidates your token, so you should not press this button
+    after grabbing your token. Instead, consider using a private or incognito window and closing it when you are done.
 
-To grab your .ROBLOSECURITY cookie, log into your account and follow the instructions below.
+To grab your .ROBLOSECURITY cookie, log into your account on the Roblox website and follow the instructions below.
 
 === "Chrome/Chromium-based"
     You can access the cookie by going to https://www.roblox.com/, pressing the padlock icon next to the URL in your
