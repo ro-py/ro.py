@@ -26,9 +26,6 @@ extra_css:
 
 plugins:
   - search
-  - mermaid2:
-      arguments:
-        theme: dark
   - gen-files:
       scripts:
         - docs/gen_doc_stubs.py
@@ -59,11 +56,7 @@ markdown_extensions:
   - pymdownx.inlinehilite
   - pymdownx.keys
   - pymdownx.magiclink
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:mermaid2.fence_mermaid
+  - pymdownx.superfences
   - pymdownx.highlight:
       guess_lang: false
   - toc:
