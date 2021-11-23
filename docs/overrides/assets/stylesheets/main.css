@@ -1,7 +1,7 @@
-.md-announce strong {
+.md-banner strong {
     white-space: nowrap;
 }
-.md-announce a {
+.md-banner a {
     color: white;
     font-size: 0.8rem;
 }
