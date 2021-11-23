@@ -42,20 +42,6 @@ from .utilities.iterators import PageIterator
 from .utilities.shared import ClientSharedObject
 
 
-def _user_search_handler(shared: ClientSharedObject, data: dict) -> RequestedUsernamePartialUser:
-    """
-    Handler for converting data from users/v1/users/search to a RequestedUsernamePartialUser.
-
-    Arguments:
-        shared: A ClientSharedObject to pass to the output object.
-        data: One item from users/v1/users/search.
-
-    Returns:
-        A RequestedUsernamePartialUser.
-    """
-    return RequestedUsernamePartialUser(shared=shared, data=data)
-
-
 class Client:
     """
     Represents a Roblox client.
@@ -278,7 +264,7 @@ class Client:
             url=self._shared.url_generator.get_url("users", f"v1/users/search"),
             limit=limit,
             extra_parameters={"keyword": keyword},
-            handler=_user_search_handler,
+            handler=lambda shared, data: RequestedUsernamePartialUser(shared, data),
         )
 
     # Groups

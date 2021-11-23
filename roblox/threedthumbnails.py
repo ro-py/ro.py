@@ -10,7 +10,12 @@ from .utilities.shared import ClientSharedObject
 
 class ThreeDThumbnailVector3:
     """
-    Represents a Vector3 used on a 3D thumbnail.
+    Represents a Vector3 used in a 3D thumbnail.
+
+    Attributes:
+        x: The X component of the vector.
+        y: The Y component of the vector.
+        z: The Z component of the vector.
     """
 
     def __init__(self, data: dict):
@@ -22,6 +27,11 @@ class ThreeDThumbnailVector3:
 class ThreeDThumbnailCamera:
     """
     Represents a camera in a 3D thumbnail.
+
+    Attributes:
+        fov: The camera's field of view.
+        position: The camera's position.
+        rotation: The camera's rotation.
     """
 
     def __init__(self, data: dict):
