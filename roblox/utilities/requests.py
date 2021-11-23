@@ -39,8 +39,7 @@ class Requests:
     Attributes:
         session: Base session object to use when sending requests.
         xcsrf_token_name: The header that will contain the Cross-Site Request Forgery token
-        xcsrf_allowed_methods: The methods allowed for
-        that method. Keys must be in lowercase.
+        xcsrf_allowed_methods: The methods allowed for that method. Keys must be in lowercase.
         url_generator: URL generator for ban parsing.
     """
 

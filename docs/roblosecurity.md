@@ -8,10 +8,10 @@ When you log out, that token is invalidated. Even if the client holds on to the 
 
 This token is called the `.ROBLOSECURITY` token and you will need one to do anything that you need to be logged in to do
 on Roblox, including:  
-- getting information about yourself (name, description, ID, etc)
-- changing avatar
-- getting friends list
-- playing games
+- getting information about yourself (name, description, ID, etc)  
+- changing avatar  
+- getting friends list  
+- playing games  
 
 !!! danger
     You may have heard of this token before and have been told that you should never, under any circumstances, share 

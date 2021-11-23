@@ -1,13 +1,15 @@
 # Authentication
 To authenticate our client, we need our .ROBLOSECURITY token. To learn about why we need this and how to get it, 
 please see [ROBLOSECURITY](/roblosecurity). 
+
 Once we have our token, we can add it to our client by passing it as the first parameter. 
-Use this code, where TOKEN is the .ROBLOSECURITY token grabbed earlier, to authenticate your client.
+Use the following code and replace `TOKEN` with the .ROBLOSECURITY token grabbed earlier to authenticate your client.
 ```python
 from roblox import Client
 client = Client("TOKEN")
 ```
-To test your token, run the following code:
+
+To test your token, replace the code in `main()` with the following:
 ```python
 user = await client.get_authenticated_user()
 print("ID:", user.id)
@@ -21,7 +23,7 @@ someone your token, and it makes it harder to collaborate on code with others.
 To solve this problem, we'll create a separate file called `.env` which will contain our token.  
 
 Your file should look like this, where TOKEN is the .ROBLOSECURITY token you grabbed earlier.
-```dotenv
+```dotenv title=".env"
 ROBLOXTOKEN=TOKEN
 ```
 Place it in the same folder as your application's main file. 
@@ -49,7 +51,7 @@ client = Client(os.getenv("ROBLOXTOKEN"))
 ```
 Test it with `get_authenticated_user` and you should be all set!
 !!! abstract "Finished code"
-    ```python
+    ```python title="main.py"
     import asyncio
     import os
     from dotenv import load_dotenv
