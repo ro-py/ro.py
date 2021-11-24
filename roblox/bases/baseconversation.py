@@ -10,7 +10,7 @@ from ..utilities.shared import ClientSharedObject
 
 class BaseConversation(BaseItem):
     """
-    Represents a Roblox Conversation ID.
+    Represents a Roblox chat conversation ID.
 
     Attributes:
         _shared: The ClientSharedObject.
@@ -21,7 +21,7 @@ class BaseConversation(BaseItem):
         """
         Arguments:
             shared: The ClientSharedObject.
-            conversation_id: The Conversation ID.
+            conversation_id: The conversation ID.
         """
 
         self._shared: ClientSharedObject = shared

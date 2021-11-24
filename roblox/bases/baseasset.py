@@ -6,14 +6,9 @@ This file contains the BaseAsset object, which represents a Roblox asset ID.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from .baseitem import BaseItem
 from ..resale import AssetResaleData
 from ..utilities.shared import ClientSharedObject
-
-if TYPE_CHECKING:
-    from ..assets import EconomyAsset
 
 
 class BaseAsset(BaseItem):
@@ -35,19 +30,13 @@ class BaseAsset(BaseItem):
         self._shared: ClientSharedObject = shared
         self.id: int = asset_id
 
-    async def to_asset(self) -> EconomyAsset:
-        """
-        Returns the object converted to an EconomyAsset.
-
-        Returns:
-            An EconomyAsset.
-        """
-        return await self._shared.client.get_asset(self.id)
-
     async def get_resale_data(self) -> AssetResaleData:
         """
-        Gets the asset's resale data.
-        Returns: The asset's resale data.
+        Gets the asset's limited resale data.
+        The asset must be a limited item for this information to be present.
+
+        Returns:
+            The asset's limited resale data.
         """
         resale_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("economy", f"v1/assets/{self.id}/resale-data")

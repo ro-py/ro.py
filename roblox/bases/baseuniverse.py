@@ -22,6 +22,12 @@ from ..sociallinks import UniverseSocialLink
 class UniverseLiveStats:
     """
     Represents a universe's live stats.
+
+    Attributes:
+        total_player_count: The amount of players present in this universe's subplaces.
+        game_count: The amount of active servers for this universe's subplaces.
+        player_counts_by_device_type: A dictionary where the keys are device types and the values are the amount of
+                                      this universe's subplace's active players which are on that device type.
     """
 
     def __init__(self, data: dict):
@@ -30,13 +36,9 @@ class UniverseLiveStats:
         self.player_counts_by_device_type: Dict[str, int] = data["playerCountsByDeviceType"]
 
 
-def _gamepasses_handler(shared: ClientSharedObject, data: dict):
-    return GamePass(shared=shared, data=data)
-
-
 def _universe_badges_handler(shared: ClientSharedObject, data: dict) -> Badge:
-    from ..badges import Badge  # Fixme 🥺🥺🥺
-
+    # inline imports are used here, sorry
+    from ..badges import Badge
     return Badge(shared=shared, data=data)
 
 
@@ -88,6 +90,9 @@ class BaseUniverse(BaseItem):
     def get_badges(self, limit: int = 10) -> PageIterator:
         """
         Gets the universe's badges.
+
+        Returns:
+            A PageIterator containing this universe's badges.
         """
 
         return PageIterator(
@@ -101,6 +106,9 @@ class BaseUniverse(BaseItem):
         """
         Gets the universe's live stats.
         This data does not update live. These are just the stats that are shown on the website's live stats display.
+
+        Returns:
+            The universe's live stats.
         """
         stats_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("develop", f"v1/universes/{self.id}/live-stats")
@@ -111,22 +119,24 @@ class BaseUniverse(BaseItem):
     def get_gamepasses(self, limit: int = 10) -> PageIterator:
         """
         Gets the universe's gamepasses.
+
+        Returns:
+            A PageIterator containing the universe's gamepasses.
         """
 
         return PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("games", f"v1/games/{self.id}/game-passes"),
             limit=limit,
-            handler=_gamepasses_handler,
+            handler=lambda shared, data: GamePass(shared, data),
         )
 
     async def get_social_links(self) -> List[UniverseSocialLink]:
         """
+        Gets the universe's social links.
 
-        Gets a universe's social links;
-
-        Returns: A list of the universe's social links.
-
+        Returns:
+            A list of the universe's social links.
         """
 
         links_response = await self._shared.requests.get(

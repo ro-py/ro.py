@@ -1,6 +1,6 @@
 """
 
-This file contains the BaseRole object, which represents a Roblox role ID.
+This file contains the BaseRole object, which represents a Roblox group role ID.
 
 """
 
@@ -10,7 +10,7 @@ from ..utilities.shared import ClientSharedObject
 
 class BaseRole(BaseItem):
     """
-    Represents a Roblox role ID.
+    Represents a Roblox group role ID.
 
     Attributes:
         _shared: The ClientSharedObject.

@@ -1,11 +1,14 @@
 """
+
 This file contains the BaseItem class, which all bases inherit.
+
 """
 
 
 class BaseItem:
     """
-    All bases inherit this class.
+    This object represents a base Roblox item. All other bases inherit this object.
+    This object overrides equals and not-equals methods ensuring that two bases with the same ID are always equal.
     """
     id = None
 

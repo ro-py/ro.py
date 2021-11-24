@@ -10,18 +10,18 @@ from ..utilities.shared import ClientSharedObject
 
 class BaseUniverseSocialLink(BaseItem):
     """
-    Represents a Roblox roblox_badge ID.
+    Represents a Roblox universe social link ID.
 
     Attributes:
         _shared: The ClientSharedObject.
-        id: The promotion channel ID.
+        id: The universe social link ID.
     """
 
     def __init__(self, shared: ClientSharedObject, social_link_id: int):
         """
         Arguments:
             shared: The ClientSharedObject.
-            social_link_id: The UniversePromotionChannel ID.
+            social_link_id: The universe social link ID.
         """
 
         self._shared: ClientSharedObject = shared

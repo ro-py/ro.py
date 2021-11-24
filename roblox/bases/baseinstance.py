@@ -10,7 +10,8 @@ from ..utilities.shared import ClientSharedObject
 
 class BaseInstance(BaseItem):
     """
-    Represents an instance of a Roblox item.
+    Represents a Roblox instance ID.
+    Instance IDs represent the ownership of a single Roblox item.
 
     Attributes:
         _shared: The ClientSharedObject.

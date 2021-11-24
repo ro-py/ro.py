@@ -11,6 +11,7 @@ from ..utilities.shared import ClientSharedObject
 class BasePlace(BaseAsset):
     """
     Represents a Roblox place ID.
+    Places are a form of Asset and as such this object derives from BaseAsset.
 
     Attributes:
         _shared: The ClientSharedObject.
@@ -31,15 +32,14 @@ class BasePlace(BaseAsset):
 
     async def get_instances(self, start_index: int = 0):
         """
-        Returns a list of this place's current instances (servers).
+        Returns a list of this place's current active servers, known in the API as "game instances".
         This list always contains 10 items or fewer.
         For more items, add 10 to the start index and repeat until no more items are available.
-        fixme please! at some point you should add an iterator for this.
 
         Arguments:
             start_index: Where to start in the server index.
         """
-        from ..jobs import GameInstances  # FIXME
+        from ..jobs import GameInstances
 
         instances_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("www", f"games/getgameinstancesjson"),

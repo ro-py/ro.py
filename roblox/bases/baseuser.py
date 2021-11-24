@@ -83,7 +83,7 @@ class BaseUser(BaseItem):
         Grabs the user's presence.
 
         Returns:
-            The user's presence
+            The user's presence, if they have an active presence.
         """
         presences = await self._shared.presence_provider.get_user_presences([self.id])
         try:
@@ -109,8 +109,6 @@ class BaseUser(BaseItem):
     async def get_currency(self) -> int:
         """
         Grabs the user's current Robux amount. Only works on the authenticated user.
-        "but jmk,,, why is this method in the baseuser and not the client!?!?"
-        That's how the API is structured. That's why.
 
         Returns:
             The user's Robux amount.
@@ -142,7 +140,7 @@ class BaseUser(BaseItem):
             item_type: The type of item to get an instance for.
             item_id: The item's ID.
 
-        Returns: An ItemInstance, or None.
+        Returns: An ItemInstance, if it exists.
         """
 
         item_type: str = item_type.value.lower()
@@ -165,7 +163,9 @@ class BaseUser(BaseItem):
     async def get_asset_instance(self, asset: BaseAsset) -> Optional[AssetInstance]:
         """
         Checks if a user owns the asset, and returns details about the asset if they do.
-        Returns: An AssetInstance object containing some asset details or None.
+
+        Returns:
+            An asset instance, if the user owns this asset.
         """
         return await self.get_item_instance(
             item_type=InstanceType.asset,
@@ -175,7 +175,9 @@ class BaseUser(BaseItem):
     async def get_gamepass_instance(self, gamepass: BaseGamePass) -> Optional[GamePassInstance]:
         """
         Checks if a user owns the gamepass, and returns details about the asset if they do.
-        Returns: A GamePassInstance object containing some details or None.
+
+        Returns:
+            An gamepass instance, if the user owns this gamepass.
         """
         return await self.get_item_instance(
             item_type=InstanceType.gamepass,
@@ -184,8 +186,10 @@ class BaseUser(BaseItem):
 
     async def get_badge_awarded_dates(self, badges: list[BaseBadge]) -> List[PartialBadge]:
         """
+        Gets the dates that each badge in a list of badges were awarded to this user.
+
         Returns:
-            A list of Partial Badges containing badge awarded dates.
+            A list of partial badges containing badge awarded dates.
         """
         awarded_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("badges", f"v1/users/{self.id}/badges/awarded-dates"),
@@ -205,7 +209,8 @@ class BaseUser(BaseItem):
         """
         Gets the group's roles.
 
-        Returns: A list of the group's roles.
+        Returns:
+            A list of the group's roles.
         """
         from ..roles import Role
         from ..groups import Group
@@ -228,7 +233,8 @@ class BaseUser(BaseItem):
         """
         Gets the user's Roblox badges.
 
-        Returns: A list of Roblox badges.
+        Returns:
+            A list of Roblox badges.
         """
 
         badges_response = await self._shared.requests.get(
@@ -241,7 +247,8 @@ class BaseUser(BaseItem):
         """
         Gets the user's promotion channels.
 
-        Returns: The user's promotion channels.
+        Returns:
+            The user's promotion channels.
         """
         channels_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("accountinformation", f"v1/users/{self.id}/promotion-channels")
@@ -305,9 +312,10 @@ class BaseUser(BaseItem):
             sort_order: SortOrder = SortOrder.Ascending
     ) -> PageIterator:
         """
-        Gets the user's followings.
+        Gets the user's followers.
+
         Returns:
-            A PageIterator containing the user's followers.
+            A PageIterator containing everyone who follows this user.
         """
         return self._get_friend_channel_iterator(
             channel="followers",
@@ -322,8 +330,9 @@ class BaseUser(BaseItem):
     ) -> PageIterator:
         """
         Gets the user's followings.
+
         Returns:
-            A PageIterator containing the user's followers.
+            A PageIterator containing everyone that this user is following.
         """
         return self._get_friend_channel_iterator(
             channel="followings",
