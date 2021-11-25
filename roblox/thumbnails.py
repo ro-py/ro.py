@@ -5,7 +5,7 @@ Contains objects related to Roblox thumbnails.
 """
 
 from enum import Enum
-from typing import Optional, List
+from typing import Optional, List, Union, Tuple
 
 from .threedthumbnails import ThreeDThumbnail
 from .utilities.shared import ClientSharedObject
@@ -53,6 +53,16 @@ class AvatarThumbnailType(Enum):
     full_body = 1
     headshot = 2
     bust = 3
+
+
+SizeTupleOrString = Union[Tuple[int, int], str]
+
+
+def _to_size_string(size_item: SizeTupleOrString):
+    if isinstance(size_item, tuple):
+        return f"{int(size_item[0])}x{int(size_item[1])}"
+    else:
+        return size_item
 
 
 class Thumbnail:
@@ -146,7 +156,7 @@ class ThumbnailProvider:
             self,
             assets: List[AssetOrAssetId],
             return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
-            size: str = "30x30",
+            size: SizeTupleOrString = (30, 30),
             image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
     ) -> List[Thumbnail]:
@@ -168,7 +178,7 @@ class ThumbnailProvider:
             params={
                 "assetIds": list(map(int, assets)),
                 "returnPolicy": return_policy.value,
-                "size": size,
+                "size": _to_size_string(size),
                 "format": image_format.value,
                 "isCircular": is_circular,
             },
@@ -201,7 +211,7 @@ class ThumbnailProvider:
     async def get_badge_icons(
             self,
             badges: List[BadgeOrBadgeId],
-            size: str = "150x150",
+            size: SizeTupleOrString = (150, 150),
             image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
     ) -> List[Thumbnail]:
@@ -221,7 +231,7 @@ class ThumbnailProvider:
             url=self._shared.url_generator.get_url("thumbnails", "v1/badges/icons"),
             params={
                 "badgeIds": list(map(int, badges)),
-                "size": size,
+                "size": _to_size_string(size),
                 "format": image_format.value,
                 "isCircular": is_circular,
             },
@@ -236,7 +246,7 @@ class ThumbnailProvider:
             self,
             gamepasses: List[GamePassOrGamePassId],
             # TODO Make size enum
-            size: str = "150x150",
+            size: SizeTupleOrString = (150, 150),
             image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
     ) -> List[Thumbnail]:
@@ -256,7 +266,7 @@ class ThumbnailProvider:
             url=self._shared.url_generator.get_url("thumbnails", "v1/game-passes"),
             params={
                 "gamePassIds": list(map(int, gamepasses)),
-                "size": size,
+                "size": _to_size_string(size),
                 "format": image_format.value,
                 "isCircular": is_circular,
             },
@@ -271,7 +281,7 @@ class ThumbnailProvider:
             self,
             universes: List[UniverseOrUniverseId],
             return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
-            size: str = "50x50",
+            size: SizeTupleOrString = (50, 50),
             image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
     ) -> List[Thumbnail]:
@@ -293,7 +303,7 @@ class ThumbnailProvider:
             params={
                 "universeIds": list(map(int, universes)),
                 "returnPolicy": return_policy.value,
-                "size": size,
+                "size": _to_size_string(size),
                 "format": image_format.value,
                 "isCircular": is_circular,
             },
@@ -307,7 +317,7 @@ class ThumbnailProvider:
     async def get_universe_thumbnails(
             self,
             universes: List[UniverseOrUniverseId],
-            size: str = "768x432",
+            size: SizeTupleOrString = (768, 432),
             image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
             count_per_universe: int = None,
@@ -335,7 +345,7 @@ class ThumbnailProvider:
                 "universeIds": list(map(int, universes)),
                 "countPerUniverse": count_per_universe,
                 "defaults": defaults,
-                "size": size,
+                "size": _to_size_string(size),
                 "format": image_format.value,
                 "isCircular": is_circular,
             },
@@ -349,7 +359,7 @@ class ThumbnailProvider:
     async def get_group_icons(
             self,
             groups: List[GroupOrGroupId],
-            size: str = "150x150",
+            size: SizeTupleOrString = (150, 150),
             image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
     ) -> List[Thumbnail]:
@@ -369,7 +379,7 @@ class ThumbnailProvider:
             url=self._shared.url_generator.get_url("thumbnails", "v1/groups/icons"),
             params={
                 "groupIds": list(map(int, groups)),
-                "size": size,
+                "size": _to_size_string(size),
                 "format": image_format.value,
                 "isCircular": is_circular,
             },
@@ -384,7 +394,7 @@ class ThumbnailProvider:
             self,
             places: List[PlaceOrPlaceId],
             return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
-            size: str = "50x50",
+            size: SizeTupleOrString = (50, 50),
             image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
     ) -> List[Thumbnail]:
@@ -405,7 +415,7 @@ class ThumbnailProvider:
             params={
                 "placeIds": list(map(int, places)),
                 "returnPolicy": return_policy.value,
-                "size": size,
+                "size": _to_size_string(size),
                 "format": image_format.value,
                 "isCircular": is_circular,
             },
@@ -420,7 +430,7 @@ class ThumbnailProvider:
             self,
             users: List[UserOrUserId],
             type: AvatarThumbnailType = AvatarThumbnailType.full_body,
-            size: str = None,
+            size: SizeTupleOrString = None,
             image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
     ) -> List[Thumbnail]:
@@ -440,13 +450,13 @@ class ThumbnailProvider:
         uri: str
         if type == AvatarThumbnailType.full_body:
             uri = "avatar"
-            size = size or "30x30"
+            size = size or (30, 30)
         elif type == AvatarThumbnailType.bust:
             uri = "avatar-bust"
-            size = size or "48x48"
+            size = size or (48, 48)
         elif type == AvatarThumbnailType.headshot:
             uri = "avatar-headshot"
-            size = size or "48x48"
+            size = size or (48, 48)
         else:
             raise ValueError("Avatar type is invalid.")
 
@@ -454,7 +464,7 @@ class ThumbnailProvider:
             url=self._shared.url_generator.get_url("thumbnails", f"v1/users/{uri}"),
             params={
                 "userIds": list(map(int, users)),
-                "size": size,
+                "size": _to_size_string(size),
                 "format": image_format.value,
                 "isCircular": is_circular,
             },
