@@ -4,8 +4,7 @@ Contains the Client, which is the core object at the center of all ro.py applica
 
 """
 
-from typing import Union, Optional, List
-from httpx import Response
+from typing import Union, List
 
 from .account import AccountProvider
 from .assets import EconomyAsset
@@ -327,7 +326,7 @@ class Client:
             for universe_data in universes_data
         ]
 
-    async def get_universe(self, universe_id: int) -> Optional[Universe]:
+    async def get_universe(self, universe_id: int) -> Universe:
         """
         Gets a universe with the passed ID.
 
@@ -381,7 +380,7 @@ class Client:
             Place(shared=self._shared, data=place_data) for place_data in places_data
         ]
 
-    async def get_place(self, place_id: int) -> Optional[Place]:
+    async def get_place(self, place_id: int) -> Place:
         """
         Gets a place with the passed ID.
 
@@ -476,7 +475,7 @@ class Client:
         plugins_data = plugins_response.json()["data"]
         return [Plugin(shared=self._shared, data=plugin_data) for plugin_data in plugins_data]
 
-    async def get_plugin(self, plugin_id: int) -> Optional[Plugin]:
+    async def get_plugin(self, plugin_id: int) -> Plugin:
         """
         Grabs a plugin with the passed ID.
 
