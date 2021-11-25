@@ -28,6 +28,7 @@ async def main():
     elif asset.is_limited_unique == True:
         print("Is unique limited:", asset.is_limited_unique)
         print("Remaining:", asset.remaining)
+    print("Creation Date:", asset.created.strftime("%m/%d/%Y, %H:%M:%S"))
 
 
 asyncio.get_event_loop().run_until_complete(main())
