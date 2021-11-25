@@ -49,6 +49,12 @@
         </tr>
         <tr>
             <td>
+                <a href="./multi_place_information.py">multi_place_information.py</a>
+            </td>
+            <td>Grabs places' information and prints it to the console.</td>
+        </tr>
+        <tr>
+            <td>
                 <a href="./asset_information.py">asset_information.py</a>
             </td>
             <td>Grabs asset information and prints it to the console.</td>
