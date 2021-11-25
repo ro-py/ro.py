@@ -21,7 +21,7 @@
             <td>
                 <a href="./multi_user_information.py">multi_user_information.py</a>
             </td>
-            <td>Grabs users' information and prints it to the console.</td>
+            <td>Grabs users' information and prints it all to the console.</td>
         </tr>
         <tr>
             <td>
@@ -33,7 +33,7 @@
             <td>
                 <a href="./multi_user_information_by_usernames.py">multi_user_information_by_usernames.py</a>
             </td>
-            <td>Grabs users' information by username and prints it to the console.</td>
+            <td>Grabs users' information by username and prints it all to the console.</td>
         </tr>
         <tr>
             <td>
@@ -51,7 +51,7 @@
             <td>
                 <a href="./multi_place_information.py">multi_place_information.py</a>
             </td>
-            <td>Grabs places' information and prints it to the console.</td>
+            <td>Grabs places' information and prints it all to the console.</td>
         </tr>
         <tr>
             <td>
@@ -75,13 +75,19 @@
             <td>
                 <a href="./multi_plugin_information.py">multi_plugin_information.py</a>
             </td>
-            <td>Grabs plugins' information and prints it to the console.</td>
+            <td>Grabs plugins' information and prints it all to the console.</td>
         </tr>
         <tr>
             <td>
                 <a href="./universe_information.py">universe_information.py</a>
             </td>
             <td>Grabs universe information and prints it to the console.</td>
+        </tr>
+        <tr>
+            <td>
+                <a href="./multi_universe_information.py">multi_universe_information.py</a>
+            </td>
+            <td>Grabs universes' information and prints it all to the console.</td>
         </tr>
     </table>
 </div>
