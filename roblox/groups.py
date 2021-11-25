@@ -14,7 +14,7 @@ from .utilities.shared import ClientSharedObject
 
 class Group(BaseGroup):
     """
-    Represents a Join Request
+    Represents a Roblox Group
 
     Attributes:
         _shared: The shared object, which is passed to all objects this client generates.
