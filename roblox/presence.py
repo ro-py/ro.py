@@ -5,15 +5,16 @@ This module contains classes intended to parse and deal with data from Roblox pr
 """
 
 from __future__ import annotations
-from typing import TYPE_CHECKING
-from enum import IntEnum
+
 from datetime import datetime
+from enum import IntEnum
 from typing import Optional, List
+from typing import TYPE_CHECKING
 
 from dateutil.parser import parse
 
-from .bases.baseplace import BasePlace
 from .bases.basejob import BaseJob
+from .bases.baseplace import BasePlace
 from .bases.baseuniverse import BaseUniverse
 from .utilities.shared import ClientSharedObject
 

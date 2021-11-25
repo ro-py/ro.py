@@ -174,6 +174,7 @@ class ItemNotFound(RobloxException):
     """
     Raised for invalid items.
     """
+
     def __init__(self, message: str, response: Optional[Response] = None):
         """
         Arguments:

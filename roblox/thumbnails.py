@@ -8,9 +8,9 @@ from enum import Enum
 from typing import Optional, List, Union, Tuple
 
 from .threedthumbnails import ThreeDThumbnail
-from .utilities.shared import ClientSharedObject
 from .types import AssetOrAssetId, BadgeOrBadgeId, GamePassOrGamePassId, GroupOrGroupId, PlaceOrPlaceId, \
     UniverseOrUniverseId, UserOrUserId
+from .utilities.shared import ClientSharedObject
 
 
 class ThumbnailState(Enum):

@@ -27,12 +27,12 @@ from .presence import PresenceProvider
 from .thumbnails import ThumbnailProvider
 from .universes import Universe
 from .users import User
+from .utilities.exceptions import BadRequest, NotFound, AssetNotFound, BadgeNotFound, GroupNotFound, PlaceNotFound, \
+    PluginNotFound, UniverseNotFound, UserNotFound
 from .utilities.iterators import PageIterator
 from .utilities.requests import Requests
 from .utilities.shared import ClientSharedObject
 from .utilities.url import URLGenerator
-from .utilities.exceptions import BadRequest, NotFound, AssetNotFound, BadgeNotFound, GroupNotFound, PlaceNotFound, \
-    PluginNotFound, UniverseNotFound, UserNotFound
 
 
 class Client:

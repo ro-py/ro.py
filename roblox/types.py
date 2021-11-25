@@ -11,9 +11,9 @@ from .bases.basebadge import BaseBadge
 from .bases.basegamepass import BaseGamePass
 from .bases.basegroup import BaseGroup
 from .bases.baseplace import BasePlace
+from .bases.baserole import BaseRole
 from .bases.baseuniverse import BaseUniverse
 from .bases.baseuser import BaseUser
-from .bases.baserole import BaseRole
 
 AssetOrAssetId = Union[BaseAsset, int]
 BadgeOrBadgeId = Union[BaseBadge, int]
