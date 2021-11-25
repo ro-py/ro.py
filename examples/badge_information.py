@@ -16,6 +16,7 @@ async def main():
     print("Enabled:", badge.enabled)
     print("Awarded Count:", badge.statistics.awarded_count)
     print("Awarding Universe ID:", badge.awarding_universe.id)
+    print("Creation Date:", badge.created.strftime("%m/%d/%Y, %H:%M:%S"))
 
 
 asyncio.get_event_loop().run_until_complete(main())
