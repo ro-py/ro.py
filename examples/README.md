@@ -73,6 +73,12 @@
         </tr>
         <tr>
             <td>
+                <a href="./multi_plugin_information.py">multi_plugin_information.py</a>
+            </td>
+            <td>Grabs plugins' information and prints it to the console.</td>
+        </tr>
+        <tr>
+            <td>
                 <a href="./universe_information.py">universe_information.py</a>
             </td>
             <td>Grabs universe information and prints it to the console.</td>
