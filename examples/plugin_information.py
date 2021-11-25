@@ -14,7 +14,7 @@ async def main():
     print("Name:", plugin.name)
     print("Description:", plugin.description)
     print("Comments Enabled:", plugin.comments_enabled)
-    print("Creation Date:", plugin.created.strftime("%d/%m/%Y"))
+    print("Creation Date:", plugin.created.strftime("%m/%d/%Y, %H:%M:%S"))
 
 
 asyncio.get_event_loop().run_until_complete(main())
