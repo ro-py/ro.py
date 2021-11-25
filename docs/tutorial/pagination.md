@@ -69,7 +69,7 @@ for user in users:
     print(f"\t{user.name}")
 ```
 
-# But what about other things?
+## But what about other things?
 Iterators aren't *just* used for searching for users. There are also various other things that use this same concept,
 including group wall posts. In this example, we get the first 10 posts on the "Official Group of Roblox" group:
 ```python
