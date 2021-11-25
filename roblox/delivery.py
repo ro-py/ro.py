@@ -107,6 +107,7 @@ class ContentCDNHash(BaseCDNHash):
 
 class DeliveryProvider:
     """
+    Represents a Content Delivery Provider
     """
 
     def __init__(self, shared: ClientSharedObject):
