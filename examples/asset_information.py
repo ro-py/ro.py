@@ -12,7 +12,7 @@ async def main():
 
     print("ID:", asset.id)
     print("Name:", asset.name)
-    print(f"Description: {plugin.description!r}")
+    print(f"Description: {asset.description!r}")
     print("Type:", asset.type.name)
     print("Creator:")
     print("Is a:", asset.creator_type.name)
