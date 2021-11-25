@@ -468,10 +468,9 @@ class ThumbnailProvider:
             for thumbnail_data in thumbnails_data
         ]
 
-    async def get_user_avatar_3d(self, user: BaseUser) -> Thumbnail:
+    async def get_user_avatar_3d(self, user: UserOrUserId) -> Thumbnail:
         """
         Returns the user's thumbnail in 3d.
-        TODO: Add special 3d features
 
         Arguments:
             user: User you want the 3d thumbnail of.
@@ -481,7 +480,9 @@ class ThumbnailProvider:
         """
         thumbnail_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/users/avatar-3d"),
-            params={"userId": int(user)},
+            params={
+                "userId": int(user)
+            },
         )
         thumbnail_data = thumbnail_response.json()
         return Thumbnail(shared=self._shared, data=thumbnail_data)

@@ -14,7 +14,7 @@ from .utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:
     from .bases.basegroup import BaseGroup
-    from .bases.baserole import BaseRole
+    from .types import RoleOrRoleId, GroupOrGroupId
 
 
 class MemberRelationship(BaseUser):
@@ -33,7 +33,7 @@ class MemberRelationship(BaseUser):
         else:
             self.group = group
 
-    async def set_role(self, role: BaseRole):
+    async def set_role(self, role: RoleOrRoleId):
         """
         Sets this member's role.
 

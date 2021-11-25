@@ -13,6 +13,7 @@ from .bases.basegroup import BaseGroup
 from .bases.baseplace import BasePlace
 from .bases.baseuniverse import BaseUniverse
 from .bases.baseuser import BaseUser
+from .bases.baserole import BaseRole
 
 AssetOrAssetId = Union[BaseAsset, int]
 BadgeOrBadgeId = Union[BaseBadge, int]
@@ -21,3 +22,4 @@ GroupOrGroupId = Union[BaseGroup, int]
 PlaceOrPlaceId = Union[BasePlace, int]
 UniverseOrUniverseId = Union[BaseUniverse, int]
 UserOrUserId = Union[BaseUser, int]
+RoleOrRoleId = Union[BaseRole, int]

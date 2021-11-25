@@ -25,6 +25,7 @@ from ..wall import WallPost, WallPostRelationship
 
 if TYPE_CHECKING:
     from .baseuser import BaseUser
+    from ..types import UserOrUserId, RoleOrRoleId
 
 
 class JoinRequest(PartialUser):
@@ -234,7 +235,7 @@ class BaseGroup(BaseItem):
             group=self
         ) for role_data in roles_data["roles"]]
 
-    async def set_role(self, user: BaseUser, role: BaseRole) -> None:
+    async def set_role(self, user: UserOrUserId, role: RoleOrRoleId) -> None:
         """
         Sets a users role.
 
@@ -243,13 +244,13 @@ class BaseGroup(BaseItem):
             role: The new role.
         """
         await self._shared.requests.patch(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users/{user.id}"),
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users/{int(user)}"),
             json={
-                "roleId": role.id
+                "roleId": int(role)
             }
         )
 
-    async def set_rank(self, user: BaseUser, rank: int) -> None:
+    async def set_rank(self, user: UserOrUserId, rank: int) -> None:
         """
         Changes a member's role using a rank number.
 
@@ -263,9 +264,9 @@ class BaseGroup(BaseItem):
         if not role:
             raise InvalidRole(f"Role with rank number {rank} does not exist.")
 
-        await self.set_role(user, role)
+        await self.set_role(int(user), role)
 
-    async def kick_user(self, user: BaseUser):
+    async def kick_user(self, user: UserOrUserId):
         """
         Kicks a user from a group.
 
@@ -273,7 +274,7 @@ class BaseGroup(BaseItem):
             user: The user who will be kicked from the group.
         """
         await self._shared.requests.delete(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users/{user.id}")
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users/{int(user)}")
         )
 
     def get_wall_posts(self, sort_order: SortOrder = SortOrder.Ascending, limit: int = 10) -> PageIterator:

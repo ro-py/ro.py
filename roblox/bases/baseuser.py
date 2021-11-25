@@ -23,6 +23,7 @@ from ..utilities.shared import ClientSharedObject
 if TYPE_CHECKING:
     from ..friends import Friend
     from ..roles import Role
+    from ..types import AssetOrAssetId, GamePassOrGamePassId
 
 
 class BaseUser(BaseItem):
@@ -160,7 +161,7 @@ class BaseUser(BaseItem):
         else:
             return None
 
-    async def get_asset_instance(self, asset: BaseAsset) -> Optional[AssetInstance]:
+    async def get_asset_instance(self, asset: AssetOrAssetId) -> Optional[AssetInstance]:
         """
         Checks if a user owns the asset, and returns details about the asset if they do.
 
@@ -169,10 +170,10 @@ class BaseUser(BaseItem):
         """
         return await self.get_item_instance(
             item_type=InstanceType.asset,
-            item_id=asset.id
+            item_id=int(asset)
         )
 
-    async def get_gamepass_instance(self, gamepass: BaseGamePass) -> Optional[GamePassInstance]:
+    async def get_gamepass_instance(self, gamepass: GamePassOrGamePassId) -> Optional[GamePassInstance]:
         """
         Checks if a user owns the gamepass, and returns details about the asset if they do.
 
@@ -181,7 +182,7 @@ class BaseUser(BaseItem):
         """
         return await self.get_item_instance(
             item_type=InstanceType.gamepass,
-            item_id=gamepass.id
+            item_id=int(gamepass)
         )
 
     async def get_badge_awarded_dates(self, badges: list[BaseBadge]) -> List[PartialBadge]:
