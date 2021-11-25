@@ -37,6 +37,12 @@
         </tr>
         <tr>
             <td>
+                <a href="./user_search.py">user_search.py</a>
+            </td>
+            <td>Searches for users who have a keyword in their name and prints them all to the console.</td>
+        </tr>
+        <tr>
+            <td>
                 <a href="./group_information.py">group_information.py</a>
             </td>
             <td>Grabs group information and prints it to the console.</td>
