@@ -13,7 +13,7 @@ async def main():
 
     print("ID:", place.id)
     print("Name:", place.name)
-    print(f"Description: {plugin.description!r}")
+    print(f"Description: {place.description!r}")
     print("Playable:", place.is_playable)
     if place.is_playable == False:
         print("Reason:", place.reason_prohibited)
