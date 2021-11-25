@@ -145,7 +145,7 @@ class Requests:
 
     async def put(self, *args, **kwargs) -> Response:
         """
-        Sends a PATCH request.
+        Sends a PUT request.
 
         Returns:
             Response
