@@ -29,5 +29,11 @@
             </td>
             <td>Grabs place information and prints it to the console.</td>
         </tr>
+        <tr>
+            <td>
+                <a href="./asset_information.py">asset_information.py</a>
+            </td>
+            <td>Grabs asset information and prints it to the console.</td>
+        </tr>
     </table>
 </div>
