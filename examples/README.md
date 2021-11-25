@@ -31,6 +31,12 @@
         </tr>
         <tr>
             <td>
+                <a href="./multi_user_information_by_username.py">multi_user_information_by_username.py</a>
+            </td>
+            <td>Grabs users' information by username and prints it to the console.</td>
+        </tr>
+        <tr>
+            <td>
                 <a href="./group_information.py">group_information.py</a>
             </td>
             <td>Grabs group information and prints it to the console.</td>
