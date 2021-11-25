@@ -42,11 +42,12 @@ class Group(BaseGroup):
         self.id: int = data["id"]
         self.name: str = data["name"]
         self.description: str = data["description"]
-        self.owner: PartialUser = PartialUser(shared=shared, data=data["owner"])
-        self.shout: Optional[Shout] = data["shout"] and Shout(
+        self.owner: Optional[PartialUser] = PartialUser(shared=shared, data=data["owner"]) if data.get("owner") else \
+            None
+        self.shout: Optional[Shout] = Shout(
             shared=self._shared,
             data=data["shout"]
-        ) or None
+        ) if data.get("shout") else None
         self.member_count: int = data["memberCount"]
         self.is_builders_club_only: bool = data["isBuildersClubOnly"]
         self.public_entry_allowed: bool = data["publicEntryAllowed"]

@@ -162,8 +162,72 @@ class InvalidRole(RobloxException):
     pass
 
 
-class NoMoreItems(Exception):
+class NoMoreItems(RobloxException):
     """
     Raised when there are no more items left to iterate through.
+    """
+    pass
+
+
+# Exceptions raised for certain Client methods
+class ItemNotFound(RobloxException):
+    """
+    Raised for invalid items.
+    """
+    def __init__(self, message: str, response: Optional[Response] = None):
+        """
+        Arguments:
+            response: The raw response object.
+        """
+        self.response: Optional[Response] = response
+        self.status: Optional[int] = response.status_code if response else None
+        super().__init__(message)
+
+
+class AssetNotFound(ItemNotFound):
+    """
+    Raised for invalid asset IDs.
+    """
+    pass
+
+
+class BadgeNotFound(ItemNotFound):
+    """
+    Raised for invalid badge IDs.
+    """
+    pass
+
+
+class GroupNotFound(ItemNotFound):
+    """
+    Raised for invalid badge IDs.
+    """
+    pass
+
+
+class PlaceNotFound(ItemNotFound):
+    """
+    Raised for invalid place IDs.
+    """
+    pass
+
+
+class PluginNotFound(ItemNotFound):
+    """
+    Raised for invalid plugin IDs.
+    """
+    pass
+
+
+class UniverseNotFound(ItemNotFound):
+    """
+    Raised for invalid universe IDs.
+    """
+    pass
+
+
+class UserNotFound(ItemNotFound):
+    """
+    Raised for invalid user IDs or usernames.
     """
     pass

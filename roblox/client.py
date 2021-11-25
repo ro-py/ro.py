@@ -5,6 +5,7 @@ Contains the Client, which is the core object at the center of all ro.py applica
 """
 
 from typing import Union, Optional, List
+from httpx import Response
 
 from .account import AccountProvider
 from .assets import EconomyAsset
@@ -16,26 +17,23 @@ from .bases.basegroup import BaseGroup
 from .bases.baseplace import BasePlace
 from .bases.baseplugin import BasePlugin
 from .bases.baseuniverse import BaseUniverse
-# Bases
 from .bases.baseuser import BaseUser
-# Providers
 from .chat import ChatProvider
 from .delivery import DeliveryProvider
 from .groups import Group
-# Partials
 from .partials.partialuser import PartialUser, RequestedUsernamePartialUser
 from .places import Place
 from .plugins import Plugin
 from .presence import PresenceProvider
 from .thumbnails import ThumbnailProvider
 from .universes import Universe
-# Objects
 from .users import User
 from .utilities.iterators import PageIterator
 from .utilities.requests import Requests
 from .utilities.shared import ClientSharedObject
-# Utilities
 from .utilities.url import URLGenerator
+from .utilities.exceptions import BadRequest, NotFound, AssetNotFound, BadgeNotFound, GroupNotFound, PlaceNotFound, \
+    PluginNotFound, UniverseNotFound, UserNotFound
 
 
 class Client:
@@ -114,9 +112,15 @@ class Client:
         Returns:
             A user object.
         """
-        user_response = await self._requests.get(
-            url=self._shared.url_generator.get_url("users", f"v1/users/{user_id}")
-        )
+        try:
+            user_response = await self._requests.get(
+                url=self._shared.url_generator.get_url("users", f"v1/users/{user_id}")
+            )
+        except NotFound as exception:
+            raise UserNotFound(
+                message="Invalid user.",
+                response=exception.response
+            ) from None
         user_data = user_response.json()
         return User(shared=self._shared, data=user_data)
 
@@ -206,7 +210,7 @@ class Client:
 
     async def get_user_by_username(
             self, username: str, exclude_banned_users: bool = False, expand: bool = False
-    ) -> Optional[Union[RequestedUsernamePartialUser, User]]:
+    ) -> Union[RequestedUsernamePartialUser, User]:
         """
         Grabs a user corresponding to the passed username.
 
@@ -226,7 +230,7 @@ class Client:
         try:
             return users[0]
         except IndexError:
-            return None
+            raise UserNotFound("Invalid username.") from None
 
     def get_base_user(self, user_id: int) -> BaseUser:
         """
@@ -274,9 +278,15 @@ class Client:
         Returns:
             A Group.
         """
-        group_response = await self._requests.get(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{group_id}")
-        )
+        try:
+            group_response = await self._requests.get(
+                url=self._shared.url_generator.get_url("groups", f"v1/groups/{group_id}")
+            )
+        except BadRequest as exception:
+            raise GroupNotFound(
+                message="Invalid group.",
+                response=exception.response
+            ) from None
         group_data = group_response.json()
         return Group(shared=self._shared, data=group_data)
 
@@ -331,7 +341,7 @@ class Client:
         try:
             return universes[0]
         except IndexError:
-            return None
+            raise UniverseNotFound("Invalid universe.") from None
 
     def get_base_universe(self, universe_id: int) -> BaseUniverse:
         """
@@ -385,7 +395,7 @@ class Client:
         try:
             return places[0]
         except IndexError:
-            return None
+            raise PlaceNotFound("Invalid place.") from None
 
     def get_base_place(self, place_id: int) -> BasePlace:
         """
@@ -414,11 +424,17 @@ class Client:
         Returns:
             An Asset.
         """
-        asset_response = await self._requests.get(
-            url=self._shared.url_generator.get_url(
-                "economy", f"v2/assets/{asset_id}/details"
+        try:
+            asset_response = await self._requests.get(
+                url=self._shared.url_generator.get_url(
+                    "economy", f"v2/assets/{asset_id}/details"
+                )
             )
-        )
+        except BadRequest as exception:
+            raise AssetNotFound(
+                message="Invalid asset.",
+                response=exception.response
+            ) from None
         asset_data = asset_response.json()
         return EconomyAsset(shared=self._shared, data=asset_data)
 
@@ -474,7 +490,7 @@ class Client:
         try:
             return plugins[0]
         except IndexError:
-            return None
+            raise PlaceNotFound("Invalid plugin.") from None
 
     def get_base_plugin(self, plugin_id: int) -> BasePlugin:
         """
@@ -503,11 +519,17 @@ class Client:
         Returns:
             A Badge.
         """
-        badge_response = await self._requests.get(
-            url=self._shared.url_generator.get_url(
-                "badges", f"v1/badges/{badge_id}"
+        try:
+            badge_response = await self._requests.get(
+                url=self._shared.url_generator.get_url(
+                    "badges", f"v1/badges/{badge_id}"
+                )
             )
-        )
+        except NotFound as exception:
+            raise BadgeNotFound(
+                message="Invalid badge.",
+                response=exception.response
+            ) from None
         badge_data = badge_response.json()
         return Badge(shared=self._shared, data=badge_data)
 
