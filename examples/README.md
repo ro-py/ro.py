@@ -31,7 +31,7 @@
         </tr>
         <tr>
             <td>
-                <a href="./multi_user_information_by_username.py">multi_user_information_by_username.py</a>
+                <a href="./multi_user_information_by_usernames.py">multi_user_information_by_usernames.py</a>
             </td>
             <td>Grabs users' information by username and prints it to the console.</td>
         </tr>
