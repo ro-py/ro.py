@@ -9,9 +9,7 @@ from __future__ import annotations
 from typing import Optional, List, TYPE_CHECKING
 
 from .baseitem import BaseItem
-from ..bases.baseasset import BaseAsset
 from ..bases.basebadge import BaseBadge
-from ..bases.basegamepass import BaseGamePass
 from ..instances import ItemInstance, InstanceType, AssetInstance, GamePassInstance, instance_classes
 from ..partials.partialbadge import PartialBadge
 from ..presence import Presence

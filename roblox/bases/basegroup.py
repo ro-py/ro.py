@@ -13,7 +13,6 @@ from typing import Optional, List, Union, TYPE_CHECKING
 from dateutil.parser import parse
 
 from .baseitem import BaseItem
-from ..bases.baserole import BaseRole
 from ..members import Member, MemberRelationship
 from ..partials.partialuser import PartialUser, RequestedUsernamePartialUser
 from ..roles import Role

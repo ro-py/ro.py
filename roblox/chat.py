@@ -14,9 +14,10 @@ class ChatSettings:
     Represents the authenticated user's Roblox chat settings.
 
     Attributes:
-        chat_enabled: Is chat enabled for the user.
-        is_active_chat_user: Was the Last ChatMessage Sent within the last x dats or the account was created in the last x das? Note: user is active by default unless he/she does not chat for more than x dats after account creation.
-        is_connect_tab_enabled: Is Connect Tab Enabled for this user.
+        chat_enabled: Whether chat is enabled for the user.
+        is_active_chat_user: Whether the user is an active chat user. New accounts are active by default and become
+                             inactive if they do not send any messages over a period of time.
+        is_connect_tab_enabled: Whether the Connect tab is enabled for this user.
     """
 
     def __init__(self, data: dict):

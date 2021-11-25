@@ -7,7 +7,6 @@ Contains objects related to Roblox thumbnails.
 from enum import Enum
 from typing import Optional, List
 
-from .bases.baseuser import BaseUser
 from .threedthumbnails import ThreeDThumbnail
 from .utilities.shared import ClientSharedObject
 from .types import AssetOrAssetId, BadgeOrBadgeId, GamePassOrGamePassId, GroupOrGroupId, PlaceOrPlaceId, \
@@ -147,9 +146,8 @@ class ThumbnailProvider:
             self,
             assets: List[AssetOrAssetId],
             return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
-            # TODO MAKE SIZE ENUM
             size: str = "30x30",
-            format: ThumbnailFormat = ThumbnailFormat.png,
+            image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
     ) -> List[Thumbnail]:
         """
@@ -159,7 +157,7 @@ class ThumbnailProvider:
             assets: Assets you want the thumbnails of.
             return_policy: How you want it returns look at enum.
             size: size of the image.
-            format: Format of the image.
+            image_format: Format of the image.
             is_circular: if the image is a circle yes or no.
 
         Returns:
@@ -171,7 +169,7 @@ class ThumbnailProvider:
                 "assetIds": list(map(int, assets)),
                 "returnPolicy": return_policy.value,
                 "size": size,
-                "format": format.value,
+                "format": image_format.value,
                 "isCircular": is_circular,
             },
         )
@@ -204,7 +202,7 @@ class ThumbnailProvider:
             self,
             badges: List[BadgeOrBadgeId],
             size: str = "150x150",
-            format: ThumbnailFormat = ThumbnailFormat.png,
+            image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
     ) -> List[Thumbnail]:
         """
@@ -213,7 +211,7 @@ class ThumbnailProvider:
         Arguments:
             badges: Badges you want the thumbnails of.
             size: size of the image.
-            format: Format of the image.
+            image_format: Format of the image.
             is_circular: if the image is a circle yes or no.
 
         Returns:
@@ -224,7 +222,7 @@ class ThumbnailProvider:
             params={
                 "badgeIds": list(map(int, badges)),
                 "size": size,
-                "format": format.value,
+                "format": image_format.value,
                 "isCircular": is_circular,
             },
         )
@@ -239,7 +237,7 @@ class ThumbnailProvider:
             gamepasses: List[GamePassOrGamePassId],
             # TODO Make size enum
             size: str = "150x150",
-            format: ThumbnailFormat = ThumbnailFormat.png,
+            image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
     ) -> List[Thumbnail]:
         """
@@ -248,7 +246,7 @@ class ThumbnailProvider:
         Arguments:
             gamepasses: Gamepasses you want the thumbnails of.
             size: size of the image.
-            format: Format of the image.
+            image_format: Format of the image.
             is_circular: if the image is a circle yes or no.
 
         Returns:
@@ -259,7 +257,7 @@ class ThumbnailProvider:
             params={
                 "gamePassIds": list(map(int, gamepasses)),
                 "size": size,
-                "format": format.value,
+                "format": image_format.value,
                 "isCircular": is_circular,
             },
         )
@@ -274,7 +272,7 @@ class ThumbnailProvider:
             universes: List[UniverseOrUniverseId],
             return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
             size: str = "50x50",
-            format: ThumbnailFormat = ThumbnailFormat.png,
+            image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
     ) -> List[Thumbnail]:
         """
@@ -284,7 +282,7 @@ class ThumbnailProvider:
             universes: Universes you want the thumbnails of.
             return_policy: How you want it returns look at enum.
             size: size of the image.
-            format: Format of the image.
+            image_format: Format of the image.
             is_circular: if the image is a circle yes or no.
 
         Returns:
@@ -296,7 +294,7 @@ class ThumbnailProvider:
                 "universeIds": list(map(int, universes)),
                 "returnPolicy": return_policy.value,
                 "size": size,
-                "format": format.value,
+                "format": image_format.value,
                 "isCircular": is_circular,
             },
         )
@@ -310,7 +308,7 @@ class ThumbnailProvider:
             self,
             universes: List[UniverseOrUniverseId],
             size: str = "768x432",
-            format: ThumbnailFormat = ThumbnailFormat.png,
+            image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
             count_per_universe: int = None,
             defaults: bool = None,
@@ -321,7 +319,7 @@ class ThumbnailProvider:
         Arguments:
             universes: Universes you want the thumbnails of.
             size: size of the image.
-            format: Format of the image.
+            image_format: Format of the image.
             count_per_universe: Unknown.
             is_circular: if the image is a circle yes or no.
             defaults: Whether to return default thumbnails.
@@ -338,7 +336,7 @@ class ThumbnailProvider:
                 "countPerUniverse": count_per_universe,
                 "defaults": defaults,
                 "size": size,
-                "format": format.value,
+                "format": image_format.value,
                 "isCircular": is_circular,
             },
         )
@@ -352,7 +350,7 @@ class ThumbnailProvider:
             self,
             groups: List[GroupOrGroupId],
             size: str = "150x150",
-            format: ThumbnailFormat = ThumbnailFormat.png,
+            image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
     ) -> List[Thumbnail]:
         """
@@ -361,7 +359,7 @@ class ThumbnailProvider:
         Arguments:
             groups: Groups you want the thumbnails of.
             size: size of the image.
-            format: Format of the image.
+            image_format: Format of the image.
             is_circular: if the image is a circle yes or no.
 
         Returns:
@@ -372,7 +370,7 @@ class ThumbnailProvider:
             params={
                 "groupIds": list(map(int, groups)),
                 "size": size,
-                "format": format.value,
+                "format": image_format.value,
                 "isCircular": is_circular,
             },
         )
@@ -387,7 +385,7 @@ class ThumbnailProvider:
             places: List[PlaceOrPlaceId],
             return_policy: ThumbnailReturnPolicy = ThumbnailReturnPolicy.place_holder,
             size: str = "50x50",
-            format: ThumbnailFormat = ThumbnailFormat.png,
+            image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
     ) -> List[Thumbnail]:
         """
@@ -397,7 +395,7 @@ class ThumbnailProvider:
             places: Places you want the thumbnails of.
             return_policy: How you want it returns look at enum.
             size: size of the image.
-            format: Format of the image.
+            image_format: Format of the image.
             is_circular: if the image is a circle yes or no.
         Returns:
             A List of Thumbnails.
@@ -408,7 +406,7 @@ class ThumbnailProvider:
                 "placeIds": list(map(int, places)),
                 "returnPolicy": return_policy.value,
                 "size": size,
-                "format": format.value,
+                "format": image_format.value,
                 "isCircular": is_circular,
             },
         )
@@ -423,7 +421,7 @@ class ThumbnailProvider:
             users: List[UserOrUserId],
             type: AvatarThumbnailType = AvatarThumbnailType.full_body,
             size: str = None,
-            format: ThumbnailFormat = ThumbnailFormat.png,
+            image_format: ThumbnailFormat = ThumbnailFormat.png,
             is_circular: bool = False,
     ) -> List[Thumbnail]:
         """
@@ -433,7 +431,7 @@ class ThumbnailProvider:
             users: Id of the users you want the thumbnails of.
             type: Type of avatar thumbnail you want look at enum.
             size: size of the image.
-            format: Format of the image.
+            image_format: Format of the image.
             is_circular: if the image is a circle yes or no.
 
         Returns:
@@ -457,7 +455,7 @@ class ThumbnailProvider:
             params={
                 "userIds": list(map(int, users)),
                 "size": size,
-                "format": format.value,
+                "format": image_format.value,
                 "isCircular": is_circular,
             },
         )

@@ -107,6 +107,7 @@ class ContentCDNHash(BaseCDNHash):
 
 class DeliveryProvider:
     """
+    Provides CDN hashes and other delivery-related objects.
     """
 
     def __init__(self, shared: ClientSharedObject):

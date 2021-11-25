@@ -37,7 +37,8 @@ class ConversationTitle:
 
     Attributes:
         title_for_viewer: Specifies the title for the conversation specific to the viewer.
-        is_default_title: Specifies if the title displayed for the user is generated as a default title in the backend or was custom assigned by the user.
+        is_default_title: Specifies if the title displayed for the user is generated as a default title or was edited by
+                          the user.
     """
 
     def __init__(self, data: dict):

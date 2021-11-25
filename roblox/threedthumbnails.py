@@ -31,7 +31,7 @@ class ThreeDThumbnailCamera:
     Attributes:
         fov: The camera's field of view.
         position: The camera's position.
-        rotation: The camera's rotation.
+        direction: The camera's direction.
     """
 
     def __init__(self, data: dict):

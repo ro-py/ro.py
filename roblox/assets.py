@@ -99,7 +99,8 @@ class AssetType:
     def __init__(self, type_id: int):
         """
         Arguments:
-            type_id: The AssetTypeID to instantiate this AssetType object with. This is used to determine the name of the AssetType.
+            type_id: The AssetTypeID to instantiate this AssetType object with.
+                     This is used to determine the name of the AssetType.
         """
 
         self.id: int = type_id
