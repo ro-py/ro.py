@@ -12,7 +12,7 @@ async def main():
 
     print("ID:", universe.id)
     print("Name:", universe.name)
-    print(f"Description: {plugin.description!r}")
+    print(f"Description: {universe.description!r}")
     print("Open Source:", universe.copying_allowed)
     print("Creator:")
     print("Is a:", universe.creator_type.name)
