@@ -19,6 +19,18 @@
         </tr>
         <tr>
             <td>
+                <a href="./multi_user_information.py">multi_user_information.py</a>
+            </td>
+            <td>Grabs users' information and prints it to the console.</td>
+        </tr>
+        <tr>
+            <td>
+                <a href="./user_information_by_username.py">user_information_by_username.py</a>
+            </td>
+            <td>Grabs user information by username and prints it to the console.</td>
+        </tr>
+        <tr>
+            <td>
                 <a href="./group_information.py">group_information.py</a>
             </td>
             <td>Grabs group information and prints it to the console.</td>
