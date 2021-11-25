@@ -208,7 +208,7 @@ class Client:
             ]
 
     async def get_user_by_username(
-            self, username: str, exclude_banned_users: bool = False, expand: bool = False
+            self, username: str, exclude_banned_users: bool = False, expand: bool = True
     ) -> Union[RequestedUsernamePartialUser, User]:
         """
         Grabs a user corresponding to the passed username.
@@ -219,7 +219,7 @@ class Client:
             expand: Whether to return a User (2 requests) rather than a RequestedUsernamePartialUser (1 request)
 
         Returns:
-            A User, RequestedUsernamePartialUser, or None, depending on the expand argument.
+            A User or RequestedUsernamePartialUser depending on the expand argument.
         """
         users = await self.get_users_by_usernames(
             usernames=[username],
