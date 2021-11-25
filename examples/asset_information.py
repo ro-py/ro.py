@@ -8,7 +8,7 @@ client = Client()
 
 
 async def main():
-    asset = await client.get_asset(7364000493)
+    asset = await client.get_asset(1778004652)
 
     print("ID:", asset.id)
     print("Name:", asset.name)
