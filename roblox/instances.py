@@ -53,6 +53,11 @@ class AssetInstance(ItemInstance):
     """
 
     def __init__(self, shared: ClientSharedObject, data: dict):
+        """
+        Arguments:
+            shared: The ClientSharedObject.
+            data: The data from the endpoint.
+        """
         self._shared: ClientSharedObject = shared
         super().__init__(shared=self._shared, data=data)
 
@@ -68,6 +73,11 @@ class BadgeInstance(ItemInstance):
     """
 
     def __init__(self, shared: ClientSharedObject, data: dict):
+        """
+        Arguments:
+            shared: The ClientSharedObject.
+            data: The data from the endpoint.
+        """
         self._shared: ClientSharedObject = shared
         super().__init__(shared=self._shared, data=data)
 
@@ -83,6 +93,11 @@ class GamePassInstance(ItemInstance):
     """
 
     def __init__(self, shared: ClientSharedObject, data: dict):
+        """
+        Arguments:
+            shared: The ClientSharedObject.
+            data: The data from the endpoint.
+        """
         self._shared: ClientSharedObject = shared
         super().__init__(shared=self._shared, data=data)
 
