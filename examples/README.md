@@ -35,5 +35,11 @@
             </td>
             <td>Grabs asset information and prints it to the console.</td>
         </tr>
+        <tr>
+            <td>
+                <a href="./badge_information.py">badge_information.py</a>
+            </td>
+            <td>Grabs badge information and prints it to the console.</td>
+        </tr>
     </table>
 </div>
