@@ -490,7 +490,7 @@ class Client:
         try:
             return plugins[0]
         except IndexError:
-            raise PlaceNotFound("Invalid plugin.") from None
+            raise PluginNotFound("Invalid plugin.") from None
 
     def get_base_plugin(self, plugin_id: int) -> BasePlugin:
         """
