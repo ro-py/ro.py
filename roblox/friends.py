@@ -5,6 +5,7 @@ Contains classes related to Roblox friend data and parsing.
 """
 
 from typing import Optional
+
 from .users import User
 from .utilities.shared import ClientSharedObject
 

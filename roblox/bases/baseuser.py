@@ -339,5 +339,3 @@ class BaseUser(BaseItem):
             limit=limit,
             sort_order=sort_order
         )
-
-

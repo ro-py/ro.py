@@ -10,9 +10,9 @@ from typing import Union, Optional
 from dateutil.parser import parse
 
 from .bases.baseasset import BaseAsset
+from .creatortype import CreatorType
 from .partials.partialgroup import AssetPartialGroup
 from .partials.partialuser import PartialUser
-from .creatortype import CreatorType
 from .utilities.shared import ClientSharedObject
 
 asset_type_names = {

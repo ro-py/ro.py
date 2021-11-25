@@ -6,40 +6,36 @@ Contains the Client, which is the core object at the center of all ro.py applica
 
 from typing import Union, Optional, List
 
-# Bases
-from .bases.baseuser import BaseUser
+from .account import AccountProvider
+from .assets import EconomyAsset
+from .badges import Badge
 from .bases.baseasset import BaseAsset
 from .bases.basebadge import BaseBadge
+from .bases.basegamepass import BaseGamePass
 from .bases.basegroup import BaseGroup
 from .bases.baseplace import BasePlace
 from .bases.baseplugin import BasePlugin
-from .bases.basegamepass import BaseGamePass
 from .bases.baseuniverse import BaseUniverse
-
+# Bases
+from .bases.baseuser import BaseUser
 # Providers
 from .chat import ChatProvider
-from .account import AccountProvider
 from .delivery import DeliveryProvider
-from .presence import PresenceProvider
-from .thumbnails import ThumbnailProvider
-
+from .groups import Group
 # Partials
 from .partials.partialuser import PartialUser, RequestedUsernamePartialUser
-
+from .places import Place
+from .plugins import Plugin
+from .presence import PresenceProvider
+from .thumbnails import ThumbnailProvider
+from .universes import Universe
 # Objects
 from .users import User
-from .groups import Group
-from .places import Place
-from .badges import Badge
-from .plugins import Plugin
-from .universes import Universe
-from .assets import EconomyAsset
-
+from .utilities.iterators import PageIterator
+from .utilities.requests import Requests
+from .utilities.shared import ClientSharedObject
 # Utilities
 from .utilities.url import URLGenerator
-from .utilities.requests import Requests
-from .utilities.iterators import PageIterator
-from .utilities.shared import ClientSharedObject
 
 
 class Client:

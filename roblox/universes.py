@@ -11,9 +11,9 @@ from typing import Optional, List, Union
 from dateutil.parser import parse
 
 from .bases.baseuniverse import BaseUniverse
+from .creatortype import CreatorType
 from .partials.partialgroup import UniversePartialGroup
 from .partials.partialuser import PartialUser
-from .creatortype import CreatorType
 from .utilities.shared import ClientSharedObject
 
 
