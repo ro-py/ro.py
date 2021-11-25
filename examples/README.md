@@ -41,5 +41,11 @@
             </td>
             <td>Grabs badge information and prints it to the console.</td>
         </tr>
+        <tr>
+            <td>
+                <a href="./plugin_information.py">plugin_information.py</a>
+            </td>
+            <td>Grabs plugin information and prints it to the console.</td>
+        </tr>
     </table>
 </div>
