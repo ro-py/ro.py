@@ -12,7 +12,7 @@ async def main():
 
     print("ID:", plugin.id)
     print("Name:", plugin.name)
-    print("Description:", plugin.description)
+    print(f"Description: {plugin.description!r}")
     print("Comments Enabled:", plugin.comments_enabled)
     print("Creation Date:", plugin.created.strftime("%m/%d/%Y, %H:%M:%S"))
 
