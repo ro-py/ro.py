@@ -12,7 +12,7 @@ async def main():
 
     print("ID:", badge.id)
     print("Name:", badge.name)
-    print(f"Description: {plugin.description!r}")
+    print(f"Description: {badge.description!r}")
     print("Enabled:", badge.enabled)
     print("Awarded Count:", badge.statistics.awarded_count)
     print("Awarding Universe ID:", badge.awarding_universe.id)
