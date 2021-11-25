@@ -4,32 +4,45 @@ This module contains classes intended to parse and deal with data from Roblox pr
 
 """
 
+from __future__ import annotations
+from typing import TYPE_CHECKING
+from enum import IntEnum
 from datetime import datetime
 from typing import Optional, List
 
 from dateutil.parser import parse
 
 from .bases.baseplace import BasePlace
+from .bases.basejob import BaseJob
 from .bases.baseuniverse import BaseUniverse
 from .utilities.shared import ClientSharedObject
+
+if TYPE_CHECKING:
+    from .types import UserOrUserId
+
+
+class PresenceType(IntEnum):
+    """
+    Represents a user's presence type.
+    """
+    offline = 0
+    online = 1
+    in_game = 2
+    in_studio = 3
 
 
 class Presence:
     """
-    The PresenceProvider is an object that represents https://presence.roblox.com/ and provides multiple functions
-    for fetching user presence information.
+    Represents a user's presence.
 
     Attributes:
-        _shared: The shared object, which is passed to all objects this client generates.
-        _data: The data from the request.
-        user_presence_type: type of presence?
-        last_location: last location the user visited.
-        place: place of the last visited game.
-        root_place: root_place of the last visited game.
-        game_id: game_id of the last visited game.
-        universe: universe of the last visited game.
-        user_id: the id of the currently selected user.
-        last_online: when that user was online for the last time.
+        user_presence_type: The type of the presence.
+        last_location: A string representing the user's last location.
+        place: The place the user is playing or editing.
+        root_place: The root place of the parent universe of the last place the user is playing or editing.
+        job: The job of the root place that the user is playing or editing.
+        universe: The universe the user is playing or editing.
+        last_online: When the user was last online.
     """
 
     def __init__(self, shared: ClientSharedObject, data: dict):
@@ -39,29 +52,28 @@ class Presence:
             data: The data from the request.
         """
         self._shared: ClientSharedObject = shared
-        self._data: dict = data
 
-        self.user_presence_type: int = data["userPresenceType"]
+        self.user_presence_type: PresenceType = PresenceType(data["userPresenceType"])
         self.last_location: str = data["lastLocation"]
 
-        self.place: Optional[BasePlace] = data.get("placeId") and BasePlace(
+        self.place: Optional[BasePlace] = BasePlace(
             shared=shared,
             place_id=data["placeId"]
-        )
+        ) if data.get("placeId") else None
 
-        self.root_place: Optional[BasePlace] = data.get("rootPlaceId") and BasePlace(
+        self.root_place: Optional[BasePlace] = BasePlace(
             shared=shared,
             place_id=data["rootPlaceId"]
-        )
+        ) if data.get("rootPlaceId") else None
 
-        self.game_id: Optional[str] = data["gameId"]
+        self.job: Optional[BaseJob] = BaseJob(self._shared, data["gameId"]) if data.get("gameId") else None
 
-        self.universe: Optional[BaseUniverse] = data.get("universeId") and BaseUniverse(
+        self.universe: Optional[BaseUniverse] = BaseUniverse(
             shared=shared,
             universe_id=data["universeId"]
-        )
+        ) if data.get("universeId") else None
 
-        self.user_id: int = data["userId"]
+        # self.user: BaseUser = BaseUser(self._shared, data["userId"])
         self.last_online: datetime = parse(data["lastOnline"])
 
     def __repr__(self):
@@ -70,21 +82,19 @@ class Presence:
 
 class PresenceProvider:
     """
-    The PresenceProvider provides multiple functions for fetching user presence information.
-
-    Attributes:
-        _shared: The shared object, which is passed to all objects this client generates.
+    The PresenceProvider is an object that represents https://presence.roblox.com/ and provides multiple functions
+    for fetching user presence information.
     """
 
     def __init__(self, shared: ClientSharedObject):
         self._shared: ClientSharedObject = shared
 
-    async def get_user_presences(self, user_ids: List[int]) -> List[Presence]:
+    async def get_user_presences(self, users: List[UserOrUserId]) -> List[Presence]:
         """
         Returns a list of Presence objects corresponding to each user in the list.
 
         Arguments:
-            user_ids: The list of users you want to presences from.
+            users: The list of users you want to get presences from.
 
         Returns:
             A List of Presence.
@@ -93,7 +103,7 @@ class PresenceProvider:
         presences_response = await self._shared.requests.post(
             url=self._shared.url_generator.get_url("presence", "v1/presence/users"),
             json={
-                "userIds": user_ids
+                "userIds": list(map(int, users))
             }
         )
         presences_data = presences_response.json()["userPresences"]
