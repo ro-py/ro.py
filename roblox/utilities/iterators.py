@@ -102,10 +102,12 @@ class RobloxIterator:
 
         raise NotImplementedError
 
-    async def flatten(self) -> list:
+    async def flatten(self, max_items: int = None) -> list:
         """
         Flattens the data into a list.
         """
+        if max_items is None:
+            max_items = self.max_items
 
         items: list = []
 
@@ -116,7 +118,10 @@ class RobloxIterator:
             except NoMoreItems:
                 break
 
-        return items
+            if max_items is not None and len(items) >= max_items:
+                break
+
+        return items[:max_items]
 
     def __aiter__(self):
         return IteratorItems(

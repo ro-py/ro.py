@@ -51,10 +51,39 @@ sets of data and may use more memory. Because we turn this iterator into a list,
 for user in await client.user_search("boatbomber").flatten():
     print(user.name)
 ```
-We can also store it in a variable:
+We can limit the amount of items in this list using the `max_ietms` argument:
 ```python
-users = await client.user_search("boatbomber").flatten()
+for user in await client.user_search("builderman", max_items=10).flatten():
+    print(user.name)
+```
+We can also pass the value directly to `.flatten()`:
+```python
+for user in await client.user_search("builderman").flatten(10):
+    print(user.name)
+```
+As the result is just a normal list, we can store it in a variable:
+```python
+users = await client.user_search("builderman").flatten(10)
 print(f"{len(users)} items:")
 for user in users:
     print(f"\t{user.name}")
+```
+
+# But what about other things?
+Iterators aren't *just* used for searching for users. There are also various other things that use this same concept,
+including group wall posts. In this example, we get the first 10 posts on the "Official Group of Roblox" group:
+```python
+group = await client.get_group(1200769)
+async for post in group.get_wall_posts(max_items=10):
+    print(post)
+```
+If instead we want the *last* 10 posts (as in the most recent posts) we can use the `sort_order` argument:
+```python
+group = await client.get_group(1200769)
+async for post in group.get_wall_posts(sort_order=SortOrder.Descending, max_items=10):
+    print(post)
+```
+The `SortOrder` object can be imported like this:
+```python
+from roblox.utilities.iterators import SortOrder
 ```
