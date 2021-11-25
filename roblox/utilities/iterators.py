@@ -27,10 +27,12 @@ class IteratorItems(AsyncIterator):
     Represents the items inside of an iterator.
     """
 
-    def __init__(self, iterator: RobloxIterator):
+    def __init__(self, iterator: RobloxIterator, max_items: Optional[int] = None):
         self._iterator = iterator
         self._position: int = 0
+        self._global_position: int = 0
         self._items: list = []
+        self._max_items = max_items
 
     def __aiter__(self):
         self._position = 0
@@ -47,8 +49,12 @@ class IteratorItems(AsyncIterator):
             except NoMoreItems:
                 # if there aren't any more items, reset and break the loop
                 self._position = 0
+                self._global_position = 0
                 self._items = []
                 raise StopAsyncIteration
+
+        if self._max_items is not None and self._global_position >= self._max_items:
+            raise StopAsyncIteration
 
         # if we got here we know there are more items
         try:
@@ -58,6 +64,7 @@ class IteratorItems(AsyncIterator):
             raise StopAsyncIteration
         # we advance the iterator by one for the next iteration
         self._position += 1
+        self._global_position += 1
         return item
 
 
@@ -85,9 +92,8 @@ class RobloxIterator:
     Represents a basic iterator which all iterators should implement.
     """
 
-    def __init__(self):
-        self._items = IteratorItems(self)
-        self._pages = IteratorPages(self)
+    def __init__(self, max_items: int = None):
+        self.max_items: Optional[int] = max_items
 
     async def next(self):
         """
@@ -113,36 +119,40 @@ class RobloxIterator:
         return items
 
     def __aiter__(self):
-        return self._items
+        return IteratorItems(
+            iterator=self,
+            max_items=self.max_items
+        )
 
-    def items(self) -> IteratorItems:
+    def items(self, max_items: int = None) -> IteratorItems:
         """
         Returns an AsyncIterable containing each iterator item.
         """
-        return self._items
+        if max_items is None:
+            max_items = self.max_items
+        return IteratorItems(
+            iterator=self,
+            max_items=max_items
+        )
 
     def pages(self) -> IteratorPages:
         """
         Returns an AsyncIterable containing each iterator page. Each page is a list of items.
         """
-        return self._pages
+        return IteratorPages(self)
 
 
 class PageIterator(RobloxIterator):
     """
-    Represents a cursor-based, paginated Roblox object.
+    Represents a cursor-based, paginated Roblox object. Learn more about iterators in the pagination tutorial:
+    [Pagination](/tutorial/pagination)
     For more information about how cursor-based pagination works, see https://robloxapi.wiki/wiki/Pagination.
-    To use, iterate over the object with `async for`:
-    ```python
-    async for item in iterator:
-        print(item)
-    ```
 
     Attributes:
         _shared: The ClientSharedObject.
         url: The endpoint to hit for new page data.
         sort_order: The sort order to use for returned data.
-        limit: How much data should be returned per-page.
+        page_size: How much data should be returned per-page.
         extra_parameters: Extra parameters to pass to the endpoint.
         handler: A callable object to use to convert raw endpoint data to parsed objects.
         handler_kwargs: Extra keyword arguments to pass to the handler.
@@ -157,7 +167,8 @@ class PageIterator(RobloxIterator):
             shared: ClientSharedObject,
             url: str,
             sort_order: SortOrder = SortOrder.Ascending,
-            limit: int = 10,
+            page_size: int = 10,
+            max_items: int = None,
             extra_parameters: Optional[dict] = None,
             handler: Optional[Callable] = None,
             handler_kwargs: Optional[dict] = None
@@ -167,20 +178,20 @@ class PageIterator(RobloxIterator):
             shared: The ClientSharedObject.
             url: The endpoint to hit for new page data.
             sort_order: The sort order to use for returned data.
-            limit: How much data should be returned per-page.
+            page_size: How much data should be returned per-page.
+            max_items: The maximum amount of items to return when this iterator is looped through.
             extra_parameters: Extra parameters to pass to the endpoint.
             handler: A callable object to use to convert raw endpoint data to parsed objects.
             handler_kwargs: Extra keyword arguments to pass to the handler.
         """
-
-        super().__init__()
+        super().__init__(max_items=max_items)
 
         self._shared: ClientSharedObject = shared
 
         # store some basic arguments in the object
         self.url: str = url
         self.sort_order: SortOrder = sort_order
-        self.limit: int = limit
+        self.page_size: int = page_size
 
         self.extra_parameters: dict = extra_parameters or {}
         self.handler: Callable = handler
@@ -200,9 +211,10 @@ class PageIterator(RobloxIterator):
         Advances the iterator to the next page.
         """
         if self.next_started and not self.next_cursor:
-            # if we just started and there is no cursor
-            # this is the last page, because we can go back but not forward
-            # so raise the exception
+            """
+            If we just started and there is no cursor, this is the last page, because we can go back but not forward.
+            We should raise an exception here.
+            """
             raise NoMoreItems("No more items.")
 
         if not self.next_started:
@@ -212,7 +224,7 @@ class PageIterator(RobloxIterator):
             url=self.url,
             params={
                 "cursor": self.next_cursor,
-                "limit": self.limit,
+                "limit": self.page_size,
                 "sortOrder": self.sort_order.value,
                 **self.extra_parameters
             }

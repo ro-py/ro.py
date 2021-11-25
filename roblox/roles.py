@@ -10,7 +10,7 @@ from typing import TYPE_CHECKING, Optional
 
 from .bases.baserole import BaseRole
 from .partials.partialuser import PartialUser
-from .utilities.iterators import PageIterator
+from .utilities.iterators import PageIterator, SortOrder
 from .utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:
@@ -51,9 +51,15 @@ class Role(BaseRole):
     def __repr__(self):
         return f"<{self.__class__.__name__} name={self.name!r} rank={self.rank} member_count={self.member_count}>"
 
-    def get_members(self, limit: int = 10) -> PageIterator:
+    def get_members(self, page_size: int = 10, sort_order: SortOrder = SortOrder.Ascending,
+                    max_items: int = None) -> PageIterator:
         """
-        Gets all members with this role
+        Gets all members with this role.
+
+        Arguments:
+            page_size: How many users should be returned for each page.
+            sort_order: Order in which data should be grabbed.
+            max_items: The maximum items to return when looping through this object.
 
         Returns:
             A PageIterator containing all members with this role.
@@ -61,6 +67,8 @@ class Role(BaseRole):
         return PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.group.id}/roles/{self.id}/users"),
-            limit=limit,
+            page_size=page_size,
+            sort_order=sort_order,
+            max_items=max_items,
             handler=lambda shared, data: PartialUser(shared=shared, data=data)
         )

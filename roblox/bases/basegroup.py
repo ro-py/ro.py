@@ -158,13 +158,15 @@ class BaseGroup(BaseItem):
             }
         )
 
-    def get_members(self, sort_order: SortOrder = SortOrder.Ascending, limit: int = 10) -> PageIterator:
+    def get_members(self, page_size: int = 10, sort_order: SortOrder = SortOrder.Ascending,
+                    max_items: int = None) -> PageIterator:
         """
         Gets all members of a group.
 
         Arguments:
+            page_size: How many members should be returned for each page.
             sort_order: Order in which data should be grabbed.
-            limit: Size of each page.
+            max_items: The maximum items to return when looping through this object.
 
         Returns:
             A PageIterator containing the group's members.
@@ -172,8 +174,9 @@ class BaseGroup(BaseItem):
         return PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users"),
+            page_size=page_size,
             sort_order=sort_order,
-            limit=limit,
+            max_items=max_items,
             handler=lambda shared, data: Member(shared=shared, data=data, group=self)
         )
 
@@ -276,21 +279,24 @@ class BaseGroup(BaseItem):
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users/{int(user)}")
         )
 
-    def get_wall_posts(self, sort_order: SortOrder = SortOrder.Ascending, limit: int = 10) -> PageIterator:
+    def get_wall_posts(self, page_size: int = 10, sort_order: SortOrder = SortOrder.Ascending,
+                       max_items: int = None) -> PageIterator:
         """
         Gets all members of a group.
 
         Arguments:
+            page_size: How many members should be returned for each page.
             sort_order: Order in which data should be grabbed.
-            limit: How many posts will be returned per page.
+            max_items: The maximum items to return when looping through this object.
 
         Returns: A PageIterator.
         """
         return PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("groups", f"v2/groups/{self.id}/wall/posts"),
+            page_size=page_size,
             sort_order=sort_order,
-            limit=limit,
+            max_items=max_items,
             handler=lambda shared, data: WallPost(shared=shared, data=data, group=self)
         )
 
@@ -310,13 +316,15 @@ class BaseGroup(BaseItem):
             group=self
         )
 
-    def get_join_requests(self, sort_order: SortOrder = SortOrder.Ascending, limit: int = 10) -> PageIterator:
+    def get_join_requests(self, page_size: int = 10, sort_order: SortOrder = SortOrder.Ascending,
+                          max_items: int = None) -> PageIterator:
         """
         Gets all of this group's join requests.
 
         Arguments:
+            page_size: How many members should be returned for each page.
             sort_order: Order in which data should be grabbed.
-            limit: How many posts will be returned per page.
+            max_items: The maximum items to return when looping through this object.
 
         Returns:
             A PageIterator containing group join requests.
@@ -324,8 +332,9 @@ class BaseGroup(BaseItem):
         return PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests"),
+            page_size=page_size,
             sort_order=sort_order,
-            limit=limit,
+            max_items=max_items,
             handler=lambda shared, data: JoinRequest(shared=shared, data=data, group=self)
         )
 

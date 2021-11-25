@@ -14,19 +14,31 @@ A simple `async for` can loop through the data no problem:
 async for user in client.user_search("builderman"):
     print(user.name)
 ```
+We can limit the amount of items returned using the `max_items` argument:
+```python
+async for user in client.user_search("builderman", max_items=10):
+    print(user.name)
+```
+We can also use `.items()`:
+```python
+async for user in client.user_search("builderman").items(10):
+    print(user.name)
+```
 
 ## Looping through pages
-If we want to instead loop through each *page*, we can use `pages()`:
+If we want to instead loop through each *page*, we can use `.pages()`:
 ```python
 async for page in client.user_search("builderman").pages():
     print("Page:")
     for user in page:
         print(f"\t{user.name}")
 ```
-The size of this page depends on the value of the `limit` argument. It can be either 10, 20, 50 or 100. Higher values
-mean you'll send less requests to get the same amount of data, however these requests will usually take longer.
+The size of this page depends on the value of the `page_size` argument. It can be either 10, 25, 50 or 100. 
+Higher values mean you send less requests to get the same amount of data, however these requests will usually take 
+longer.
+
 ```python
-async for page in client.user_search("builderman", limit=100).pages():
+async for page in client.user_search("builderman", page_size=100).pages():
     print(f"Page with {len(page)} items:")
     for user in page:
         print(f"\t{user.name}")

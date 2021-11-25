@@ -59,10 +59,15 @@ class BaseUser(BaseItem):
         return status_data["status"]
 
     def username_history(
-            self, limit: int = 10, sort_order: SortOrder = SortOrder.Ascending
+            self, page_size: int = 10, sort_order: SortOrder = SortOrder.Ascending, max_items: int = None
     ) -> PageIterator:
         """
         Grabs the user's username history.
+
+        Arguments:
+            page_size: How many members should be returned for each page.
+            sort_order: Order in which data should be grabbed.
+            max_items: The maximum items to return when looping through this object.
 
         Returns:
             A PageIterator containing the user's username history.
@@ -72,8 +77,9 @@ class BaseUser(BaseItem):
             url=self._shared.url_generator.get_url(
                 "users", f"v1/users/{self.id}/username-history"
             ),
-            limit=limit,
+            page_size=page_size,
             sort_order=sort_order,
+            max_items=max_items,
             handler=lambda shared, data: data["name"],
         )
 
@@ -266,15 +272,16 @@ class BaseUser(BaseItem):
     def _get_friend_channel_iterator(
             self,
             channel: str,
-            limit: int = 10,
-            sort_order: SortOrder = SortOrder.Ascending
+            page_size: int = 10,
+            sort_order: SortOrder = SortOrder.Ascending, max_items: int = None
     ) -> PageIterator:
         from ..friends import Friend
         return PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("friends", f"v1/users/{self.id}/{channel}"),
-            limit=limit,
+            page_size=page_size,
             sort_order=sort_order,
+            max_items=max_items,
             handler=lambda shared, data: Friend(shared=shared, data=data)
         )
 
@@ -307,8 +314,8 @@ class BaseUser(BaseItem):
 
     def get_followers(
             self,
-            limit: int = 10,
-            sort_order: SortOrder = SortOrder.Ascending
+            page_size: int = 10,
+            sort_order: SortOrder = SortOrder.Ascending, max_items: int = None
     ) -> PageIterator:
         """
         Gets the user's followers.
@@ -318,14 +325,15 @@ class BaseUser(BaseItem):
         """
         return self._get_friend_channel_iterator(
             channel="followers",
-            limit=limit,
-            sort_order=sort_order
+            page_size=page_size,
+            sort_order=sort_order,
+            max_items=max_items,
         )
 
     def get_followings(
             self,
-            limit: int = 10,
-            sort_order: SortOrder = SortOrder.Ascending
+            page_size: int = 10,
+            sort_order: SortOrder = SortOrder.Ascending, max_items: int = None
     ) -> PageIterator:
         """
         Gets the user's followings.
@@ -335,6 +343,7 @@ class BaseUser(BaseItem):
         """
         return self._get_friend_channel_iterator(
             channel="followings",
-            limit=limit,
-            sort_order=sort_order
+            page_size=page_size,
+            sort_order=sort_order,
+            max_items=max_items,
         )

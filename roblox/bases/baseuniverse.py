@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 from .baseitem import BaseItem
 from ..utilities.shared import ClientSharedObject
-from ..utilities.iterators import PageIterator
+from ..utilities.iterators import PageIterator, SortOrder
 from ..gamepasses import GamePass
 from ..sociallinks import UniverseSocialLink
 
@@ -87,9 +87,15 @@ class BaseUniverse(BaseItem):
         is_favorited_data = is_favorited_response.json()
         return is_favorited_data["isFavorited"]
 
-    def get_badges(self, limit: int = 10) -> PageIterator:
+    def get_badges(self, page_size: int = 10, sort_order: SortOrder = SortOrder.Ascending,
+                   max_items: int = None) -> PageIterator:
         """
         Gets the universe's badges.
+
+        Arguments:
+            page_size: How many members should be returned for each page.
+            sort_order: Order in which data should be grabbed.
+            max_items: The maximum items to return when looping through this object.
 
         Returns:
             A PageIterator containing this universe's badges.
@@ -98,7 +104,9 @@ class BaseUniverse(BaseItem):
         return PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("badges", f"v1/universes/{self.id}/badges"),
-            limit=limit,
+            page_size=page_size,
+            sort_order=sort_order,
+            max_items=max_items,
             handler=_universe_badges_handler,
         )
 
@@ -116,9 +124,15 @@ class BaseUniverse(BaseItem):
         stats_data = stats_response.json()
         return UniverseLiveStats(data=stats_data)
 
-    def get_gamepasses(self, limit: int = 10) -> PageIterator:
+    def get_gamepasses(self, page_size: int = 10, sort_order: SortOrder = SortOrder.Ascending,
+                       max_items: int = None) -> PageIterator:
         """
         Gets the universe's gamepasses.
+
+        Arguments:
+            page_size: How many members should be returned for each page.
+            sort_order: Order in which data should be grabbed.
+            max_items: The maximum items to return when looping through this object.
 
         Returns:
             A PageIterator containing the universe's gamepasses.
@@ -127,7 +141,9 @@ class BaseUniverse(BaseItem):
         return PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("games", f"v1/games/{self.id}/game-passes"),
-            limit=limit,
+            page_size=page_size,
+            sort_order=sort_order,
+            max_items=max_items,
             handler=lambda shared, data: GamePass(shared, data),
         )
 

@@ -247,13 +247,15 @@ class Client:
         """
         return BaseUser(shared=self._shared, user_id=user_id)
 
-    def user_search(self, keyword: str, limit: int = 10) -> PageIterator:
+    def user_search(self, keyword: str, page_size: int = 10,
+                    max_items: int = None) -> PageIterator:
         """
         Search for users with a keyword.
 
         Arguments:
             keyword: A keyword to search for.
-            limit: How many users should be returned for each page
+            page_size: How many members should be returned for each page.
+            max_items: The maximum items to return when looping through this object.
 
         Returns:
             A PageIterator containing RequestedUsernamePartialUser.
@@ -261,7 +263,8 @@ class Client:
         return PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("users", f"v1/users/search"),
-            limit=limit,
+            page_size=page_size,
+            max_items=max_items,
             extra_parameters={"keyword": keyword},
             handler=lambda shared, data: RequestedUsernamePartialUser(shared, data),
         )
