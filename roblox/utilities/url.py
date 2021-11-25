@@ -13,7 +13,7 @@ class URLGenerator:
     Generates URLs based on a chosen base URL.
 
     Attributes:
-        base_url: The base URL
+        base_url: The base URL.
     """
 
     def __init__(self, base_url: str):
@@ -24,8 +24,8 @@ class URLGenerator:
         Returns the full URL of a subdomain, given the base subdomain name.
 
         Arguments:
-            subdomain: subdomain for the website
-            protocol: protocol used
+            subdomain: The URL subdomain.
+            protocol: The URL protocol.
         """
         return f"{protocol}://{subdomain}.{self.base_url}"
 
@@ -37,13 +37,13 @@ class URLGenerator:
             protocol: str = "https",
     ) -> str:
         """
-        Returns a full URl, given a subdomain name, protocol, and each.
+        Returns a full URL, given a subdomain name, protocol, and path.
 
         Arguments:
-            subdomain: subdomain for the website
-            protocol: protocol used
-            path: path to the data
-            base_url: base url
+            subdomain: The URL subdomain.
+            protocol: The URL protocol.
+            path: The URL path.
+            base_url: The base URL.
         """
         if base_url is None:
             base_url = self.base_url

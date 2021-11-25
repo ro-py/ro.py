@@ -14,11 +14,13 @@ from ..utilities.shared import ClientSharedObject
 
 class PartialBadge(BaseBadge):
     """
+    Represents partial badge data.
+
     Attributes:
         _data: The data we get back from the endpoint.
         _shared: The shared object, which is passed to all objects this client generates.
         id: The universe ID.
-        awarded: The date when the badge was awarded
+        awarded: The date when the badge was awarded.
     """
 
     def __init__(self, shared: ClientSharedObject, data: dict):

@@ -27,7 +27,7 @@ class IteratorItems(AsyncIterator):
     Represents the items inside of an iterator.
     """
 
-    def __init__(self, iterator: Iterator):
+    def __init__(self, iterator: RobloxIterator):
         self._iterator = iterator
         self._position: int = 0
         self._items: list = []
@@ -66,7 +66,7 @@ class IteratorPages(AsyncIterator):
     Represents the pages inside of an iterator.
     """
 
-    def __init__(self, iterator: Iterator):
+    def __init__(self, iterator: RobloxIterator):
         self._iterator = iterator
 
     def __aiter__(self):
@@ -80,7 +80,7 @@ class IteratorPages(AsyncIterator):
             raise StopAsyncIteration
 
 
-class Iterator:
+class RobloxIterator:
     """
     Represents a basic iterator which all iterators should implement.
     """
@@ -128,7 +128,7 @@ class Iterator:
         return self._pages
 
 
-class PageIterator(Iterator):
+class PageIterator(RobloxIterator):
     """
     Represents a cursor-based, paginated Roblox object.
     For more information about how cursor-based pagination works, see https://robloxapi.wiki/wiki/Pagination.
@@ -237,9 +237,17 @@ class PageIterator(Iterator):
         return data
 
 
-class PageNumberIterator(Iterator):
+class PageNumberIterator(RobloxIterator):
     """
     Represents an iterator that is advanced with page numbers and sizes, like those seen on chat.roblox.com.
+
+    Attributes:
+        url: The endpoint to hit for new page data.
+        page_number: The current page number.
+        page_size: The size of each page.
+        extra_parameters: Extra parameters to pass to the endpoint.
+        handler: A callable object to use to convert raw endpoint data to parsed objects.
+        handler_kwargs: Extra keyword arguments to pass to the handler.
     """
 
     def __init__(

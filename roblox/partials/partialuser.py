@@ -10,12 +10,13 @@ from ..utilities.shared import ClientSharedObject
 
 class PartialUser(BaseUser):
     """
+    Represents partial user information.
+
     Attributes:
-        _data: The data we get back from the endpoint.
         _shared: The shared object, which is passed to all objects this client generates.
-        id: Id of the user
-        name: Name of the user
-        display_name: display name of the user
+        id: The user's ID.
+        name: The user's name.
+        display_name: The user's display name.
     """
 
     def __init__(self, shared: ClientSharedObject, data: dict):
@@ -25,7 +26,6 @@ class PartialUser(BaseUser):
             data: The data from the endpoint.
         """
         self._shared: ClientSharedObject = shared
-        self._data: dict = data
 
         self.id: int = data.get("id") or data.get("userId") or data.get("Id")
 
@@ -40,6 +40,8 @@ class PartialUser(BaseUser):
 
 class RequestedUsernamePartialUser(PartialUser):
     """
+    Represents a partial user in the context of a search query.
+
     Attributes:
         requested_username: Username they requested
     """
@@ -52,4 +54,4 @@ class RequestedUsernamePartialUser(PartialUser):
         """
         super().__init__(shared=shared, data=data)
 
-        self.requested_username = data.get("requestedUsername")
+        self.requested_username: str = data.get("requestedUsername")

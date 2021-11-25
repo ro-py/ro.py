@@ -11,10 +11,10 @@ from ..utilities.shared import ClientSharedObject
 
 class AssetPartialGroup(BaseGroup):
     """
-    Represents the response data of https://games.roblox.com/v1/games.
+    Represents a partial group in the context of a Roblox asset.
+    Intended to parse the `data[0]["creator"]` data from https://games.roblox.com/v1/games.
 
     Attributes:
-        _data: The data we get back from the endpoint.
         _shared: The shared object, which is passed to all objects this client generates.
         id: The group's name.
         creator: The group's owner.
@@ -28,7 +28,6 @@ class AssetPartialGroup(BaseGroup):
             data: The data from the endpoint.
         """
         self._shared: ClientSharedObject = shared
-        self._data: dict = data
 
         self.creator: BaseUser = BaseUser(shared=shared, user_id=data["Id"])
         self.id: int = data["CreatorTargetId"]
@@ -42,6 +41,8 @@ class AssetPartialGroup(BaseGroup):
 
 class UniversePartialGroup(BaseGroup):
     """
+    Represents a partial group in the context of a Roblox universe.
+
     Attributes:
         _data: The data we get back from the endpoint.
         _shared: The shared object, which is passed to all objects this client generates.

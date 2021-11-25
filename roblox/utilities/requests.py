@@ -19,7 +19,6 @@ from ..utilities.url import URLGenerator
 class CleanAsyncClient(AsyncClient):
     """
     This is a clean-on-delete version of httpx.AsyncClient.
-
     """
 
     def __init__(self):
@@ -78,10 +77,10 @@ class Requests:
     async def request(self, method: str, *args, **kwargs) -> Response:
         """
         Arguments:
-            method: method used for the request
+            method: The request method.
 
         Returns:
-            Response
+            An HTTP response.
         """
 
         handle_xcsrf_token = kwargs.pop("handle_xcsrf_token", True)
@@ -128,7 +127,7 @@ class Requests:
         Sends a GET request.
 
         Returns:
-            Response
+            An HTTP response.
         """
 
         return await self.request("GET", *args, **kwargs)
@@ -138,7 +137,7 @@ class Requests:
         Sends a POST request.
 
         Returns:
-            Response
+            An HTTP response.
         """
 
         return await self.request("POST", *args, **kwargs)
@@ -148,7 +147,7 @@ class Requests:
         Sends a PATCH request.
 
         Returns:
-            Response
+            An HTTP response.
         """
 
         return await self.request("PUT", *args, **kwargs)
@@ -158,7 +157,7 @@ class Requests:
         Sends a PATCH request.
 
         Returns:
-            Response
+            An HTTP response.
         """
 
         return await self.request("PATCH", *args, **kwargs)
@@ -168,7 +167,7 @@ class Requests:
         Sends a DELETE request.
 
         Returns:
-            Response
+            An HTTP response.
         """
 
         return await self.request("DELETE", *args, **kwargs)

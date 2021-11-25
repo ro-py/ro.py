@@ -23,6 +23,13 @@ class RobloxException(Exception):
 class ResponseError:
     """
     Represents an error returned by a Roblox game server.
+
+    Attributes:
+        code: The error code.
+        message: The error message.
+        user_facing_message: A more simple error message intended for frontend use.
+        field: The field causing this error.
+        retryable: Whether retrying this exception could supress this issue.
     """
 
     def __init__(self, data: dict):
@@ -39,6 +46,11 @@ class ResponseError:
 class HTTPException(RobloxException):
     """
     Exception that's raised when an HTTP request fails.
+
+    Attributes:
+        response: The HTTP response object.
+        status: The HTTP response status code.
+        errors: A list of Roblox response errors.
     """
 
     def __init__(self, response: Response, errors: Optional[list] = None):
@@ -52,7 +64,7 @@ class HTTPException(RobloxException):
         self.errors: List[ResponseError]
 
         if errors:
-            self.errors: List[ResponseError] = [
+            self.errors = [
                 ResponseError(data=error_data) for error_data in errors
             ]
         else:

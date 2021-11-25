@@ -10,7 +10,7 @@ from ..utilities.shared import ClientSharedObject
 
 class PartialRole(BaseRole):
     """
-    Represents partial role information.
+    Represents partial group role information.
 
     Attributes:
         _shared: The shared object.

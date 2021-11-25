@@ -11,8 +11,9 @@ from ..utilities.shared import ClientSharedObject
 
 class PartialUniverse(BaseUniverse):
     """
-    Attributes:
-        _data: The data we get back from the endpoint.
+    Represents partial universe information.
+
+    Attributes:.
         _shared: The shared object, which is passed to all objects this client generates.
         id: The universe ID.
         name: The name of the universe.
@@ -26,7 +27,6 @@ class PartialUniverse(BaseUniverse):
             data: The raw data.
         """
         self._shared: ClientSharedObject = shared
-        self._data: dict = data
 
         self.id: int = data["id"]
 
@@ -41,6 +41,8 @@ class PartialUniverse(BaseUniverse):
 
 class ChatPartialUniverse(BaseUniverse):
     """
+    Represents a partial universe in the context of a chat conversation.
+
     Attributes:
         _data: The data we get back from the endpoint.
         _shared: The shared object, which is passed to all objects this client generates.

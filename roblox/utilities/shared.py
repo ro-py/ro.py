@@ -25,14 +25,14 @@ class ClientSharedObject:
     This object is shared between the client and all objects it generates.
 
     Attributes:
-        client: method used for the request
-        requests: Everything and noting.
-        url_generator: Everything and noting.
-        presence_provider: provider for all presence stuff
-        thumbnail_provider: provider for all thumbnail stuff
-        delivery_provider: provider for all delivery stuff
-        chat_provider: provider for chat
-        account_provider: provider for account
+        client: The main client.
+        requests: The requests object.
+        url_generator: The URL generator object.
+        presence_provider: A provider for presence information.
+        thumbnail_provider: A provider for thumbnail information.
+        delivery_provider: A provider for delivery information.
+        chat_provider: A provider for chat information.
+        account_provider:  A provider for account information.
     """
 
     def __init__(self, client: Client, requests: Requests, url_generator: URLGenerator):
