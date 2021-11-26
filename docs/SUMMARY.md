@@ -2,6 +2,7 @@
 * [Tutorial](tutorial/index.md)
     * [Get Started](tutorial/get-started.md)
     * [Authentication](tutorial/authentication.md)
+    * [Error Handling](tutorial/error-handling.md)
     * [Pagination](tutorial/pagination.md)
 * [ROBLOSECURITY](roblosecurity.md)
 * [Bases](bases.md)
