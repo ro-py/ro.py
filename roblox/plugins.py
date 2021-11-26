@@ -17,7 +17,7 @@ class Plugin(BasePlugin):
     Represents a Roblox plugin.
     It is intended to parse data from https://develop.roblox.com/v1/plugins.
 
-     Attributes:
+    Attributes:
         id: The ID of the plugin.
         name: The name of the plugin.
         description: The plugin's description.
