@@ -3,6 +3,7 @@
     * [Get Started](tutorial/get-started.md)
     * [Authentication](tutorial/authentication.md)
     * [Error Handling](tutorial/error-handling.md)
+    * [Thumbnails](tutorial/thumbnails.md)
     * [Pagination](tutorial/pagination.md)
 * [ROBLOSECURITY](roblosecurity.md)
 * [Bases](bases.md)

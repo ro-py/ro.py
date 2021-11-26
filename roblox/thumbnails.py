@@ -436,6 +436,25 @@ class ThumbnailProvider:
     ) -> List[Thumbnail]:
         """
         Returns avatars for each user ID passed.
+        The valid sizes depend on the `type` parameter.
+
+        | Size | full_body | headshot | bust |
+        |---|---|---|---|
+        | 30x30 | ✔️ | ❌ | ❌ |
+        | 48x48 | ✔️ | ✔️ | ✔️ |
+        | 50x50 | ❌ | ✔️ | ✔️ |
+        | 60x60 | ✔️ | ✔️ | ✔️ |
+        | 75x75 | ✔️ | ✔️ | ✔️ |
+        | 100x100 | ✔️ | ✔️ | ✔️ |
+        | 110x110 | ✔️ | ✔️ | ❌ |
+        | 140x140 | ✔️ | ❌ | ❌ |
+        | 150x150 | ✔️ | ✔️ | ✔️ |
+        | 150x200 | ✔️ | ❌ | ❌ |
+        | 180x180 | ✔️ | ✔️ | ✔️ |
+        | 250x250 | ✔️ | ❌ | ❌ |
+        | 352x352 | ✔️ | ✔️ | ✔️ |
+        | 420x420 | ✔️ | ✔️ | ✔️ |
+        | 720x720 | ✔️ | ❌ | ❌ |
 
         Arguments:
             users: Id of the users you want the thumbnails of.
