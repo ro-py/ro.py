@@ -21,7 +21,7 @@
             <td>
                 <a href="./multi_user_information.py">multi_user_information.py</a>
             </td>
-            <td>Grabs users' information and prints it all to the console.</td>
+            <td>Grabs information about multiple users and prints it to the console.</td>
         </tr>
         <tr>
             <td>
@@ -33,13 +33,13 @@
             <td>
                 <a href="./multi_user_information_by_usernames.py">multi_user_information_by_usernames.py</a>
             </td>
-            <td>Grabs users' information by username and prints it all to the console.</td>
+            <td>Grabs information about multiple users by username and prints it to the console.</td>
         </tr>
         <tr>
             <td>
                 <a href="./user_search.py">user_search.py</a>
             </td>
-            <td>Searches for users who have a keyword in their name and prints them all to the console.</td>
+            <td>Searches for users and prints 10 to the console.</td>
         </tr>
         <tr>
             <td>
@@ -51,13 +51,13 @@
             <td>
                 <a href="./place_information.py">place_information.py</a>
             </td>
-            <td>Grabs place information and prints it to the console.</td>
+            <td>Grabs place information and prints it to the console. Requires authentication.</td>
         </tr>
         <tr>
             <td>
                 <a href="./multi_place_information.py">multi_place_information.py</a>
             </td>
-            <td>Grabs places' information and prints it all to the console.</td>
+            <td>Grabs information about multiple places and prints it to the console.</td>
         </tr>
         <tr>
             <td>
@@ -81,7 +81,7 @@
             <td>
                 <a href="./multi_plugin_information.py">multi_plugin_information.py</a>
             </td>
-            <td>Grabs plugins' information and prints it all to the console.</td>
+            <td>Grabs information about multiple plugins and prints it to the console.</td>
         </tr>
         <tr>
             <td>
@@ -93,7 +93,7 @@
             <td>
                 <a href="./multi_universe_information.py">multi_universe_information.py</a>
             </td>
-            <td>Grabs universes' information and prints it all to the console.</td>
+            <td>Grabs information about multiple universes and prints it to the console.</td>
         </tr>
     </table>
 </div>
