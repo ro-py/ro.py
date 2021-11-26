@@ -9,7 +9,7 @@ client = Client("cookie_here")
 
 
 async def main():
-    place = await client.get_place(4743118182)
+    place = await client.get_place(8100260845)
 
     print("ID:", place.id)
     print("Name:", place.name)

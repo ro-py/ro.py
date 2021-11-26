@@ -8,7 +8,7 @@ client = Client()
 
 
 async def main():
-    group = await client.get_group(11179261)
+    group = await client.get_group(9695397)
 
     print("ID:", group.id)
     print("Name:", group.name)

@@ -8,7 +8,7 @@ client = Client()
 
 
 async def main():
-    badge = await client.get_badge(66918518)
+    badge = await client.get_badge(2124867793)
 
     print("ID:", badge.id)
     print("Name:", badge.name)

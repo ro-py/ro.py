@@ -8,7 +8,7 @@ client = Client()
 
 
 async def main():
-    users = await client.get_users([1, 2], expand=True)
+    users = await client.get_users([2067807455, 1], expand=True)
 
     for user in users:
         status = await user.get_status()

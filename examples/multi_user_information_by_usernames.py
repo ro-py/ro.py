@@ -8,7 +8,7 @@ client = Client()
 
 
 async def main():
-    users = await client.get_users_by_usernames(["Roblox", "John Doe"], expand=True)
+    users = await client.get_users_by_usernames(["ro_python", "Roblox"], expand=True)
 
     for user in users:
         status = await user.get_status()

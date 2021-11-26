@@ -8,7 +8,7 @@ client = Client()
 
 
 async def main():
-    plugins = await client.get_plugins([174577307, 752585459])
+    plugins = await client.get_plugins([8100268552, 8100269650])
 
     for plugin in plugins:
         print("ID:", plugin.id)

@@ -9,7 +9,7 @@ client = Client("cookie_here")
 
 
 async def main():
-    places = await client.get_places([1818, 33913])
+    places = await client.get_places([8100260845, 8100266389])
 
     for place in places:
         print("ID:", place.id)

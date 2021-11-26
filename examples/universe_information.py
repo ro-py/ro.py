@@ -8,7 +8,7 @@ client = Client()
 
 
 async def main():
-    universe = await client.get_universe(2148912791)
+    universe = await client.get_universe(3118067569)
 
     print("ID:", universe.id)
     print("Name:", universe.name)

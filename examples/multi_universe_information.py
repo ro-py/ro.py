@@ -8,7 +8,7 @@ client = Client()
 
 
 async def main():
-    universes = await client.get_universes([1818, 33913])
+    universes = await client.get_universes([13058, 15642])
 
     for universe in universes:
         print("ID:", universe.id)
