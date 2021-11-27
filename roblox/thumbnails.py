@@ -162,6 +162,30 @@ class ThumbnailProvider:
     ) -> List[Thumbnail]:
         """
         Returns asset thumbnails for the asset ID passed.
+        Supported sizes:  
+        - 30x30  
+        - 42x42  
+        - 50x50  
+        - 60x62  
+        - 75x75  
+        - 110x110  
+        - 140x140  
+        - 150x150  
+        - 160x100  
+        - 160x600  
+        - 250x250  
+        - 256x144  
+        - 300x250  
+        - 304x166  
+        - 384x216  
+        - 396x216  
+        - 420x420  
+        - 480x270  
+        - 512x512  
+        - 576x324  
+        - 700x700  
+        - 728x90  
+        - 768x432  
 
         Arguments:
             assets: Assets you want the thumbnails of.
@@ -217,6 +241,8 @@ class ThumbnailProvider:
     ) -> List[Thumbnail]:
         """
         Returns badge icons for each badge ID passed.
+        Supported sizes:  
+        - 150x150  
 
         Arguments:
             badges: Badges you want the thumbnails of.
@@ -252,6 +278,8 @@ class ThumbnailProvider:
     ) -> List[Thumbnail]:
         """
         Returns gamepass icons for each gamepass ID passed.
+        Supported sizes:  
+        - 150x150  
 
         Arguments:
             gamepasses: Gamepasses you want the thumbnails of.
@@ -287,6 +315,13 @@ class ThumbnailProvider:
     ) -> List[Thumbnail]:
         """
         Returns universe icons for each universe ID passed.
+        Supported sizes:  
+        - 50x50  
+        - 128x128  
+        - 150x150  
+        - 256x256  
+        - 512x512  
+        - 768x432  
 
         Arguments:
             universes: Universes you want the thumbnails of.
@@ -325,6 +360,12 @@ class ThumbnailProvider:
     ) -> List[UniverseThumbnails]:
         """
         Returns universe thumbnails for each universe ID passed.
+        Supported sizes:  
+        - 768x432  
+        - 576x324  
+        - 480x270  
+        - 384x216  
+        - 256x144  
 
         Arguments:
             universes: Universes you want the thumbnails of.
@@ -365,6 +406,9 @@ class ThumbnailProvider:
     ) -> List[Thumbnail]:
         """
         Returns icons for each group ID passed.
+        Supported sizes:  
+        - 150x150  
+        - 420x420  
 
         Arguments:
             groups: Groups you want the thumbnails of.
@@ -400,6 +444,13 @@ class ThumbnailProvider:
     ) -> List[Thumbnail]:
         """
         Returns icons for each place ID passed.
+        Supported sizes:  
+        - 50x50  
+        - 128x128  
+        - 150x150  
+        - 256x256  
+        - 512x512  
+        - 768x432  
 
         Arguments:
             places: Places you want the thumbnails of.
