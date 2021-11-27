@@ -19,7 +19,7 @@ class InstanceType(Enum):
     """
     asset = "Asset"
     gamepass = "GamePass"
-    # badge = "Badge"
+    badge = "Badge"
 
 
 class ItemInstance(BaseInstance):

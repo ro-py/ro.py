@@ -50,9 +50,9 @@ class AvatarThumbnailType(Enum):
     Type of avatar thumbnail.
     """
 
-    full_body = 1
-    headshot = 2
-    bust = 3
+    full_body = "full_body"
+    headshot = "headshot"
+    bust = "bust"
 
 
 SizeTupleOrString = Union[Tuple[int, int], str]
