@@ -212,10 +212,10 @@ class BaseUser(BaseItem):
 
     async def get_group_roles(self) -> List[Role]:
         """
-        Gets the group's roles.
+        Gets a list of roles for all groups this user is in.
 
         Returns:
-            A list of the group's roles.
+            A list of roles.
         """
         from ..roles import Role
         from ..groups import Group
