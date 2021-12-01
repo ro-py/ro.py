@@ -24,7 +24,7 @@ from ..wall import WallPost, WallPostRelationship
 
 if TYPE_CHECKING:
     from .baseuser import BaseUser
-    from ..types import UserOrUserId, RoleOrRoleId
+    from ..utilities.types import UserOrUserId, RoleOrRoleId
 
 
 class JoinRequest(PartialUser):

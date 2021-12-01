@@ -21,7 +21,7 @@ from ..utilities.shared import ClientSharedObject
 if TYPE_CHECKING:
     from ..friends import Friend
     from ..roles import Role
-    from ..types import AssetOrAssetId, GamePassOrGamePassId
+    from ..utilities.types import AssetOrAssetId, GamePassOrGamePassId
 
 
 class BaseUser(BaseItem):
