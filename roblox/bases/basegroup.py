@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from ..types import UserOrUserId, RoleOrRoleId
 
 
-class JoinRequest():
+class JoinRequest:
     """
     Represents a group join request.
 
