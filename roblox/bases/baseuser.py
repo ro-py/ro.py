@@ -61,7 +61,7 @@ class BaseUser(BaseItem):
     def username_history(
             self, page_size: int = 10, sort_order: SortOrder = SortOrder.Ascending, max_items: int = None
     ) -> PageIterator:
-        """117091179
+        """
         Grabs the user's username history.
 
         Arguments:
