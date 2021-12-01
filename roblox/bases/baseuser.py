@@ -61,7 +61,7 @@ class BaseUser(BaseItem):
     def username_history(
             self, page_size: int = 10, sort_order: SortOrder = SortOrder.Ascending, max_items: int = None
     ) -> PageIterator:
-        """
+        """117091179
         Grabs the user's username history.
 
         Arguments:
@@ -233,6 +233,30 @@ class BaseUser(BaseItem):
                 )
             ) for role_data in roles_data
         ]
+
+    async def get_primary_group_role(self) -> Optional[Role]:
+        """
+        Gets a list of roles for all groups this user is in.
+
+        Returns:
+            A list of roles.
+        """
+        from ..roles import Role
+        from ..groups import Group
+        roles_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("groups", f"v1/users/{self.id}/groups/primary/role")
+        )
+        json = roles_response.json()
+        if json is None:
+            return None
+        return Role(
+                shared=self._shared,
+                data=json["role"],
+                group=Group(
+                    shared=self._shared,
+                    data=json["group"]
+                )
+            )
 
     async def get_roblox_badges(self) -> List[RobloxBadge]:
         """
