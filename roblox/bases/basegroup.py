@@ -27,7 +27,7 @@ if TYPE_CHECKING:
     from ..types import UserOrUserId, RoleOrRoleId
 
 
-class JoinRequest(PartialUser):
+class JoinRequest():
     """
     Represents a group join request.
 
@@ -38,15 +38,16 @@ class JoinRequest(PartialUser):
 
     def __init__(self, shared: ClientSharedObject, data: dict, group: Union[BaseGroup, int]):
         self._shared: ClientSharedObject = shared
-        super().__init__(shared=self._shared, data=data["requester"])
         self.created: datetime = parse(data["created"])
-
+        self.requester = PartialUser(shared=self._shared, data=data["requester"])
         self.group: BaseGroup
-
         if isinstance(group, int):
             self.group = BaseGroup(shared=self._shared, group_id=group)
         else:
             self.group = group
+
+    def __int__(self):
+        return self.requester.id
 
     async def accept(self):
         """
@@ -356,7 +357,7 @@ class BaseGroup(BaseItem):
             group=self
         ) or None
 
-    async def accept_user(self, user: Union[int, BaseUser]):
+    async def accept_user(self, user: Union[int, BaseUser, JoinRequest]):
         """
         Accepts a user's request to join this group.
 
@@ -367,7 +368,7 @@ class BaseGroup(BaseItem):
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests/users/{int(user)}")
         )
 
-    async def decline_user(self, user: Union[int, BaseUser]):
+    async def decline_user(self, user: Union[int, BaseUser, JoinRequest]):
         """
         Declines a user's request to join this group.
 
@@ -376,6 +377,34 @@ class BaseGroup(BaseItem):
         """
         await self._shared.requests.delete(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests/users/{int(user)}")
+        )
+
+    async def batch_accept_users(self, users: List[Union[int, BaseUser, JoinRequest]]):
+        """
+        Accepts multiple user's request to join this group.
+
+        Arguments:
+            List[user]: The users to accept into this group.
+        """
+        await self._shared.requests.post(
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests"),
+            json={
+                "UserIds": [int(user) for user in users]
+            }
+        )
+
+    async def batch_decline_users(self, users: List[Union[int, BaseUser, JoinRequest]]):
+        """
+        Declines multiple user's request to join this group.
+
+        Arguments:
+            List[user]: The users to decline from this group.
+        """
+        await self._shared.requests.delete(
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests"),
+            json={
+                "UserIds": [int(user) for user in users]
+            }
         )
 
     async def update_shout(self, message: str) -> Optional[Shout]:
