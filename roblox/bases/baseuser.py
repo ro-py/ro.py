@@ -236,10 +236,10 @@ class BaseUser(BaseItem):
 
     async def get_primary_group_role(self) -> Optional[Role]:
         """
-        Gets a list of roles for all groups this user is in.
+        Gets a role for the primary group this user is in.
 
         Returns:
-            A list of roles.
+            Role
         """
         from ..roles import Role
         from ..groups import Group
