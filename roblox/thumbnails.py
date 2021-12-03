@@ -477,7 +477,7 @@ class ThumbnailProvider:
             for thumbnail_data in thumbnails_data
         ]
 
-    async def get_user_avatars(
+    async def get_user_avatar_thumbnails(
             self,
             users: List[UserOrUserId],
             type: AvatarThumbnailType = AvatarThumbnailType.full_body,
@@ -486,7 +486,7 @@ class ThumbnailProvider:
             is_circular: bool = False,
     ) -> List[Thumbnail]:
         """
-        Returns avatars for each user ID passed.
+        Returns avatar thumbnails for each user ID passed.
         The valid sizes depend on the `type` parameter.
 
         | Size | full_body | headshot | bust |
@@ -546,7 +546,7 @@ class ThumbnailProvider:
             for thumbnail_data in thumbnails_data
         ]
 
-    async def get_user_avatar_3d(self, user: UserOrUserId) -> Thumbnail:
+    async def get_user_avatar_thumbnail_3d(self, user: UserOrUserId) -> Thumbnail:
         """
         Returns the user's thumbnail in 3d.
 

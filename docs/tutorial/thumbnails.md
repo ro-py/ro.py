@@ -4,14 +4,14 @@ Below is a list of item types on Roblox and methods you can use to generate thei
 
 ## Users
 To generate avatar thumbnails, use the 
-[`get_user_avatars()`](/reference/roblox/thumbnails/#roblox.thumbnails.ThumbnailProvider.get_user_avatars) method.
+[`get_user_avatar_thumbnails()`](/reference/roblox/thumbnails/#roblox.thumbnails.ThumbnailProvider.get_user_avatar_thumbnails) method.
 The `type` parameter is an [`AvatarThumbnailType`](/reference/roblox/thumbnails/#roblox.thumbnails.AvatarThumbnailType)
 object, which you can import from `roblox` or from `roblox.thumbnails`.  
 Do note that the `size` parameter only allows certain sizes - see the docs for more details.
 
 ```python
 user = await client.get_user(2067807455)
-user_thumbnails = await client.thumbnails.get_user_avatars(
+user_thumbnails = await client.thumbnails.get_user_avatar_thumbnails(
     users=[user],
     type=AvatarThumbnailType.full_body,
     size=(420, 420)
@@ -27,12 +27,13 @@ We can read the first thumbnail (if it exists) and print out its URL.
 
 ### 3D thumbnails
 To generate 3D avatar thumbnails, use the 
-[`get_user_avatar_3d()`](/reference/roblox/thumbnails/#roblox.thumbnails.ThumbnailProvider.get_user_avatar_3d) method
+[`get_user_avatar_thumbnails_3d()`](/reference/roblox/thumbnails/#roblox.thumbnails.ThumbnailProvider.get_user_avatar_thumbnails_3d) method
 and call the [`get_3d_data()`](/reference/roblox/thumbnails/#roblox.thumbnails.Thumbnail.get_3d_data)
 method on the thumbnail to get 3d-related data.
+
 ```python
 user = await client.get_user(1)
-user_3d_thumbnail = await client.thumbnails.get_user_avatar_3d(user)
+user_3d_thumbnail = await client.thumbnails.get_user_avatar_thumbnail_3d(user)
 user_3d_data = await user_3d_thumbnail.get_3d_data()
 print("OBJ:", user_3d_data.obj.get_url())
 print("MTL:", user_3d_data.mtl.get_url())
