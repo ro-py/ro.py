@@ -74,7 +74,7 @@ async def main():
     assert await test_user_id(3)  # Jane Doe
 
     assert await test_user_id(968108160)  # jmk (@local_ip)
-    assert await test_user_id(33655127)  # boatbomber
+    assert await test_user_id(111179700)  # Iron_Legion
 
     assert await test_user_id_name(1)
     assert await test_user_id_name(2)
@@ -84,6 +84,7 @@ async def main():
     assert await test_user_name_id("John Doe")
     assert await test_user_name_id("Jane Doe")
     assert await test_user_name_id("local_ip")
+    assert await test_user_name_id("Iron_Legion")
 
 
 if __name__ == '__main__':
