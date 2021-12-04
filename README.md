@@ -4,7 +4,7 @@
 </p>
 <p align="center">
     <a href="https://github.com/ro-py/ro.py">GitHub</a> |
-    <a href="https://jmk.gg/ro.py">Discord</a> |
+    <a href="https://discord.gg/UKPaPu4teg">Discord</a> |
     <a href="https://pypi.org/project/roblox/">PyPI</a> |
     <a href="https://ro.py.jmk.gg/">Documentation</a> |
     <a href="https://github.com/ro-py/ro.py/tree/main/examples">Examples</a> |
