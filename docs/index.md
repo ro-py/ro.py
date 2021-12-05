@@ -18,17 +18,12 @@ The key features are:
 ourselves without dealing with advanced Roblox-specific concepts.
 
 ## Installation
-!!! warning
-	ro.py is in the process of being completely rewritten for the v2.0 release.  
-    All ro.py releases on PyPI (both the `ro-py` and `roblox` packages) are using the `v1.2.0.5` release, which is not
-    compatible with the documentation found here.
+To install ro.py from PyPI, you can install with pip:
+```
+pip install roblox
+```
 
 To install ro.py from git, install [git-scm](https://git-scm.com/downloads) and run the following:
 ```
 pip install git+git://github.com/ro-py/ro.py.git
-```
-
-To install ro.py from PyPI, which is currently incompatible with this documentation, you can install with pip:
-```
-pip install roblox
 ```
