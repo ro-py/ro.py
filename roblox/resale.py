@@ -16,8 +16,8 @@ class AssetResaleData:
         sales: The asset's sales.
         number_remaining: On a Limited U item that hasn't ran out, this is the amount remaining.
         recent_average_price: The item's recent average price.
-        original_price: What price this item waas originally sold at.
-        price_data_points: A list of tuples containing.
+        original_price: What price this item was originally sold at.
+        price_data_points: A list of tuples containing a limited item's price points over time.
     """
 
     def __init__(self, data: dict):
