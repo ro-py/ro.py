@@ -57,6 +57,13 @@ class WallPostRelationship:
 class WallPost(WallPostRelationship):
     """
     Represents a post on a Roblox group wall.
+    
+    Attributes:
+        id: The post ID.
+        poster: The member who made the post.
+        body: Body of the post.
+        created: Creation date of the post.
+        updated: Last updated date of the post.
     """
 
     def __init__(self, shared: ClientSharedObject, data: dict, group: BaseGroup):
