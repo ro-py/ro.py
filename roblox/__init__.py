@@ -14,7 +14,7 @@ __title__ = "roblox"
 __author__ = "jmkdev"
 __license__ = "MIT"
 __copyright__ = "Copyright 2020-present jmkdev"
-__version__ = "2.0.0-beta"
+__version__ = "2.0.0"
 
 import logging
 from typing import NamedTuple
@@ -47,7 +47,7 @@ version_info: VersionInfo = VersionInfo(
     major=2,
     minor=0,
     micro=0,
-    releaselevel="beta",
+    releaselevel="release",
     serial=0
 )
 
