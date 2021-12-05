@@ -21,7 +21,7 @@ from ..utilities.shared import ClientSharedObject
 if TYPE_CHECKING:
     from ..friends import Friend
     from ..roles import Role
-    from ..types import AssetOrAssetId, GamePassOrGamePassId
+    from ..utilities.types import AssetOrAssetId, GamePassOrGamePassId
 
 
 class BaseUser(BaseItem):
@@ -212,10 +212,10 @@ class BaseUser(BaseItem):
 
     async def get_group_roles(self) -> List[Role]:
         """
-        Gets the group's roles.
+        Gets a list of roles for all groups this user is in.
 
         Returns:
-            A list of the group's roles.
+            A list of roles.
         """
         from ..roles import Role
         from ..groups import Group
@@ -233,6 +233,30 @@ class BaseUser(BaseItem):
                 )
             ) for role_data in roles_data
         ]
+
+    async def get_primary_group_role(self) -> Optional[Role]:
+        """
+        Gets a role for the primary group this user is in.
+
+        Returns:
+            Role
+        """
+        from ..roles import Role
+        from ..groups import Group
+        roles_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("groups", f"v1/users/{self.id}/groups/primary/role")
+        )
+        json = roles_response.json()
+        if json is None:
+            return None
+        return Role(
+                shared=self._shared,
+                data=json["role"],
+                group=Group(
+                    shared=self._shared,
+                    data=json["group"]
+                )
+            )
 
     async def get_roblox_badges(self) -> List[RobloxBadge]:
         """

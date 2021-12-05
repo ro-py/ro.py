@@ -25,7 +25,7 @@ class AccountProvider:
     async def get_birthday(self) -> date:
         """
         Gets the authenticated user's birthday.
-        
+s
         Returns: 
             The authenticated user's birthday.
         """

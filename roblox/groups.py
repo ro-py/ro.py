@@ -14,7 +14,7 @@ from .utilities.shared import ClientSharedObject
 
 class Group(BaseGroup):
     """
-    Represents a Join Request
+    Represents a group.
 
     Attributes:
         _shared: The shared object, which is passed to all objects this client generates.
@@ -48,6 +48,7 @@ class Group(BaseGroup):
             shared=self._shared,
             data=data["shout"]
         ) if data.get("shout") else None
+
         self.member_count: int = data["memberCount"]
         self.is_builders_club_only: bool = data["isBuildersClubOnly"]
         self.public_entry_allowed: bool = data["publicEntryAllowed"]

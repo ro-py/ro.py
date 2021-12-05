@@ -9,20 +9,18 @@ client = Client("cookie_here")
 
 
 async def main():
-    places = await client.get_places([1818, 33913])
+    places = await client.get_places([8100260845, 8100266389])
 
     for place in places:
-        print("--------")
-
         print("ID:", place.id)
-        print("Name:", place.name)
-        print(f"Description: {place.description!r}")
-        print("Playable:", place.is_playable)
-        if place.is_playable == False:
-            print("Reason:", place.reason_prohibited)
+        print("\tName:", place.name)
+        print(f"\tDescription: {place.description!r}")
+        print("\tPlayable:", place.is_playable)
+        if not place.is_playable:
+            print("\tReason:", place.reason_prohibited)
         if place.price > 0:
-            print("Price:", place.price)
-        print("Creator:", place.builder)
+            print("\tPrice:", place.price)
+        print("\tCreator:", place.builder)
 
 
 asyncio.get_event_loop().run_until_complete(main())

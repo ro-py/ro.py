@@ -23,6 +23,7 @@ class UserPromotionChannels:
         self.twitter: Optional[str] = data["twitter"]
         self.youtube: Optional[str] = data["youtube"]
         self.twitch: Optional[str] = data["twitch"]
+        self.guilded: Optional[str] = data["guilded"]
 
     def __repr__(self):
         return f"<{self.__class__.__name__}>"

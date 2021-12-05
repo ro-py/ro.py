@@ -26,7 +26,7 @@ except ImportError:
 
 from .client import Client
 from .utilities.exceptions import *
-from .types import *
+from .utilities.types import *
 from .thumbnails import ThumbnailState, ThumbnailFormat, ThumbnailReturnPolicy, AvatarThumbnailType
 from .universes import UniverseGenre, UniverseAvatarType
 from .creatortype import CreatorType

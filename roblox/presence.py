@@ -19,7 +19,7 @@ from .bases.baseuniverse import BaseUniverse
 from .utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:
-    from .types import UserOrUserId
+    from .utilities.types import UserOrUserId
 
 
 class PresenceType(IntEnum):

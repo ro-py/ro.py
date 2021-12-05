@@ -10,3 +10,7 @@
 .md-footer-copyright::after{
 	content: "· Original theme by Elttob";
 }
+
+:root {
+    color-scheme: dark;
+}

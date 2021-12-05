@@ -14,7 +14,7 @@ from .utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:
     from .bases.basegroup import BaseGroup
-    from .types import RoleOrRoleId
+    from .utilities.types import RoleOrRoleId
 
 
 class MemberRelationship(BaseUser):

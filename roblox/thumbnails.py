@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Optional, List, Union, Tuple
 
 from .threedthumbnails import ThreeDThumbnail
-from .types import AssetOrAssetId, BadgeOrBadgeId, GamePassOrGamePassId, GroupOrGroupId, PlaceOrPlaceId, \
+from .utilities.types import AssetOrAssetId, BadgeOrBadgeId, GamePassOrGamePassId, GroupOrGroupId, PlaceOrPlaceId, \
     UniverseOrUniverseId, UserOrUserId
 from .utilities.shared import ClientSharedObject
 
@@ -50,9 +50,9 @@ class AvatarThumbnailType(Enum):
     Type of avatar thumbnail.
     """
 
-    full_body = 1
-    headshot = 2
-    bust = 3
+    full_body = "full_body"
+    headshot = "headshot"
+    bust = "bust"
 
 
 SizeTupleOrString = Union[Tuple[int, int], str]
@@ -162,6 +162,30 @@ class ThumbnailProvider:
     ) -> List[Thumbnail]:
         """
         Returns asset thumbnails for the asset ID passed.
+        Supported sizes:  
+        - 30x30  
+        - 42x42  
+        - 50x50  
+        - 60x62  
+        - 75x75  
+        - 110x110  
+        - 140x140  
+        - 150x150  
+        - 160x100  
+        - 160x600  
+        - 250x250  
+        - 256x144  
+        - 300x250  
+        - 304x166  
+        - 384x216  
+        - 396x216  
+        - 420x420  
+        - 480x270  
+        - 512x512  
+        - 576x324  
+        - 700x700  
+        - 728x90  
+        - 768x432  
 
         Arguments:
             assets: Assets you want the thumbnails of.
@@ -217,6 +241,8 @@ class ThumbnailProvider:
     ) -> List[Thumbnail]:
         """
         Returns badge icons for each badge ID passed.
+        Supported sizes:  
+        - 150x150  
 
         Arguments:
             badges: Badges you want the thumbnails of.
@@ -252,6 +278,8 @@ class ThumbnailProvider:
     ) -> List[Thumbnail]:
         """
         Returns gamepass icons for each gamepass ID passed.
+        Supported sizes:  
+        - 150x150  
 
         Arguments:
             gamepasses: Gamepasses you want the thumbnails of.
@@ -287,6 +315,13 @@ class ThumbnailProvider:
     ) -> List[Thumbnail]:
         """
         Returns universe icons for each universe ID passed.
+        Supported sizes:  
+        - 50x50  
+        - 128x128  
+        - 150x150  
+        - 256x256  
+        - 512x512  
+        - 768x432  
 
         Arguments:
             universes: Universes you want the thumbnails of.
@@ -325,6 +360,12 @@ class ThumbnailProvider:
     ) -> List[UniverseThumbnails]:
         """
         Returns universe thumbnails for each universe ID passed.
+        Supported sizes:  
+        - 768x432  
+        - 576x324  
+        - 480x270  
+        - 384x216  
+        - 256x144  
 
         Arguments:
             universes: Universes you want the thumbnails of.
@@ -365,6 +406,9 @@ class ThumbnailProvider:
     ) -> List[Thumbnail]:
         """
         Returns icons for each group ID passed.
+        Supported sizes:  
+        - 150x150  
+        - 420x420  
 
         Arguments:
             groups: Groups you want the thumbnails of.
@@ -400,6 +444,13 @@ class ThumbnailProvider:
     ) -> List[Thumbnail]:
         """
         Returns icons for each place ID passed.
+        Supported sizes:  
+        - 50x50  
+        - 128x128  
+        - 150x150  
+        - 256x256  
+        - 512x512  
+        - 768x432  
 
         Arguments:
             places: Places you want the thumbnails of.
@@ -426,7 +477,7 @@ class ThumbnailProvider:
             for thumbnail_data in thumbnails_data
         ]
 
-    async def get_user_avatars(
+    async def get_user_avatar_thumbnails(
             self,
             users: List[UserOrUserId],
             type: AvatarThumbnailType = AvatarThumbnailType.full_body,
@@ -435,7 +486,26 @@ class ThumbnailProvider:
             is_circular: bool = False,
     ) -> List[Thumbnail]:
         """
-        Returns avatars for each user ID passed.
+        Returns avatar thumbnails for each user ID passed.
+        The valid sizes depend on the `type` parameter.
+
+        | Size | full_body | headshot | bust |
+        |---|---|---|---|
+        | 30x30 | ✔️ | ❌ | ❌ |
+        | 48x48 | ✔️ | ✔️ | ✔️ |
+        | 50x50 | ❌ | ✔️ | ✔️ |
+        | 60x60 | ✔️ | ✔️ | ✔️ |
+        | 75x75 | ✔️ | ✔️ | ✔️ |
+        | 100x100 | ✔️ | ✔️ | ✔️ |
+        | 110x110 | ✔️ | ✔️ | ❌ |
+        | 140x140 | ✔️ | ❌ | ❌ |
+        | 150x150 | ✔️ | ✔️ | ✔️ |
+        | 150x200 | ✔️ | ❌ | ❌ |
+        | 180x180 | ✔️ | ✔️ | ✔️ |
+        | 250x250 | ✔️ | ❌ | ❌ |
+        | 352x352 | ✔️ | ✔️ | ✔️ |
+        | 420x420 | ✔️ | ✔️ | ✔️ |
+        | 720x720 | ✔️ | ❌ | ❌ |
 
         Arguments:
             users: Id of the users you want the thumbnails of.
@@ -476,7 +546,7 @@ class ThumbnailProvider:
             for thumbnail_data in thumbnails_data
         ]
 
-    async def get_user_avatar_3d(self, user: UserOrUserId) -> Thumbnail:
+    async def get_user_avatar_thumbnail_3d(self, user: UserOrUserId) -> Thumbnail:
         """
         Returns the user's thumbnail in 3d.
 

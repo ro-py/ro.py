@@ -23,15 +23,15 @@ setup_info = {
     ],
     "project_urls": {
         "Discord": "https://discord.gg/tjRfCbDMSk",
-        "Issue Tracker": "https://github.com/rbx-libdev/ro.py/issues",
-        "GitHub": "https://github.com/rbx-libdev/ro.py/",
-        "Examples": "https://github.com/rbx-libdev/ro.py/tree/main/examples",
+        "Issue Tracker": "https://github.com/ro-py/ro.py/issues",
+        "GitHub": "https://github.com/ro-py/ro.py/",
+        "Examples": "https://github.com/ro-py/ro.py/tree/main/examples",
         "Twitter": "https://twitter.com/jmkdev"
     },
     "python_requires": '>=3.7',
     "install_requires": [
-        "httpx",
-        "python-dateutil"
+        "httpx>=0.21.0",
+        "python-dateutil>=2.8.0"
     ]
 }
 

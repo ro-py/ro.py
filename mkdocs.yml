@@ -20,6 +20,8 @@ theme:
     scheme: slate
     primary: black
     accent: blue
+  features:
+    - content.code.annotate
 
 extra_css:
   - assets/theme.css
@@ -49,9 +51,12 @@ plugins:
 markdown_extensions:
   - admonition
   - attr_list
+  - def_list
   - meta
   - pymdownx.betterem
   - pymdownx.details
+  - pymdownx.tasklist:
+      custom_checkbox: true
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.inlinehilite
