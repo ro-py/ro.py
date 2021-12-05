@@ -92,13 +92,13 @@ class PresenceProvider:
 
     async def get_user_presences(self, users: List[UserOrUserId]) -> List[Presence]:
         """
-        Returns a list of Presence objects corresponding to each user in the list.
+        Grabs a list of Presence objects corresponding to each user in the list.
 
         Arguments:
-            users: The list of users you want to get presences from.
+            users: The list of users you want to get Presences from.
 
         Returns:
-            A List of Presence.
+            A list of Presences.
         """
 
         presences_response = await self._shared.requests.post(

@@ -1,6 +1,6 @@
 """
 
-This module contains classes intended to parse and deal with data from Roblox roblox badge endpoints.
+This module contains classes intended to parse and deal with data from Roblox badge endpoints.
 
 """
 

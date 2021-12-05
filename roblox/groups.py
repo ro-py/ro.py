@@ -64,6 +64,8 @@ class Group(BaseGroup):
         Arguments:
             message: The new shout message.
             update_self: Whether to update self.shout automatically.
+        Returns: 
+            The old and new shout.
         """
         shout_response = await self._requests.patch(
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/status"),

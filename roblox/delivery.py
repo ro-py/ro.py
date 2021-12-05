@@ -99,7 +99,8 @@ class ContentCDNHash(BaseCDNHash):
 
     def get_url(self, site: str = cdn_site) -> str:
         """
-        Returns this hash's URL.
+        Returns:
+            This hash's URL.
         """
 
         return self._get_url("c", cdn_site)
@@ -124,7 +125,8 @@ class DeliveryProvider:
         Arguments:
             cdn_hash: The cdn_hash.
 
-        Returns: A BaseHash.
+        Returns:
+            A BaseCDNHash.
         """
 
         return BaseCDNHash(
@@ -140,7 +142,8 @@ class DeliveryProvider:
             url: A CDN url.
             site: The site this cdn_hash is located at.
 
-        Returns: The CDN cdn_hash for the supplied CDN URL.
+        Returns:
+            The CDN cdn_hash for the supplied CDN URL.
         """
 
         return self.get_cdn_hash(
@@ -154,7 +157,8 @@ class DeliveryProvider:
         Arguments:
             cdn_hash: The cdn_hash.
 
-        Returns: A BaseHash.
+        Returns:
+            A ThumbnailCDNHash.
         """
 
         return ThumbnailCDNHash(
@@ -169,7 +173,8 @@ class DeliveryProvider:
         Arguments:
             cdn_hash: The cdn_hash.
 
-        Returns: A BaseHash.
+        Returns:
+            A ContentCDNHash.
         """
 
         return ContentCDNHash(
