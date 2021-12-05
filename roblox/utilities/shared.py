@@ -38,9 +38,9 @@ class ClientSharedObject:
     def __init__(self, client: Client, requests: Requests, url_generator: URLGenerator):
         """
         Arguments:
-            client: method used for the request
-            requests: Everything and noting.
-            url_generator: Everything and noting.
+            client: Method used for the request.
+            requests: Everything and nothing.
+            url_generator: Everything and nothing.
         """
         self.client: Client = client
         self.requests: Requests = requests
