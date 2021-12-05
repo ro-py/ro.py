@@ -97,6 +97,9 @@ class Thumbnail:
     async def get_3d_data(self):
         """
         Generates 3D thumbnail data for this endpoint.
+        
+        Returns:
+            A ThreeDThumbnail.
         """
         threed_response = await self._shared.requests.get(
             url=self.image_url
@@ -195,7 +198,7 @@ class ThumbnailProvider:
             is_circular: if the image is a circle yes or no.
 
         Returns:
-            A List of Thumbnails.
+            A list of Thumbnails.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/assets"),
@@ -215,7 +218,7 @@ class ThumbnailProvider:
 
     async def get_asset_thumbnail_3d(self, asset: AssetOrAssetId) -> Thumbnail:
         """
-        Returns a 3d asset thumbnail for the user ID passed.
+        Returns a 3D asset thumbnail for the user ID passed.
 
         Arguments:
             asset: Asset you want the thumbnails of.
@@ -251,7 +254,7 @@ class ThumbnailProvider:
             is_circular: if the image is a circle yes or no.
 
         Returns:
-            A List of Thumbnails.
+            A list of Thumbnails.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/badges/icons"),
@@ -285,10 +288,10 @@ class ThumbnailProvider:
             gamepasses: Gamepasses you want the thumbnails of.
             size: size of the image.
             image_format: Format of the image.
-            is_circular: if the image is a circle yes or no.
+            is_circular: If the image is a circle yes or no.
 
         Returns:
-            A List of Thumbnails.
+            A list of Thumbnails.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/game-passes"),
@@ -328,10 +331,10 @@ class ThumbnailProvider:
             return_policy: How you want it returns look at enum.
             size: size of the image.
             image_format: Format of the image.
-            is_circular: if the image is a circle yes or no.
+            is_circular: If the image is a circle yes or no.
 
         Returns:
-            A List of Thumbnails.
+            A list of Thumbnails.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/games/icons"),
@@ -372,11 +375,11 @@ class ThumbnailProvider:
             size: size of the image.
             image_format: Format of the image.
             count_per_universe: Unknown.
-            is_circular: if the image is a circle yes or no.
+            is_circular: If the image is a circle yes or no.
             defaults: Whether to return default thumbnails.
 
         Returns:
-            A List of Thumbnails.
+            A list of Thumbnails.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url(
@@ -414,10 +417,10 @@ class ThumbnailProvider:
             groups: Groups you want the thumbnails of.
             size: size of the image.
             image_format: Format of the image.
-            is_circular: if the image is a circle yes or no.
+            is_circular: If the image is a circle yes or no.
 
         Returns:
-            A List of Thumbnails.
+            A list of Thumbnails.
         """
         thumbnails_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("thumbnails", "v1/groups/icons"),
@@ -512,10 +515,10 @@ class ThumbnailProvider:
             type: Type of avatar thumbnail you want look at enum.
             size: size of the image.
             image_format: Format of the image.
-            is_circular: if the image is a circle yes or no.
+            is_circular: If the image is a circle yes or no.
 
         Returns:
-            A List of Thumbnails.
+            A list of Thumbnails.
         """
         uri: str
         if type == AvatarThumbnailType.full_body:
