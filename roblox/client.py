@@ -20,7 +20,7 @@ from .bases.baseuser import BaseUser
 from .chat import ChatProvider
 from .delivery import DeliveryProvider
 from .groups import Group
-from .partials.partialuser import PartialUser, RequestedUsernamePartialUser
+from .partials.partialuser import PartialUser, RequestedUsernamePartialUser, PreviousUsernamesPartialUser
 from .places import Place
 from .plugins import Plugin
 from .presence import PresenceProvider
@@ -266,7 +266,7 @@ class Client:
             page_size=page_size,
             max_items=max_items,
             extra_parameters={"keyword": keyword},
-            handler=lambda shared, data: RequestedUsernamePartialUser(shared, data),
+            handler=lambda shared, data: PreviousUsernamesPartialUser(shared, data),
         )
 
     # Groups

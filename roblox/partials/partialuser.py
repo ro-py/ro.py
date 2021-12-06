@@ -4,6 +4,8 @@ This file contains partial objects related to Roblox users.
 
 """
 
+from typing import Optional, List
+
 from ..bases.baseuser import BaseUser
 from ..utilities.shared import ClientSharedObject
 
@@ -40,18 +42,36 @@ class PartialUser(BaseUser):
 
 class RequestedUsernamePartialUser(PartialUser):
     """
-    Represents a partial user in the context of a search query.
+    Represents a partial user in the context of a search where the requested username is present.
 
     Attributes:
-        requested_username: Username they requested
+        requested_username: The requested username.
     """
 
     def __init__(self, shared: ClientSharedObject, data: dict):
         """
         Arguments:
             shared: The ClientSharedObject.
-            data: The data form the endpoint.
+            data: The data from the endpoint.
         """
         super().__init__(shared=shared, data=data)
 
-        self.requested_username: str = data.get("requestedUsername")
+        self.requested_username: Optional[str] = data.get("requestedUsername")
+
+
+class PreviousUsernamesPartialUser(PartialUser):
+    """
+    Represents a partial user in the context of a search where the user's previous usernames are present.
+    Attributes:
+        previous_usernames: A list of the user's previous usernames.
+    """
+
+    def __init__(self, shared: ClientSharedObject, data: dict):
+        """
+        Arguments:
+            shared: The ClientSharedObject.
+            data: The data from the endpoint.
+        """
+        super().__init__(shared=shared, data=data)
+
+        self.previous_usernames: List[str] = data["previousUsernames"]
