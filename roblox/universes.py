@@ -11,6 +11,8 @@ from typing import Optional, List, Union
 from dateutil.parser import parse
 
 from .bases.baseuniverse import BaseUniverse
+from .bases.baseplace import BasePlace
+
 from .creatortype import CreatorType
 from .partials.partialgroup import UniversePartialGroup
 from .partials.partialuser import PartialUser
@@ -93,7 +95,7 @@ class Universe(BaseUniverse):
 
         self.id: int = data["id"]
         super().__init__(shared=shared, universe_id=self.id)
-        self.root_place: BaseUniverse = BaseUniverse(shared=shared, universe_id=data["rootPlaceId"])
+        self.root_place: BasePlace = BasePlace(shared=shared, place_id=data["rootPlaceId"])
         self.name: str = data["name"]
         self.description: str = data["description"]
         self.creator_type: Enum = CreatorType(data["creator"]["type"])
