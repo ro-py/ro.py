@@ -23,9 +23,9 @@ class SocialLinkType(Enum):
     roblox_group = "RobloxGroup"
 
 
-class UniverseSocialLink(BaseUniverseSocialLink):
+class SocialLink(BaseUniverseSocialLink):
     """
-    Represents a universe's social links.
+    Represents a universe or group's social links.
 
     Attributes:
         _shared: The shared object.

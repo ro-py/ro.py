@@ -21,6 +21,7 @@ from ..utilities.exceptions import InvalidRole
 from ..utilities.iterators import PageIterator, SortOrder
 from ..utilities.shared import ClientSharedObject
 from ..wall import WallPost, WallPostRelationship
+from ..sociallinks import SocialLink
 
 if TYPE_CHECKING:
     from .baseuser import BaseUser
@@ -428,3 +429,17 @@ class BaseGroup(BaseItem):
         ) or None
 
         return new_shout
+
+    async def get_social_links(self) -> List[SocialLink]:
+        """
+        Gets the group's social links.
+
+        Returns:
+            A list of the universe's social links.
+        """
+
+        links_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/social-links")
+        )
+        links_data = links_response.json()["data"]
+        return [SocialLink(shared=self._shared, data=link_data) for link_data in links_data]

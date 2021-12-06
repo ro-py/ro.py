@@ -16,7 +16,7 @@ from .baseitem import BaseItem
 from ..utilities.shared import ClientSharedObject
 from ..utilities.iterators import PageIterator, SortOrder
 from ..gamepasses import GamePass
-from ..sociallinks import UniverseSocialLink
+from ..sociallinks import SocialLink
 
 
 class UniverseLiveStats:
@@ -147,7 +147,7 @@ class BaseUniverse(BaseItem):
             handler=lambda shared, data: GamePass(shared, data),
         )
 
-    async def get_social_links(self) -> List[UniverseSocialLink]:
+    async def get_social_links(self) -> List[SocialLink]:
         """
         Gets the universe's social links.
 
@@ -159,4 +159,4 @@ class BaseUniverse(BaseItem):
             url=self._shared.url_generator.get_url("games", f"v1/games/{self.id}/social-links/list")
         )
         links_data = links_response.json()["data"]
-        return [UniverseSocialLink(shared=self._shared, data=link_data) for link_data in links_data]
+        return [SocialLink(shared=self._shared, data=link_data) for link_data in links_data]
