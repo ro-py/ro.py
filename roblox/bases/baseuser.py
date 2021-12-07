@@ -371,3 +371,16 @@ class BaseUser(BaseItem):
             sort_order=sort_order,
             max_items=max_items,
         )
+
+    async def can_manage(self, asset: AssetOrAssetId) -> bool:
+        """
+        Checks if the user can manage an asset.
+
+        Arguments:
+            asset: An asset to check.
+        """
+        manage_response = await self._shared.requests.get(
+            url=self._shared.url_generator.get_url("api", f"users/{self.id}/canmanage/{int(asset)}")
+        )
+        manage_data = manage_response.json()
+        return manage_data["CanManage"]
