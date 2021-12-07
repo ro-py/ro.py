@@ -1,0 +1,58 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - games.roblox.com
+      referer:
+      - www.roblox.com
+      user-agent:
+      - Roblox/WinInet
+    method: GET
+    uri: https://games.roblox.com/v1/games?universeIds=2042724756
+  response:
+    content: "{\"data\":[{\"id\":2042724756,\"rootPlaceId\":5759259638,\"name\":\"[\u2744\uFE0FWINTER]
+      ALPINE VALLEY [1.5M visits]\",\"description\":\"\U0001F44D UPVOTE OUR GAME TO
+      SUPPORT NEW UPDATES!\\r\\n\u2796\\r\\n\u27A1\uFE0FJOIN OUR GROUP FOR ITEMS IN
+      GAME: https://www.roblox.com/groups/5485871/The-Greater-Alemannic-Realm#!/about\\r\\n\u2796\\r\\nIn
+      the mountainous regions of Alemannia lies an enormous underground fortress and
+      factory, guarded by tanks, artillery, helicopters and all manner of war machines.
+      A mountain range protects civilian life from the ongoing conflict. Cross the
+      border and join the ranks!\\r\\n\u2796\\r\\n\u27A1\uFE0FMORE GAMEPASSES HERE:
+      https://www.roblox.com/games/5954498673/Weapon-Gamepasses-GAR#!/store\\r\\nhttps://www.roblox.com/games/5997519941/Weapon-Gamepasses-2-GAR\\r\\nhttps://www.roblox.com/games/6002025823/Weapon-Gamepasses-3-GAR#!/store\\r\\n\u2796\\r\\n\u2B07\uFE0F
+      See our SOCIAL LINKS below to join our thriving community!\",\"creator\":{\"id\":5485871,\"name\":\"The
+      Greater Alemannic Realm\",\"type\":\"Group\",\"isRNVAccount\":false},\"price\":null,\"allowedGearGenres\":[\"All\"],\"allowedGearCategories\":[],\"isGenreEnforced\":true,\"copyingAllowed\":false,\"playing\":79,\"visits\":1607882,\"maxPlayers\":1,\"created\":\"2020-09-29T23:59:56.22Z\",\"updated\":\"2021-12-06T00:21:03.6176106Z\",\"studioAccessToApisAllowed\":false,\"createVipServersAllowed\":true,\"universeAvatarType\":\"MorphToR6\",\"genre\":\"All\",\"isAllGenre\":true,\"isFavoritedByUser\":false,\"favoritedCount\":14206}]}"
+    headers:
+      cache-control:
+      - no-store, must-revalidate, no-cache
+      content-encoding:
+      - gzip
+      content-length:
+      - '865'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Mon, 06 Dec 2021 20:58:19 GMT
+      nel:
+      - '{"report_to":"network-errors","max_age":604800,"success_fraction":0.0001,"failure_fraction":1}'
+      p3p:
+      - CP="CAO DSP COR CURa ADMa DEVa OUR IND PHY ONL UNI COM NAV INT DEM PRE"
+      pragma:
+      - no-cache
+      report-to:
+      - '{"group":"network-errors","max_age":604800,"endpoints":[{"url":"https://ncs.roblox.com/upload"}]}'
+      roblox-machine-id:
+      - CHI1-WEB6056
+      vary:
+      - Accept-Encoding
+      x-frame-options:
+      - SAMEORIGIN
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

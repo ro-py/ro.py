@@ -1,0 +1,54 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - badges.roblox.com
+      referer:
+      - www.roblox.com
+      user-agent:
+      - Roblox/WinInet
+    method: GET
+    uri: https://badges.roblox.com/v1/badges/2124467043
+  response:
+    content: "{\"id\":2124467043,\"name\":\"Meet The Owner\",\"description\":\"Play
+      in the same game with the owner.\\n(Given out automatically)\",\"displayName\":\"Meet
+      The Owner\",\"displayDescription\":\"Play in the same game with the owner.\\n(Given
+      out automatically)\",\"enabled\":true,\"iconImageId\":3144010514,\"displayIconImageId\":3144010514,\"created\":\"2019-05-04T09:35:52.59-05:00\",\"updated\":\"2020-05-30T15:41:07.9-05:00\",\"statistics\":{\"pastDayAwardedCount\":0,\"awardedCount\":8396,\"winRatePercentage\":0.0},\"awardingUniverse\":{\"id\":964540701,\"name\":\"Sound
+      Space \U0001F383 SPOOKY UPDATE! \U0001F383\",\"rootPlaceId\":2677609345}}"
+    headers:
+      cache-control:
+      - no-cache
+      content-encoding:
+      - gzip
+      content-length:
+      - '358'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 07 Dec 2021 11:43:36 GMT
+      expires:
+      - '-1'
+      nel:
+      - '{"report_to":"network-errors","max_age":604800,"success_fraction":0.0001,"failure_fraction":1}'
+      p3p:
+      - CP="CAO DSP COR CURa ADMa DEVa OUR IND PHY ONL UNI COM NAV INT DEM PRE"
+      pragma:
+      - no-cache
+      report-to:
+      - '{"group":"network-errors","max_age":604800,"endpoints":[{"url":"https://ncs.roblox.com/upload"}]}'
+      roblox-machine-id:
+      - CHI1-WEB2591
+      vary:
+      - Accept-Encoding
+      x-frame-options:
+      - SAMEORIGIN
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

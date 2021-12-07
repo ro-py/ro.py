@@ -1,0 +1,53 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - users.roblox.com
+      referer:
+      - www.roblox.com
+      user-agent:
+      - Roblox/WinInet
+    method: GET
+    uri: https://users.roblox.com/v1/users/search?cursor=&limit=10&sortOrder=Asc&keyword=123
+  response:
+    content: '{"previousPageCursor":null,"nextPageCursor":"eyJzdGFydEluZGV4IjoxMCwiZGlzY3JpbWluYXRvciI6ImtleXdvcmQ6MTIzIiwiY291bnQiOjEwfQpkNmZjYzFmMWMyY2UxNDY4YzA5ZmJkMGRhZmJlMWMyN2NiNzc0MDRjNTI1OWZlYTJiYTI4MTE5Yzc4MmYxMGE3","data":[{"previousUsernames":[],"id":2785008966,"name":"123Eveoco","displayName":"123s"},{"previousUsernames":[],"id":2028159946,"name":"kellehmilds","displayName":"123s"},{"previousUsernames":[],"id":409374050,"name":"ss_u","displayName":"123"},{"previousUsernames":[],"id":2626248361,"name":"NotGaeClub","displayName":"123s"},{"previousUsernames":[],"id":2466811659,"name":"Veronica_lodg3321","displayName":"123s"},{"previousUsernames":[],"id":2493573773,"name":"SunnyBrightDays","displayName":"123s"},{"previousUsernames":["RhyzTheBeast10","zTviq"],"id":123565583,"name":"I10c","displayName":"123"},{"previousUsernames":[],"id":660514103,"name":"im_noob12322","displayName":"123s"},{"previousUsernames":[],"id":942940959,"name":"ikerealisgood2","displayName":"123S"},{"previousUsernames":[],"id":126107073,"name":"AppleGamerDutch","displayName":"123"}]}'
+    headers:
+      cache-control:
+      - no-cache
+      content-encoding:
+      - gzip
+      content-length:
+      - '477'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Mon, 06 Dec 2021 21:23:32 GMT
+      expires:
+      - '-1'
+      nel:
+      - '{"report_to":"network-errors","max_age":604800,"success_fraction":0.0001,"failure_fraction":1}'
+      p3p:
+      - CP="CAO DSP COR CURa ADMa DEVa OUR IND PHY ONL UNI COM NAV INT DEM PRE"
+      pragma:
+      - no-cache
+      report-to:
+      - '{"group":"network-errors","max_age":604800,"endpoints":[{"url":"https://ncs.roblox.com/upload"}]}'
+      roblox-machine-id:
+      - CHI1-WEB6
+      set-cookie:
+      - GuestData=UserID=-1214734519; domain=.roblox.com; expires=Fri, 23-Apr-2049
+        20:23:32 GMT; path=/
+      vary:
+      - Accept-Encoding
+      x-frame-options:
+      - SAMEORIGIN
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

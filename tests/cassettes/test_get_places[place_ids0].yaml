@@ -1,0 +1,66 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - games.roblox.com
+      referer:
+      - www.roblox.com
+      user-agent:
+      - Roblox/WinInet
+    method: GET
+    uri: https://games.roblox.com/v1/games/multiget-place-details?placeIds=5759259638&placeIds=2677609345
+  response:
+    content: "[{\"placeId\":5759259638,\"name\":\"[\u2744\uFE0FWINTER] ALPINE VALLEY
+      [1.5M visits]\",\"description\":\"\U0001F44D UPVOTE OUR GAME TO SUPPORT NEW
+      UPDATES!\\r\\n\u2796\\r\\n\u27A1\uFE0FJOIN OUR GROUP FOR ITEMS IN GAME: https://www.roblox.com/groups/5485871/The-Greater-Alemannic-Realm#!/about\\r\\n\u2796\\r\\nIn
+      the mountainous regions of Alemannia lies an enormous underground fortress and
+      factory, guarded by tanks, artillery, helicopters and all manner of war machines.
+      A mountain range protects civilian life from the ongoing conflict. Cross the
+      border and join the ranks!\\r\\n\u2796\\r\\n\u27A1\uFE0FMORE GAMEPASSES HERE:
+      https://www.roblox.com/games/5954498673/Weapon-Gamepasses-GAR#!/store\\r\\nhttps://www.roblox.com/games/5997519941/Weapon-Gamepasses-2-GAR\\r\\nhttps://www.roblox.com/games/6002025823/Weapon-Gamepasses-3-GAR#!/store\\r\\n\u2796\\r\\n\u2B07\uFE0F
+      See our SOCIAL LINKS below to join our thriving community!\",\"url\":\"https://www.roblox.com/games/5759259638/WINTER-ALPINE-VALLEY-1-5M-visits\",\"builder\":\"The
+      Greater Alemannic Realm\",\"builderId\":5485871,\"isPlayable\":true,\"reasonProhibited\":\"None\",\"universeId\":2042724756,\"universeRootPlaceId\":5759259638,\"price\":0,\"imageToken\":\"T_5759259638_89ca\"},{\"placeId\":2677609345,\"name\":\"Sound
+      Space \U0001F383 SPOOKY UPDATE! \U0001F383\",\"description\":\"Hit notes coming
+      towards you on a track in unique spaces.\\r\\n\\r\\nThis game used to be called
+      Blox Saber but was later renamed to Sound Space since it fits the game better.\\r\\n\\r\\nSHUTDOWN
+      = UPDATE\\r\\n\\r\\nNOW SUPPORTS VR!\\r\\n\\r\\n> How do you play? < \\r\\n-Move
+      your mouse around (no need to click the blocks)\\r\\n-Press Space to pause,
+      hold to unpause\\r\\n-Hold R to stop the song\\r\\n\\r\\n> Custom Maps <\\r\\nYou
+      can make custom maps using a map editor.\\r\\n\\r\\n> Here you can see what
+      the next update will look like:\\r\\nhttps://www.roblox.com/games/2291449672/Sound-Space\",\"url\":\"https://www.roblox.com/games/2677609345/Sound-Space-SPOOKY-UPDATE\",\"builder\":\"Blox
+      Saber\",\"builderId\":4605161,\"isPlayable\":true,\"reasonProhibited\":\"None\",\"universeId\":964540701,\"universeRootPlaceId\":2677609345,\"price\":0,\"imageToken\":\"T_2677609345_9f06\"}]"
+    headers:
+      cache-control:
+      - no-store, must-revalidate, no-cache
+      content-encoding:
+      - gzip
+      content-length:
+      - '1090'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 07 Dec 2021 10:28:46 GMT
+      nel:
+      - '{"report_to":"network-errors","max_age":604800,"success_fraction":0.0001,"failure_fraction":1}'
+      p3p:
+      - CP="CAO DSP COR CURa ADMa DEVa OUR IND PHY ONL UNI COM NAV INT DEM PRE"
+      pragma:
+      - no-cache
+      report-to:
+      - '{"group":"network-errors","max_age":604800,"endpoints":[{"url":"https://ncs.roblox.com/upload"}]}'
+      roblox-machine-id:
+      - CHI1-WEB6056
+      vary:
+      - Accept-Encoding
+      x-frame-options:
+      - SAMEORIGIN
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

@@ -1,0 +1,51 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - groups.roblox.com
+      referer:
+      - www.roblox.com
+      user-agent:
+      - Roblox/WinInet
+    method: GET
+    uri: https://groups.roblox.com/v1/groups/9695397
+  response:
+    content: '{"id":9695397,"name":"ro.py","description":"Sandbox group for ro.py","owner":{"buildersClubMembershipType":"None","userId":968108160,"username":"local_ip","displayName":"jmk"},"shout":{"body":"Example
+      Shout","poster":{"buildersClubMembershipType":"None","userId":2067807455,"username":"ro_python","displayName":"ro_python"},"created":"2021-12-01T02:51:22.563Z","updated":"2021-12-01T02:51:22.563Z"},"memberCount":17,"isBuildersClubOnly":false,"publicEntryAllowed":true}'
+    headers:
+      cache-control:
+      - no-cache
+      content-encoding:
+      - gzip
+      content-length:
+      - '290'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 07 Dec 2021 09:55:41 GMT
+      expires:
+      - '-1'
+      nel:
+      - '{"report_to":"network-errors","max_age":604800,"success_fraction":0.0001,"failure_fraction":1}'
+      p3p:
+      - CP="CAO DSP COR CURa ADMa DEVa OUR IND PHY ONL UNI COM NAV INT DEM PRE"
+      pragma:
+      - no-cache
+      report-to:
+      - '{"group":"network-errors","max_age":604800,"endpoints":[{"url":"https://ncs.roblox.com/upload"}]}'
+      roblox-machine-id:
+      - CHI1-WEB8448
+      vary:
+      - Accept-Encoding
+      x-frame-options:
+      - SAMEORIGIN
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1
