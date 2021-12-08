@@ -44,9 +44,9 @@ class Role(BaseRole):
         super().__init__(shared=self._shared, role_id=self.id, group=self.group)
 
         self.name: str = data["name"]
-        self.description: Optional[str] = data.get("description")
+        self.description: str = data["description"]
         self.rank: int = data["rank"]
-        self.member_count: Optional[int] = data.get("memberCount")
+        self.member_count: int = data["memberCount"]
 
     def __repr__(self):
         return f"<{self.__class__.__name__} name={self.name!r} rank={self.rank} member_count={self.member_count}>"
