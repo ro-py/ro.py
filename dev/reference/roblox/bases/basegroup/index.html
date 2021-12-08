@@ -698,20 +698,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#roblox.bases.basegroup.BaseGroup.batch_accept_users" class="md-nav__link">
-    batch_accept_users()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#roblox.bases.basegroup.BaseGroup.batch_decline_users" class="md-nav__link">
-    batch_decline_users()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#roblox.bases.basegroup.BaseGroup.decline_user" class="md-nav__link">
     decline_user()
   </a>
@@ -1716,20 +1702,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#roblox.bases.basegroup.BaseGroup.batch_accept_users" class="md-nav__link">
-    batch_accept_users()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#roblox.bases.basegroup.BaseGroup.batch_decline_users" class="md-nav__link">
-    batch_decline_users()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#roblox.bases.basegroup.BaseGroup.decline_user" class="md-nav__link">
     decline_user()
   </a>
@@ -2117,124 +2089,6 @@ BaseGroup            (<a title="roblox.bases.baseitem.BaseItem" href="../baseite
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
         <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/join-requests/users/</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="p">)</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
-
-  <div class="doc doc-object doc-method">
-
-
-
-<h4 id="roblox.bases.basegroup.BaseGroup.batch_accept_users" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">batch_accept_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">users</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">BaseUser</span><span class="p">,</span> <span class="n">JoinRequest</span><span class="p">]])</span></code>
-
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-async"><code>async</code></small>
-  </span>
-
-<a href="#roblox.bases.basegroup.BaseGroup.batch_accept_users" class="headerlink" title="Permanent link">&para;</a></h4>
-
-    <div class="doc doc-contents ">
-
-      <p>Accepts multiple user's request to join this group.</p>
-
-<p><strong>Parameters:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>List[user]</code></td>
-        <td></td>
-        <td><p>The users to accept into this group.</p></td>
-        <td><em>required</em></td>
-      </tr>
-  </tbody>
-</table>
-        <details class="quote">
-          <summary>Source code in <code>roblox/bases/basegroup.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">batch_accept_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">users</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">BaseUser</span><span class="p">,</span> <span class="n">JoinRequest</span><span class="p">]]):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Accepts multiple user&#39;s request to join this group.</span>
-
-<span class="sd">    Arguments:</span>
-<span class="sd">        List[user]: The users to accept into this group.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/join-requests&quot;</span><span class="p">),</span>
-        <span class="n">json</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;UserIds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users</span><span class="p">]</span>
-        <span class="p">}</span>
-    <span class="p">)</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
-
-  <div class="doc doc-object doc-method">
-
-
-
-<h4 id="roblox.bases.basegroup.BaseGroup.batch_decline_users" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">batch_decline_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">users</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">BaseUser</span><span class="p">,</span> <span class="n">JoinRequest</span><span class="p">]])</span></code>
-
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-async"><code>async</code></small>
-  </span>
-
-<a href="#roblox.bases.basegroup.BaseGroup.batch_decline_users" class="headerlink" title="Permanent link">&para;</a></h4>
-
-    <div class="doc doc-contents ">
-
-      <p>Declines multiple user's request to join this group.</p>
-
-<p><strong>Parameters:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>List[user]</code></td>
-        <td></td>
-        <td><p>The users to decline from this group.</p></td>
-        <td><em>required</em></td>
-      </tr>
-  </tbody>
-</table>
-        <details class="quote">
-          <summary>Source code in <code>roblox/bases/basegroup.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">batch_decline_users</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">users</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">BaseUser</span><span class="p">,</span> <span class="n">JoinRequest</span><span class="p">]]):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Declines multiple user&#39;s request to join this group.</span>
-
-<span class="sd">    Arguments:</span>
-<span class="sd">        List[user]: The users to decline from this group.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/join-requests&quot;</span><span class="p">),</span>
-        <span class="n">json</span><span class="o">=</span><span class="p">{</span>
-            <span class="s2">&quot;UserIds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span> <span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="n">users</span><span class="p">]</span>
-        <span class="p">}</span>
     <span class="p">)</span>
 </code></pre></div>
         </details>

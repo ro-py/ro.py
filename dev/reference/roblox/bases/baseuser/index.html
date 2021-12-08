@@ -922,13 +922,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#roblox.bases.baseuser.BaseUser.get_primary_group_role" class="md-nav__link">
-    get_primary_group_role()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#roblox.bases.baseuser.BaseUser.get_promotion_channels" class="md-nav__link">
     get_promotion_channels()
   </a>
@@ -1734,13 +1727,6 @@
           <li class="md-nav__item">
   <a href="#roblox.bases.baseuser.BaseUser.get_presence" class="md-nav__link">
     get_presence()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#roblox.bases.baseuser.BaseUser.get_primary_group_role" class="md-nav__link">
-    get_primary_group_role()
   </a>
   
 </li>
@@ -2673,71 +2659,6 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
         <span class="k">return</span> <span class="n">presences</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
-
-  <div class="doc doc-object doc-method">
-
-
-
-<h4 id="roblox.bases.baseuser.BaseUser.get_primary_group_role" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_primary_group_role</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Role</span><span class="p">]</span></code>
-
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-async"><code>async</code></small>
-  </span>
-
-<a href="#roblox.bases.baseuser.BaseUser.get_primary_group_role" class="headerlink" title="Permanent link">&para;</a></h4>
-
-    <div class="doc doc-contents ">
-
-      <p>Gets a role for the primary group this user is in.</p>
-
-<p><strong>Returns:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td><code>Optional[Role]</code></td>
-      <td><p>Role</p></td>
-    </tr>
-  </tbody>
-</table>
-        <details class="quote">
-          <summary>Source code in <code>roblox/bases/baseuser.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_primary_group_role</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Role</span><span class="p">]:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Gets a role for the primary group this user is in.</span>
-
-<span class="sd">    Returns:</span>
-<span class="sd">        Role</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">..roles</span> <span class="kn">import</span> <span class="n">Role</span>
-    <span class="kn">from</span> <span class="nn">..groups</span> <span class="kn">import</span> <span class="n">Group</span>
-    <span class="n">roles_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/groups/primary/role&quot;</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">json</span> <span class="o">=</span> <span class="n">roles_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-    <span class="k">if</span> <span class="n">json</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="k">return</span> <span class="kc">None</span>
-    <span class="k">return</span> <span class="n">Role</span><span class="p">(</span>
-        <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
-        <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="p">[</span><span class="s2">&quot;role&quot;</span><span class="p">],</span>
-        <span class="n">group</span><span class="o">=</span><span class="n">Group</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="p">[</span><span class="s2">&quot;group&quot;</span><span class="p">]</span>
-        <span class="p">)</span>
-    <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
