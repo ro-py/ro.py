@@ -1,4 +1,4 @@
-name: MkDocs Deploy
+name: MkDocs Deploy (dev)
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ on:
     paths:
       - "roblox/**"
       - "docs/**"
-      - ".github/workflows/**"
+      - ".github/workflows/dev-docs.yml"
       - "mkdocs.yml"
 
 jobs:
