@@ -831,13 +831,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#roblox.bases.baseuser.BaseUser.can_manage" class="md-nav__link">
-    can_manage()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#roblox.bases.baseuser.BaseUser.get_asset_instance" class="md-nav__link">
     get_asset_instance()
   </a>
@@ -1655,13 +1648,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#roblox.bases.baseuser.BaseUser.can_manage" class="md-nav__link">
-    can_manage()
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#roblox.bases.baseuser.BaseUser.get_asset_instance" class="md-nav__link">
     get_asset_instance()
   </a>
@@ -1948,64 +1934,6 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">user_id</span>
-</code></pre></div>
-        </details>
-    </div>
-
-  </div>
-
-
-
-  <div class="doc doc-object doc-method">
-
-
-
-<h4 id="roblox.bases.baseuser.BaseUser.can_manage" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">can_manage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AssetOrAssetId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span></code>
-
-  <span class="doc doc-properties">
-      <small class="doc doc-property doc-property-async"><code>async</code></small>
-  </span>
-
-<a href="#roblox.bases.baseuser.BaseUser.can_manage" class="headerlink" title="Permanent link">&para;</a></h4>
-
-    <div class="doc doc-contents ">
-
-      <p>Checks if the user can manage an asset.</p>
-
-<p><strong>Parameters:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-      <th>Default</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>asset</code></td>
-        <td><code>AssetOrAssetId</code></td>
-        <td><p>An asset to check.</p></td>
-        <td><em>required</em></td>
-      </tr>
-  </tbody>
-</table>
-        <details class="quote">
-          <summary>Source code in <code>roblox/bases/baseuser.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">can_manage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AssetOrAssetId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Checks if the user can manage an asset.</span>
-
-<span class="sd">    Arguments:</span>
-<span class="sd">        asset: An asset to check.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">manage_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;api&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/canmanage/</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">asset</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="p">)</span>
-    <span class="n">manage_data</span> <span class="o">=</span> <span class="n">manage_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">manage_data</span><span class="p">[</span><span class="s2">&quot;CanManage&quot;</span><span class="p">]</span>
 </code></pre></div>
         </details>
     </div>
@@ -2803,13 +2731,13 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
     <span class="k">if</span> <span class="n">json</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="kc">None</span>
     <span class="k">return</span> <span class="n">Role</span><span class="p">(</span>
+        <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+        <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="p">[</span><span class="s2">&quot;role&quot;</span><span class="p">],</span>
+        <span class="n">group</span><span class="o">=</span><span class="n">Group</span><span class="p">(</span>
             <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
-            <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="p">[</span><span class="s2">&quot;role&quot;</span><span class="p">],</span>
-            <span class="n">group</span><span class="o">=</span><span class="n">Group</span><span class="p">(</span>
-                <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
-                <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="p">[</span><span class="s2">&quot;group&quot;</span><span class="p">]</span>
-            <span class="p">)</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">json</span><span class="p">[</span><span class="s2">&quot;group&quot;</span><span class="p">]</span>
         <span class="p">)</span>
+    <span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
