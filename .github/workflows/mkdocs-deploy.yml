@@ -24,4 +24,4 @@ jobs:
           python-version: 3.x
       - run: pip install git+https://github.com/squidfunk/mkdocs-material.git@8.0.0b2
       - run: pip install mkdocstrings httpx mkdocs-literate-nav mkdocs-gen-files mike
-      - run: mike deploy --push --update-aliases dev dev
+      - run: mike deploy --push --update-aliases dev
