@@ -43,4 +43,3 @@ jobs:
       - name: Deploy docs
         run: |
           mike deploy dev
-      - run: mike deploy --push --update-aliases dev
