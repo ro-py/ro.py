@@ -17,11 +17,11 @@ from ..members import Member, MemberRelationship
 from ..partials.partialuser import PartialUser, RequestedUsernamePartialUser
 from ..roles import Role
 from ..shout import Shout
+from ..sociallinks import SocialLink
 from ..utilities.exceptions import InvalidRole
 from ..utilities.iterators import PageIterator, SortOrder
 from ..utilities.shared import ClientSharedObject
 from ..wall import WallPost, WallPostRelationship
-from ..sociallinks import SocialLink
 
 if TYPE_CHECKING:
     from .baseuser import BaseUser

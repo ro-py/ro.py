@@ -250,13 +250,13 @@ class BaseUser(BaseItem):
         if json is None:
             return None
         return Role(
+            shared=self._shared,
+            data=json["role"],
+            group=Group(
                 shared=self._shared,
-                data=json["role"],
-                group=Group(
-                    shared=self._shared,
-                    data=json["group"]
-                )
+                data=json["group"]
             )
+        )
 
     async def get_roblox_badges(self) -> List[RobloxBadge]:
         """
@@ -371,16 +371,3 @@ class BaseUser(BaseItem):
             sort_order=sort_order,
             max_items=max_items,
         )
-
-    async def can_manage(self, asset: AssetOrAssetId) -> bool:
-        """
-        Checks if the user can manage an asset.
-
-        Arguments:
-            asset: An asset to check.
-        """
-        manage_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("api", f"users/{self.id}/canmanage/{int(asset)}")
-        )
-        manage_data = manage_response.json()
-        return manage_data["CanManage"]

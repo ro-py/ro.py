@@ -5,10 +5,10 @@ This module contains classes used internally by ro.py for sending requests to Ro
 """
 
 from __future__ import annotations
-from typing import Dict, Optional
 
 import asyncio
 from json import JSONDecodeError
+from typing import Dict, Optional
 
 from httpx import AsyncClient, Response
 
