@@ -94,7 +94,7 @@ class Thumbnail:
         return f"<{self.__class__.__name__} target_id={self.target_id} name={self.state!r} " \
                f"image_url={self.image_url!r}>"
 
-    async def get_3d_data(self):
+    async def get_3d_data(self) -> ThreeDThumbnail:
         """
         Generates 3D thumbnail data for this endpoint.
         

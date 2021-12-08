@@ -380,34 +380,6 @@ class BaseGroup(BaseItem):
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests/users/{int(user)}")
         )
 
-    async def batch_accept_users(self, users: List[Union[int, BaseUser, JoinRequest]]):
-        """
-        Accepts multiple user's request to join this group.
-
-        Arguments:
-            List[user]: The users to accept into this group.
-        """
-        await self._shared.requests.post(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests"),
-            json={
-                "UserIds": [int(user) for user in users]
-            }
-        )
-
-    async def batch_decline_users(self, users: List[Union[int, BaseUser, JoinRequest]]):
-        """
-        Declines multiple user's request to join this group.
-
-        Arguments:
-            List[user]: The users to decline from this group.
-        """
-        await self._shared.requests.delete(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests"),
-            json={
-                "UserIds": [int(user) for user in users]
-            }
-        )
-
     async def update_shout(self, message: str) -> Optional[Shout]:
         """
         Updates the shout.
