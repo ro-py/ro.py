@@ -42,4 +42,4 @@ jobs:
       
       - name: Deploy docs
         run: |
-          mike deploy dev
+          mike deploy dev --push
