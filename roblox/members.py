@@ -77,8 +77,8 @@ class Member(MemberRelationship):
 
         super().__init__(shared=self._shared, user=self.id, group=group)
 
-        self.role: PartialRole = PartialRole(shared=self._shared, data=data["role"])
         self.group: BaseGroup = group
+        self.role: PartialRole = PartialRole(shared=self._shared, data=data["role"], group=self.group)
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id} name={self.name!r} role={self.role}>"
