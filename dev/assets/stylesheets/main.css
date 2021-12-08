@@ -1,0 +1,8 @@
+.md-banner strong {
+    white-space: nowrap;
+}
+.md-banner a {
+    color: white;
+    font-size: 0.8rem;
+}
+

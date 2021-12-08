@@ -1,0 +1,16 @@
+[data-md-color-scheme=slate] {
+    --md-default-bg-color: #1d1d1f;
+    --md-typeset-a-color: var(--md-accent-fg-color) !important;
+}
+
+.md-typeset a:focus, .md-typeset a:hover {
+    color: #72b8ff;
+}
+
+.md-footer-copyright::after{
+	content: "· Original theme by Elttob";
+}
+
+:root {
+    color-scheme: dark;
+}
