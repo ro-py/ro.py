@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -35,11 +37,11 @@ jobs:
         run: |
           mkdocs build
       
-      - name: Configure Git author
+      - name: Configure Git user
         run: |
-          git config --global user.name "${GITHUB_ACTOR}"
-          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
       
       - name: Deploy docs
         run: |
-          mike deploy dev --push
+          mike deploy --push dev
