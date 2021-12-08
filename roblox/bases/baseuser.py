@@ -20,7 +20,7 @@ from ..utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:
     from ..friends import Friend
-    from ..roles import Role
+    from ..partials.partialrole import PartialRole
     from ..utilities.types import AssetOrAssetId, GamePassOrGamePassId
 
 
@@ -210,21 +210,21 @@ class BaseUser(BaseItem):
             ) for partial_data in awarded_data
         ]
 
-    async def get_group_roles(self) -> List[Role]:
+    async def get_group_roles(self) -> list[PartialRole]:
         """
         Gets a list of roles for all groups this user is in.
 
         Returns:
             A list of roles.
         """
-        from ..roles import Role
+        from ..partials.partialrole import PartialRole
         from ..groups import Group
         roles_response = await self._shared.requests.get(
             url=self._shared.url_generator.get_url("groups", f"v1/users/{self.id}/groups/roles")
         )
         roles_data = roles_response.json()["data"]
         return [
-            Role(
+            PartialRole(
                 shared=self._shared,
                 data=role_data["role"],
                 group=Group(
