@@ -30,6 +30,7 @@ from .utilities.types import *
 from .thumbnails import ThumbnailState, ThumbnailFormat, ThumbnailReturnPolicy, AvatarThumbnailType
 from .universes import UniverseGenre, UniverseAvatarType
 from .creatortype import CreatorType
+from .auditlogs import Actions
 
 
 class VersionInfo(NamedTuple):

@@ -25,7 +25,7 @@ class PartialRole(BaseRole):
         self.id: int = data["id"]
         super().__init__(shared=self._shared, role_id=self.id)
         self.name: str = data["name"]
-        self.rank: int = data["rank"]
+        self.rank: int = data.get("rank")
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id} name={self.name!r} rank={self.rank}>"

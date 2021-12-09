@@ -13,6 +13,7 @@ from typing import Optional, List, Union, TYPE_CHECKING
 from dateutil.parser import parse
 
 from .baseitem import BaseItem
+from ..auditlogs import RemoveMember, ChangeRank
 from ..members import Member, MemberRelationship
 from ..partials.partialuser import PartialUser, RequestedUsernamePartialUser
 from ..roles import Role
@@ -22,6 +23,7 @@ from ..utilities.exceptions import InvalidRole
 from ..utilities.iterators import PageIterator, SortOrder
 from ..utilities.shared import ClientSharedObject
 from ..wall import WallPost, WallPostRelationship
+from ..auditlogs import Actions
 
 if TYPE_CHECKING:
     from .baseuser import BaseUser
@@ -179,7 +181,7 @@ class BaseGroup(BaseItem):
             page_size=page_size,
             sort_order=sort_order,
             max_items=max_items,
-            handler=lambda shared, data: Member(shared=shared, data=data, group=self)
+            handler=lambda shared, data: Member(shared=shared, data=data, group=self),
         )
 
     def get_member(self, user: Union[int, BaseUser]) -> MemberRelationship:
@@ -415,3 +417,16 @@ class BaseGroup(BaseItem):
         )
         links_data = links_response.json()["data"]
         return [SocialLink(shared=self._shared, data=link_data) for link_data in links_data]
+
+    def get_audit_logs(self, sort_order: SortOrder = SortOrder.Ascending, page_size: int = 10, max_items: int = None,
+                       action: Optional[Actions] = None) -> PageIterator:
+        audit_logs = {"Remove Member": RemoveMember, "Change Rank": ChangeRank}
+        return PageIterator(
+            shared=self._shared,
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/audit-log"),
+            page_size=page_size,
+            sort_order=sort_order,
+            max_items=max_items,
+            extra_parameters={"actionType": action.value},
+            handler=lambda shared, data: audit_logs[data["actionType"]](shared=shared, data=data, group=self)
+        )
