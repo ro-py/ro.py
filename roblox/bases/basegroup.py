@@ -420,6 +420,9 @@ class BaseGroup(BaseItem):
 
     def get_audit_logs(self, sort_order: SortOrder = SortOrder.Ascending, page_size: int = 10, max_items: int = None,
                        action: Optional[Actions] = None) -> PageIterator:
+        extra_parameters = None
+        if action:
+            extra_parameters = {"actionType": action.value}
         audit_logs = {"Remove Member": RemoveMember, "Change Rank": ChangeRank}
         return PageIterator(
             shared=self._shared,
@@ -427,6 +430,6 @@ class BaseGroup(BaseItem):
             page_size=page_size,
             sort_order=sort_order,
             max_items=max_items,
-            extra_parameters={"actionType": action.value},
+            extra_parameters=extra_parameters,
             handler=lambda shared, data: audit_logs[data["actionType"]](shared=shared, data=data, group=self)
         )
