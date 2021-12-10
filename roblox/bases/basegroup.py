@@ -13,7 +13,9 @@ from typing import Optional, List, Union, TYPE_CHECKING
 from dateutil.parser import parse
 
 from .baseitem import BaseItem
-from ..auditlogs import RemoveMember, ChangeRank
+from ..auditlogs import RemoveMember, ChangeRank, DeletePost, AcceptJoinRequest, DeclineJoinRequest, BuyAd, \
+    SendAllyRequest, CreateEnemy, AcceptAllyRequest, DeclineAllyRequest, DeleteAlly, CreateItems, SpendGroupFunds, \
+    ChangeOwner, ChangeDescription, PostStatus
 from ..members import Member, MemberRelationship
 from ..partials.partialuser import PartialUser, RequestedUsernamePartialUser
 from ..roles import Role
@@ -423,7 +425,14 @@ class BaseGroup(BaseItem):
         extra_parameters = None
         if action:
             extra_parameters = {"actionType": action.value}
-        audit_logs = {"Remove Member": RemoveMember, "Change Rank": ChangeRank}
+        audit_logs = {"Remove Member": RemoveMember, "Change Rank": ChangeRank, "Delete Post": DeletePost,
+                      "Accept Join Request": AcceptJoinRequest, "Decline Join Request": DeclineJoinRequest,
+                      "Post Status": PostStatus, "Buy Ad": BuyAd, "Send Ally Request": SendAllyRequest,
+                      "Create Enemy": CreateEnemy, "Accept Ally Request": AcceptAllyRequest,
+                      "Decline Ally Request": DeclineAllyRequest, "Delete Ally": DeleteAlly,
+                      "Create Items": CreateItems, "Spend Group Funds": SpendGroupFunds, "Change Owner": ChangeOwner,
+                      "Change Description": ChangeDescription
+                      }
         return PageIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/audit-log"),
