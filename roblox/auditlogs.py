@@ -227,10 +227,14 @@ class ChangeRank:
         self.created: datetime = parse(data["created"])
         self.target: PartialUser = PartialUser(shared=shared, data={"id": data["description"]["TargetId"],
                                                                     "name": data["description"]["TargetName"]})
-        self.new_role: PartialRole = PartialRole(shared=shared, data={"id": data["description"]["NewRoleSetId"],
-                                                                      "name": data["description"]["NewRoleSetName"]})
-        self.old_role: PartialRole = PartialRole(shared=shared, data={"id": data["description"]["OldRoleSetId"],
-                                                                      "name": data["description"]["OldRoleSetName"]})
+        self.new_role: PartialRole = PartialRole(shared=shared,
+                                                 data={"id": data["description"]["NewRoleSetId"],
+                                                       "name": data["description"]["NewRoleSetName"]},
+                                                 group=group)
+        self.old_role: PartialRole = PartialRole(shared=shared,
+                                                 data={"id": data["description"]["OldRoleSetId"],
+                                                       "name": data["description"]["OldRoleSetName"]},
+                                                 group=group)
 
 
 class BuyAd:
@@ -1213,7 +1217,7 @@ class UpdateRolesetRank:
             group: the group you have the audit logs from
         """
 
-        from roblox.partials.partialasset import PartialAsset
+        from roblox.partials.partialrole import UpdateRankPartialRole
 
         self.shared: ClientSharedObject = shared
         self.group: BaseGroup = group
@@ -1221,4 +1225,33 @@ class UpdateRolesetRank:
         self.action_type: str = data["actionType"]
         self.created: datetime = parse(data["created"])
 
-        self.asset: PartialAsset = PartialAsset(shared=shared, data=data["description"])
+        self.asset: UpdateRankPartialRole = UpdateRankPartialRole(shared=shared, data=data["description"], group=group)
+
+
+class UpdateRolesetData:
+    """
+    Represents a badge from the API.
+
+    Attributes:
+        actor: Member who did it.
+        action_type: Type of the action.
+        created: Datetime of creation of the audit_log.
+        group:  The group that send you an ally request
+    """
+
+    def __init__(self, shared: ClientSharedObject, data: dict, group: BaseGroup):
+        """
+        Arguments:
+            shared: The ClientSharedObject to be used when getting information on badges.
+            data: The data from the endpoint.
+            group: the group you have the audit logs from
+        """
+        from roblox.partials.partialrole import UpdateDataPartialRole
+
+        self.shared: ClientSharedObject = shared
+        self.group: BaseGroup = group
+        self.actor: Member = Member(shared=self.shared, data=data["actor"], group=self.group)
+        self.action_type: str = data["actionType"]
+        self.created: datetime = parse(data["created"])
+
+        self.asset: UpdateDataPartialRole = UpdateDataPartialRole(shared=shared, data=data["description"], group=group)

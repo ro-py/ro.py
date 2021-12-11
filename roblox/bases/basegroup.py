@@ -18,7 +18,7 @@ from ..auditlogs import RemoveMember, ChangeRank, DeletePost, AcceptJoinRequest,
     ChangeOwner, ChangeDescription, PostStatus, DeleteEnemy, AddGroupPlace, RemoveGroupPlace, AdjustCurrencyAmounts, \
     Abandon, Claim, Delete, Rename, CancelClanInvite, CreateGroupAsset, BuyClan, UpdateGroupAsset, \
     ConfigureGroupAsset, CreateGroupDeveloperProduct, ConfigureGroupGame, RevertGroupAsset, Lock, Unlock, \
-    CreateGamePass, CreateBadge, ConfigureBadge, SavePlace, PublishPlace
+    CreateGamePass, CreateBadge, ConfigureBadge, SavePlace, PublishPlace, UpdateRolesetRank, UpdateRolesetData
 from ..members import Member, MemberRelationship
 from ..partials.partialuser import PartialUser, RequestedUsernamePartialUser
 from ..roles import Role
@@ -445,7 +445,7 @@ class BaseGroup(BaseItem):
                       "Configure Group Game": ConfigureGroupGame, "Lock": Lock, "Unlock": Unlock,
                       "Create Game Pass": CreateGamePass, "Create Badge": CreateBadge,
                       "Configure Badge": ConfigureBadge, "Save Place": SavePlace, "Publish Place": PublishPlace,
-                      "Update Roleset Rank": UpdateRolesetRank
+                      "Update Roleset Rank": UpdateRolesetRank, "Update Roleset Data": UpdateRolesetData
                       }
         return PageIterator(
             shared=self._shared,

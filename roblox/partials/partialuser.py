@@ -34,7 +34,7 @@ class PartialUser(BaseUser):
         super().__init__(shared=shared, user_id=self.id)
 
         self.name: str = data.get("name") or data.get("Name") or data.get("username") or data.get("Username")
-        self.display_name: str = data.get("displayName")
+        self.display_name: Optional[str] = data.get("displayName")
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id} name={self.name!r} display_name={self.display_name!r}>"
