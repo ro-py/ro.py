@@ -13,7 +13,7 @@ from dateutil.parser import parse
 from .bases.baseplace import BasePlace
 from .bases.baseuniverse import BaseUniverse
 from .creatortype import CreatorType
-from .partials.partialgroup import UniversePartialGroup
+from .partials.partialgroup import PartialGroup
 from .partials.partialuser import PartialUser
 from .utilities.shared import ClientSharedObject
 
@@ -99,9 +99,9 @@ class Universe(BaseUniverse):
         self.description: str = data["description"]
         self.creator_type: Enum = CreatorType(data["creator"]["type"])
         # isRNVAccount is not part of PartialUser, UniversePartialGroup
-        self.creator: Union[PartialUser, UniversePartialGroup]
+        self.creator: Union[PartialUser, PartialGroup]
         if self.creator_type == CreatorType.group:
-            self.creator = UniversePartialGroup(shared, data["creator"])
+            self.creator = PartialGroup(shared, data["creator"])
         elif self.creator_type == CreatorType.user:
             self.creator = PartialUser(shared, data["creator"])
         self.price: Optional[int] = data["price"]

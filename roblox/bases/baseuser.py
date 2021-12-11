@@ -11,7 +11,7 @@ from typing import Optional, List, TYPE_CHECKING
 from .baseitem import BaseItem
 from ..bases.basebadge import BaseBadge
 from ..instances import ItemInstance, InstanceType, AssetInstance, GamePassInstance, instance_classes
-from ..partials.partialbadge import PartialBadge
+from ..partials.partialbadge import AwardsPartialBadge
 from ..presence import Presence
 from ..promotionchannels import UserPromotionChannels
 from ..robloxbadges import RobloxBadge
@@ -189,7 +189,7 @@ class BaseUser(BaseItem):
             item_id=int(gamepass)
         )
 
-    async def get_badge_awarded_dates(self, badges: list[BaseBadge]) -> List[PartialBadge]:
+    async def get_badge_awarded_dates(self, badges: list[BaseBadge]) -> List[AwardsPartialBadge]:
         """
         Gets the dates that each badge in a list of badges were awarded to this user.
 
@@ -204,7 +204,7 @@ class BaseUser(BaseItem):
         )
         awarded_data: list = awarded_response.json()["data"]
         return [
-            PartialBadge(
+            AwardsPartialBadge(
                 shared=self._shared,
                 data=partial_data
             ) for partial_data in awarded_data

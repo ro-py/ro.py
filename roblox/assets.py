@@ -11,7 +11,7 @@ from dateutil.parser import parse
 
 from .bases.baseasset import BaseAsset
 from .creatortype import CreatorType
-from .partials.partialgroup import AssetPartialGroup
+from .partials.partialgroup import PartialGroup
 from .partials.partialuser import PartialUser
 from .utilities.shared import ClientSharedObject
 
@@ -155,12 +155,12 @@ class EconomyAsset(BaseAsset):
         self.type: AssetType = AssetType(type_id=data["AssetTypeId"])
 
         self.creator_type: CreatorType = CreatorType(data["Creator"]["CreatorType"])
-        self.creator: Union[PartialUser, AssetPartialGroup]
+        self.creator: Union[PartialUser, PartialGroup]
 
         if self.creator_type == CreatorType.user:
             self.creator: PartialUser = PartialUser(shared=shared, data=data["Creator"])
         elif self.creator_type == CreatorType.group:
-            self.creator: AssetPartialGroup = AssetPartialGroup(shared=shared, data=data["Creator"])
+            self.creator: PartialGroup = PartialGroup(shared=shared, data=data["Creator"])
 
         self.icon_image: BaseAsset = BaseAsset(shared=shared, asset_id=data["IconImageAssetId"])
 

@@ -20,6 +20,36 @@ class PartialBadge(BaseBadge):
         _data: The data we get back from the endpoint.
         _shared: The shared object, which is passed to all objects this client generates.
         id: The universe ID.
+        name: The name of the badge.
+    """
+
+    def __init__(self, shared: ClientSharedObject, data: dict):
+        """
+        Arguments:
+            shared: The ClientSharedObject.
+            data: The raw data.
+        """
+        self._shared: ClientSharedObject = shared
+        self._data: dict = data
+
+        self.id: int = data["BadgeId"]
+
+        super().__init__(shared=shared, badge_id=self.id)
+
+        self.name: str = data["BadgeName"]
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name}>"
+
+
+class AwardsPartialBadge(BaseBadge):
+    """
+    Represents partial badge data.
+
+    Attributes:
+        _data: The data we get back from the endpoint.
+        _shared: The shared object, which is passed to all objects this client generates.
+        id: The universe ID.
         awarded: The date when the badge was awarded.
     """
 

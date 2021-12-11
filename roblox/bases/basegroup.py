@@ -15,7 +15,10 @@ from dateutil.parser import parse
 from .baseitem import BaseItem
 from ..auditlogs import RemoveMember, ChangeRank, DeletePost, AcceptJoinRequest, DeclineJoinRequest, BuyAd, \
     SendAllyRequest, CreateEnemy, AcceptAllyRequest, DeclineAllyRequest, DeleteAlly, CreateItems, SpendGroupFunds, \
-    ChangeOwner, ChangeDescription, PostStatus
+    ChangeOwner, ChangeDescription, PostStatus, DeleteEnemy, AddGroupPlace, RemoveGroupPlace, AdjustCurrencyAmounts, \
+    Abandon, Claim, Delete, Rename, CancelClanInvite, CreateGroupAsset, BuyClan, UpdateGroupAsset, \
+    ConfigureGroupAsset, CreateGroupDeveloperProduct, ConfigureGroupGame, RevertGroupAsset, Lock, Unlock, \
+    CreateGamePass, CreateBadge, ConfigureBadge, SavePlace, PublishPlace
 from ..members import Member, MemberRelationship
 from ..partials.partialuser import PartialUser, RequestedUsernamePartialUser
 from ..roles import Role
@@ -430,8 +433,19 @@ class BaseGroup(BaseItem):
                       "Post Status": PostStatus, "Buy Ad": BuyAd, "Send Ally Request": SendAllyRequest,
                       "Create Enemy": CreateEnemy, "Accept Ally Request": AcceptAllyRequest,
                       "Decline Ally Request": DeclineAllyRequest, "Delete Ally": DeleteAlly,
-                      "Create Items": CreateItems, "Spend Group Funds": SpendGroupFunds, "Change Owner": ChangeOwner,
-                      "Change Description": ChangeDescription
+                      "Delete Enemy": DeleteEnemy, "Add Group Place": AddGroupPlace,
+                      "Remove Group Place": RemoveGroupPlace, "Create Items": CreateItems,
+                      "Spend Group Funds": SpendGroupFunds, "Change Owner": ChangeOwner,
+                      "Delete": Delete, "Adjust Currency Amounts": AdjustCurrencyAmounts, "Abandon": Abandon,
+                      "Claim": Claim, "Rename": Rename, "Change Description": ChangeDescription,
+                      "Cancel Clan Invite": CancelClanInvite, "Buy Clan": BuyClan,
+                      "Create Group Asset": CreateGroupAsset, "Update Group Asset": UpdateGroupAsset,
+                      "Configure Group Asset": ConfigureGroupAsset, "Revert Group Asset": RevertGroupAsset,
+                      "Create Group Developer Product": CreateGroupDeveloperProduct,
+                      "Configure Group Game": ConfigureGroupGame, "Lock": Lock, "Unlock": Unlock,
+                      "Create Game Pass": CreateGamePass, "Create Badge": CreateBadge,
+                      "Configure Badge": ConfigureBadge, "Save Place": SavePlace, "Publish Place": PublishPlace,
+                      "Update Roleset Rank": UpdateRolesetRank
                       }
         return PageIterator(
             shared=self._shared,
