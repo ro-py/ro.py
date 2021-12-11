@@ -3,9 +3,14 @@
 This file contains partial objects related to Roblox group roles.
 
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
 from ..bases.baserole import BaseRole
 from ..utilities.shared import ClientSharedObject
+
+if TYPE_CHECKING:
+    from ..bases.basegroup import BaseGroup
 
 
 class PartialRole(BaseRole):
@@ -19,11 +24,12 @@ class PartialRole(BaseRole):
         rank: The role's rank ID.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
+    def __init__(self, shared: ClientSharedObject, data: dict, group: BaseGroup):
         self._shared: ClientSharedObject = shared
 
         self.id: int = data["id"]
-        super().__init__(shared=self._shared, role_id=self.id)
+        self.group: BaseGroup = group
+        super().__init__(shared=self._shared, role_id=self.id, group=group)
         self.name: str = data["name"]
         self.rank: int = data.get("rank")
 
