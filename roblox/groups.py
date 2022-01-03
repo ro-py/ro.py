@@ -17,7 +17,6 @@ class Group(BaseGroup):
     Represents a group.
 
     Attributes:
-        _shared: The shared object, which is passed to all objects this client generates.
         id: the id of the group.
         name: name of the group.
         description: description of the group.
