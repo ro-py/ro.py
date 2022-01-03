@@ -17,6 +17,10 @@ class GameInstancePlayerThumbnail:
     Represent a player in a game instance's thumbnail.
     As the asset part of these thumbnails is no longer in use, this endpoint does not attempt to implement asset
     information.
+    
+    Attributes:
+        url: The thumbnail's URL.
+        final: Whether the thumbnail is finalized or not.
     """
 
     def __init__(self, shared: ClientSharedObject, data: dict):
@@ -34,6 +38,11 @@ class GameInstancePlayer(BaseUser):
     Represents a single player in a game instance.
     Data, like user ID and username, may be filled with placeholder data.
     Do not rely on this object containing proper data. If the id attribute is 0, this object should not be used.
+    
+    Attributes:
+        id: The player's user ID.
+        name: The player's username.
+        thumbnail: The player's thumbnail.
     """
 
     def __init__(self, shared: ClientSharedObject, data: dict):
@@ -56,7 +65,6 @@ class GameInstance(BaseJob):
     Represents a game (or place) instance, or "job".
 
     Attributes:
-        _shared: The shared object.
         id: The instance's job ID.
         capacity: The server's capacity.
         ping: The server's ping.
