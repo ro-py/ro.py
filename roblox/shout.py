@@ -17,7 +17,6 @@ class Shout:
     Represents a Group Shout.
 
     Attributes:
-        _shared: The shared object, which is passed to all objects this client generates.
         body: The text of the shout.
         created: When the shout was created.
         updated: When the shout was updated.
