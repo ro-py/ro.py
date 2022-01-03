@@ -46,4 +46,4 @@ pip install git+git://github.com/ro-py/ro.py.git
 
 # Tutorial
 Learn how to use ro.py in our docs:
-https://ro.py.jmk.gg/tutorial/
+https://ro.py.jmk.gg/dev/tutorial/
