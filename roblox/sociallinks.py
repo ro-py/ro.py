@@ -28,7 +28,6 @@ class SocialLink(BaseUniverseSocialLink):
     Represents a universe or group's social links.
 
     Attributes:
-        _shared: The shared object.
         id: The social link's ID.
         title: The social link's title.
         url: The social link's URL.
