@@ -1686,9 +1686,19 @@ Member            (<a title="roblox.members.MemberRelationship" href="#roblox.me
   </thead>
   <tbody>
       <tr>
-        <td><code>_shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The shared object.</p></td>
+        <td><code>id</code></td>
+        <td><code>int</code></td>
+        <td><p>The member's ID.</p></td>
+      </tr>
+      <tr>
+        <td><code>name</code></td>
+        <td><code>str</code></td>
+        <td><p>The member's name.</p></td>
+      </tr>
+      <tr>
+        <td><code>display_name</code></td>
+        <td><code>str</code></td>
+        <td><p>The member's display name.</p></td>
       </tr>
       <tr>
         <td><code>role</code></td>
@@ -1702,6 +1712,36 @@ Member            (<a title="roblox.members.MemberRelationship" href="#roblox.me
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/members.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Member</span><span class="p">(</span><span class="n">MemberRelationship</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a group member.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: The member&#39;s ID.</span>
+<span class="sd">        name: The member&#39;s name.</span>
+<span class="sd">        display_name: The member&#39;s display name.</span>
+<span class="sd">        role: The member&#39;s role.</span>
+<span class="sd">        group: The member&#39;s group.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">group</span><span class="p">:</span> <span class="n">BaseGroup</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">][</span><span class="s2">&quot;userId&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">][</span><span class="s2">&quot;username&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;user&quot;</span><span class="p">][</span><span class="s2">&quot;displayName&quot;</span><span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">user</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="n">group</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="p">:</span> <span class="n">PartialRole</span> <span class="o">=</span> <span class="n">PartialRole</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;role&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">:</span> <span class="n">BaseGroup</span> <span class="o">=</span> <span class="n">group</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> role=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">role</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -1807,6 +1847,69 @@ MemberRelationship            (<a title="roblox.bases.baseuser.BaseUser" href=".
 
       <p>Represents a relationship between a user and a group.</p>
 
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>group</code></td>
+        <td><code>BaseGroup</code></td>
+        <td><p>The corresponding group.</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/members.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">MemberRelationship</span><span class="p">(</span><span class="n">BaseUser</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a relationship between a user and a group.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        group: The corresponding group.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseUser</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="n">group</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseGroup</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">:</span> <span class="n">BaseGroup</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">BaseGroup</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">group_id</span><span class="o">=</span><span class="n">group</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">group</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">set_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">:</span> <span class="n">RoleOrRoleId</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets this member&#39;s role.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            role: The new role this member should be assigned.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">role</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">set_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rank</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets this member&#39;s rank.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            rank: The new rank this member should be assigned. Should be in the range of 0-255.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">set_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rank</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">kick</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Kicks this member from the group.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">kick_user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+        </details>
 
 
 

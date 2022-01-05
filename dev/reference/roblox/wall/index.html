@@ -1698,6 +1698,44 @@ WallPost            (<a title="roblox.wall.WallPostRelationship" href="#roblox.w
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/wall.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">WallPost</span><span class="p">(</span><span class="n">WallPostRelationship</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a post on a Roblox group wall.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: The post ID.</span>
+<span class="sd">        poster: The member who made the post.</span>
+<span class="sd">        body: Body of the post.</span>
+<span class="sd">        created: Creation date of the post.</span>
+<span class="sd">        updated: Last updated date of the post.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">group</span><span class="p">:</span> <span class="n">BaseGroup</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">post_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+            <span class="n">group</span><span class="o">=</span><span class="n">group</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">poster</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Member</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;poster&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">Member</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;poster&quot;</span><span class="p">],</span>
+            <span class="n">group</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">group</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;created&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updated</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;updated&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> body=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="si">!r}</span><span class="s2"> group=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -1821,17 +1859,57 @@ WallPostRelationship        </code>
   </thead>
   <tbody>
       <tr>
-        <td><code>_shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The ClientSharedObject.</p></td>
-      </tr>
-      <tr>
         <td><code>id</code></td>
         <td><code>int</code></td>
         <td><p>The post ID.</p></td>
       </tr>
+      <tr>
+        <td><code>group</code></td>
+        <td><code>BaseGroup</code></td>
+        <td><p>The group who's wall this post exists on.</p></td>
+      </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/wall.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">WallPostRelationship</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a Roblox wall post ID.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: The post ID.</span>
+<span class="sd">        group: The group who&#39;s wall this post exists on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">post_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">group</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseGroup</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: The ClientSharedObject.</span>
+<span class="sd">            post_id: The post ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">post_id</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">:</span> <span class="n">BaseGroup</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">BaseGroup</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">group_id</span><span class="o">=</span><span class="n">group</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">group</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deletes this wall post.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/wall/posts/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> group=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+</code></pre></div>
+        </details>
 
 
 

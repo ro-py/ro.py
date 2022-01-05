@@ -1618,11 +1618,6 @@ Group            (<a title="roblox.bases.basegroup.BaseGroup" href="../bases/bas
   </thead>
   <tbody>
       <tr>
-        <td><code>_shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The shared object, which is passed to all objects this client generates.</p></td>
-      </tr>
-      <tr>
         <td><code>id</code></td>
         <td><code>int</code></td>
         <td><p>the id of the group.</p></td>
@@ -1669,6 +1664,83 @@ Group            (<a title="roblox.bases.basegroup.BaseGroup" href="../bases/bas
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/groups.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Group</span><span class="p">(</span><span class="n">BaseGroup</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a group.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: the id of the group.</span>
+<span class="sd">        name: name of the group.</span>
+<span class="sd">        description: description of the group.</span>
+<span class="sd">        owner: player who owns the group.</span>
+<span class="sd">        shout: the current group shout.</span>
+<span class="sd">        member_count: about of members in the group.</span>
+<span class="sd">        is_builders_club_only: can only people with builder club join.</span>
+<span class="sd">        public_entry_allowed: can you join without your join request having to be accepted.</span>
+<span class="sd">        is_locked: Is the group locked?</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            data: The data we get back from the endpoint.</span>
+<span class="sd">            shared: The shared object, which is passed to all objects this client generates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PartialUser</span><span class="p">]</span> <span class="o">=</span> <span class="n">PartialUser</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;owner&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;owner&quot;</span><span class="p">)</span> <span class="k">else</span> \
+            <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Shout</span><span class="p">]</span> <span class="o">=</span> <span class="n">Shout</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;shout&quot;</span><span class="p">]</span>
+        <span class="p">)</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;shout&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">member_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;memberCount&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_builders_club_only</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;isBuildersClubOnly&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">public_entry_allowed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;publicEntryAllowed&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_locked</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;isLocked&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> owner=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">owner</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_shout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">update_self</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Shout</span><span class="p">],</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Shout</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the shout.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            message: The new shout message.</span>
+<span class="sd">            update_self: Whether to update self.shout automatically.</span>
+<span class="sd">        Returns: </span>
+<span class="sd">            The old and new shout.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">shout_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/status&quot;</span><span class="p">),</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+        <span class="n">shout_data</span> <span class="o">=</span> <span class="n">shout_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="n">old_shout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Shout</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shout</span>
+        <span class="n">new_shout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Shout</span><span class="p">]</span> <span class="o">=</span> <span class="n">shout_data</span> <span class="ow">and</span> <span class="n">Shout</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">shout_data</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">update_self</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shout</span> <span class="o">=</span> <span class="n">new_shout</span>
+
+        <span class="k">return</span> <span class="n">old_shout</span><span class="p">,</span> <span class="n">new_shout</span>
+</code></pre></div>
+        </details>
 
 
 

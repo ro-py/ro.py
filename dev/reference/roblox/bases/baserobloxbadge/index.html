@@ -1607,6 +1607,30 @@ BaseRobloxBadge            (<a title="roblox.bases.baseitem.BaseItem" href="../b
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/bases/baserobloxbadge.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">BaseRobloxBadge</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a Roblox roblox badge ID.</span>
+<span class="sd">    !!! warning</span>
+<span class="sd">        This is not a badge! It is a **roblox badge**.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        _shared: The ClientSharedObject.</span>
+<span class="sd">        id: The roblox badge ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">roblox_badge_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: The ClientSharedObject.</span>
+<span class="sd">            roblox_badge_id: The roblox badge ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">roblox_badge_id</span>
+</code></pre></div>
+        </details>
 
 
 

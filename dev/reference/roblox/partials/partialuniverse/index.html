@@ -1667,6 +1667,35 @@ ChatPartialUniverse            (<a title="roblox.bases.baseuniverse.BaseUniverse
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/partials/partialuniverse.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ChatPartialUniverse</span><span class="p">(</span><span class="n">BaseUniverse</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a partial universe in the context of a chat conversation.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        _data: The data we get back from the endpoint.</span>
+<span class="sd">        _shared: The shared object, which is passed to all objects this client generates.</span>
+<span class="sd">        id: The universe ID.</span>
+<span class="sd">        root_place: The universe&#39;s root place.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: The ClientSharedObject.</span>
+<span class="sd">            data: The raw data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;universeId&quot;</span><span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">universe_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_place</span><span class="p">:</span> <span class="n">BasePlace</span> <span class="o">=</span> <span class="n">BasePlace</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">place_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;rootPlaceId&quot;</span><span class="p">])</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -1777,6 +1806,38 @@ PartialUniverse            (<a title="roblox.bases.baseuniverse.BaseUniverse" hr
     name: The name of the universe.
     root_place: The universe's root place.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/partials/partialuniverse.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">PartialUniverse</span><span class="p">(</span><span class="n">BaseUniverse</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents partial universe information.</span>
+
+<span class="sd">    Attributes:.</span>
+<span class="sd">        _shared: The shared object, which is passed to all objects this client generates.</span>
+<span class="sd">        id: The universe ID.</span>
+<span class="sd">        name: The name of the universe.</span>
+<span class="sd">        root_place: The universe&#39;s root place.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: The ClientSharedObject.</span>
+<span class="sd">            data: The raw data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">universe_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_place</span><span class="p">:</span> <span class="n">BasePlace</span> <span class="o">=</span> <span class="n">BasePlace</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">place_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;rootPlaceId&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">&gt;&quot;</span>
+</code></pre></div>
+        </details>
 
 
 

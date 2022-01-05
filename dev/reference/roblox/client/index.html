@@ -1975,6 +1975,541 @@ Client        </code>
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/client.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Client</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a Roblox client.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        requests: The requests object, which is used to send requests to Roblox endpoints.</span>
+<span class="sd">        url_generator: The URL generator object, which is used to generate URLs to send requests to endpoints.</span>
+<span class="sd">        presence: The presence provider object.</span>
+<span class="sd">        thumbnails: The thumbnail provider object.</span>
+<span class="sd">        delivery: The delivery provider object.</span>
+<span class="sd">        chat: The chat provider object.</span>
+<span class="sd">        account: The account provider object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">base_url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;roblox.com&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            token: A .ROBLOSECURITY token to authenticate the client with.</span>
+<span class="sd">            base_url: The base URL to use when sending requests.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_url_generator</span><span class="p">:</span> <span class="n">URLGenerator</span> <span class="o">=</span> <span class="n">URLGenerator</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="p">:</span> <span class="n">Requests</span> <span class="o">=</span> <span class="n">Requests</span><span class="p">(</span>
+            <span class="n">url_generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_url_generator</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">ClientSharedObject</span><span class="p">(</span>
+            <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">requests</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="p">,</span>
+            <span class="n">url_generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_url_generator</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">presence</span><span class="p">:</span> <span class="n">PresenceProvider</span> <span class="o">=</span> <span class="n">PresenceProvider</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thumbnails</span><span class="p">:</span> <span class="n">ThumbnailProvider</span> <span class="o">=</span> <span class="n">ThumbnailProvider</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delivery</span><span class="p">:</span> <span class="n">DeliveryProvider</span> <span class="o">=</span> <span class="n">DeliveryProvider</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chat</span><span class="p">:</span> <span class="n">ChatProvider</span> <span class="o">=</span> <span class="n">ChatProvider</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account</span><span class="p">:</span> <span class="n">AccountProvider</span> <span class="o">=</span> <span class="n">AccountProvider</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">)</span>
+
+        <span class="c1"># TODO: Improve this hack</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">presence_provider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">presence</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">thumbnail_provider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">thumbnails</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">delivery_provider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delivery</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">chat_provider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chat</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">account_provider</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">account</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span> <span class="n">Requests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url_generator</span><span class="p">:</span> <span class="n">URLGenerator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url_generator</span>
+
+        <span class="k">if</span> <span class="n">token</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_token</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+
+    <span class="c1"># Authentication</span>
+    <span class="k">def</span> <span class="nf">set_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Authenticates the client with the passed .ROBLOSECURITY token.</span>
+<span class="sd">        This method does not send any requests and will not throw if the token is invalid.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            token: A .ROBLOSECURITY token to authenticate the client with.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">cookies</span><span class="p">[</span><span class="s2">&quot;.ROBLOSECURITY&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">token</span>
+
+    <span class="c1"># Users</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">User</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a user with the specified user ID.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            user_id: A Roblox user ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A user object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">user_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="n">user_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">NotFound</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UserNotFound</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid user.&quot;</span><span class="p">,</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">response</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+        <span class="n">user_data</span> <span class="o">=</span> <span class="n">user_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">user_data</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_authenticated_user</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">expand</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">User</span><span class="p">,</span> <span class="n">PartialUser</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grabs the authenticated user.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            expand: Whether to return a User (2 requests) rather than a PartialUser (1 request)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The authenticated user.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">authenticated_user_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/authenticated&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">authenticated_user_data</span> <span class="o">=</span> <span class="n">authenticated_user_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">expand</span><span class="p">:</span>
+            <span class="k">return</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">authenticated_user_data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">PartialUser</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">authenticated_user_data</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_users</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">user_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">],</span>
+            <span class="n">exclude_banned_users</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">expand</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">PartialUser</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">User</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grabs a list of users corresponding to each user ID in the list.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            user_ids: A list of Roblox user IDs.</span>
+<span class="sd">            exclude_banned_users: Whether to exclude banned users from the data.</span>
+<span class="sd">            expand: Whether to return a list of Users (2 requests) rather than PartialUsers (1 request)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A List of Users or partial users.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">users_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users&quot;</span><span class="p">),</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;userIds&quot;</span><span class="p">:</span> <span class="n">user_ids</span><span class="p">,</span> <span class="s2">&quot;excludeBannedUsers&quot;</span><span class="p">:</span> <span class="n">exclude_banned_users</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">users_data</span> <span class="o">=</span> <span class="n">users_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">expand</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">user_data</span> <span class="ow">in</span> <span class="n">users_data</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">PartialUser</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">user_data</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">user_data</span> <span class="ow">in</span> <span class="n">users_data</span>
+            <span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_users_by_usernames</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">usernames</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+            <span class="n">exclude_banned_users</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">expand</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">RequestedUsernamePartialUser</span><span class="p">],</span> <span class="n">List</span><span class="p">[</span><span class="n">User</span><span class="p">]]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grabs a list of users corresponding to each username in the list.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            usernames: A list of Roblox usernames.</span>
+<span class="sd">            exclude_banned_users: Whether to exclude banned users from the data.</span>
+<span class="sd">            expand: Whether to return a list of Users (2 requests) rather than RequestedUsernamePartialUsers (1 request)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of User or RequestedUsernamePartialUser, depending on the expand argument.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">users_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/usernames/users&quot;</span><span class="p">),</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;usernames&quot;</span><span class="p">:</span> <span class="n">usernames</span><span class="p">,</span> <span class="s2">&quot;excludeBannedUsers&quot;</span><span class="p">:</span> <span class="n">exclude_banned_users</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">users_data</span> <span class="o">=</span> <span class="n">users_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">expand</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_user</span><span class="p">(</span><span class="n">user_data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">])</span> <span class="k">for</span> <span class="n">user_data</span> <span class="ow">in</span> <span class="n">users_data</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="n">RequestedUsernamePartialUser</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">user_data</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">user_data</span> <span class="ow">in</span> <span class="n">users_data</span>
+            <span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_user_by_username</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exclude_banned_users</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">expand</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">RequestedUsernamePartialUser</span><span class="p">,</span> <span class="n">User</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grabs a user corresponding to the passed username.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            username: A Roblox username.</span>
+<span class="sd">            exclude_banned_users: Whether to exclude banned users from the data.</span>
+<span class="sd">            expand: Whether to return a User (2 requests) rather than a RequestedUsernamePartialUser (1 request)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A User or RequestedUsernamePartialUser depending on the expand argument.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">users</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_users_by_usernames</span><span class="p">(</span>
+            <span class="n">usernames</span><span class="o">=</span><span class="p">[</span><span class="n">username</span><span class="p">],</span>
+            <span class="n">exclude_banned_users</span><span class="o">=</span><span class="n">exclude_banned_users</span><span class="p">,</span>
+            <span class="n">expand</span><span class="o">=</span><span class="n">expand</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">users</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UserNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid username.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">get_base_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseUser</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a base user.</span>
+
+<span class="sd">        !!! note</span>
+<span class="sd">            This method does not send any requests - it just generates an object.</span>
+<span class="sd">            For more information on bases, please see [Bases](/bases).</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            user_id: A Roblox user ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A BaseUser.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BaseUser</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">user_search</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">keyword</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                    <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PageIterator</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Search for users with a keyword.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            keyword: A keyword to search for.</span>
+<span class="sd">            page_size: How many members should be returned for each page.</span>
+<span class="sd">            max_items: The maximum items to return when looping through this object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A PageIterator containing RequestedUsernamePartialUser.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/search&quot;</span><span class="p">),</span>
+            <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
+            <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
+            <span class="n">extra_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;keyword&quot;</span><span class="p">:</span> <span class="n">keyword</span><span class="p">},</span>
+            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">PreviousUsernamesPartialUser</span><span class="p">(</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="c1"># Groups</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Group</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a group by its ID.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            group_id: A Roblox group ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A Group.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">group_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="n">group_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">BadRequest</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">GroupNotFound</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid group.&quot;</span><span class="p">,</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">response</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+        <span class="n">group_data</span> <span class="o">=</span> <span class="n">group_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">Group</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">group_data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_base_group</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseGroup</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a base group.</span>
+
+<span class="sd">        !!! note</span>
+<span class="sd">            This method does not send any requests - it just generates an object.</span>
+<span class="sd">            For more information on bases, please see [Bases](/bases).</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            group_id: A Roblox group ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A BaseGroup.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BaseGroup</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">group_id</span><span class="o">=</span><span class="n">group_id</span><span class="p">)</span>
+
+    <span class="c1"># Universes</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_universes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">universe_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Universe</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grabs a list of universes corresponding to each ID in the list.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            universe_ids: A list of Roblox universe IDs.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of Universes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">universes_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/games&quot;</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;universeIds&quot;</span><span class="p">:</span> <span class="n">universe_ids</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">universes_data</span> <span class="o">=</span> <span class="n">universes_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">Universe</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">universe_data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">universe_data</span> <span class="ow">in</span> <span class="n">universes_data</span>
+        <span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_universe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">universe_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Universe</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a universe with the passed ID.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            universe_id: A Roblox universe ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A Universe.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">universes</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_universes</span><span class="p">(</span><span class="n">universe_ids</span><span class="o">=</span><span class="p">[</span><span class="n">universe_id</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">universes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UniverseNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid universe.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">get_base_universe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">universe_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseUniverse</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a base universe.</span>
+
+<span class="sd">        !!! note</span>
+<span class="sd">            This method does not send any requests - it just generates an object.</span>
+<span class="sd">            For more information on bases, please see [Bases](/bases).</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            universe_id: A Roblox universe ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A BaseUniverse.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BaseUniverse</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">universe_id</span><span class="o">=</span><span class="n">universe_id</span><span class="p">)</span>
+
+    <span class="c1"># Places</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_places</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">place_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Place</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grabs a list of places corresponding to each ID in the list.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            place_ids: A list of Roblox place IDs.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of Places.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">places_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+                <span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/multiget-place-details&quot;</span>
+            <span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;placeIds&quot;</span><span class="p">:</span> <span class="n">place_ids</span><span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">places_data</span> <span class="o">=</span> <span class="n">places_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">Place</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">place_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">place_data</span> <span class="ow">in</span> <span class="n">places_data</span>
+        <span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_place</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">place_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Place</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a place with the passed ID.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            place_id: A Roblox place ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A Place.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">places</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_places</span><span class="p">(</span><span class="n">place_ids</span><span class="o">=</span><span class="p">[</span><span class="n">place_id</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">places</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PlaceNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid place.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">get_base_place</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">place_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BasePlace</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a base place.</span>
+
+<span class="sd">        !!! note</span>
+<span class="sd">            This method does not send any requests - it just generates an object.</span>
+<span class="sd">            For more information on bases, please see [Bases](/bases).</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            place_id: A Roblox place ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A BasePlace.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BasePlace</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">place_id</span><span class="o">=</span><span class="n">place_id</span><span class="p">)</span>
+
+    <span class="c1"># Assets</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_asset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">EconomyAsset</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets an asset with the passed ID.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            asset_id: A Roblox asset ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            An Asset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">asset_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+                    <span class="s2">&quot;economy&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v2/assets/</span><span class="si">{</span><span class="n">asset_id</span><span class="si">}</span><span class="s2">/details&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">BadRequest</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">AssetNotFound</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid asset.&quot;</span><span class="p">,</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">response</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+        <span class="n">asset_data</span> <span class="o">=</span> <span class="n">asset_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">EconomyAsset</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">asset_data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_base_asset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseAsset</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a base asset.</span>
+
+<span class="sd">        !!! note</span>
+<span class="sd">            This method does not send any requests - it just generates an object.</span>
+<span class="sd">            For more information on bases, please see [Bases](/bases).</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            asset_id: A Roblox asset ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A BaseAsset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">asset_id</span><span class="p">)</span>
+
+    <span class="c1"># Plugins</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_plugins</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_ids</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Plugin</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grabs a list of plugins corresponding to each ID in the list.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            plugin_ids: A list of Roblox plugin IDs.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of Plugins.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plugins_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+                <span class="s2">&quot;develop&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/plugins&quot;</span>
+            <span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;pluginIds&quot;</span><span class="p">:</span> <span class="n">plugin_ids</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">plugins_data</span> <span class="o">=</span> <span class="n">plugins_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Plugin</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">plugin_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">plugin_data</span> <span class="ow">in</span> <span class="n">plugins_data</span><span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Plugin</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grabs a plugin with the passed ID.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            plugin_id: A Roblox plugin ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A Plugin.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">plugins</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_plugins</span><span class="p">([</span><span class="n">plugin_id</span><span class="p">])</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">plugins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">PluginNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid plugin.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+
+    <span class="k">def</span> <span class="nf">get_base_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BasePlugin</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a base plugin.</span>
+
+<span class="sd">        !!! note</span>
+<span class="sd">            This method does not send any requests - it just generates an object.</span>
+<span class="sd">            For more information on bases, please see [Bases](/bases).</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            plugin_id: A Roblox plugin ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A BasePlugin.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BasePlugin</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">plugin_id</span><span class="o">=</span><span class="n">plugin_id</span><span class="p">)</span>
+
+    <span class="c1"># Badges</span>
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_badge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">badge_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Badge</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a badge with the passed ID.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            badge_id: A Roblox badge ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A Badge.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">badge_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+                    <span class="s2">&quot;badges&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/badges/</span><span class="si">{</span><span class="n">badge_id</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">except</span> <span class="n">NotFound</span> <span class="k">as</span> <span class="n">exception</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">BadgeNotFound</span><span class="p">(</span>
+                <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid badge.&quot;</span><span class="p">,</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">response</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+        <span class="n">badge_data</span> <span class="o">=</span> <span class="n">badge_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">Badge</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">badge_data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_base_badge</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">badge_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseBadge</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a base badge.</span>
+
+<span class="sd">        !!! note</span>
+<span class="sd">            This method does not send any requests - it just generates an object.</span>
+<span class="sd">            For more information on bases, please see [Bases](/bases).</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            badge_id: A Roblox badge ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A BaseBadge.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BaseBadge</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">badge_id</span><span class="o">=</span><span class="n">badge_id</span><span class="p">)</span>
+
+    <span class="c1"># Gamepasses</span>
+    <span class="k">def</span> <span class="nf">get_base_gamepass</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamepass_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseGamePass</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a base gamepass.</span>
+
+<span class="sd">        !!! note</span>
+<span class="sd">            This method does not send any requests - it just generates an object.</span>
+<span class="sd">            For more information on bases, please see [Bases](/bases).</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            gamepass_id: A Roblox gamepass ID.</span>
+
+<span class="sd">        Returns: A BaseGamePass.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BaseGamePass</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">gamepass_id</span><span class="o">=</span><span class="n">gamepass_id</span><span class="p">)</span>
+</code></pre></div>
+        </details>
 
 
 

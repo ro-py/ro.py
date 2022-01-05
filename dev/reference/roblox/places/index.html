@@ -1604,16 +1604,6 @@ Place            (<a title="roblox.bases.baseplace.BasePlace" href="../bases/bas
   </thead>
   <tbody>
       <tr>
-        <td><code>_shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The shared object, which is passed to all objects this client generates.</p></td>
-      </tr>
-      <tr>
-        <td><code>_data</code></td>
-        <td><code>dict</code></td>
-        <td><p>The data from the request.</p></td>
-      </tr>
-      <tr>
         <td><code>id</code></td>
         <td><code>int</code></td>
         <td><p>id of the place.</p></td>
@@ -1675,6 +1665,58 @@ Place            (<a title="roblox.bases.baseplace.BasePlace" href="../bases/bas
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/places.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Place</span><span class="p">(</span><span class="n">BasePlace</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a Roblox place.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: id of the place.</span>
+<span class="sd">        name: Name of the place.</span>
+<span class="sd">        description: Description of the place.</span>
+<span class="sd">        url: URL for the place.</span>
+<span class="sd">        builder: The name of the user or group who owns the place.</span>
+<span class="sd">        builder_id: The ID of the player or group who owns the place.</span>
+<span class="sd">        is_playable: Whether the authenticated user can play this game.</span>
+<span class="sd">        reason_prohibited: If the place is not playable, contains the reason why the user cannot play the game.</span>
+<span class="sd">        universe: The BaseUniverse that contains this place.</span>
+<span class="sd">        universe_root_place: The root place that the universe contains.</span>
+<span class="sd">        price: How much it costs to play the game.</span>
+<span class="sd">        image_token: Can be used to generate thumbnails for this place.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: The shared object, which is passed to all objects this client generates.</span>
+<span class="sd">            data: data to make the magic happen.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">place_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;placeId&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;placeId&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">builder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;builder&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">builder_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;builderId&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_playable</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;isPlayable&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reason_prohibited</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;reasonProhibited&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">universe</span><span class="p">:</span> <span class="n">BaseUniverse</span> <span class="o">=</span> <span class="n">BaseUniverse</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">universe_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;universeId&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">universe_root_place</span><span class="p">:</span> <span class="n">BasePlace</span> <span class="o">=</span> <span class="n">BasePlace</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">place_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;universeRootPlaceId&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">price</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_token</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;imageToken&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">&gt;&quot;</span>
+</code></pre></div>
+        </details>
 
 
 

@@ -2159,6 +2159,18 @@ AvatarThumbnailType            (<span title="enum.Enum">Enum</span>)
 
       <p>Type of avatar thumbnail.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/thumbnails.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AvatarThumbnailType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Type of avatar thumbnail.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">full_body</span> <span class="o">=</span> <span class="s2">&quot;full_body&quot;</span>
+    <span class="n">headshot</span> <span class="o">=</span> <span class="s2">&quot;headshot&quot;</span>
+    <span class="n">bust</span> <span class="o">=</span> <span class="s2">&quot;bust&quot;</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2263,16 +2275,6 @@ Thumbnail        </code>
   </thead>
   <tbody>
       <tr>
-        <td><code>_shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The shared object, which is passed to all objects this client generates.</p></td>
-      </tr>
-      <tr>
-        <td><code>_data</code></td>
-        <td><code>dict</code></td>
-        <td><p>The data from the request.</p></td>
-      </tr>
-      <tr>
         <td><code>target_id</code></td>
         <td><code>int</code></td>
         <td><p>The id of the target of the image.</p></td>
@@ -2289,6 +2291,52 @@ Thumbnail        </code>
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/thumbnails.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Thumbnail</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a Roblox thumbnail as returned by almost all endpoints on https://thumbnails.roblox.com/.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        target_id: The id of the target of the image.</span>
+<span class="sd">        state: The current state of the image.</span>
+<span class="sd">        image_url: Url of the image.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: Shared object.</span>
+<span class="sd">            data: The data from the request.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">target_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;targetId&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">:</span> <span class="n">ThumbnailState</span> <span class="o">=</span> <span class="n">ThumbnailState</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;imageUrl&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> target_id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">target_id</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="si">!r}</span><span class="s2"> &quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;image_url=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">image_url</span><span class="si">!r}</span><span class="s2">&gt;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_3d_data</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ThreeDThumbnail</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates 3D thumbnail data for this endpoint.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A ThreeDThumbnail.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">threed_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">image_url</span>
+        <span class="p">)</span>
+        <span class="n">threed_data</span> <span class="o">=</span> <span class="n">threed_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">ThreeDThumbnail</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">threed_data</span>
+        <span class="p">)</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2478,6 +2526,17 @@ ThumbnailFormat            (<span title="enum.Enum">Enum</span>)
 
       <p>Format returned by the endpoint.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/thumbnails.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ThumbnailFormat</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Format returned by the endpoint.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">png</span> <span class="o">=</span> <span class="s2">&quot;Png&quot;</span>
+    <span class="n">jpeg</span> <span class="o">=</span> <span class="s2">&quot;Jpeg&quot;</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2553,23 +2612,434 @@ ThumbnailProvider        </code>
 
       <p>The ThumbnailProvider that provides multiple functions for generating user thumbnails.</p>
 
-<p><strong>Attributes:</strong></p>
-<table>
-  <thead>
-    <tr>
-      <th>Name</th>
-      <th>Type</th>
-      <th>Description</th>
-    </tr>
-  </thead>
-  <tbody>
-      <tr>
-        <td><code>_shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The shared object, which is passed to all objects this client generates.</p></td>
-      </tr>
-  </tbody>
-</table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/thumbnails.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ThumbnailProvider</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ThumbnailProvider that provides multiple functions for generating user thumbnails.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: Shared object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_asset_thumbnails</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">assets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AssetOrAssetId</span><span class="p">],</span>
+            <span class="n">return_policy</span><span class="p">:</span> <span class="n">ThumbnailReturnPolicy</span> <span class="o">=</span> <span class="n">ThumbnailReturnPolicy</span><span class="o">.</span><span class="n">place_holder</span><span class="p">,</span>
+            <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span>
+            <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">,</span>
+            <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns asset thumbnails for the asset ID passed.</span>
+<span class="sd">        Supported sizes:  </span>
+<span class="sd">        - 30x30  </span>
+<span class="sd">        - 42x42  </span>
+<span class="sd">        - 50x50  </span>
+<span class="sd">        - 60x62  </span>
+<span class="sd">        - 75x75  </span>
+<span class="sd">        - 110x110  </span>
+<span class="sd">        - 140x140  </span>
+<span class="sd">        - 150x150  </span>
+<span class="sd">        - 160x100  </span>
+<span class="sd">        - 160x600  </span>
+<span class="sd">        - 250x250  </span>
+<span class="sd">        - 256x144  </span>
+<span class="sd">        - 300x250  </span>
+<span class="sd">        - 304x166  </span>
+<span class="sd">        - 384x216  </span>
+<span class="sd">        - 396x216  </span>
+<span class="sd">        - 420x420  </span>
+<span class="sd">        - 480x270  </span>
+<span class="sd">        - 512x512  </span>
+<span class="sd">        - 576x324  </span>
+<span class="sd">        - 700x700  </span>
+<span class="sd">        - 728x90  </span>
+<span class="sd">        - 768x432  </span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            assets: Assets you want the thumbnails of.</span>
+<span class="sd">            return_policy: How you want it returns look at enum.</span>
+<span class="sd">            size: size of the image.</span>
+<span class="sd">            image_format: Format of the image.</span>
+<span class="sd">            is_circular: if the image is a circle yes or no.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of Thumbnails.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/assets&quot;</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;assetIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">assets</span><span class="p">)),</span>
+                <span class="s2">&quot;returnPolicy&quot;</span><span class="p">:</span> <span class="n">return_policy</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
+                <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">image_format</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;isCircular&quot;</span><span class="p">:</span> <span class="n">is_circular</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
+        <span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_asset_thumbnail_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AssetOrAssetId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Thumbnail</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns a 3D asset thumbnail for the user ID passed.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            asset: Asset you want the thumbnails of.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A Thumbnail.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">thumbnail_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+                <span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/assets-thumbnail-3d&quot;</span>
+            <span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;assetId&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">asset</span><span class="p">)},</span>
+        <span class="p">)</span>
+        <span class="n">thumbnail_data</span> <span class="o">=</span> <span class="n">thumbnail_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_badge_icons</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">badges</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BadgeOrBadgeId</span><span class="p">],</span>
+            <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span>
+            <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">,</span>
+            <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns badge icons for each badge ID passed.</span>
+<span class="sd">        Supported sizes:  </span>
+<span class="sd">        - 150x150  </span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            badges: Badges you want the thumbnails of.</span>
+<span class="sd">            size: size of the image.</span>
+<span class="sd">            image_format: Format of the image.</span>
+<span class="sd">            is_circular: if the image is a circle yes or no.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of Thumbnails.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/badges/icons&quot;</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;badgeIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">badges</span><span class="p">)),</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
+                <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">image_format</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;isCircular&quot;</span><span class="p">:</span> <span class="n">is_circular</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
+        <span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_gamepass_icons</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">gamepasses</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">GamePassOrGamePassId</span><span class="p">],</span>
+            <span class="c1"># TODO Make size enum</span>
+            <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span>
+            <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">,</span>
+            <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns gamepass icons for each gamepass ID passed.</span>
+<span class="sd">        Supported sizes:  </span>
+<span class="sd">        - 150x150  </span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            gamepasses: Gamepasses you want the thumbnails of.</span>
+<span class="sd">            size: size of the image.</span>
+<span class="sd">            image_format: Format of the image.</span>
+<span class="sd">            is_circular: If the image is a circle yes or no.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of Thumbnails.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/game-passes&quot;</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;gamePassIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">gamepasses</span><span class="p">)),</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
+                <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">image_format</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;isCircular&quot;</span><span class="p">:</span> <span class="n">is_circular</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
+        <span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_universe_icons</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">universes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UniverseOrUniverseId</span><span class="p">],</span>
+            <span class="n">return_policy</span><span class="p">:</span> <span class="n">ThumbnailReturnPolicy</span> <span class="o">=</span> <span class="n">ThumbnailReturnPolicy</span><span class="o">.</span><span class="n">place_holder</span><span class="p">,</span>
+            <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+            <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">,</span>
+            <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns universe icons for each universe ID passed.</span>
+<span class="sd">        Supported sizes:  </span>
+<span class="sd">        - 50x50  </span>
+<span class="sd">        - 128x128  </span>
+<span class="sd">        - 150x150  </span>
+<span class="sd">        - 256x256  </span>
+<span class="sd">        - 512x512  </span>
+<span class="sd">        - 768x432  </span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            universes: Universes you want the thumbnails of.</span>
+<span class="sd">            return_policy: How you want it returns look at enum.</span>
+<span class="sd">            size: size of the image.</span>
+<span class="sd">            image_format: Format of the image.</span>
+<span class="sd">            is_circular: If the image is a circle yes or no.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of Thumbnails.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/games/icons&quot;</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;universeIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">universes</span><span class="p">)),</span>
+                <span class="s2">&quot;returnPolicy&quot;</span><span class="p">:</span> <span class="n">return_policy</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
+                <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">image_format</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;isCircular&quot;</span><span class="p">:</span> <span class="n">is_circular</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
+        <span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_universe_thumbnails</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">universes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UniverseOrUniverseId</span><span class="p">],</span>
+            <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="p">(</span><span class="mi">768</span><span class="p">,</span> <span class="mi">432</span><span class="p">),</span>
+            <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">,</span>
+            <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">count_per_universe</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">defaults</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">UniverseThumbnails</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns universe thumbnails for each universe ID passed.</span>
+<span class="sd">        Supported sizes:  </span>
+<span class="sd">        - 768x432  </span>
+<span class="sd">        - 576x324  </span>
+<span class="sd">        - 480x270  </span>
+<span class="sd">        - 384x216  </span>
+<span class="sd">        - 256x144  </span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            universes: Universes you want the thumbnails of.</span>
+<span class="sd">            size: size of the image.</span>
+<span class="sd">            image_format: Format of the image.</span>
+<span class="sd">            count_per_universe: Unknown.</span>
+<span class="sd">            is_circular: If the image is a circle yes or no.</span>
+<span class="sd">            defaults: Whether to return default thumbnails.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of Thumbnails.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+                <span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/games/multiget/thumbnails&quot;</span>
+            <span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;universeIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">universes</span><span class="p">)),</span>
+                <span class="s2">&quot;countPerUniverse&quot;</span><span class="p">:</span> <span class="n">count_per_universe</span><span class="p">,</span>
+                <span class="s2">&quot;defaults&quot;</span><span class="p">:</span> <span class="n">defaults</span><span class="p">,</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
+                <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">image_format</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;isCircular&quot;</span><span class="p">:</span> <span class="n">is_circular</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">UniverseThumbnails</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
+        <span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_group_icons</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">groups</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">GroupOrGroupId</span><span class="p">],</span>
+            <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span>
+            <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">,</span>
+            <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns icons for each group ID passed.</span>
+<span class="sd">        Supported sizes:  </span>
+<span class="sd">        - 150x150  </span>
+<span class="sd">        - 420x420  </span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            groups: Groups you want the thumbnails of.</span>
+<span class="sd">            size: size of the image.</span>
+<span class="sd">            image_format: Format of the image.</span>
+<span class="sd">            is_circular: If the image is a circle yes or no.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of Thumbnails.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/groups/icons&quot;</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;groupIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">groups</span><span class="p">)),</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
+                <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">image_format</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;isCircular&quot;</span><span class="p">:</span> <span class="n">is_circular</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
+        <span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_place_icons</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">places</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PlaceOrPlaceId</span><span class="p">],</span>
+            <span class="n">return_policy</span><span class="p">:</span> <span class="n">ThumbnailReturnPolicy</span> <span class="o">=</span> <span class="n">ThumbnailReturnPolicy</span><span class="o">.</span><span class="n">place_holder</span><span class="p">,</span>
+            <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+            <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">,</span>
+            <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns icons for each place ID passed.</span>
+<span class="sd">        Supported sizes:  </span>
+<span class="sd">        - 50x50  </span>
+<span class="sd">        - 128x128  </span>
+<span class="sd">        - 150x150  </span>
+<span class="sd">        - 256x256  </span>
+<span class="sd">        - 512x512  </span>
+<span class="sd">        - 768x432  </span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            places: Places you want the thumbnails of.</span>
+<span class="sd">            return_policy: How you want it returns look at enum.</span>
+<span class="sd">            size: size of the image.</span>
+<span class="sd">            image_format: Format of the image.</span>
+<span class="sd">            is_circular: if the image is a circle yes or no.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A List of Thumbnails.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/places/gameicons&quot;</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;placeIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">places</span><span class="p">)),</span>
+                <span class="s2">&quot;returnPolicy&quot;</span><span class="p">:</span> <span class="n">return_policy</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
+                <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">image_format</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;isCircular&quot;</span><span class="p">:</span> <span class="n">is_circular</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
+        <span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_user_avatar_thumbnails</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">users</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UserOrUserId</span><span class="p">],</span>
+            <span class="nb">type</span><span class="p">:</span> <span class="n">AvatarThumbnailType</span> <span class="o">=</span> <span class="n">AvatarThumbnailType</span><span class="o">.</span><span class="n">full_body</span><span class="p">,</span>
+            <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">,</span>
+            <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns avatar thumbnails for each user ID passed.</span>
+<span class="sd">        The valid sizes depend on the `type` parameter.</span>
+
+<span class="sd">        | Size | full_body | headshot | bust |</span>
+<span class="sd">        |---|---|---|---|</span>
+<span class="sd">        | 30x30 | ✔️ | ❌ | ❌ |</span>
+<span class="sd">        | 48x48 | ✔️ | ✔️ | ✔️ |</span>
+<span class="sd">        | 50x50 | ❌ | ✔️ | ✔️ |</span>
+<span class="sd">        | 60x60 | ✔️ | ✔️ | ✔️ |</span>
+<span class="sd">        | 75x75 | ✔️ | ✔️ | ✔️ |</span>
+<span class="sd">        | 100x100 | ✔️ | ✔️ | ✔️ |</span>
+<span class="sd">        | 110x110 | ✔️ | ✔️ | ❌ |</span>
+<span class="sd">        | 140x140 | ✔️ | ❌ | ❌ |</span>
+<span class="sd">        | 150x150 | ✔️ | ✔️ | ✔️ |</span>
+<span class="sd">        | 150x200 | ✔️ | ❌ | ❌ |</span>
+<span class="sd">        | 180x180 | ✔️ | ✔️ | ✔️ |</span>
+<span class="sd">        | 250x250 | ✔️ | ❌ | ❌ |</span>
+<span class="sd">        | 352x352 | ✔️ | ✔️ | ✔️ |</span>
+<span class="sd">        | 420x420 | ✔️ | ✔️ | ✔️ |</span>
+<span class="sd">        | 720x720 | ✔️ | ❌ | ❌ |</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            users: Id of the users you want the thumbnails of.</span>
+<span class="sd">            type: Type of avatar thumbnail you want look at enum.</span>
+<span class="sd">            size: size of the image.</span>
+<span class="sd">            image_format: Format of the image.</span>
+<span class="sd">            is_circular: If the image is a circle yes or no.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of Thumbnails.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">uri</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">AvatarThumbnailType</span><span class="o">.</span><span class="n">full_body</span><span class="p">:</span>
+            <span class="n">uri</span> <span class="o">=</span> <span class="s2">&quot;avatar&quot;</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">size</span> <span class="ow">or</span> <span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">AvatarThumbnailType</span><span class="o">.</span><span class="n">bust</span><span class="p">:</span>
+            <span class="n">uri</span> <span class="o">=</span> <span class="s2">&quot;avatar-bust&quot;</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">size</span> <span class="ow">or</span> <span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">48</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">AvatarThumbnailType</span><span class="o">.</span><span class="n">headshot</span><span class="p">:</span>
+            <span class="n">uri</span> <span class="o">=</span> <span class="s2">&quot;avatar-headshot&quot;</span>
+            <span class="n">size</span> <span class="o">=</span> <span class="n">size</span> <span class="ow">or</span> <span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">48</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Avatar type is invalid.&quot;</span><span class="p">)</span>
+
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;userIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">users</span><span class="p">)),</span>
+                <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
+                <span class="s2">&quot;format&quot;</span><span class="p">:</span> <span class="n">image_format</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;isCircular&quot;</span><span class="p">:</span> <span class="n">is_circular</span><span class="p">,</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+
+        <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
+        <span class="p">]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_user_avatar_thumbnail_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserOrUserId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Thumbnail</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the user&#39;s thumbnail in 3d.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            user: User you want the 3d thumbnail of.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A Thumbnail.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">thumbnail_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/users/avatar-3d&quot;</span><span class="p">),</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;userId&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
+            <span class="p">},</span>
+        <span class="p">)</span>
+        <span class="n">thumbnail_data</span> <span class="o">=</span> <span class="n">thumbnail_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -4008,6 +4478,18 @@ ThumbnailReturnPolicy            (<span title="enum.Enum">Enum</span>)
 
       <p>The return policy for place/universe thumbnails.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/thumbnails.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ThumbnailReturnPolicy</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The return policy for place/universe thumbnails.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">place_holder</span> <span class="o">=</span> <span class="s2">&quot;PlaceHolder&quot;</span>
+    <span class="n">auto_generated</span> <span class="o">=</span> <span class="s2">&quot;AutoGenerated&quot;</span>
+    <span class="n">force_auto_generated</span> <span class="o">=</span> <span class="s2">&quot;ForceAutoGenerated&quot;</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -4102,6 +4584,21 @@ ThumbnailState            (<span title="enum.Enum">Enum</span>)
 
       <p>The current state of the thumbnail.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/thumbnails.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ThumbnailState</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The current state of the thumbnail.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">completed</span> <span class="o">=</span> <span class="s2">&quot;Completed&quot;</span>
+    <span class="n">in_review</span> <span class="o">=</span> <span class="s2">&quot;InReview&quot;</span>
+    <span class="n">pending</span> <span class="o">=</span> <span class="s2">&quot;Pending&quot;</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="s2">&quot;Error&quot;</span>
+    <span class="n">moderated</span> <span class="o">=</span> <span class="s2">&quot;Moderated&quot;</span>
+    <span class="n">blocked</span> <span class="o">=</span> <span class="s2">&quot;Blocked&quot;</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -4260,16 +4757,6 @@ UniverseThumbnails        </code>
   </thead>
   <tbody>
       <tr>
-        <td><code>_shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The shared object, which is passed to all objects this client generates.</p></td>
-      </tr>
-      <tr>
-        <td><code>_data</code></td>
-        <td><code>dict</code></td>
-        <td><p>The data from the request.</p></td>
-      </tr>
-      <tr>
         <td><code>universe_id</code></td>
         <td><code>int</code></td>
         <td><p>The id of the target of the image.</p></td>
@@ -4286,6 +4773,35 @@ UniverseThumbnails        </code>
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/thumbnails.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UniverseThumbnails</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a universe&#39;s thumbnails as returned by https://thumbnails.roblox.com/v1/games/multiget/thumbnails.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        universe_id: The id of the target of the image.</span>
+<span class="sd">        error: The errors you got.</span>
+<span class="sd">        thumbnails: List of thumbnails.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: Shared object.</span>
+<span class="sd">            data: The data from the request.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">data</span>
+        <span class="c1"># todo add base universe maby</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">universe_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;universeId&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thumbnails</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+</code></pre></div>
+        </details>
 
 
 

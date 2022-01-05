@@ -1949,6 +1949,54 @@ IteratorItems            (<span title="collections.abc.AsyncIterator">AsyncItera
 
       <p>Represents the items inside of an iterator.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/iterators.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">IteratorItems</span><span class="p">(</span><span class="n">AsyncIterator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents the items inside of an iterator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterator</span><span class="p">:</span> <span class="n">RobloxIterator</span><span class="p">,</span> <span class="n">max_items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iterator</span> <span class="o">=</span> <span class="n">iterator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_position</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_global_position</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_max_items</span> <span class="o">=</span> <span class="n">max_items</span>
+
+    <span class="k">def</span> <span class="fm">__aiter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__anext__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">):</span>
+            <span class="c1"># we are at the end of our current page of items. start again with a new page</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># get new items</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_items</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iterator</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="k">except</span> <span class="n">NoMoreItems</span><span class="p">:</span>
+                <span class="c1"># if there aren&#39;t any more items, reset and break the loop</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_global_position</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_items</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">raise</span> <span class="ne">StopAsyncIteration</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_items</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_global_position</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_max_items</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopAsyncIteration</span>
+
+        <span class="c1"># if we got here we know there are more items</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_position</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="c1"># edge case for group roles</span>
+            <span class="k">raise</span> <span class="ne">StopAsyncIteration</span>
+        <span class="c1"># we advance the iterator by one for the next iteration</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_position</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_global_position</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="n">item</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2105,6 +2153,27 @@ IteratorPages            (<span title="collections.abc.AsyncIterator">AsyncItera
 
       <p>Represents the pages inside of an iterator.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/iterators.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">IteratorPages</span><span class="p">(</span><span class="n">AsyncIterator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents the pages inside of an iterator.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">iterator</span><span class="p">:</span> <span class="n">RobloxIterator</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iterator</span> <span class="o">=</span> <span class="n">iterator</span>
+
+    <span class="k">def</span> <span class="fm">__aiter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="fm">__anext__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">page</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iterator</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">page</span>
+        <span class="k">except</span> <span class="n">NoMoreItems</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopAsyncIteration</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2303,6 +2372,115 @@ For more information about how cursor-based pagination works, see <a href="https
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/iterators.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">PageIterator</span><span class="p">(</span><span class="n">RobloxIterator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a cursor-based, paginated Roblox object. Learn more about iterators in the pagination tutorial:</span>
+<span class="sd">    [Pagination](/tutorial/pagination)</span>
+<span class="sd">    For more information about how cursor-based pagination works, see https://robloxapi.wiki/wiki/Pagination.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        _shared: The ClientSharedObject.</span>
+<span class="sd">        url: The endpoint to hit for new page data.</span>
+<span class="sd">        sort_order: The sort order to use for returned data.</span>
+<span class="sd">        page_size: How much data should be returned per-page.</span>
+<span class="sd">        extra_parameters: Extra parameters to pass to the endpoint.</span>
+<span class="sd">        handler: A callable object to use to convert raw endpoint data to parsed objects.</span>
+<span class="sd">        handler_kwargs: Extra keyword arguments to pass to the handler.</span>
+<span class="sd">        next_cursor: Cursor to use to advance to the next page.</span>
+<span class="sd">        previous_cursor: Cursor to use to advance to the previous page.</span>
+<span class="sd">        iterator_position: What position in the iterator_items the iterator is currently at.</span>
+<span class="sd">        iterator_items: List of current items the iterator is working on.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span>
+            <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">sort_order</span><span class="p">:</span> <span class="n">SortOrder</span> <span class="o">=</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">Ascending</span><span class="p">,</span>
+            <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">extra_parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">handler</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">handler_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            shared: The ClientSharedObject.</span>
+<span class="sd">            url: The endpoint to hit for new page data.</span>
+<span class="sd">            sort_order: The sort order to use for returned data.</span>
+<span class="sd">            page_size: How much data should be returned per-page.</span>
+<span class="sd">            max_items: The maximum amount of items to return when this iterator is looped through.</span>
+<span class="sd">            extra_parameters: Extra parameters to pass to the endpoint.</span>
+<span class="sd">            handler: A callable object to use to convert raw endpoint data to parsed objects.</span>
+<span class="sd">            handler_kwargs: Extra keyword arguments to pass to the handler.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+
+        <span class="c1"># store some basic arguments in the object</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sort_order</span><span class="p">:</span> <span class="n">SortOrder</span> <span class="o">=</span> <span class="n">sort_order</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">page_size</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra_parameters</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">extra_parameters</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">handler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">handler_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="c1"># cursors to use for next, previous</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_cursor</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="c1"># iter values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iterator_position</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iterator_items</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_started</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Advances the iterator to the next page.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_started</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_cursor</span><span class="p">:</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            If we just started and there is no cursor, this is the last page, because we can go back but not forward.</span>
+<span class="sd">            We should raise an exception here.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="k">raise</span> <span class="n">NoMoreItems</span><span class="p">(</span><span class="s2">&quot;No more items.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_started</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">next_started</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">page_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;cursor&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_cursor</span><span class="p">,</span>
+                <span class="s2">&quot;limit&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span><span class="p">,</span>
+                <span class="s2">&quot;sortOrder&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">sort_order</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">extra_parameters</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">page_data</span> <span class="o">=</span> <span class="n">page_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="c1"># fill in cursors</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_cursor</span> <span class="o">=</span> <span class="n">page_data</span><span class="p">[</span><span class="s2">&quot;nextPageCursor&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">previous_cursor</span> <span class="o">=</span> <span class="n">page_data</span><span class="p">[</span><span class="s2">&quot;previousPageCursor&quot;</span><span class="p">]</span>
+
+        <span class="n">data</span> <span class="o">=</span> <span class="n">page_data</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">(</span>
+                    <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">item_data</span><span class="p">,</span>
+                    <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">handler_kwargs</span>
+                <span class="p">)</span> <span class="k">for</span> <span class="n">item_data</span> <span class="ow">in</span> <span class="n">data</span>
+            <span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2583,6 +2761,76 @@ PageNumberIterator            (<a title="roblox.utilities.iterators.RobloxIterat
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/iterators.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">PageNumberIterator</span><span class="p">(</span><span class="n">RobloxIterator</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents an iterator that is advanced with page numbers and sizes, like those seen on chat.roblox.com.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        url: The endpoint to hit for new page data.</span>
+<span class="sd">        page_number: The current page number.</span>
+<span class="sd">        page_size: The size of each page.</span>
+<span class="sd">        extra_parameters: Extra parameters to pass to the endpoint.</span>
+<span class="sd">        handler: A callable object to use to convert raw endpoint data to parsed objects.</span>
+<span class="sd">        handler_kwargs: Extra keyword arguments to pass to the handler.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span>
+            <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="n">extra_parameters</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">handler</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Callable</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">handler_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">page_size</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">extra_parameters</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">extra_parameters</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">handler</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">handler_kwargs</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">handler_kwargs</span> <span class="ow">or</span> <span class="p">{}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">iterator_position</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">iterator_items</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Advances the iterator to the next page.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">page_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+            <span class="n">params</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;pageNumber&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span><span class="p">,</span>
+                <span class="s2">&quot;pageSize&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">page_size</span><span class="p">,</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">extra_parameters</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">page_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NoMoreItems</span><span class="p">(</span><span class="s2">&quot;No more items.&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">page_number</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">handler</span><span class="p">(</span>
+                    <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+                    <span class="n">data</span><span class="o">=</span><span class="n">item_data</span><span class="p">,</span>
+                    <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">handler_kwargs</span>
+                <span class="p">)</span> <span class="k">for</span> <span class="n">item_data</span> <span class="ow">in</span> <span class="n">data</span>
+            <span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">data</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2727,6 +2975,68 @@ RobloxIterator        </code>
 
       <p>Represents a basic iterator which all iterators should implement.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/iterators.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RobloxIterator</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a basic iterator which all iterators should implement.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_items</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">max_items</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Moves to the next page and returns that page&#39;s data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">flatten</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Flattens the data into a list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">max_items</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">max_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_items</span>
+
+        <span class="n">items</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">new_items</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+                <span class="n">items</span> <span class="o">+=</span> <span class="n">new_items</span>
+            <span class="k">except</span> <span class="n">NoMoreItems</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">max_items</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">items</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">max_items</span><span class="p">:</span>
+                <span class="k">break</span>
+
+        <span class="k">return</span> <span class="n">items</span><span class="p">[:</span><span class="n">max_items</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__aiter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">IteratorItems</span><span class="p">(</span>
+            <span class="n">iterator</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">max_items</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">max_items</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IteratorItems</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an AsyncIterable containing each iterator item.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">max_items</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">max_items</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_items</span>
+        <span class="k">return</span> <span class="n">IteratorItems</span><span class="p">(</span>
+            <span class="n">iterator</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span>
+            <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">pages</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">IteratorPages</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns an AsyncIterable containing each iterator page. Each page is a list of items.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">IteratorPages</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2969,6 +3279,17 @@ SortOrder            (<span title="enum.Enum">Enum</span>)
 
       <p>Order in which page data should load in.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/iterators.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">SortOrder</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Order in which page data should load in.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">Ascending</span> <span class="o">=</span> <span class="s2">&quot;Asc&quot;</span>
+    <span class="n">Descending</span> <span class="o">=</span> <span class="s2">&quot;Desc&quot;</span>
+</code></pre></div>
+        </details>
 
 
 

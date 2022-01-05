@@ -1632,6 +1632,40 @@ ClientSharedObject        </code>
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/shared.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ClientSharedObject</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This object is shared between the client and all objects it generates.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        client: The main client.</span>
+<span class="sd">        requests: The requests object.</span>
+<span class="sd">        url_generator: The URL generator object.</span>
+<span class="sd">        presence_provider: A provider for presence information.</span>
+<span class="sd">        thumbnail_provider: A provider for thumbnail information.</span>
+<span class="sd">        delivery_provider: A provider for delivery information.</span>
+<span class="sd">        chat_provider: A provider for chat information.</span>
+<span class="sd">        account_provider:  A provider for account information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">requests</span><span class="p">:</span> <span class="n">Requests</span><span class="p">,</span> <span class="n">url_generator</span><span class="p">:</span> <span class="n">URLGenerator</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            client: Method used for the request.</span>
+<span class="sd">            requests: Everything and nothing.</span>
+<span class="sd">            url_generator: Everything and nothing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span> <span class="n">Requests</span> <span class="o">=</span> <span class="n">requests</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url_generator</span><span class="p">:</span> <span class="n">URLGenerator</span> <span class="o">=</span> <span class="n">url_generator</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">presence_provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PresenceProvider</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">thumbnail_provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ThumbnailProvider</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delivery_provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">DeliveryProvider</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chat_provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ChatProvider</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">account_provider</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">AccountProvider</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+</code></pre></div>
+        </details>
 
 
 

@@ -1736,6 +1736,33 @@ For more info, see <a href="https://robloxapi.wiki/wiki/3D_Thumbnails">https://r
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/threedthumbnails.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ThreeDThumbnail</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a user&#39;s 3D Thumbnail data.</span>
+<span class="sd">    For more info, see https://robloxapi.wiki/wiki/3D_Thumbnails.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        mtl: A CDN hash pointing to the MTL data.</span>
+<span class="sd">        obj: A CDN hash pointing to the OBJ data.</span>
+<span class="sd">        textures: A list of CDN hashes pointing to PNG texture data.</span>
+<span class="sd">        camera: The camera object.</span>
+<span class="sd">        aabb: The AABB object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mtl</span><span class="p">:</span> <span class="n">ThumbnailCDNHash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">delivery_provider</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mtl&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">:</span> <span class="n">ThumbnailCDNHash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">delivery_provider</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">textures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ThumbnailCDNHash</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">delivery_provider</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">cdn_hash</span><span class="p">)</span> <span class="k">for</span> <span class="n">cdn_hash</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;textures&quot;</span><span class="p">]</span>
+        <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="p">:</span> <span class="n">ThreeDThumbnailCamera</span> <span class="o">=</span> <span class="n">ThreeDThumbnailCamera</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;camera&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">aabb</span><span class="p">:</span> <span class="n">ThreeDThumbnailAABB</span> <span class="o">=</span> <span class="n">ThreeDThumbnailAABB</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;aabb&quot;</span><span class="p">])</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -1836,6 +1863,26 @@ Roblox uses this data to calculate the maximum render distance used when renderi
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/threedthumbnails.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ThreeDThumbnailAABB</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents AABB data in a 3D thumbnail.</span>
+<span class="sd">    Roblox uses this data to calculate the maximum render distance used when rendering 3D thumbnails.</span>
+<span class="sd">    ```js</span>
+<span class="sd">    THREE.Vector3(json.aabb.max.x, json.aabb.max.y, json.aabb.max.z).length() * 4;</span>
+<span class="sd">    ```</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        min: The minimum render position.</span>
+<span class="sd">        max: The maximum render position.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">min</span><span class="p">:</span> <span class="n">ThreeDThumbnailVector3</span> <span class="o">=</span> <span class="n">ThreeDThumbnailVector3</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max</span><span class="p">:</span> <span class="n">ThreeDThumbnailVector3</span> <span class="o">=</span> <span class="n">ThreeDThumbnailVector3</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">])</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -1931,6 +1978,24 @@ ThreeDThumbnailCamera        </code>
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/threedthumbnails.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ThreeDThumbnailCamera</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a camera in a 3D thumbnail.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        fov: The camera&#39;s field of view.</span>
+<span class="sd">        position: The camera&#39;s position.</span>
+<span class="sd">        direction: The camera&#39;s direction.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fov</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;fov&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">position</span><span class="p">:</span> <span class="n">ThreeDThumbnailVector3</span> <span class="o">=</span> <span class="n">ThreeDThumbnailVector3</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">:</span> <span class="n">ThreeDThumbnailVector3</span> <span class="o">=</span> <span class="n">ThreeDThumbnailVector3</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;direction&quot;</span><span class="p">])</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2027,6 +2092,24 @@ ThreeDThumbnailVector3        </code>
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/threedthumbnails.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ThreeDThumbnailVector3</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a Vector3 used in a 3D thumbnail.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        x: The X component of the vector.</span>
+<span class="sd">        y: The Y component of the vector.</span>
+<span class="sd">        z: The Z component of the vector.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">x</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">y</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">z</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;z&quot;</span><span class="p">]</span>
+</code></pre></div>
+        </details>
 
 
 

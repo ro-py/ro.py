@@ -1719,6 +1719,54 @@ Badge            (<a title="roblox.bases.basebadge.BaseBadge" href="../bases/bas
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/badges.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Badge</span><span class="p">(</span><span class="n">BaseBadge</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a badge from the API.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: The badge Id.</span>
+<span class="sd">        name: The name of the badge.</span>
+<span class="sd">        description: The badge description.</span>
+<span class="sd">        display_name: The localized name of the badge.</span>
+<span class="sd">        display_description: The localized badge description.</span>
+<span class="sd">        enabled: Whether or not the badge is enabled.</span>
+<span class="sd">        icon: The badge icon.</span>
+<span class="sd">        display_icon: The localized badge icon.</span>
+<span class="sd">        created: When the badge was created.</span>
+<span class="sd">        updated: When the badge was updated.</span>
+<span class="sd">        statistics: Badge award statistics.</span>
+<span class="sd">        awarding_universe: The universe the badge is being awarded from.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: The ClientSharedObject to be used when getting information on badges.</span>
+<span class="sd">            data: The data from the endpoint.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">badge_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;displayName&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;displayDescription&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">icon</span><span class="p">:</span> <span class="n">BaseAsset</span> <span class="o">=</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;iconImageId&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_icon</span><span class="p">:</span> <span class="n">BaseAsset</span> <span class="o">=</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;displayIconImageId&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;created&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updated</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;updated&quot;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">statistics</span><span class="p">:</span> <span class="n">BadgeStatistics</span> <span class="o">=</span> <span class="n">BadgeStatistics</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;statistics&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">awarding_universe</span><span class="p">:</span> <span class="n">PartialUniverse</span> <span class="o">=</span> <span class="n">PartialUniverse</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;awardingUniverse&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">&gt;&quot;</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -1885,6 +1933,29 @@ BadgeStatistics        </code>
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/badges.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">BadgeStatistics</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        past_day_awarded_count: How many instances of this badge were awarded in the last day.</span>
+<span class="sd">        awarded_count: How many instances of this badge have been awarded.</span>
+<span class="sd">        win_rate_percentage: Percentage of players who have joined the parent universe have been awarded this badge.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            data: The raw input data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">past_day_awarded_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;pastDayAwardedCount&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">awarded_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;awardedCount&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">win_rate_percentage</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;winRatePercentage&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> awarded_count=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">awarded_count</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+</code></pre></div>
+        </details>
 
 
 

@@ -1603,11 +1603,6 @@ Shout        </code>
   </thead>
   <tbody>
       <tr>
-        <td><code>_shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The shared object, which is passed to all objects this client generates.</p></td>
-      </tr>
-      <tr>
         <td><code>body</code></td>
         <td><code>str</code></td>
         <td><p>The text of the shout.</p></td>
@@ -1629,6 +1624,44 @@ Shout        </code>
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/shout.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Shout</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a Group Shout.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        body: The text of the shout.</span>
+<span class="sd">        created: When the shout was created.</span>
+<span class="sd">        updated: When the shout was updated.</span>
+<span class="sd">        poster: Who posted the shout.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span>
+            <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: Shared object.</span>
+<span class="sd">            data: The data from the request.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;created&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updated</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;updated&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">poster</span><span class="p">:</span> <span class="n">PartialUser</span> <span class="o">=</span> <span class="n">PartialUser</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;poster&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> created=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="si">}</span><span class="s2"> updated=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">updated</span><span class="si">}</span><span class="s2"> body=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="si">!r}</span><span class="s2"> &quot;</span> \
+               <span class="sa">f</span><span class="s2">&quot;poster=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">poster</span><span class="si">!r}</span><span class="s2">&gt;&quot;</span>
+</code></pre></div>
+        </details>
 
 
 

@@ -1969,6 +1969,330 @@ BaseGroup            (<a title="roblox.bases.baseitem.BaseItem" href="../baseite
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/bases/basegroup.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">BaseGroup</span><span class="p">(</span><span class="n">BaseItem</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a Roblox group ID.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        _shared: The ClientSharedObject.</span>
+<span class="sd">        _requests: The requests object.</span>
+<span class="sd">        id: The group&#39;s ID.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">group_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">            shared: The ClientSharedObject.</span>
+<span class="sd">            group_id: The group&#39;s ID.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span> <span class="o">=</span> <span class="n">shared</span><span class="o">.</span><span class="n">requests</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">group_id</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_settings</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">GroupSettings</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets all the settings of the selected group</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The group&#39;s settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">settings_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/settings&quot;</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">settings_data</span> <span class="o">=</span> <span class="n">settings_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">GroupSettings</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">settings_data</span>
+        <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_settings</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">is_approval_required</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">is_builders_club_required</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">are_enemies_allowed</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">are_group_funds_visible</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">are_group_games_visible</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">bool</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates this group&#39;s settings. Passing `None` will default this setting to the value already present in the</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            is_approval_required: Whether approval is required via a join request before joining this group.</span>
+<span class="sd">            is_builders_club_required: Whether users are required to have a Premium subscription to join this group.</span>
+<span class="sd">            are_enemies_allowed: Whether this group can send and recieve enemy requests.</span>
+<span class="sd">            are_group_funds_visible: Whether the group fund balance is visible to external users.</span>
+<span class="sd">            are_group_games_visible: Whether group games are visible to external users.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/settings&quot;</span><span class="p">),</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;isApprovalRequired&quot;</span><span class="p">:</span> <span class="n">is_approval_required</span><span class="p">,</span>
+                <span class="s2">&quot;isBuildersClubRequired&quot;</span><span class="p">:</span> <span class="n">is_builders_club_required</span><span class="p">,</span>
+                <span class="s2">&quot;areEnemiesAllowed&quot;</span><span class="p">:</span> <span class="n">are_enemies_allowed</span><span class="p">,</span>
+                <span class="s2">&quot;areGroupFundsVisible&quot;</span><span class="p">:</span> <span class="n">are_group_funds_visible</span><span class="p">,</span>
+                <span class="s2">&quot;areGroupGamesVisible&quot;</span><span class="p">:</span> <span class="n">are_group_games_visible</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_members</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">:</span> <span class="n">SortOrder</span> <span class="o">=</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">Ascending</span><span class="p">,</span>
+                    <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PageIterator</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets all members of a group.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            page_size: How many members should be returned for each page.</span>
+<span class="sd">            sort_order: Order in which data should be grabbed.</span>
+<span class="sd">            max_items: The maximum items to return when looping through this object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A PageIterator containing the group&#39;s members.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/users&quot;</span><span class="p">),</span>
+            <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
+            <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
+            <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
+            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Member</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_member</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">BaseUser</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">MemberRelationship</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a member of a group.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            user: A BaseUser or a User ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A member.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">MemberRelationship</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+            <span class="n">group</span><span class="o">=</span><span class="bp">self</span>
+        <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_member_by_username</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">exclude_banned_users</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MemberRelationship</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a member of a group by username.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            username: A Roblox username.</span>
+<span class="sd">            exclude_banned_users: Whether to exclude banned users from the data.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A member.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">user</span><span class="p">:</span> <span class="n">RequestedUsernamePartialUser</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get_user_by_username</span><span class="p">(</span>
+            <span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">,</span>
+            <span class="n">exclude_banned_users</span><span class="o">=</span><span class="n">exclude_banned_users</span><span class="p">,</span>
+            <span class="n">expand</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">MemberRelationship</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">user</span><span class="o">=</span><span class="n">user</span><span class="p">,</span>
+            <span class="n">group</span><span class="o">=</span><span class="bp">self</span>
+        <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_roles</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Role</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets all roles of the group.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of the group&#39;s roles.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">roles_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/roles&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">roles_data</span> <span class="o">=</span> <span class="n">roles_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Role</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">role_data</span><span class="p">,</span>
+            <span class="n">group</span><span class="o">=</span><span class="bp">self</span>
+        <span class="p">)</span> <span class="k">for</span> <span class="n">role_data</span> <span class="ow">in</span> <span class="n">roles_data</span><span class="p">[</span><span class="s2">&quot;roles&quot;</span><span class="p">]]</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">set_role</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserOrUserId</span><span class="p">,</span> <span class="n">role</span><span class="p">:</span> <span class="n">RoleOrRoleId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Sets a users role.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            user: The user who&#39;s rank will be changed.</span>
+<span class="sd">            role: The new role.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/users/</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;roleId&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">role</span><span class="p">)</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">set_rank</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserOrUserId</span><span class="p">,</span> <span class="n">rank</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Changes a member&#39;s role using a rank number.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            user: The user who&#39;s rank will be changed.</span>
+<span class="sd">            rank: The rank number to change to. (1-255)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">roles</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_roles</span><span class="p">()</span>
+
+        <span class="n">role</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">role</span> <span class="k">for</span> <span class="n">role</span> <span class="ow">in</span> <span class="n">roles</span> <span class="k">if</span> <span class="n">role</span><span class="o">.</span><span class="n">rank</span> <span class="o">==</span> <span class="n">rank</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">role</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidRole</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Role with rank number </span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2"> does not exist.&quot;</span><span class="p">)</span>
+
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_role</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">),</span> <span class="n">role</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">kick_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserOrUserId</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Kicks a user from a group.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            user: The user who will be kicked from the group.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/users/</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_wall_posts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">:</span> <span class="n">SortOrder</span> <span class="o">=</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">Ascending</span><span class="p">,</span>
+                       <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PageIterator</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets all members of a group.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            page_size: How many members should be returned for each page.</span>
+<span class="sd">            sort_order: Order in which data should be grabbed.</span>
+<span class="sd">            max_items: The maximum items to return when looping through this object.</span>
+
+<span class="sd">        Returns: A PageIterator.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v2/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/wall/posts&quot;</span><span class="p">),</span>
+            <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
+            <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
+            <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
+            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">WallPost</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_wall_post</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">post_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">WallPostRelationship</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a wall post from an ID.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            post_id: A post ID.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A basic wall post relationship.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">WallPostRelationship</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">post_id</span><span class="o">=</span><span class="n">post_id</span><span class="p">,</span>
+            <span class="n">group</span><span class="o">=</span><span class="bp">self</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_join_requests</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">:</span> <span class="n">SortOrder</span> <span class="o">=</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">Ascending</span><span class="p">,</span>
+                          <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PageIterator</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets all of this group&#39;s join requests.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            page_size: How many members should be returned for each page.</span>
+<span class="sd">            sort_order: Order in which data should be grabbed.</span>
+<span class="sd">            max_items: The maximum items to return when looping through this object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A PageIterator containing group join requests.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/join-requests&quot;</span><span class="p">),</span>
+            <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
+            <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
+            <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
+            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">JoinRequest</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_join_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">BaseUser</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">JoinRequest</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a specific user&#39;s join request to this group.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The user&#39;s join request, or None if they have no active join request.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">join_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/join-requests/users/</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">join_data</span> <span class="o">=</span> <span class="n">join_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">join_data</span> <span class="ow">and</span> <span class="n">JoinRequest</span><span class="p">(</span>
+
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">join_data</span><span class="p">,</span>
+            <span class="n">group</span><span class="o">=</span><span class="bp">self</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="kc">None</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">accept_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">BaseUser</span><span class="p">,</span> <span class="n">JoinRequest</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accepts a user&#39;s request to join this group.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            user: The user to accept into this group.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/join-requests/users/</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">decline_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="n">BaseUser</span><span class="p">,</span> <span class="n">JoinRequest</span><span class="p">]):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Declines a user&#39;s request to join this group.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            user: The user to decline from this group.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/join-requests/users/</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">update_shout</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Shout</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Updates the shout.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            message: The new shout message.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">shout_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="o">.</span><span class="n">patch</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/status&quot;</span><span class="p">),</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;message&quot;</span><span class="p">:</span> <span class="n">message</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">shout_data</span> <span class="o">=</span> <span class="n">shout_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+
+        <span class="n">new_shout</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Shout</span><span class="p">]</span> <span class="o">=</span> <span class="n">shout_data</span> <span class="ow">and</span> <span class="n">Shout</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">data</span><span class="o">=</span><span class="n">shout_data</span>
+        <span class="p">)</span> <span class="ow">or</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">new_shout</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_social_links</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SocialLink</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the group&#39;s social links.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of the universe&#39;s social links.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">links_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/social-links&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">links_data</span> <span class="o">=</span> <span class="n">links_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">SocialLink</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">link_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">link_data</span> <span class="ow">in</span> <span class="n">links_data</span><span class="p">]</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -3309,6 +3633,40 @@ GroupSettings        </code>
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/bases/basegroup.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">GroupSettings</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a group&#39;s settings.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        _shared: The ClientSharedObject.</span>
+<span class="sd">        is_approval_required: Whether approval is required to join this group.</span>
+<span class="sd">        is_builders_club_required: Whether a membership is required to join this group.</span>
+<span class="sd">        are_enemies_allowed: Whether group enemies are allowed.</span>
+<span class="sd">        are_group_funds_visible: Whether group funds are visible.</span>
+<span class="sd">        are_group_games_visible: Whether group games are visible.</span>
+<span class="sd">        is_group_name_change_enabled: Whether group name changes are enabled.</span>
+<span class="sd">        can_change_group_name: Whether the name of this group can be changed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: The ClientSharedObject.</span>
+<span class="sd">            data: The group settings data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_approval_required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;isApprovalRequired&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_builders_club_required</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;isBuildersClubRequired&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">are_enemies_allowed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;areEnemiesAllowed&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">are_group_funds_visible</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;areGroupFundsVisible&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">are_group_games_visible</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;areGroupGamesVisible&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_group_name_change_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;isGroupNameChangeEnabled&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">can_change_group_name</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;canChangeGroupName&quot;</span><span class="p">]</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -3436,6 +3794,43 @@ JoinRequest        </code>
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/bases/basegroup.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">JoinRequest</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a group join request.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        created: When this join request was sent.</span>
+<span class="sd">        group: The parent group that this join request is linked to.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> <span class="n">group</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">BaseGroup</span><span class="p">,</span> <span class="nb">int</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;created&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">requester</span> <span class="o">=</span> <span class="n">PartialUser</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;requester&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="p">:</span> <span class="n">BaseGroup</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">BaseGroup</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">group_id</span><span class="o">=</span><span class="n">group</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">group</span> <span class="o">=</span> <span class="n">group</span>
+
+    <span class="k">def</span> <span class="fm">__int__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">requester</span><span class="o">.</span><span class="n">id</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">accept</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accepts this join request.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">accept_user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">decline</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Declines this join request.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">group</span><span class="o">.</span><span class="n">decline_user</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</code></pre></div>
+        </details>
 
 
 

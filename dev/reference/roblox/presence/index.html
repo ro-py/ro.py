@@ -1775,6 +1775,57 @@ Presence        </code>
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/presence.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Presence</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a user&#39;s presence.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        user_presence_type: The type of the presence.</span>
+<span class="sd">        last_location: A string representing the user&#39;s last location.</span>
+<span class="sd">        place: The place the user is playing or editing.</span>
+<span class="sd">        root_place: The root place of the parent universe of the last place the user is playing or editing.</span>
+<span class="sd">        job: The job of the root place that the user is playing or editing.</span>
+<span class="sd">        universe: The universe the user is playing or editing.</span>
+<span class="sd">        last_online: When the user was last online.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: Shared object.</span>
+<span class="sd">            data: The data from the request.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_presence_type</span><span class="p">:</span> <span class="n">PresenceType</span> <span class="o">=</span> <span class="n">PresenceType</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;userPresenceType&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_location</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;lastLocation&quot;</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">place</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BasePlace</span><span class="p">]</span> <span class="o">=</span> <span class="n">BasePlace</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span>
+            <span class="n">place_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;placeId&quot;</span><span class="p">]</span>
+        <span class="p">)</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;placeId&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_place</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BasePlace</span><span class="p">]</span> <span class="o">=</span> <span class="n">BasePlace</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span>
+            <span class="n">place_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;rootPlaceId&quot;</span><span class="p">]</span>
+        <span class="p">)</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rootPlaceId&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseJob</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseJob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;gameId&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gameId&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">universe</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseUniverse</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseUniverse</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span>
+            <span class="n">universe_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;universeId&quot;</span><span class="p">]</span>
+        <span class="p">)</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;universeId&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+
+        <span class="c1"># self.user: BaseUser = BaseUser(self._shared, data[&quot;userId&quot;])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_online</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;lastOnline&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> user_presence_type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">user_presence_type</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -1924,6 +1975,38 @@ PresenceProvider        </code>
       <p>The PresenceProvider is an object that represents <a href="https://presence.roblox.com/">https://presence.roblox.com/</a> and provides multiple functions
 for fetching user presence information.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/presence.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">PresenceProvider</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The PresenceProvider is an object that represents https://presence.roblox.com/ and provides multiple functions</span>
+<span class="sd">    for fetching user presence information.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">get_user_presences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">users</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UserOrUserId</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Presence</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grabs a list of Presence objects corresponding to each user in the list.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            users: The list of users you want to get Presences from.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of Presences.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">presences_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;presence&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/presence/users&quot;</span><span class="p">),</span>
+            <span class="n">json</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;userIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">users</span><span class="p">))</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="n">presences_data</span> <span class="o">=</span> <span class="n">presences_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;userPresences&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Presence</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">presence_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">presence_data</span> <span class="ow">in</span> <span class="n">presences_data</span><span class="p">]</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2072,6 +2155,18 @@ PresenceType            (<span title="enum.IntEnum">IntEnum</span>)
 
       <p>Represents a user's presence type.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/presence.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">PresenceType</span><span class="p">(</span><span class="n">IntEnum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a user&#39;s presence type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">offline</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">online</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">in_game</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">in_studio</span> <span class="o">=</span> <span class="mi">3</span>
+</code></pre></div>
+        </details>
 
 
 

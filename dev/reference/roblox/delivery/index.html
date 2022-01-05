@@ -1855,6 +1855,57 @@ BaseCDNHash        </code>
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/delivery.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">BaseCDNHash</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a cdn_hash on a Roblox content delivery network.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        cdn_hash: The CDN hash as a string.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">cdn_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: The shared object.</span>
+<span class="sd">            cdn_hash: The CDN hash as a string.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cdn_hash</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">cdn_hash</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> cdn_hash=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">cdn_hash</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">get_cdn_number</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the CDN number of this CDN hash.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The computed number of the given cdn_hash</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">get_cdn_number</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cdn_hash</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prefix</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">cdn_site</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">cdn_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cdn_number</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">cdn_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">cdn_hash</span><span class="p">,</span> <span class="n">site</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">cdn_site</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the cdn_hash&#39;s URL. This should be implemented by subclasses.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            site: Represents the URL for what site it should target, be it rbxcdn.com, or roblox.com etc.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The computed URL from the given cdn_hash attribute.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2101,6 +2152,25 @@ ContentCDNHash            (<a title="roblox.delivery.BaseCDNHash" href="#roblox.
 
       <p>Represents a CDN hash on cX.rbxcdn.com.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/delivery.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ContentCDNHash</span><span class="p">(</span><span class="n">BaseCDNHash</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a CDN hash on cX.rbxcdn.com.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">cdn_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">cdn_hash</span><span class="o">=</span><span class="n">cdn_hash</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">cdn_site</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            This hash&#39;s URL.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url</span><span class="p">(</span><span class="s2">&quot;c&quot;</span><span class="p">,</span> <span class="n">cdn_site</span><span class="p">)</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2213,6 +2283,85 @@ DeliveryProvider        </code>
 
       <p>Provides CDN hashes and other delivery-related objects.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/delivery.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">DeliveryProvider</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Provides CDN hashes and other delivery-related objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: The shared object, which is passed to all objects this client generates.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+
+    <span class="k">def</span> <span class="nf">get_cdn_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdn_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseCDNHash</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a Roblox CDN cdn_hash.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            cdn_hash: The cdn_hash.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A BaseCDNHash.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">BaseCDNHash</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">cdn_hash</span><span class="o">=</span><span class="n">cdn_hash</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_cdn_hash_from_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">cdn_site</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseCDNHash</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        todo: turn this into something that actually splits into path.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            url: A CDN url.</span>
+<span class="sd">            site: The site this cdn_hash is located at.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The CDN cdn_hash for the supplied CDN URL.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_cdn_hash</span><span class="p">(</span>
+            <span class="n">cdn_hash</span><span class="o">=</span><span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">site</span><span class="si">}</span><span class="s2">/&quot;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdn_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ThumbnailCDNHash</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a Roblox CDN cdn_hash.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            cdn_hash: The cdn_hash.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A ThumbnailCDNHash.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">ThumbnailCDNHash</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">cdn_hash</span><span class="o">=</span><span class="n">cdn_hash</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_content_cdn_hash</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cdn_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ContentCDNHash</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a Roblox CDN cdn_hash.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            cdn_hash: The cdn_hash.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A ContentCDNHash.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">ContentCDNHash</span><span class="p">(</span>
+            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">cdn_hash</span><span class="o">=</span><span class="n">cdn_hash</span>
+        <span class="p">)</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2602,6 +2751,24 @@ ThumbnailCDNHash            (<a title="roblox.delivery.BaseCDNHash" href="#roblo
 
       <p>Represents a CDN hash on tX.rbxcdn.com.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/delivery.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ThumbnailCDNHash</span><span class="p">(</span><span class="n">BaseCDNHash</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a CDN hash on tX.rbxcdn.com.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">cdn_hash</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">cdn_hash</span><span class="o">=</span><span class="n">cdn_hash</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">site</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">cdn_site</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns this CDN hash&#39;s URL.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_url</span><span class="p">(</span><span class="s2">&quot;t&quot;</span><span class="p">,</span> <span class="n">cdn_site</span><span class="p">)</span>
+</code></pre></div>
+        </details>
 
 
 

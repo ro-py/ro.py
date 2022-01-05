@@ -1890,6 +1890,19 @@ VersionInfo            (<span title="tuple">tuple</span>)
 
       <p>Represents the package's version info.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/__init__.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">VersionInfo</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents the package&#39;s version info.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">major</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">minor</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">micro</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">releaselevel</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;alpha&quot;</span><span class="p">,</span> <span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="s2">&quot;candidate&quot;</span><span class="p">,</span> <span class="s2">&quot;final&quot;</span><span class="p">]</span>
+    <span class="n">serial</span><span class="p">:</span> <span class="nb">int</span>
+</code></pre></div>
+        </details>
 
 
 

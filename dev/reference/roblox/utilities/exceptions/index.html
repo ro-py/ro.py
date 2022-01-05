@@ -1899,6 +1899,15 @@ AssetNotFound            (<a title="roblox.utilities.exceptions.ItemNotFound" hr
 
       <p>Raised for invalid asset IDs.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">AssetNotFound</span><span class="p">(</span><span class="n">ItemNotFound</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised for invalid asset IDs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -1924,6 +1933,13 @@ BadRequest            (<a title="roblox.utilities.exceptions.HTTPException" href
 
       <p>HTTP exception raised for status code 400.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">BadRequest</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;HTTP exception raised for status code 400.&quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -1949,6 +1965,15 @@ BadgeNotFound            (<a title="roblox.utilities.exceptions.ItemNotFound" hr
 
       <p>Raised for invalid badge IDs.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">BadgeNotFound</span><span class="p">(</span><span class="n">ItemNotFound</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised for invalid badge IDs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -1974,6 +1999,13 @@ Forbidden            (<a title="roblox.utilities.exceptions.HTTPException" href=
 
       <p>HTTP exception raised for status code 403. This usually means the X-CSRF-Token was not properly provided.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Forbidden</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;HTTP exception raised for status code 403. This usually means the X-CSRF-Token was not properly provided.&quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -1997,8 +2029,17 @@ GroupNotFound            (<a title="roblox.utilities.exceptions.ItemNotFound" hr
 
     <div class="doc doc-contents ">
 
-      <p>Raised for invalid badge IDs.</p>
+      <p>Raised for invalid group IDs.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">GroupNotFound</span><span class="p">(</span><span class="n">ItemNotFound</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised for invalid group IDs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -2051,6 +2092,63 @@ HTTPException            (<a title="roblox.utilities.exceptions.RobloxException"
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">HTTPException</span><span class="p">(</span><span class="n">RobloxException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Exception that&#39;s raised when an HTTP request fails.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        response: The HTTP response object.</span>
+<span class="sd">        status: The HTTP response status code.</span>
+<span class="sd">        errors: A list of Roblox response errors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Response</span><span class="p">,</span> <span class="n">errors</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">list</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            response: The raw response object.</span>
+<span class="sd">            errors: A list of errors.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">:</span> <span class="n">Response</span> <span class="o">=</span> <span class="n">response</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ResponseError</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">errors</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">ResponseError</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">error_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">error_data</span> <span class="ow">in</span> <span class="n">errors</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">errors</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+            <span class="n">error_string</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_string</span><span class="p">()</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">reason_phrase</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2">.</span><span class="se">\n\n</span><span class="s2">Errors:</span><span class="se">\n</span><span class="si">{</span><span class="n">error_string</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">reason_phrase</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">response</span><span class="o">.</span><span class="n">url</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_generate_string</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">parsed_errors</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">error</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">errors</span><span class="p">:</span>
+            <span class="c1"># Make each error into a parsed string</span>
+            <span class="n">parsed_error</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\t</span><span class="si">{</span><span class="n">error</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">error</span><span class="o">.</span><span class="n">message</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">error_messages</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="n">error</span><span class="o">.</span><span class="n">user_facing_message</span> <span class="ow">and</span> <span class="n">error_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;User-facing message: </span><span class="si">{</span><span class="n">error</span><span class="o">.</span><span class="n">user_facing_message</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">error</span><span class="o">.</span><span class="n">field</span> <span class="ow">and</span> <span class="n">error_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Field: </span><span class="si">{</span><span class="n">error</span><span class="o">.</span><span class="n">field</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">error</span><span class="o">.</span><span class="n">retryable</span> <span class="ow">and</span> <span class="n">error_messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Retryable: </span><span class="si">{</span><span class="n">error</span><span class="o">.</span><span class="n">retryable</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">error_messages</span><span class="p">:</span>
+                <span class="n">error_message_string</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n\t\t</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">error_messages</span><span class="p">)</span>
+                <span class="n">parsed_error</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\t\t</span><span class="si">{</span><span class="n">error_message_string</span><span class="si">}</span><span class="s2">&quot;</span>
+
+            <span class="n">parsed_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">parsed_error</span><span class="p">)</span>
+
+        <span class="c1"># Turn the parsed errors into a joined string</span>
+        <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">parsed_errors</span><span class="p">)</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2167,6 +2265,17 @@ InternalServerError            (<a title="roblox.utilities.exceptions.HTTPExcept
 This usually means that there was an issue on Roblox's end, but due to faulty coding on Roblox's part this can
 sometimes mean that an endpoint used internally was disabled or that invalid parameters were passed.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">InternalServerError</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    HTTP exception raised for status code 500.</span>
+<span class="sd">    This usually means that there was an issue on Roblox&#39;s end, but due to faulty coding on Roblox&#39;s part this can</span>
+<span class="sd">    sometimes mean that an endpoint used internally was disabled or that invalid parameters were passed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -2192,6 +2301,15 @@ InvalidRole            (<a title="roblox.utilities.exceptions.RobloxException" h
 
       <p>Raised when a role doesn't exist.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">InvalidRole</span><span class="p">(</span><span class="n">RobloxException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when a role doesn&#39;t exist.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -2217,6 +2335,23 @@ ItemNotFound            (<a title="roblox.utilities.exceptions.RobloxException" 
 
       <p>Raised for invalid items.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ItemNotFound</span><span class="p">(</span><span class="n">RobloxException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised for invalid items.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Response</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            response: The raw response object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Response</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="k">if</span> <span class="n">response</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2310,6 +2445,15 @@ NoMoreItems            (<a title="roblox.utilities.exceptions.RobloxException" h
 
       <p>Raised when there are no more items left to iterate through.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">NoMoreItems</span><span class="p">(</span><span class="n">RobloxException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised when there are no more items left to iterate through.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -2336,6 +2480,16 @@ NotFound            (<a title="roblox.utilities.exceptions.HTTPException" href="
       <p>HTTP exception raised for status code 404.
 This usually means we have an internal URL issue - please make a GitHub issue about this!</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">NotFound</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    HTTP exception raised for status code 404.</span>
+<span class="sd">    This usually means we have an internal URL issue - please make a GitHub issue about this!</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -2361,6 +2515,15 @@ PlaceNotFound            (<a title="roblox.utilities.exceptions.ItemNotFound" hr
 
       <p>Raised for invalid place IDs.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">PlaceNotFound</span><span class="p">(</span><span class="n">ItemNotFound</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised for invalid place IDs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -2386,6 +2549,15 @@ PluginNotFound            (<a title="roblox.utilities.exceptions.ItemNotFound" h
 
       <p>Raised for invalid plugin IDs.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">PluginNotFound</span><span class="p">(</span><span class="n">ItemNotFound</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised for invalid plugin IDs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -2447,6 +2619,28 @@ ResponseError        </code>
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">ResponseError</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents an error returned by a Roblox game server.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        code: The error code.</span>
+<span class="sd">        message: The error message.</span>
+<span class="sd">        user_facing_message: A more simple error message intended for frontend use.</span>
+<span class="sd">        field: The field causing this error.</span>
+<span class="sd">        retryable: Whether retrying this exception could supress this issue.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;code&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;message&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">user_facing_message</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;userFacingMessage&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">field</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;field&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">retryable</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;retryable&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2519,6 +2713,15 @@ RobloxException            (<span title="Exception">Exception</span>)
 
       <p>Base exception for all of ro.py.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">RobloxException</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base exception for all of ro.py.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -2545,6 +2748,16 @@ TooManyRequests            (<a title="roblox.utilities.exceptions.HTTPException"
       <p>HTTP exception raised for status code 429.
 This means that Roblox has <a href="https://en.wikipedia.org/wiki/Rate_limiting">ratelimited</a> you.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">TooManyRequests</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    HTTP exception raised for status code 429.</span>
+<span class="sd">    This means that Roblox has [ratelimited](https://en.wikipedia.org/wiki/Rate_limiting) you.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -2570,6 +2783,12 @@ Unauthorized            (<a title="roblox.utilities.exceptions.HTTPException" hr
 
       <p>HTTP exception raised for status code 401. This usually means you aren't properly authenticated.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Unauthorized</span><span class="p">(</span><span class="n">HTTPException</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;HTTP exception raised for status code 401. This usually means you aren&#39;t properly authenticated.&quot;&quot;&quot;</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -2595,6 +2814,15 @@ UniverseNotFound            (<a title="roblox.utilities.exceptions.ItemNotFound"
 
       <p>Raised for invalid universe IDs.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UniverseNotFound</span><span class="p">(</span><span class="n">ItemNotFound</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised for invalid universe IDs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>
@@ -2620,6 +2848,15 @@ UserNotFound            (<a title="roblox.utilities.exceptions.ItemNotFound" hre
 
       <p>Raised for invalid user IDs or usernames.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/utilities/exceptions.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UserNotFound</span><span class="p">(</span><span class="n">ItemNotFound</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Raised for invalid user IDs or usernames.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span>
+</code></pre></div>
+        </details>
 
 
     </div>

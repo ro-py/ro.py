@@ -1908,16 +1908,6 @@ Universe            (<a title="roblox.bases.baseuniverse.BaseUniverse" href="../
   </thead>
   <tbody>
       <tr>
-        <td><code>_data</code></td>
-        <td><code>dict</code></td>
-        <td><p>The data we get back from the endpoint.</p></td>
-      </tr>
-      <tr>
-        <td><code>_shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The shared object, which is passed to all objects this client generates.</p></td>
-      </tr>
-      <tr>
         <td><code>id</code></td>
         <td><code>int</code></td>
         <td><p>The ID of this specific universe</p></td>
@@ -2034,6 +2024,83 @@ Universe            (<a title="roblox.bases.baseuniverse.BaseUniverse" href="../
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/universes.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">Universe</span><span class="p">(</span><span class="n">BaseUniverse</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents the response data of https://games.roblox.com/v1/games.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: The ID of this specific universe</span>
+<span class="sd">        root_place: The thumbnail provider object.</span>
+<span class="sd">        name: The delivery provider object.</span>
+<span class="sd">        description: The description of the game.</span>
+<span class="sd">        creator_type: Is the creator a group or a user.</span>
+<span class="sd">        creator: creator information.</span>
+<span class="sd">        price: how much you need to pay to play the game.</span>
+<span class="sd">        allowed_gear_genres: Unknown</span>
+<span class="sd">        allowed_gear_categories: Unknown</span>
+<span class="sd">        is_genre_enforced: Unknown</span>
+<span class="sd">        copying_allowed: are you allowed to copy the game.</span>
+<span class="sd">        playing: amount of people currently playing the game.</span>
+<span class="sd">        visits: amount of visits to the game.</span>
+<span class="sd">        max_players: the maximum amount of players ber server.</span>
+<span class="sd">        created: when the game was created.</span>
+<span class="sd">        updated: when the game as been updated for the last time.</span>
+<span class="sd">        studio_access_to_apis_allowed: does studio have access to the apis.</span>
+<span class="sd">        create_vip_servers_allowed: can you create a vip server?</span>
+<span class="sd">        universe_avatar_type: type of avatars in the game.</span>
+<span class="sd">        genre: what genre the game is.</span>
+<span class="sd">        is_all_genre: if it is all genres?</span>
+<span class="sd">        is_favorited_by_user: if the authenticated user has it favorited.</span>
+<span class="sd">        favorited_count: the total amount of people who favorited the game.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            shared: The ClientSharedObject.</span>
+<span class="sd">            data: The universe data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">universe_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_place</span><span class="p">:</span> <span class="n">BasePlace</span> <span class="o">=</span> <span class="n">BasePlace</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">place_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;rootPlaceId&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">creator_type</span><span class="p">:</span> <span class="n">Enum</span> <span class="o">=</span> <span class="n">CreatorType</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;creator&quot;</span><span class="p">][</span><span class="s2">&quot;type&quot;</span><span class="p">])</span>
+        <span class="c1"># isRNVAccount is not part of PartialUser, UniversePartialGroup</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PartialUser</span><span class="p">,</span> <span class="n">UniversePartialGroup</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">creator_type</span> <span class="o">==</span> <span class="n">CreatorType</span><span class="o">.</span><span class="n">group</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">UniversePartialGroup</span><span class="p">(</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;creator&quot;</span><span class="p">])</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">creator_type</span> <span class="o">==</span> <span class="n">CreatorType</span><span class="o">.</span><span class="n">user</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">creator</span> <span class="o">=</span> <span class="n">PartialUser</span><span class="p">(</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;creator&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">price</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allowed_gear_genres</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;allowedGearGenres&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allowed_gear_categories</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;allowedGearCategories&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_genre_enforced</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;isGenreEnforced&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">copying_allowed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;copyingAllowed&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">playing</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;playing&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">visits</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;visits&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_players</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;maxPlayers&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;created&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">updated</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;updated&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">studio_access_to_apis_allowed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;studioAccessToApisAllowed&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_vip_servers_allowed</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;createVipServersAllowed&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">universe_avatar_type</span><span class="p">:</span> <span class="n">UniverseAvatarType</span> <span class="o">=</span> <span class="n">UniverseAvatarType</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;universeAvatarType&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">genre</span><span class="p">:</span> <span class="n">UniverseGenre</span> <span class="o">=</span> <span class="n">UniverseGenre</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;genre&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_all_genre</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;isAllGenre&quot;</span><span class="p">]</span>
+        <span class="c1"># gameRating seems to be null across all games, so I omitted it from this class.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">is_favorited_by_user</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;isFavoritedByUser&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">favorited_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;favoritedCount&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> creator=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2193,6 +2260,18 @@ UniverseAvatarType            (<span title="enum.Enum">Enum</span>)
 
       <p>The current avatar type of the universe.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/universes.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UniverseAvatarType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The current avatar type of the universe.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">R6</span> <span class="o">=</span> <span class="s2">&quot;MorphToR6&quot;</span>
+    <span class="n">R15</span> <span class="o">=</span> <span class="s2">&quot;MorphToR15&quot;</span>
+    <span class="n">player_choice</span> <span class="o">=</span> <span class="s2">&quot;PlayerChoice&quot;</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -2287,6 +2366,30 @@ UniverseGenre            (<span title="enum.Enum">Enum</span>)
 
       <p>The universe's genre.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/universes.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">UniverseGenre</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The universe&#39;s genre.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nb">all</span> <span class="o">=</span> <span class="s2">&quot;All&quot;</span>
+    <span class="n">building</span> <span class="o">=</span> <span class="s2">&quot;Building&quot;</span>
+    <span class="n">horror</span> <span class="o">=</span> <span class="s2">&quot;Horror&quot;</span>
+    <span class="n">town_and_city</span> <span class="o">=</span> <span class="s2">&quot;Town and City&quot;</span>
+    <span class="n">military</span> <span class="o">=</span> <span class="s2">&quot;Military&quot;</span>
+    <span class="n">comedy</span> <span class="o">=</span> <span class="s2">&quot;Comedy&quot;</span>
+    <span class="n">medieval</span> <span class="o">=</span> <span class="s2">&quot;Medieval&quot;</span>
+    <span class="n">adventure</span> <span class="o">=</span> <span class="s2">&quot;Adventure&quot;</span>
+    <span class="n">sci_fi</span> <span class="o">=</span> <span class="s2">&quot;Sci-Fi&quot;</span>
+    <span class="n">naval</span> <span class="o">=</span> <span class="s2">&quot;Naval&quot;</span>
+    <span class="n">fps</span> <span class="o">=</span> <span class="s2">&quot;FPS&quot;</span>
+    <span class="n">rpg</span> <span class="o">=</span> <span class="s2">&quot;RPG&quot;</span>
+    <span class="n">sports</span> <span class="o">=</span> <span class="s2">&quot;Sports&quot;</span>
+    <span class="n">fighting</span> <span class="o">=</span> <span class="s2">&quot;Fighting&quot;</span>
+    <span class="n">western</span> <span class="o">=</span> <span class="s2">&quot;Western&quot;</span>
+</code></pre></div>
+        </details>
 
 
 

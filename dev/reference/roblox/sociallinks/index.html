@@ -1714,11 +1714,6 @@ SocialLink            (<a title="roblox.bases.basesociallink.BaseUniverseSocialL
   </thead>
   <tbody>
       <tr>
-        <td><code>_shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The shared object.</p></td>
-      </tr>
-      <tr>
         <td><code>id</code></td>
         <td><code>int</code></td>
         <td><p>The social link's ID.</p></td>
@@ -1740,6 +1735,31 @@ SocialLink            (<a title="roblox.bases.basesociallink.BaseUniverseSocialL
       </tr>
   </tbody>
 </table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/sociallinks.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">SocialLink</span><span class="p">(</span><span class="n">BaseUniverseSocialLink</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a universe or group&#39;s social links.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        id: The social link&#39;s ID.</span>
+<span class="sd">        title: The social link&#39;s title.</span>
+<span class="sd">        url: The social link&#39;s URL.</span>
+<span class="sd">        type: The social link&#39;s type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">social_link_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">:</span> <span class="n">SocialLinkType</span> <span class="o">=</span> <span class="n">SocialLinkType</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> url=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="si">!r}</span><span class="s2"> type=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="si">!r}</span><span class="s2"> title=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="si">!r}</span><span class="s2">&quot;</span>
+</code></pre></div>
+        </details>
 
 
 
@@ -1841,6 +1861,21 @@ SocialLinkType            (<span title="enum.Enum">Enum</span>)
 
       <p>Represents a type of social link.</p>
 
+        <details class="quote">
+          <summary>Source code in <code>roblox/sociallinks.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">SocialLinkType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a type of social link.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">facebook</span> <span class="o">=</span> <span class="s2">&quot;Facebook&quot;</span>
+    <span class="n">twitter</span> <span class="o">=</span> <span class="s2">&quot;Twitter&quot;</span>
+    <span class="n">youtube</span> <span class="o">=</span> <span class="s2">&quot;YouTube&quot;</span>
+    <span class="n">twitch</span> <span class="o">=</span> <span class="s2">&quot;Twitch&quot;</span>
+    <span class="n">discord</span> <span class="o">=</span> <span class="s2">&quot;Discord&quot;</span>
+    <span class="n">roblox_group</span> <span class="o">=</span> <span class="s2">&quot;RobloxGroup&quot;</span>
+</code></pre></div>
+        </details>
 
 
 
