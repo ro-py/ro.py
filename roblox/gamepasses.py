@@ -15,7 +15,6 @@ class GamePass(BaseGamePass):
     Represents a Roblox gamepass.
 
     Attributes:
-        _shared: The shared object.
         id: The gamepass ID.
         name: The gamepass name.
         display_name: The gamepass display name.

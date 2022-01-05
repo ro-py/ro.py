@@ -17,7 +17,6 @@ class User(BaseUser):
     Represents a single conversation.
 
     Attributes:
-        _shared: The shared object, which is passed to all objects this client generates.
         id: The id of the current user.
         name: The name of the current user.
         display_name: The display name of the current user.

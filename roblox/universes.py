@@ -55,8 +55,6 @@ class Universe(BaseUniverse):
     Represents the response data of https://games.roblox.com/v1/games.
 
     Attributes:
-        _data: The data we get back from the endpoint.
-        _shared: The shared object, which is passed to all objects this client generates.
         id: The ID of this specific universe
         root_place: The thumbnail provider object.
         name: The delivery provider object.

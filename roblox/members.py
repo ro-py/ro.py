@@ -20,6 +20,9 @@ if TYPE_CHECKING:
 class MemberRelationship(BaseUser):
     """
     Represents a relationship between a user and a group.
+    
+    Attributes:
+        group: The corresponding group.
     """
 
     def __init__(self, shared: ClientSharedObject, user: Union[BaseUser, int], group: Union[BaseGroup, int]):
@@ -63,7 +66,9 @@ class Member(MemberRelationship):
     Represents a group member.
 
     Attributes:
-        _shared: The shared object.
+        id: The member's ID.
+        name: The member's name.
+        display_name: The member's display name.
         role: The member's role.
         group: The member's group.
     """

@@ -14,8 +14,6 @@ class Place(BasePlace):
     Represents a Roblox place.
 
     Attributes:
-        _shared: The shared object, which is passed to all objects this client generates.
-        _data: The data from the request.
         id: id of the place.
         name: Name of the place.
         description: Description of the place.

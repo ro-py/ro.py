@@ -21,8 +21,8 @@ class WallPostRelationship:
     Represents a Roblox wall post ID.
 
     Attributes:
-        _shared: The ClientSharedObject.
         id: The post ID.
+        group: The group who's wall this post exists on.
     """
 
     def __init__(self, shared: ClientSharedObject, post_id: int, group: Union[BaseGroup, int]):

@@ -70,8 +70,6 @@ class Thumbnail:
     Represents a Roblox thumbnail as returned by almost all endpoints on https://thumbnails.roblox.com/.
 
     Attributes:
-        _shared: The shared object, which is passed to all objects this client generates.
-        _data: The data from the request.
         target_id: The id of the target of the image.
         state: The current state of the image.
         image_url: Url of the image.
@@ -116,8 +114,6 @@ class UniverseThumbnails:
     Represents a universe's thumbnails as returned by https://thumbnails.roblox.com/v1/games/multiget/thumbnails.
 
     Attributes:
-        _shared: The shared object, which is passed to all objects this client generates.
-        _data: The data from the request.
         universe_id: The id of the target of the image.
         error: The errors you got.
         thumbnails: List of thumbnails.
@@ -143,9 +139,6 @@ class UniverseThumbnails:
 class ThumbnailProvider:
     """
     The ThumbnailProvider that provides multiple functions for generating user thumbnails.
-
-    Attributes:
-        _shared: The shared object, which is passed to all objects this client generates.
     """
 
     def __init__(self, shared: ClientSharedObject):

@@ -201,7 +201,7 @@ class BadgeNotFound(ItemNotFound):
 
 class GroupNotFound(ItemNotFound):
     """
-    Raised for invalid badge IDs.
+    Raised for invalid group IDs.
     """
     pass
 
