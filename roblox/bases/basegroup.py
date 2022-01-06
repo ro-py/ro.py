@@ -19,9 +19,10 @@ from ..roles import Role
 from ..shout import Shout
 from ..sociallinks import SocialLink
 from ..utilities.exceptions import InvalidRole
-from ..utilities.iterators import PageIterator, SortOrder
+from ..utilities.iterators import PageIterator, PageNumberIterator, SortOrder
 from ..utilities.shared import ClientSharedObject
 from ..wall import WallPost, WallPostRelationship
+from ..groups import Group
 
 if TYPE_CHECKING:
     from .baseuser import BaseUser
@@ -415,3 +416,37 @@ class BaseGroup(BaseItem):
         )
         links_data = links_response.json()["data"]
         return [SocialLink(shared=self._shared, data=link_data) for link_data in links_data]
+    
+    def get_allies(self, page_size: int = 10) -> PageNumberIterator:
+        """
+        Gets all allies of a group.
+        
+        Arguments:
+            page_size: How many allies should be returned in each page.
+           
+        Returns:
+            A PageNumberIterator containing the allies.
+        """
+        return PageNumberIterator(
+            shared=self._shared,
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/relationships/allies"),
+            page_size=page_size,
+            handler=lambda shared, data: Group(shared=shared, data=data)
+        )
+    
+    def get_enemies(self, page_size: int = 10) -> PageNumberIterator:
+        """
+        Gets all enemies of a group.
+        
+        Arguments:
+            page_size: How many enemies should be returned in each page.
+           
+        Returns:
+            A PageNumberIterator containing the enemies.
+        """
+        return PageNumberIterator(
+            shared=self._shared,
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/relationships/enemies"),
+            page_size=page_size,
+            handler=lambda shared, data: Group(shared=shared, data=data)
+        )
