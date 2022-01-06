@@ -22,7 +22,6 @@ from ..utilities.exceptions import InvalidRole
 from ..utilities.iterators import PageIterator, PageNumberIterator, SortOrder
 from ..utilities.shared import ClientSharedObject
 from ..wall import WallPost, WallPostRelationship
-from ..groups import Group
 
 if TYPE_CHECKING:
     from .baseuser import BaseUser
@@ -427,6 +426,7 @@ class BaseGroup(BaseItem):
         Returns:
             A PageNumberIterator containing the allies.
         """
+        from ..groups import Group
         return PageNumberIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/relationships/allies"),
@@ -444,6 +444,7 @@ class BaseGroup(BaseItem):
         Returns:
             A PageNumberIterator containing the enemies.
         """
+        from ..groups import Group
         return PageNumberIterator(
             shared=self._shared,
             url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/relationships/enemies"),
