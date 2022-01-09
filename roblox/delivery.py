@@ -39,7 +39,7 @@ class BaseCDNHash:
     def __init__(self, client: Client, cdn_hash: str):
         """
         Arguments:
-            client: The client object.
+            client: The Client object.
             cdn_hash: The CDN hash as a string.
         """
 

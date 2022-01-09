@@ -21,7 +21,7 @@ class PartialBadge(BaseBadge):
 
     Attributes:
         _data: The data we get back from the endpoint.
-        _client: The client object, which is passed to all objects this client generates.
+        _client: The cCient object, which is passed to all objects this Client generates.
         id: The universe ID.
         awarded: The date when the badge was awarded.
     """
@@ -29,7 +29,7 @@ class PartialBadge(BaseBadge):
     def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            client: The ClientSharedObject.
+            client: The Client.
             data: The raw data.
         """
         self._client: Client = client

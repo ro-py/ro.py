@@ -45,7 +45,7 @@ class ChatProvider:
     def __init__(self, client: Client):
         """
         Arguments:
-            client: The ClientSharedObject for getting information about chat.
+            client: The Client for getting information about chat.
         """
         self._client: Client = client
 

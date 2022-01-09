@@ -33,7 +33,7 @@ class Place(BasePlace):
     def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            client: The client object, which is passed to all objects this client generates.
+            client: The Client object, which is passed to all objects this Client generates.
             data: data to make the magic happen.
         """
         super().__init__(client=client, place_id=data["placeId"])

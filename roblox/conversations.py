@@ -76,7 +76,7 @@ class Conversation(BaseConversation):
     def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            client: The client object.
+            client: The Client object.
             data: The conversation data.
         """
         super().__init__(client=client, conversation_id=self.id)

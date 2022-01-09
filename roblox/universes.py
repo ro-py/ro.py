@@ -87,7 +87,7 @@ class Universe(BaseUniverse):
     def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            client: The ClientSharedObject.
+            client: The Client.
             data: The universe data.
         """
 

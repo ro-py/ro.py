@@ -31,13 +31,13 @@ class ItemInstance(BaseInstance):
     Represents an instance of a Roblox item of some kind.
 
     Attributes:
-        _client: The client object, which is passed to all objects this client generates.
+        _client: The Client object, which is passed to all objects this Client generates.
     """
 
     def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            client: The ClientSharedObject.
+            client: The Client.
             data: The data from the endpoint.
         """
         self._client: Client = client

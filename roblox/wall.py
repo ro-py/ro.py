@@ -22,13 +22,13 @@ class WallPostRelationship:
 
     Attributes:
         id: The post ID.
-        group: The group who's wall this post exists on.
+        group: The group whose wall this post exists on.
     """
 
     def __init__(self, client: Client, post_id: int, group: Union[BaseGroup, int]):
         """
         Arguments:
-            client: The ClientSharedObject.
+            client: The Client.
             post_id: The post ID.
         """
 

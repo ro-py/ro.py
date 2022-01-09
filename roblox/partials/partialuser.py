@@ -17,7 +17,7 @@ class PartialUser(BaseUser):
     Represents partial user information.
 
     Attributes:
-        _client: The client object, which is passed to all objects this client generates.
+        _client: The Client object, which is passed to all objects this Client generates.
         id: The user's ID.
         name: The user's name.
         display_name: The user's display name.
@@ -26,7 +26,7 @@ class PartialUser(BaseUser):
     def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            client: The ClientSharedObject.
+            client: The Client.
             data: The data from the endpoint.
         """
         self._client: Client = client
@@ -53,7 +53,7 @@ class RequestedUsernamePartialUser(PartialUser):
     def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            client: The ClientSharedObject.
+            client: The Client.
             data: The data from the endpoint.
         """
         super().__init__(client=client, data=data)
@@ -71,7 +71,7 @@ class PreviousUsernamesPartialUser(PartialUser):
     def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            client: The ClientSharedObject.
+            client: The Client.
             data: The data from the endpoint.
         """
         super().__init__(client=client, data=data)

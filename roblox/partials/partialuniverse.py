@@ -18,7 +18,7 @@ class PartialUniverse(BaseUniverse):
     Represents partial universe information.
 
     Attributes:.
-        _client: The client object, which is passed to all objects this client generates.
+        _client: The Client object, which is passed to all objects this Client generates.
         id: The universe ID.
         name: The name of the universe.
         root_place: The universe's root place.
@@ -27,7 +27,7 @@ class PartialUniverse(BaseUniverse):
     def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            client: The ClientSharedObject.
+            client: The Client.
             data: The raw data.
         """
         self._client: Client = client

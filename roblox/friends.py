@@ -27,7 +27,7 @@ class Friend(User):
         """
         Arguments:
             data: The data we get back from the endpoint.
-            client: The client object, which is passed to all objects this client generates.
+            client: The Client object, which is passed to all objects this Client generates.
         """
         super().__init__(client=client, data=data)
 

@@ -22,7 +22,7 @@ class AccountProvider:
     def __init__(self, client: Client):
         """
         Arguments:
-            client: The ClientSharedObject to be used when getting information on an account.
+            client: The Client to be used when getting information on an account.
         """
         self._client: Client = client
 
@@ -53,8 +53,8 @@ class AccountProvider:
         This endpoint *may* require your password, and requires an unlocked PIN.
 
         Arguments:
-            birthday: A date object that represents the birthay to update the ClientSharedObject's account to.
-            password: The password to the ClientSharedObject's account, this is required when changing the birthday.
+            birthday: A date object that represents the birthday to update the Client's account to.
+            password: The password to the Client's account, this is required when changing the birthday.
         """
         await self._client.requests.post(
             url=self._client.url_generator.get_url("accountinformation", "v1/birthdate"),

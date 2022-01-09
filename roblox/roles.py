@@ -33,7 +33,7 @@ class Role(BaseRole):
     def __init__(self, client: Client, data: dict, group: BaseGroup = None):
         """
         Arguments:
-            client: The client client object.
+            client: The Client object.
             data: The raw role data.
             group: The parent group.
         """

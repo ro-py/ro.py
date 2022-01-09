@@ -145,7 +145,7 @@ class EconomyAsset(BaseAsset):
     def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            client: The ClientSharedObject to be used when getting information on assets.
+            client: The Client to be used when getting information on assets.
             data: The data from the request.
         """
         super().__init__(client=client, asset_id=data["AssetId"])
