@@ -10,9 +10,9 @@ from typing import Union, TYPE_CHECKING
 
 from .bases.baseuser import BaseUser
 from .partials.partialrole import PartialRole
-from .utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:
+    from .client import Client
     from .bases.basegroup import BaseGroup
     from .utilities.types import RoleOrRoleId
 
@@ -25,14 +25,14 @@ class MemberRelationship(BaseUser):
         group: The corresponding group.
     """
 
-    def __init__(self, shared: ClientSharedObject, user: Union[BaseUser, int], group: Union[BaseGroup, int]):
-        self._shared: ClientSharedObject = shared
-        super().__init__(shared=self._shared, user_id=int(user))
+    def __init__(self, client: Client, user: Union[BaseUser, int], group: Union[BaseGroup, int]):
+        self._client: Client = client
+        super().__init__(client=self._client, user_id=int(user))
 
         self.group: BaseGroup
 
         if isinstance(group, int):
-            self.group = BaseGroup(shared=self._shared, group_id=group)
+            self.group = BaseGroup(client=self._client, group_id=group)
         else:
             self.group = group
 
@@ -73,16 +73,16 @@ class Member(MemberRelationship):
         group: The member's group.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict, group: BaseGroup):
-        self._shared: ClientSharedObject = shared
+    def __init__(self, client: Client, data: dict, group: BaseGroup):
+        self._client: Client = client
 
         self.id: int = data["user"]["userId"]
         self.name: str = data["user"]["username"]
         self.display_name: str = data["user"]["displayName"]
 
-        super().__init__(shared=self._shared, user=self.id, group=group)
+        super().__init__(client=self._client, user=self.id, group=group)
 
-        self.role: PartialRole = PartialRole(shared=self._shared, data=data["role"])
+        self.role: PartialRole = PartialRole(client=self._client, data=data["role"])
         self.group: BaseGroup = group
 
     def __repr__(self):

@@ -6,10 +6,9 @@ It also contains the GroupSettings object, which represents a group's settings.
 """
 
 from __future__ import annotations
-
-from datetime import datetime
 from typing import Optional, List, Union, TYPE_CHECKING
 
+from datetime import datetime
 from dateutil.parser import parse
 
 from .baseitem import BaseItem
@@ -20,10 +19,10 @@ from ..shout import Shout
 from ..sociallinks import SocialLink
 from ..utilities.exceptions import InvalidRole
 from ..utilities.iterators import PageIterator, SortOrder
-from ..utilities.shared import ClientSharedObject
 from ..wall import WallPost, WallPostRelationship
 
 if TYPE_CHECKING:
+    from ..client import Client
     from .baseuser import BaseUser
     from ..utilities.types import UserOrUserId, RoleOrRoleId
 
@@ -37,13 +36,13 @@ class JoinRequest:
         group: The parent group that this join request is linked to.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict, group: Union[BaseGroup, int]):
-        self._shared: ClientSharedObject = shared
+    def __init__(self, client: Client, data: dict, group: Union[BaseGroup, int]):
+        self._client: Client = client
         self.created: datetime = parse(data["created"])
-        self.requester = PartialUser(shared=self._shared, data=data["requester"])
+        self.requester = PartialUser(client=self._client, data=data["requester"])
         self.group: BaseGroup
         if isinstance(group, int):
-            self.group = BaseGroup(shared=self._shared, group_id=group)
+            self.group = BaseGroup(client=self._client, group_id=group)
         else:
             self.group = group
 
@@ -68,7 +67,6 @@ class GroupSettings:
     Represents a group's settings.
 
     Attributes:
-        _shared: The ClientSharedObject.
         is_approval_required: Whether approval is required to join this group.
         is_builders_club_required: Whether a membership is required to join this group.
         are_enemies_allowed: Whether group enemies are allowed.
@@ -78,14 +76,14 @@ class GroupSettings:
         can_change_group_name: Whether the name of this group can be changed.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
+    def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            shared: The ClientSharedObject.
+            client: The Client this object belongs to.
             data: The group settings data.
         """
 
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
         self.is_approval_required: bool = data["isApprovalRequired"]
         self.is_builders_club_required: bool = data["isBuildersClubRequired"]
         self.are_enemies_allowed: bool = data["areEnemiesAllowed"]
@@ -100,19 +98,16 @@ class BaseGroup(BaseItem):
     Represents a Roblox group ID.
 
     Attributes:
-        _shared: The ClientSharedObject.
-        _requests: The requests object.
         id: The group's ID.
     """
 
-    def __init__(self, shared: ClientSharedObject, group_id: int):
+    def __init__(self, client: Client, group_id: int):
         """
         Parameters:
-            shared: The ClientSharedObject.
+            client: The Client this object belongs to.
             group_id: The group's ID.
         """
-        self._shared: ClientSharedObject = shared
-        self._requests = shared.requests
+        self._client: Client = client
         self.id: int = group_id
 
     async def get_settings(self) -> GroupSettings:
@@ -122,12 +117,12 @@ class BaseGroup(BaseItem):
         Returns:
             The group's settings.
         """
-        settings_response = await self._requests.get(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/settings"),
+        settings_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/settings"),
         )
         settings_data = settings_response.json()
         return GroupSettings(
-            shared=self._shared,
+            client=self._client,
             data=settings_data
         )
 
@@ -149,8 +144,8 @@ class BaseGroup(BaseItem):
             are_group_funds_visible: Whether the group fund balance is visible to external users.
             are_group_games_visible: Whether group games are visible to external users.
         """
-        await self._requests.patch(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/settings"),
+        await self._client.requests.patch(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/settings"),
             json={
                 "isApprovalRequired": is_approval_required,
                 "isBuildersClubRequired": is_builders_club_required,
@@ -174,12 +169,12 @@ class BaseGroup(BaseItem):
             A PageIterator containing the group's members.
         """
         return PageIterator(
-            shared=self._shared,
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users"),
+            client=self._client,
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/users"),
             page_size=page_size,
             sort_order=sort_order,
             max_items=max_items,
-            handler=lambda shared, data: Member(shared=shared, data=data, group=self)
+            handler=lambda client, data: Member(client=client, data=data, group=self)
         )
 
     def get_member(self, user: Union[int, BaseUser]) -> MemberRelationship:
@@ -193,7 +188,7 @@ class BaseGroup(BaseItem):
             A member.
         """
         return MemberRelationship(
-            shared=self._shared,
+            client=self._client,
             user=user,
             group=self
         )
@@ -210,14 +205,14 @@ class BaseGroup(BaseItem):
             A member.
         """
 
-        user: RequestedUsernamePartialUser = await self._shared.client.get_user_by_username(
+        user: RequestedUsernamePartialUser = await self._client.get_user_by_username(
             username=username,
             exclude_banned_users=exclude_banned_users,
             expand=False
         )
 
         return MemberRelationship(
-            shared=self._shared,
+            client=self._client,
             user=user,
             group=self
         )
@@ -229,12 +224,12 @@ class BaseGroup(BaseItem):
         Returns:
             A list of the group's roles.
         """
-        roles_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/roles")
+        roles_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/roles")
         )
         roles_data = roles_response.json()
         return [Role(
-            shared=self._shared,
+            client=self._client,
             data=role_data,
             group=self
         ) for role_data in roles_data["roles"]]
@@ -247,8 +242,8 @@ class BaseGroup(BaseItem):
             user: The user who's rank will be changed.
             role: The new role.
         """
-        await self._shared.requests.patch(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users/{int(user)}"),
+        await self._client.requests.patch(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/users/{int(user)}"),
             json={
                 "roleId": int(role)
             }
@@ -277,8 +272,8 @@ class BaseGroup(BaseItem):
         Arguments:
             user: The user who will be kicked from the group.
         """
-        await self._shared.requests.delete(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/users/{int(user)}")
+        await self._client.requests.delete(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/users/{int(user)}")
         )
 
     def get_wall_posts(self, page_size: int = 10, sort_order: SortOrder = SortOrder.Ascending,
@@ -294,12 +289,12 @@ class BaseGroup(BaseItem):
         Returns: A PageIterator.
         """
         return PageIterator(
-            shared=self._shared,
-            url=self._shared.url_generator.get_url("groups", f"v2/groups/{self.id}/wall/posts"),
+            client=self._client,
+            url=self._client.url_generator.get_url("groups", f"v2/groups/{self.id}/wall/posts"),
             page_size=page_size,
             sort_order=sort_order,
             max_items=max_items,
-            handler=lambda shared, data: WallPost(shared=shared, data=data, group=self)
+            handler=lambda client, data: WallPost(client=client, data=data, group=self)
         )
 
     def get_wall_post(self, post_id: int) -> WallPostRelationship:
@@ -313,7 +308,7 @@ class BaseGroup(BaseItem):
             A basic wall post relationship.
         """
         return WallPostRelationship(
-            shared=self._shared,
+            client=self._client,
             post_id=post_id,
             group=self
         )
@@ -332,12 +327,12 @@ class BaseGroup(BaseItem):
             A PageIterator containing group join requests.
         """
         return PageIterator(
-            shared=self._shared,
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests"),
+            client=self._client,
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests"),
             page_size=page_size,
             sort_order=sort_order,
             max_items=max_items,
-            handler=lambda shared, data: JoinRequest(shared=shared, data=data, group=self)
+            handler=lambda client, data: JoinRequest(client=client, data=data, group=self)
         )
 
     async def get_join_request(self, user: Union[int, BaseUser]) -> Optional[JoinRequest]:
@@ -347,13 +342,13 @@ class BaseGroup(BaseItem):
         Returns:
             The user's join request, or None if they have no active join request.
         """
-        join_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests/users/{int(user)}")
+        join_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests/users/{int(user)}")
         )
         join_data = join_response.json()
         return join_data and JoinRequest(
 
-            shared=self._shared,
+            client=self._client,
             data=join_data,
             group=self
         ) or None
@@ -365,8 +360,8 @@ class BaseGroup(BaseItem):
         Arguments:
             user: The user to accept into this group.
         """
-        await self._shared.requests.post(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests/users/{int(user)}")
+        await self._client.requests.post(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests/users/{int(user)}")
         )
 
     async def decline_user(self, user: Union[int, BaseUser, JoinRequest]):
@@ -376,8 +371,8 @@ class BaseGroup(BaseItem):
         Arguments:
             user: The user to decline from this group.
         """
-        await self._shared.requests.delete(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests/users/{int(user)}")
+        await self._client.requests.delete(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/join-requests/users/{int(user)}")
         )
 
     async def update_shout(self, message: str) -> Optional[Shout]:
@@ -387,8 +382,8 @@ class BaseGroup(BaseItem):
         Arguments:
             message: The new shout message.
         """
-        shout_response = await self._requests.patch(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/status"),
+        shout_response = await self._client.requests.patch(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/status"),
             json={
                 "message": message
             }
@@ -396,7 +391,7 @@ class BaseGroup(BaseItem):
         shout_data = shout_response.json()
 
         new_shout: Optional[Shout] = shout_data and Shout(
-            shared=self._shared,
+            client=self._client,
             data=shout_data
         ) or None
 
@@ -410,8 +405,8 @@ class BaseGroup(BaseItem):
             A list of the universe's social links.
         """
 
-        links_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/social-links")
+        links_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/social-links")
         )
         links_data = links_response.json()["data"]
-        return [SocialLink(shared=self._shared, data=link_data) for link_data in links_data]
+        return [SocialLink(client=self._client, data=link_data) for link_data in links_data]

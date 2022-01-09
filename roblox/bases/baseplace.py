@@ -4,8 +4,13 @@ This file contains the BasePlace object, which represents a Roblox place ID.
 
 """
 
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 from ..bases.baseasset import BaseAsset
-from ..utilities.shared import ClientSharedObject
+
+if TYPE_CHECKING:
+    from ..client import Client
 
 
 class BasePlace(BaseAsset):
@@ -14,20 +19,19 @@ class BasePlace(BaseAsset):
     Places are a form of Asset and as such this object derives from BaseAsset.
 
     Attributes:
-        _shared: The ClientSharedObject.
         id: The place ID.
     """
 
-    def __init__(self, shared: ClientSharedObject, place_id: int):
+    def __init__(self, client: Client, place_id: int):
         """
         Arguments:
-            shared: The ClientSharedObject.
+            client: The Client this object belongs to.
             place_id: The place ID.
         """
 
-        super().__init__(shared, place_id)
+        super().__init__(client, place_id)
 
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
         self.id: int = place_id
 
     async def get_instances(self, start_index: int = 0):
@@ -41,8 +45,8 @@ class BasePlace(BaseAsset):
         """
         from ..jobs import GameInstances
 
-        instances_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("www", f"games/getgameinstancesjson"),
+        instances_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("www", f"games/getgameinstancesjson"),
             params={
                 "placeId": self.id,
                 "startIndex": start_index
@@ -50,6 +54,6 @@ class BasePlace(BaseAsset):
         )
         instances_data = instances_response.json()
         return GameInstances(
-            shared=self._shared,
+            client=self._client,
             data=instances_data
         )

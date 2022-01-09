@@ -5,9 +5,13 @@ Not to be confused with users.py or the Account system.
 
 """
 
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 from datetime import date
 
-from .utilities.shared import ClientSharedObject
+if TYPE_CHECKING:
+    from .client import Client
 
 
 class AccountProvider:
@@ -15,22 +19,22 @@ class AccountProvider:
     Provides methods that control the authenticated user's account.
     """
 
-    def __init__(self, shared: ClientSharedObject):
+    def __init__(self, client: Client):
         """
         Arguments:
-            shared: The ClientSharedObject to be used when getting information on an account.
+            client: The ClientSharedObject to be used when getting information on an account.
         """
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
 
     async def get_birthday(self) -> date:
         """
         Gets the authenticated user's birthday.
-s
+
         Returns: 
             The authenticated user's birthday.
         """
-        birthday_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("accountinformation", "v1/birthdate")
+        birthday_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("accountinformation", "v1/birthdate")
         )
         birthday_data = birthday_response.json()
         return date(
@@ -52,8 +56,8 @@ s
             birthday: A date object that represents the birthay to update the ClientSharedObject's account to.
             password: The password to the ClientSharedObject's account, this is required when changing the birthday.
         """
-        await self._shared.requests.post(
-            url=self._shared.url_generator.get_url("accountinformation", "v1/birthdate"),
+        await self._client.requests.post(
+            url=self._client.url_generator.get_url("accountinformation", "v1/birthdate"),
             json={
                 "birthMonth": birthday.month,
                 "birthDay": birthday.day,

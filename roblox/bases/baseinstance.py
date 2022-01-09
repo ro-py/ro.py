@@ -4,8 +4,13 @@ This file contains the BaseInstance object, which represents a Roblox instance I
 
 """
 
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 from .baseitem import BaseItem
-from ..utilities.shared import ClientSharedObject
+
+if TYPE_CHECKING:
+    from ..client import Client
 
 
 class BaseInstance(BaseItem):
@@ -14,16 +19,15 @@ class BaseInstance(BaseItem):
     Instance IDs represent the ownership of a single Roblox item.
 
     Attributes:
-        _shared: The ClientSharedObject.
         id: The instance ID.
     """
 
-    def __init__(self, shared: ClientSharedObject, instance_id: int):
+    def __init__(self, client: Client, instance_id: int):
         """
         Arguments:
-            shared: The ClientSharedObject.
+            client: The Client this object belongs to.
             instance_id: The asset instance ID.
         """
 
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
         self.id: int = instance_id

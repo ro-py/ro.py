@@ -3,11 +3,15 @@
 Contains classes related to Roblox gamepass data and parsing.
 
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .client import Client
 from typing import Optional
 
 from .bases.basegamepass import BaseGamePass
-from .utilities.shared import ClientSharedObject
 
 
 class GamePass(BaseGamePass):
@@ -21,10 +25,10 @@ class GamePass(BaseGamePass):
         price: The gamepass price.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
-        self._shared: ClientSharedObject = shared
+    def __init__(self, client: Client, data: dict):
+        self._client: Client = client
         self.id: int = data["id"]
-        super().__init__(shared=self._shared, gamepass_id=self.id)
+        super().__init__(client=self._client, gamepass_id=self.id)
         self.name: str = data["name"]
         self.display_name: str = data["displayName"]
         # TODO: add product here

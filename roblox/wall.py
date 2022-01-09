@@ -10,9 +10,9 @@ from typing import Optional, Union, TYPE_CHECKING
 from dateutil.parser import parse
 
 from .members import Member
-from .utilities.shared import ClientSharedObject
 
 if TYPE_CHECKING:
+    from .client import Client
     from .bases.basegroup import BaseGroup
 
 
@@ -25,20 +25,20 @@ class WallPostRelationship:
         group: The group who's wall this post exists on.
     """
 
-    def __init__(self, shared: ClientSharedObject, post_id: int, group: Union[BaseGroup, int]):
+    def __init__(self, client: Client, post_id: int, group: Union[BaseGroup, int]):
         """
         Arguments:
-            shared: The ClientSharedObject.
+            client: The ClientSharedObject.
             post_id: The post ID.
         """
 
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
         self.id: int = post_id
 
         self.group: BaseGroup
 
         if isinstance(group, int):
-            self.group = BaseGroup(shared=self._shared, group_id=group)
+            self.group = BaseGroup(client=self._client, group_id=group)
         else:
             self.group = group
 
@@ -46,8 +46,8 @@ class WallPostRelationship:
         """
         Deletes this wall post.
         """
-        await self._shared.requests.delete(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.group.id}/wall/posts/{self.id}")
+        await self._client.requests.delete(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.group.id}/wall/posts/{self.id}")
         )
 
     def __repr__(self):
@@ -66,19 +66,19 @@ class WallPost(WallPostRelationship):
         updated: Last updated date of the post.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict, group: BaseGroup):
-        self._shared: ClientSharedObject = shared
+    def __init__(self, client: Client, data: dict, group: BaseGroup):
+        self._client: Client = client
 
         self.id: int = data["id"]
 
         super().__init__(
-            shared=self._shared,
+            client=self._client,
             post_id=self.id,
             group=group
         )
 
         self.poster: Optional[Member] = data["poster"] and Member(
-            shared=self._shared,
+            client=self._client,
             data=data["poster"],
             group=self.group
         ) or None

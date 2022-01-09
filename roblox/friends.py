@@ -3,11 +3,13 @@
 Contains classes related to Roblox friend data and parsing.
 
 """
-
-from typing import Optional
+from __future__ import annotations
+from typing import Optional, TYPE_CHECKING
 
 from .users import User
-from .utilities.shared import ClientSharedObject
+
+if TYPE_CHECKING:
+    from .client import Client
 
 
 class Friend(User):
@@ -21,13 +23,13 @@ class Friend(User):
         friend_frequent_rank: Unknown
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
+    def __init__(self, client: Client, data: dict):
         """
         Arguments:
             data: The data we get back from the endpoint.
-            shared: The shared object, which is passed to all objects this client generates.
+            client: The client object, which is passed to all objects this client generates.
         """
-        super().__init__(shared=shared, data=data)
+        super().__init__(client=client, data=data)
 
         self.is_online: Optional[bool] = data.get("isOnline")
         self.presence_type: int = data["presenceType"]

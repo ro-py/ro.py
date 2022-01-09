@@ -5,7 +5,6 @@ Contains exceptions used by ro.py.
 """
 
 from typing import Optional, List, Dict, Type
-
 from httpx import Response
 
 

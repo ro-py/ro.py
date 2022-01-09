@@ -3,13 +3,18 @@
 This module contains classes intended to parse and deal with data from Roblox server instance (or "job") endpoints.
 
 """
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .client import Client
 
 from typing import List
 
 from .bases.basejob import BaseJob
 from .bases.baseplace import BasePlace
 from .bases.baseuser import BaseUser
-from .utilities.shared import ClientSharedObject
 
 
 class GameInstancePlayerThumbnail:
@@ -23,8 +28,8 @@ class GameInstancePlayerThumbnail:
         final: Whether the thumbnail is finalized or not.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
-        self._shared: ClientSharedObject = shared
+    def __init__(self, client: Client, data: dict):
+        self._client: Client = client
 
         self.url: str = data["Url"]
         self.final: bool = data["IsFinal"]
@@ -45,14 +50,14 @@ class GameInstancePlayer(BaseUser):
         thumbnail: The player's thumbnail.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
-        self._shared: ClientSharedObject = shared
+    def __init__(self, client: Client, data: dict):
+        self._client: Client = client
         self.id: int = data["Id"]
-        super().__init__(shared=self._shared, user_id=self.id)
+        super().__init__(client=self._client, user_id=self.id)
 
         self.name: str = data["Username"]
         self.thumbnail: GameInstancePlayerThumbnail = GameInstancePlayerThumbnail(
-            shared=self._shared,
+            client=self._client,
             data=data["Thumbnail"]
         )
 
@@ -82,21 +87,21 @@ class GameInstance(BaseJob):
                          through the Roblox mobile app.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
-        self._shared: ClientSharedObject = shared
+    def __init__(self, client: Client, data: dict):
+        self._client: Client = client
         self.id: str = data["Guid"]
 
-        super().__init__(shared=self._shared, job_id=self.id)
+        super().__init__(client=self._client, job_id=self.id)
 
         self.capacity: int = data["Capacity"]
         self.ping: int = data["Ping"]
         self.fps: float = data["Fps"]
         self.show_slow_game_message: bool = data["ShowSlowGameMessage"]
-        self.place: BasePlace = BasePlace(shared=self._shared, place_id=data["PlaceId"])
+        self.place: BasePlace = BasePlace(client=self._client, place_id=data["PlaceId"])
 
         self.current_players: List[GameInstancePlayer] = [
             GameInstancePlayer(
-                shared=self._shared,
+                client=self._client,
                 data=player_data
             ) for player_data in data["CurrentPlayers"]
         ]
@@ -126,15 +131,15 @@ class GameInstances:
         total_collection_size: How many active servers there are.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
-        self._shared: ClientSharedObject = shared
+    def __init__(self, client: Client, data: dict):
+        self._client: Client = client
 
-        self.place: BasePlace = BasePlace(shared=self._shared, place_id=data["PlaceId"])
+        self.place: BasePlace = BasePlace(client=self._client, place_id=data["PlaceId"])
         self.show_shutdown_all_button: bool = data["ShowShutdownAllButton"]
         self.is_game_instance_list_unavailable: bool = data["IsGameInstanceListUnavailable"]
         self.collection: List[GameInstance] = [
             GameInstance(
-                shared=self._shared,
+                client=self._client,
                 data=instance_data
             ) for instance_data in data["Collection"]
         ]

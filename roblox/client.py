@@ -31,7 +31,6 @@ from .utilities.exceptions import BadRequest, NotFound, AssetNotFound, BadgeNotF
     PluginNotFound, UniverseNotFound, UserNotFound
 from .utilities.iterators import PageIterator
 from .utilities.requests import Requests
-from .utilities.shared import ClientSharedObject
 from .utilities.url import URLGenerator
 
 
@@ -60,27 +59,14 @@ class Client:
             url_generator=self._url_generator
         )
 
-        self._shared: ClientSharedObject = ClientSharedObject(
-            client=self,
-            requests=self._requests,
-            url_generator=self._url_generator
-        )
-
-        self.presence: PresenceProvider = PresenceProvider(shared=self._shared)
-        self.thumbnails: ThumbnailProvider = ThumbnailProvider(shared=self._shared)
-        self.delivery: DeliveryProvider = DeliveryProvider(shared=self._shared)
-        self.chat: ChatProvider = ChatProvider(shared=self._shared)
-        self.account: AccountProvider = AccountProvider(shared=self._shared)
-
-        # TODO: Improve this hack
-        self._shared.presence_provider = self.presence
-        self._shared.thumbnail_provider = self.thumbnails
-        self._shared.delivery_provider = self.delivery
-        self._shared.chat_provider = self.chat
-        self._shared.account_provider = self.account
-
-        self.requests: Requests = self._requests
         self.url_generator: URLGenerator = self._url_generator
+        self.requests: Requests = self._requests
+
+        self.presence: PresenceProvider = PresenceProvider(client=self)
+        self.thumbnails: ThumbnailProvider = ThumbnailProvider(client=self)
+        self.delivery: DeliveryProvider = DeliveryProvider(client=self)
+        self.chat: ChatProvider = ChatProvider(client=self)
+        self.account: AccountProvider = AccountProvider(client=self)
 
         if token:
             self.set_token(token)
@@ -113,7 +99,7 @@ class Client:
         """
         try:
             user_response = await self._requests.get(
-                url=self._shared.url_generator.get_url("users", f"v1/users/{user_id}")
+                url=self.url_generator.get_url("users", f"v1/users/{user_id}")
             )
         except NotFound as exception:
             raise UserNotFound(
@@ -121,7 +107,7 @@ class Client:
                 response=exception.response
             ) from None
         user_data = user_response.json()
-        return User(shared=self._shared, data=user_data)
+        return User(client=self, data=user_data)
 
     async def get_authenticated_user(
             self, expand: bool = True
@@ -136,14 +122,14 @@ class Client:
             The authenticated user.
         """
         authenticated_user_response = await self._requests.get(
-            url=self._shared.url_generator.get_url("users", f"v1/users/authenticated")
+            url=self._url_generator.get_url("users", f"v1/users/authenticated")
         )
         authenticated_user_data = authenticated_user_response.json()
 
         if expand:
             return await self.get_user(authenticated_user_data["id"])
         else:
-            return PartialUser(shared=self._shared, data=authenticated_user_data)
+            return PartialUser(client=self, data=authenticated_user_data)
 
     async def get_users(
             self,
@@ -163,7 +149,7 @@ class Client:
             A List of Users or partial users.
         """
         users_response = await self._requests.post(
-            url=self._shared.url_generator.get_url("users", f"v1/users"),
+            url=self._url_generator.get_url("users", f"v1/users"),
             json={"userIds": user_ids, "excludeBannedUsers": exclude_banned_users},
         )
         users_data = users_response.json()["data"]
@@ -172,7 +158,7 @@ class Client:
             return [await self.get_user(user_data["id"]) for user_data in users_data]
         else:
             return [
-                PartialUser(shared=self._shared, data=user_data)
+                PartialUser(client=self, data=user_data)
                 for user_data in users_data
             ]
 
@@ -194,7 +180,7 @@ class Client:
             A list of User or RequestedUsernamePartialUser, depending on the expand argument.
         """
         users_response = await self._requests.post(
-            url=self._shared.url_generator.get_url("users", f"v1/usernames/users"),
+            url=self._url_generator.get_url("users", f"v1/usernames/users"),
             json={"usernames": usernames, "excludeBannedUsers": exclude_banned_users},
         )
         users_data = users_response.json()["data"]
@@ -203,7 +189,7 @@ class Client:
             return [await self.get_user(user_data["id"]) for user_data in users_data]
         else:
             return [
-                RequestedUsernamePartialUser(shared=self._shared, data=user_data)
+                RequestedUsernamePartialUser(client=self, data=user_data)
                 for user_data in users_data
             ]
 
@@ -245,7 +231,7 @@ class Client:
         Returns:
             A BaseUser.
         """
-        return BaseUser(shared=self._shared, user_id=user_id)
+        return BaseUser(client=self, user_id=user_id)
 
     def user_search(self, keyword: str, page_size: int = 10,
                     max_items: int = None) -> PageIterator:
@@ -261,12 +247,12 @@ class Client:
             A PageIterator containing RequestedUsernamePartialUser.
         """
         return PageIterator(
-            shared=self._shared,
-            url=self._shared.url_generator.get_url("users", f"v1/users/search"),
+            client=self,
+            url=self._url_generator.get_url("users", f"v1/users/search"),
             page_size=page_size,
             max_items=max_items,
             extra_parameters={"keyword": keyword},
-            handler=lambda shared, data: PreviousUsernamesPartialUser(shared, data),
+            handler=lambda client, data: PreviousUsernamesPartialUser(client=client, data=data),
         )
 
     # Groups
@@ -282,7 +268,7 @@ class Client:
         """
         try:
             group_response = await self._requests.get(
-                url=self._shared.url_generator.get_url("groups", f"v1/groups/{group_id}")
+                url=self._url_generator.get_url("groups", f"v1/groups/{group_id}")
             )
         except BadRequest as exception:
             raise GroupNotFound(
@@ -290,7 +276,7 @@ class Client:
                 response=exception.response
             ) from None
         group_data = group_response.json()
-        return Group(shared=self._shared, data=group_data)
+        return Group(client=self, data=group_data)
 
     def get_base_group(self, group_id: int) -> BaseGroup:
         """
@@ -306,7 +292,7 @@ class Client:
         Returns:
             A BaseGroup.
         """
-        return BaseGroup(shared=self._shared, group_id=group_id)
+        return BaseGroup(client=self, group_id=group_id)
 
     # Universes
     async def get_universes(self, universe_ids: List[int]) -> List[Universe]:
@@ -320,12 +306,12 @@ class Client:
             A list of Universes.
         """
         universes_response = await self._requests.get(
-            url=self._shared.url_generator.get_url("games", "v1/games"),
+            url=self._url_generator.get_url("games", "v1/games"),
             params={"universeIds": universe_ids},
         )
         universes_data = universes_response.json()["data"]
         return [
-            Universe(shared=self._shared, data=universe_data)
+            Universe(client=self, data=universe_data)
             for universe_data in universes_data
         ]
 
@@ -359,7 +345,7 @@ class Client:
         Returns:
             A BaseUniverse.
         """
-        return BaseUniverse(shared=self._shared, universe_id=universe_id)
+        return BaseUniverse(client=self, universe_id=universe_id)
 
     # Places
     async def get_places(self, place_ids: List[int]) -> List[Place]:
@@ -373,14 +359,14 @@ class Client:
             A list of Places.
         """
         places_response = await self._requests.get(
-            url=self._shared.url_generator.get_url(
+            url=self._url_generator.get_url(
                 "games", f"v1/games/multiget-place-details"
             ),
             params={"placeIds": place_ids},
         )
         places_data = places_response.json()
         return [
-            Place(shared=self._shared, data=place_data) for place_data in places_data
+            Place(client=self, data=place_data) for place_data in places_data
         ]
 
     async def get_place(self, place_id: int) -> Place:
@@ -413,7 +399,7 @@ class Client:
         Returns:
             A BasePlace.
         """
-        return BasePlace(shared=self._shared, place_id=place_id)
+        return BasePlace(client=self, place_id=place_id)
 
     # Assets
     async def get_asset(self, asset_id: int) -> EconomyAsset:
@@ -428,7 +414,7 @@ class Client:
         """
         try:
             asset_response = await self._requests.get(
-                url=self._shared.url_generator.get_url(
+                url=self._url_generator.get_url(
                     "economy", f"v2/assets/{asset_id}/details"
                 )
             )
@@ -438,7 +424,7 @@ class Client:
                 response=exception.response
             ) from None
         asset_data = asset_response.json()
-        return EconomyAsset(shared=self._shared, data=asset_data)
+        return EconomyAsset(client=self, data=asset_data)
 
     def get_base_asset(self, asset_id: int) -> BaseAsset:
         """
@@ -454,7 +440,7 @@ class Client:
         Returns:
             A BaseAsset.
         """
-        return BaseAsset(shared=self._shared, asset_id=asset_id)
+        return BaseAsset(client=self, asset_id=asset_id)
 
     # Plugins
     async def get_plugins(self, plugin_ids: List[int]) -> List[Plugin]:
@@ -468,7 +454,7 @@ class Client:
             A list of Plugins.
         """
         plugins_response = await self._requests.get(
-            url=self._shared.url_generator.get_url(
+            url=self._url_generator.get_url(
                 "develop", "v1/plugins"
             ),
             params={
@@ -476,7 +462,7 @@ class Client:
             }
         )
         plugins_data = plugins_response.json()["data"]
-        return [Plugin(shared=self._shared, data=plugin_data) for plugin_data in plugins_data]
+        return [Plugin(client=self, data=plugin_data) for plugin_data in plugins_data]
 
     async def get_plugin(self, plugin_id: int) -> Plugin:
         """
@@ -508,7 +494,7 @@ class Client:
         Returns:
             A BasePlugin.
         """
-        return BasePlugin(shared=self._shared, plugin_id=plugin_id)
+        return BasePlugin(client=self, plugin_id=plugin_id)
 
     # Badges
     async def get_badge(self, badge_id: int) -> Badge:
@@ -523,7 +509,7 @@ class Client:
         """
         try:
             badge_response = await self._requests.get(
-                url=self._shared.url_generator.get_url(
+                url=self._url_generator.get_url(
                     "badges", f"v1/badges/{badge_id}"
                 )
             )
@@ -533,7 +519,7 @@ class Client:
                 response=exception.response
             ) from None
         badge_data = badge_response.json()
-        return Badge(shared=self._shared, data=badge_data)
+        return Badge(client=self, data=badge_data)
 
     def get_base_badge(self, badge_id: int) -> BaseBadge:
         """
@@ -549,7 +535,7 @@ class Client:
         Returns:
             A BaseBadge.
         """
-        return BaseBadge(shared=self._shared, badge_id=badge_id)
+        return BaseBadge(client=self, badge_id=badge_id)
 
     # Gamepasses
     def get_base_gamepass(self, gamepass_id: int) -> BaseGamePass:
@@ -565,4 +551,4 @@ class Client:
 
         Returns: A BaseGamePass.
         """
-        return BaseGamePass(shared=self._shared, gamepass_id=gamepass_id)
+        return BaseGamePass(client=self, gamepass_id=gamepass_id)

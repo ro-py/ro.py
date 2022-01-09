@@ -3,13 +3,17 @@
 This module contains classes intended to parse and deal with data from Roblox user information endpoints.
 
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .client import Client
 from datetime import datetime
 
 from dateutil.parser import parse
 
 from .bases.baseuser import BaseUser
-from .utilities.shared import ClientSharedObject
 
 
 class User(BaseUser):
@@ -26,15 +30,15 @@ class User(BaseUser):
         created: When the user created their account.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
+    def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            shared: Shared object.
+            client: Shared object.
             data: The data from the request.
         """
-        super().__init__(shared=shared, user_id=data["id"])
+        super().__init__(client=client, user_id=data["id"])
 
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
         self._data: dict = data
 
         self.name: str = data["name"]

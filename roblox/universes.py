@@ -3,7 +3,12 @@
 This module contains classes intended to parse and deal with data from Roblox universe information endpoints.
 
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .client import Client
 from datetime import datetime
 from enum import Enum
 from typing import Optional, List, Union
@@ -15,7 +20,6 @@ from .bases.baseuniverse import BaseUniverse
 from .creatortype import CreatorType
 from .partials.partialgroup import UniversePartialGroup
 from .partials.partialuser import PartialUser
-from .utilities.shared import ClientSharedObject
 
 
 class UniverseAvatarType(Enum):
@@ -80,28 +84,28 @@ class Universe(BaseUniverse):
         favorited_count: the total amount of people who favorited the game.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
+    def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            shared: The ClientSharedObject.
+            client: The ClientSharedObject.
             data: The universe data.
         """
 
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
         self._data: dict = data
 
         self.id: int = data["id"]
-        super().__init__(shared=shared, universe_id=self.id)
-        self.root_place: BasePlace = BasePlace(shared=shared, place_id=data["rootPlaceId"])
+        super().__init__(client=client, universe_id=self.id)
+        self.root_place: BasePlace = BasePlace(client=client, place_id=data["rootPlaceId"])
         self.name: str = data["name"]
         self.description: str = data["description"]
         self.creator_type: Enum = CreatorType(data["creator"]["type"])
         # isRNVAccount is not part of PartialUser, UniversePartialGroup
         self.creator: Union[PartialUser, UniversePartialGroup]
         if self.creator_type == CreatorType.group:
-            self.creator = UniversePartialGroup(shared, data["creator"])
+            self.creator = UniversePartialGroup(client, data["creator"])
         elif self.creator_type == CreatorType.user:
-            self.creator = PartialUser(shared, data["creator"])
+            self.creator = PartialUser(client, data["creator"])
         self.price: Optional[int] = data["price"]
         self.allowed_gear_genres: List[str] = data["allowedGearGenres"]
         self.allowed_gear_categories: List[str] = data["allowedGearCategories"]
