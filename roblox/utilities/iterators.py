@@ -157,7 +157,7 @@ class PageIterator(RobloxIterator):
     For more information about how cursor-based pagination works, see https://robloxapi.wiki/wiki/Pagination.
 
     Attributes:
-        _client: The ClientSharedObject.
+        _client: The Client.
         url: The endpoint to hit for new page data.
         sort_order: The sort order to use for returned data.
         page_size: How much data should be returned per-page.
@@ -183,7 +183,7 @@ class PageIterator(RobloxIterator):
     ):
         """
         Parameters:
-            client: The ClientSharedObject.
+            client: The Client.
             url: The endpoint to hit for new page data.
             sort_order: The sort order to use for returned data.
             page_size: How much data should be returned per-page.

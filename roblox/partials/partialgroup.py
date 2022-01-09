@@ -19,7 +19,7 @@ class AssetPartialGroup(BaseGroup):
     Intended to parse the `data[0]["creator"]` data from https://games.roblox.com/v1/games.
 
     Attributes:
-        _client: The client object, which is passed to all objects this client generates.
+        _client: The Client object, which is passed to all objects this Client generates.
         id: The group's name.
         creator: The group's owner.
         name: The group's name.
@@ -28,7 +28,7 @@ class AssetPartialGroup(BaseGroup):
     def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            client: The ClientSharedObject.
+            client: The Client.
             data: The data from the endpoint.
         """
         self._client: Client = client

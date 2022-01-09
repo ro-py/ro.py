@@ -32,7 +32,7 @@ class Plugin(BasePlugin):
     def __init__(self, client: Client, data: dict):
         """
         Attributes:
-            client: The client object, which is passed to all objects this client generates.
+            client: The Client object, which is passed to all objects this Client generates.
             data: data to make the magic happen.
         """
         super().__init__(client=client, plugin_id=data["id"])

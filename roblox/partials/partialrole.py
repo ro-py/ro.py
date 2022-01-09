@@ -17,7 +17,7 @@ class PartialRole(BaseRole):
     Represents partial group role information.
 
     Attributes:
-        _client: The client object.
+        _client: The Client object.
         id: The role's ID.
         name: The role's name.
         rank: The role's rank ID.

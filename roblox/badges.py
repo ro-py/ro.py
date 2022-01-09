@@ -61,7 +61,7 @@ class Badge(BaseBadge):
     def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            client: The ClientSharedObject to be used when getting information on badges.
+            client: The Client to be used when getting information on badges.
             data: The data from the endpoint.
         """
         self.id: int = data["id"]

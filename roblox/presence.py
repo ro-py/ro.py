@@ -49,7 +49,7 @@ class Presence:
     def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            client: Shared object.
+            client: Client object.
             data: The data from the request.
         """
         self._client: Client = client
