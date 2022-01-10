@@ -1470,20 +1470,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../utilities/shared/" class="md-nav__link">
-        shared
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../utilities/types/" class="md-nav__link">
         types
       </a>
@@ -1791,35 +1777,35 @@ Presence        </code>
 <span class="sd">        last_online: When the user was last online.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Arguments:</span>
-<span class="sd">            shared: Shared object.</span>
+<span class="sd">            client: Client object.</span>
 <span class="sd">            data: The data from the request.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">user_presence_type</span><span class="p">:</span> <span class="n">PresenceType</span> <span class="o">=</span> <span class="n">PresenceType</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;userPresenceType&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_location</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;lastLocation&quot;</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">place</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BasePlace</span><span class="p">]</span> <span class="o">=</span> <span class="n">BasePlace</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
             <span class="n">place_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;placeId&quot;</span><span class="p">]</span>
         <span class="p">)</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;placeId&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">root_place</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BasePlace</span><span class="p">]</span> <span class="o">=</span> <span class="n">BasePlace</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
             <span class="n">place_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;rootPlaceId&quot;</span><span class="p">]</span>
         <span class="p">)</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rootPlaceId&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseJob</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseJob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;gameId&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gameId&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseJob</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseJob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;gameId&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gameId&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">universe</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseUniverse</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseUniverse</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
             <span class="n">universe_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;universeId&quot;</span><span class="p">]</span>
         <span class="p">)</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;universeId&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 
-        <span class="c1"># self.user: BaseUser = BaseUser(self._shared, data[&quot;userId&quot;])</span>
+        <span class="c1"># self.user: BaseUser = BaseUser(self._client, data[&quot;userId&quot;])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">last_online</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;lastOnline&quot;</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -1844,7 +1830,7 @@ Presence        </code>
 
 
 <h4 id="roblox.presence.Presence.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -1867,9 +1853,9 @@ Presence        </code>
   </thead>
   <tbody>
       <tr>
-        <td><code>shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>Shared object.</p></td>
+        <td><code>client</code></td>
+        <td><code>Client</code></td>
+        <td><p>Client object.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
@@ -1882,35 +1868,35 @@ Presence        </code>
 </table>
         <details class="quote">
           <summary>Source code in <code>roblox/presence.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments:</span>
-<span class="sd">        shared: Shared object.</span>
+<span class="sd">        client: Client object.</span>
 <span class="sd">        data: The data from the request.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">user_presence_type</span><span class="p">:</span> <span class="n">PresenceType</span> <span class="o">=</span> <span class="n">PresenceType</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;userPresenceType&quot;</span><span class="p">])</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">last_location</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;lastLocation&quot;</span><span class="p">]</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">place</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BasePlace</span><span class="p">]</span> <span class="o">=</span> <span class="n">BasePlace</span><span class="p">(</span>
-        <span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span>
+        <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
         <span class="n">place_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;placeId&quot;</span><span class="p">]</span>
     <span class="p">)</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;placeId&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">root_place</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BasePlace</span><span class="p">]</span> <span class="o">=</span> <span class="n">BasePlace</span><span class="p">(</span>
-        <span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span>
+        <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
         <span class="n">place_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;rootPlaceId&quot;</span><span class="p">]</span>
     <span class="p">)</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;rootPlaceId&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseJob</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseJob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;gameId&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gameId&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">job</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseJob</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseJob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;gameId&quot;</span><span class="p">])</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gameId&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">universe</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">BaseUniverse</span><span class="p">]</span> <span class="o">=</span> <span class="n">BaseUniverse</span><span class="p">(</span>
-        <span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span>
+        <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
         <span class="n">universe_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;universeId&quot;</span><span class="p">]</span>
     <span class="p">)</span> <span class="k">if</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;universeId&quot;</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span>
 
-    <span class="c1"># self.user: BaseUser = BaseUser(self._shared, data[&quot;userId&quot;])</span>
+    <span class="c1"># self.user: BaseUser = BaseUser(self._client, data[&quot;userId&quot;])</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">last_online</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;lastOnline&quot;</span><span class="p">])</span>
 </code></pre></div>
         </details>
@@ -1983,8 +1969,8 @@ for fetching user presence information.</p>
 <span class="sd">    for fetching user presence information.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_user_presences</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">users</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UserOrUserId</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Presence</span><span class="p">]:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1997,14 +1983,14 @@ for fetching user presence information.</p>
 <span class="sd">            A list of Presences.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">presences_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;presence&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/presence/users&quot;</span><span class="p">),</span>
+        <span class="n">presences_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;presence&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/presence/users&quot;</span><span class="p">),</span>
             <span class="n">json</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;userIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">users</span><span class="p">))</span>
             <span class="p">}</span>
         <span class="p">)</span>
         <span class="n">presences_data</span> <span class="o">=</span> <span class="n">presences_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;userPresences&quot;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">Presence</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">presence_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">presence_data</span> <span class="ow">in</span> <span class="n">presences_data</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Presence</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">presence_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">presence_data</span> <span class="ow">in</span> <span class="n">presences_data</span><span class="p">]</span>
 </code></pre></div>
         </details>
 
@@ -2025,7 +2011,7 @@ for fetching user presence information.</p>
 
 
 <h4 id="roblox.presence.PresenceProvider.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -2038,8 +2024,8 @@ for fetching user presence information.</p>
 
         <details class="quote">
           <summary>Source code in <code>roblox/presence.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">):</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
 </code></pre></div>
         </details>
     </div>
@@ -2112,14 +2098,14 @@ for fetching user presence information.</p>
 <span class="sd">        A list of Presences.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">presences_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;presence&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/presence/users&quot;</span><span class="p">),</span>
+    <span class="n">presences_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;presence&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/presence/users&quot;</span><span class="p">),</span>
         <span class="n">json</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;userIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">users</span><span class="p">))</span>
         <span class="p">}</span>
     <span class="p">)</span>
     <span class="n">presences_data</span> <span class="o">=</span> <span class="n">presences_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;userPresences&quot;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">Presence</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">presence_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">presence_data</span> <span class="ow">in</span> <span class="n">presences_data</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">Presence</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">presence_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">presence_data</span> <span class="ow">in</span> <span class="n">presences_data</span><span class="p">]</span>
 </code></pre></div>
         </details>
     </div>

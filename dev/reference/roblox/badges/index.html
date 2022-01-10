@@ -1429,20 +1429,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../utilities/shared/" class="md-nav__link">
-        shared
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../utilities/types/" class="md-nav__link">
         types
       </a>
@@ -1740,28 +1726,28 @@ Badge            (<a title="roblox.bases.basebadge.BaseBadge" href="../bases/bas
 <span class="sd">        awarding_universe: The universe the badge is being awarded from.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Arguments:</span>
-<span class="sd">            shared: The ClientSharedObject to be used when getting information on badges.</span>
+<span class="sd">            client: The Client to be used when getting information on badges.</span>
 <span class="sd">            data: The data from the endpoint.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">badge_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">badge_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">display_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;displayName&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">display_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;displayDescription&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">icon</span><span class="p">:</span> <span class="n">BaseAsset</span> <span class="o">=</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;iconImageId&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">display_icon</span><span class="p">:</span> <span class="n">BaseAsset</span> <span class="o">=</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;displayIconImageId&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">icon</span><span class="p">:</span> <span class="n">BaseAsset</span> <span class="o">=</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;iconImageId&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_icon</span><span class="p">:</span> <span class="n">BaseAsset</span> <span class="o">=</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;displayIconImageId&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;created&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">updated</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;updated&quot;</span><span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">statistics</span><span class="p">:</span> <span class="n">BadgeStatistics</span> <span class="o">=</span> <span class="n">BadgeStatistics</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;statistics&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">awarding_universe</span><span class="p">:</span> <span class="n">PartialUniverse</span> <span class="o">=</span> <span class="n">PartialUniverse</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;awardingUniverse&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">awarding_universe</span><span class="p">:</span> <span class="n">PartialUniverse</span> <span class="o">=</span> <span class="n">PartialUniverse</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;awardingUniverse&quot;</span><span class="p">])</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> id=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2">&gt;&quot;</span>
@@ -1785,7 +1771,7 @@ Badge            (<a title="roblox.bases.basebadge.BaseBadge" href="../bases/bas
 
 
 <h4 id="roblox.badges.Badge.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -1808,9 +1794,9 @@ Badge            (<a title="roblox.bases.basebadge.BaseBadge" href="../bases/bas
   </thead>
   <tbody>
       <tr>
-        <td><code>shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The ClientSharedObject to be used when getting information on badges.</p></td>
+        <td><code>client</code></td>
+        <td><code>Client</code></td>
+        <td><p>The Client to be used when getting information on badges.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
@@ -1823,28 +1809,28 @@ Badge            (<a title="roblox.bases.basebadge.BaseBadge" href="../bases/bas
 </table>
         <details class="quote">
           <summary>Source code in <code>roblox/badges.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments:</span>
-<span class="sd">        shared: The ClientSharedObject to be used when getting information on badges.</span>
+<span class="sd">        client: The Client to be used when getting information on badges.</span>
 <span class="sd">        data: The data from the endpoint.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
 
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">badge_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">badge_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">display_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;displayName&quot;</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">display_description</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;displayDescription&quot;</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;enabled&quot;</span><span class="p">]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">icon</span><span class="p">:</span> <span class="n">BaseAsset</span> <span class="o">=</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;iconImageId&quot;</span><span class="p">])</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">display_icon</span><span class="p">:</span> <span class="n">BaseAsset</span> <span class="o">=</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;displayIconImageId&quot;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">icon</span><span class="p">:</span> <span class="n">BaseAsset</span> <span class="o">=</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;iconImageId&quot;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">display_icon</span><span class="p">:</span> <span class="n">BaseAsset</span> <span class="o">=</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;displayIconImageId&quot;</span><span class="p">])</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;created&quot;</span><span class="p">])</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">updated</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;updated&quot;</span><span class="p">])</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">statistics</span><span class="p">:</span> <span class="n">BadgeStatistics</span> <span class="o">=</span> <span class="n">BadgeStatistics</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;statistics&quot;</span><span class="p">])</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">awarding_universe</span><span class="p">:</span> <span class="n">PartialUniverse</span> <span class="o">=</span> <span class="n">PartialUniverse</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;awardingUniverse&quot;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">awarding_universe</span><span class="p">:</span> <span class="n">PartialUniverse</span> <span class="o">=</span> <span class="n">PartialUniverse</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;awardingUniverse&quot;</span><span class="p">])</span>
 </code></pre></div>
         </details>
     </div>

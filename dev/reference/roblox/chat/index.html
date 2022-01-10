@@ -1450,20 +1450,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../utilities/shared/" class="md-nav__link">
-        shared
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../utilities/types/" class="md-nav__link">
         types
       </a>
@@ -1695,12 +1681,12 @@ ChatProvider        </code>
 <span class="sd">    Provides information and data related to the Roblox chat system.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Arguments:</span>
-<span class="sd">            shared: The ClientSharedObject for getting information about chat.</span>
+<span class="sd">            client: The Client for getting information about chat.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
 
     <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
@@ -1712,8 +1698,8 @@ ChatProvider        </code>
 <span class="sd">        Returns: </span>
 <span class="sd">            The user&#39;s unread conversation count.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">unread_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;v2/get-unread-conversation-count&quot;</span><span class="p">)</span>
+        <span class="n">unread_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;v2/get-unread-conversation-count&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">unread_data</span> <span class="o">=</span> <span class="n">unread_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">unread_data</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span>
@@ -1725,8 +1711,8 @@ ChatProvider        </code>
 <span class="sd">        Returns: </span>
 <span class="sd">            The user&#39;s chat settings.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">settings_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;v2/chat-settings&quot;</span><span class="p">)</span>
+        <span class="n">settings_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;v2/chat-settings&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">settings_data</span> <span class="o">=</span> <span class="n">settings_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">ChatSettings</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">settings_data</span><span class="p">)</span>
@@ -1739,9 +1725,9 @@ ChatProvider        </code>
 <span class="sd">            The user&#39;s conversations as a PageNumberIterator.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">PageNumberIterator</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;v2/get-user-conversations&quot;</span><span class="p">),</span>
-            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Conversation</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;v2/get-user-conversations&quot;</span><span class="p">),</span>
+            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Conversation</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
         <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -1763,7 +1749,7 @@ ChatProvider        </code>
 
 
 <h4 id="roblox.chat.ChatProvider.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -1786,21 +1772,21 @@ ChatProvider        </code>
   </thead>
   <tbody>
       <tr>
-        <td><code>shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The ClientSharedObject for getting information about chat.</p></td>
+        <td><code>client</code></td>
+        <td><code>Client</code></td>
+        <td><p>The Client for getting information about chat.</p></td>
         <td><em>required</em></td>
       </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>roblox/chat.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments:</span>
-<span class="sd">        shared: The ClientSharedObject for getting information about chat.</span>
+<span class="sd">        client: The Client for getting information about chat.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
 </code></pre></div>
         </details>
     </div>
@@ -1865,8 +1851,8 @@ ChatProvider        </code>
 <span class="sd">    Returns: </span>
 <span class="sd">        The user&#39;s chat settings.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">settings_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;v2/chat-settings&quot;</span><span class="p">)</span>
+    <span class="n">settings_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;v2/chat-settings&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">settings_data</span> <span class="o">=</span> <span class="n">settings_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">ChatSettings</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">settings_data</span><span class="p">)</span>
@@ -1906,8 +1892,8 @@ ChatProvider        </code>
 <span class="sd">    Returns: </span>
 <span class="sd">        The user&#39;s unread conversation count.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">unread_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;v2/get-unread-conversation-count&quot;</span><span class="p">)</span>
+    <span class="n">unread_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;v2/get-unread-conversation-count&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">unread_data</span> <span class="o">=</span> <span class="n">unread_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">unread_data</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span>
@@ -1945,9 +1931,9 @@ ChatProvider        </code>
 <span class="sd">        The user&#39;s conversations as a PageNumberIterator.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">PageNumberIterator</span><span class="p">(</span>
-        <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;v2/get-user-conversations&quot;</span><span class="p">),</span>
-        <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Conversation</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;v2/get-user-conversations&quot;</span><span class="p">),</span>
+        <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Conversation</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
     <span class="p">)</span>
 </code></pre></div>
         </details>

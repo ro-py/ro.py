@@ -1404,20 +1404,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utilities/shared/" class="md-nav__link">
-        shared
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../utilities/types/" class="md-nav__link">
         types
       </a>
@@ -1607,11 +1593,6 @@ Places are a form of Asset and as such this object derives from BaseAsset.</p>
   </thead>
   <tbody>
       <tr>
-        <td><code>_shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The ClientSharedObject.</p></td>
-      </tr>
-      <tr>
         <td><code>id</code></td>
         <td><code>int</code></td>
         <td><p>The place ID.</p></td>
@@ -1626,20 +1607,19 @@ Places are a form of Asset and as such this object derives from BaseAsset.</p>
 <span class="sd">    Places are a form of Asset and as such this object derives from BaseAsset.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        _shared: The ClientSharedObject.</span>
 <span class="sd">        id: The place ID.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">place_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">place_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Arguments:</span>
-<span class="sd">            shared: The ClientSharedObject.</span>
+<span class="sd">            client: The Client this object belongs to.</span>
 <span class="sd">            place_id: The place ID.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="p">,</span> <span class="n">place_id</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">place_id</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">place_id</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
@@ -1653,8 +1633,8 @@ Places are a form of Asset and as such this object derives from BaseAsset.</p>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">..jobs</span> <span class="kn">import</span> <span class="n">GameInstances</span>
 
-        <span class="n">instances_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;www&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;games/getgameinstancesjson&quot;</span><span class="p">),</span>
+        <span class="n">instances_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;www&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;games/getgameinstancesjson&quot;</span><span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;placeId&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
                 <span class="s2">&quot;startIndex&quot;</span><span class="p">:</span> <span class="n">start_index</span>
@@ -1662,7 +1642,7 @@ Places are a form of Asset and as such this object derives from BaseAsset.</p>
         <span class="p">)</span>
         <span class="n">instances_data</span> <span class="o">=</span> <span class="n">instances_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">GameInstances</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">instances_data</span>
         <span class="p">)</span>
 </code></pre></div>
@@ -1685,7 +1665,7 @@ Places are a form of Asset and as such this object derives from BaseAsset.</p>
 
 
 <h4 id="roblox.bases.baseplace.BasePlace.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">place_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">place_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -1708,9 +1688,9 @@ Places are a form of Asset and as such this object derives from BaseAsset.</p>
   </thead>
   <tbody>
       <tr>
-        <td><code>shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The ClientSharedObject.</p></td>
+        <td><code>client</code></td>
+        <td><code>Client</code></td>
+        <td><p>The Client this object belongs to.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
@@ -1723,16 +1703,16 @@ Places are a form of Asset and as such this object derives from BaseAsset.</p>
 </table>
         <details class="quote">
           <summary>Source code in <code>roblox/bases/baseplace.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">place_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">place_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments:</span>
-<span class="sd">        shared: The ClientSharedObject.</span>
+<span class="sd">        client: The Client this object belongs to.</span>
 <span class="sd">        place_id: The place ID.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="p">,</span> <span class="n">place_id</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">place_id</span><span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">place_id</span>
 </code></pre></div>
         </details>
@@ -1793,8 +1773,8 @@ For more items, add 10 to the start index and repeat until no more items are ava
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">..jobs</span> <span class="kn">import</span> <span class="n">GameInstances</span>
 
-    <span class="n">instances_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;www&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;games/getgameinstancesjson&quot;</span><span class="p">),</span>
+    <span class="n">instances_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;www&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;games/getgameinstancesjson&quot;</span><span class="p">),</span>
         <span class="n">params</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;placeId&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
             <span class="s2">&quot;startIndex&quot;</span><span class="p">:</span> <span class="n">start_index</span>
@@ -1802,7 +1782,7 @@ For more items, add 10 to the start index and repeat until no more items are ava
     <span class="p">)</span>
     <span class="n">instances_data</span> <span class="o">=</span> <span class="n">instances_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">GameInstances</span><span class="p">(</span>
-        <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+        <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
         <span class="n">data</span><span class="o">=</span><span class="n">instances_data</span>
     <span class="p">)</span>
 </code></pre></div>

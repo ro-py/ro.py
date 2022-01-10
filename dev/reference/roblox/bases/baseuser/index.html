@@ -1523,20 +1523,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utilities/shared/" class="md-nav__link">
-        shared
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../utilities/types/" class="md-nav__link">
         types
       </a>
@@ -1844,11 +1830,6 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
   </thead>
   <tbody>
       <tr>
-        <td><code>_shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The ClientSharedObject.</p></td>
-      </tr>
-      <tr>
         <td><code>id</code></td>
         <td><code>int</code></td>
         <td><p>The user ID.</p></td>
@@ -1862,18 +1843,17 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">    Represents a Roblox user ID.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        _shared: The ClientSharedObject.</span>
 <span class="sd">        id: The user ID.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Arguments:</span>
-<span class="sd">            shared: The ClientSharedObject.</span>
+<span class="sd">            client: The Client this object belongs to.</span>
 <span class="sd">            user_id: The user ID.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">user_id</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_status</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
@@ -1883,8 +1863,8 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">        Returns:</span>
 <span class="sd">            The user&#39;s status.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">status_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+        <span class="n">status_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
                 <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/status&quot;</span>
             <span class="p">)</span>
         <span class="p">)</span>
@@ -1906,14 +1886,14 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">            A PageIterator containing the user&#39;s username history.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+            <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
                 <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/username-history&quot;</span>
             <span class="p">),</span>
             <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
             <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
             <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
-            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
         <span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_presence</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Presence</span><span class="p">]:</span>
@@ -1923,7 +1903,7 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">        Returns:</span>
 <span class="sd">            The user&#39;s presence, if they have an active presence.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">presences</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">presence_provider</span><span class="o">.</span><span class="n">get_user_presences</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">])</span>
+        <span class="n">presences</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">presence</span><span class="o">.</span><span class="n">get_user_presences</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">])</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">presences</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
@@ -1938,11 +1918,11 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="kn">from</span> <span class="nn">..friends</span> <span class="kn">import</span> <span class="n">Friend</span>
-        <span class="n">friends_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;friends&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/friends&quot;</span><span class="p">)</span>
+        <span class="n">friends_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;friends&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/friends&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">friends_data</span> <span class="o">=</span> <span class="n">friends_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">Friend</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">friend_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">friend_data</span> <span class="ow">in</span> <span class="n">friends_data</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">Friend</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">friend_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">friend_data</span> <span class="ow">in</span> <span class="n">friends_data</span><span class="p">]</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_currency</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1951,8 +1931,8 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">        Returns:</span>
 <span class="sd">            The user&#39;s Robux amount.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">currency_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;economy&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/currency&quot;</span><span class="p">)</span>
+        <span class="n">currency_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;economy&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/currency&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">currency_data</span> <span class="o">=</span> <span class="n">currency_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">currency_data</span><span class="p">[</span><span class="s2">&quot;robux&quot;</span><span class="p">]</span>
@@ -1964,8 +1944,8 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">        Returns:</span>
 <span class="sd">            Whether the user has Premium or not.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">premium_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;premiumfeatures&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/validate-membership&quot;</span><span class="p">)</span>
+        <span class="n">premium_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;premiumfeatures&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/validate-membership&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">premium_data</span> <span class="o">=</span> <span class="n">premium_response</span><span class="o">.</span><span class="n">text</span>
         <span class="k">return</span> <span class="n">premium_data</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
@@ -1986,13 +1966,13 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
         <span class="c1"># this is so we can have special classes for other types</span>
         <span class="n">item_class</span> <span class="o">=</span> <span class="n">instance_classes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item_type</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ItemInstance</span>
 
-        <span class="n">instance_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/items/</span><span class="si">{</span><span class="n">item_type</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">item_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">instance_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/items/</span><span class="si">{</span><span class="n">item_type</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">item_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">instance_data</span> <span class="o">=</span> <span class="n">instance_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">instance_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">item_class</span><span class="p">(</span>
-                <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+                <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">instance_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -2029,8 +2009,8 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">        Returns:</span>
 <span class="sd">            A list of partial badges containing badge awarded dates.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">awarded_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;badges&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/badges/awarded-dates&quot;</span><span class="p">),</span>
+        <span class="n">awarded_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;badges&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/badges/awarded-dates&quot;</span><span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;badgeIds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">badge</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">badge</span> <span class="ow">in</span> <span class="n">badges</span><span class="p">]</span>
             <span class="p">}</span>
@@ -2038,7 +2018,7 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
         <span class="n">awarded_data</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">awarded_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">PartialBadge</span><span class="p">(</span>
-                <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+                <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">partial_data</span>
             <span class="p">)</span> <span class="k">for</span> <span class="n">partial_data</span> <span class="ow">in</span> <span class="n">awarded_data</span>
         <span class="p">]</span>
@@ -2052,16 +2032,16 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">from</span> <span class="nn">..roles</span> <span class="kn">import</span> <span class="n">Role</span>
         <span class="kn">from</span> <span class="nn">..groups</span> <span class="kn">import</span> <span class="n">Group</span>
-        <span class="n">roles_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/groups/roles&quot;</span><span class="p">)</span>
+        <span class="n">roles_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/groups/roles&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">roles_data</span> <span class="o">=</span> <span class="n">roles_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span>
             <span class="n">Role</span><span class="p">(</span>
-                <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+                <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">role_data</span><span class="p">[</span><span class="s2">&quot;role&quot;</span><span class="p">],</span>
                 <span class="n">group</span><span class="o">=</span><span class="n">Group</span><span class="p">(</span>
-                    <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+                    <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
                     <span class="n">data</span><span class="o">=</span><span class="n">role_data</span><span class="p">[</span><span class="s2">&quot;group&quot;</span><span class="p">]</span>
                 <span class="p">)</span>
             <span class="p">)</span> <span class="k">for</span> <span class="n">role_data</span> <span class="ow">in</span> <span class="n">roles_data</span>
@@ -2075,11 +2055,11 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">            A list of Roblox badges.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">badges_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;accountinformation&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/roblox-badges&quot;</span><span class="p">)</span>
+        <span class="n">badges_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;accountinformation&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/roblox-badges&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">badges_data</span> <span class="o">=</span> <span class="n">badges_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">RobloxBadge</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">badge_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">badge_data</span> <span class="ow">in</span> <span class="n">badges_data</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">RobloxBadge</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">badge_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">badge_data</span> <span class="ow">in</span> <span class="n">badges_data</span><span class="p">]</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_promotion_channels</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UserPromotionChannels</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -2088,8 +2068,8 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">        Returns:</span>
 <span class="sd">            The user&#39;s promotion channels.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">channels_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;accountinformation&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/promotion-channels&quot;</span><span class="p">)</span>
+        <span class="n">channels_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;accountinformation&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/promotion-channels&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">channels_data</span> <span class="o">=</span> <span class="n">channels_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">UserPromotionChannels</span><span class="p">(</span>
@@ -2097,8 +2077,8 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
         <span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">_get_friend_channel_count</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">channel</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
-        <span class="n">count_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;friends&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">/count&quot;</span><span class="p">)</span>
+        <span class="n">count_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;friends&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">/count&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="k">return</span> <span class="n">count_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span>
 
@@ -2110,12 +2090,12 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PageIterator</span><span class="p">:</span>
         <span class="kn">from</span> <span class="nn">..friends</span> <span class="kn">import</span> <span class="n">Friend</span>
         <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;friends&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;friends&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">channel</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
             <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
             <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
             <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
-            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Friend</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Friend</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
         <span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_friend_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -2200,7 +2180,7 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 
 
 <h4 id="roblox.bases.baseuser.BaseUser.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -2223,9 +2203,9 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
   </thead>
   <tbody>
       <tr>
-        <td><code>shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The ClientSharedObject.</p></td>
+        <td><code>client</code></td>
+        <td><code>Client</code></td>
+        <td><p>The Client this object belongs to.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
@@ -2238,14 +2218,14 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 </table>
         <details class="quote">
           <summary>Source code in <code>roblox/bases/baseuser.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments:</span>
-<span class="sd">        shared: The ClientSharedObject.</span>
+<span class="sd">        client: The Client this object belongs to.</span>
 <span class="sd">        user_id: The user ID.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">user_id</span>
 </code></pre></div>
         </details>
@@ -2349,8 +2329,8 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">    Returns:</span>
 <span class="sd">        A list of partial badges containing badge awarded dates.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">awarded_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;badges&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/badges/awarded-dates&quot;</span><span class="p">),</span>
+    <span class="n">awarded_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;badges&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/badges/awarded-dates&quot;</span><span class="p">),</span>
         <span class="n">params</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;badgeIds&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">badge</span><span class="o">.</span><span class="n">id</span> <span class="k">for</span> <span class="n">badge</span> <span class="ow">in</span> <span class="n">badges</span><span class="p">]</span>
         <span class="p">}</span>
@@ -2358,7 +2338,7 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
     <span class="n">awarded_data</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="n">awarded_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">[</span>
         <span class="n">PartialBadge</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">partial_data</span>
         <span class="p">)</span> <span class="k">for</span> <span class="n">partial_data</span> <span class="ow">in</span> <span class="n">awarded_data</span>
     <span class="p">]</span>
@@ -2411,8 +2391,8 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">    Returns:</span>
 <span class="sd">        The user&#39;s Robux amount.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">currency_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;economy&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/currency&quot;</span><span class="p">)</span>
+    <span class="n">currency_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;economy&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/currency&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">currency_data</span> <span class="o">=</span> <span class="n">currency_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">currency_data</span><span class="p">[</span><span class="s2">&quot;robux&quot;</span><span class="p">]</span>
@@ -2729,11 +2709,11 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="kn">from</span> <span class="nn">..friends</span> <span class="kn">import</span> <span class="n">Friend</span>
-    <span class="n">friends_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;friends&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/friends&quot;</span><span class="p">)</span>
+    <span class="n">friends_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;friends&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/friends&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">friends_data</span> <span class="o">=</span> <span class="n">friends_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">Friend</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">friend_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">friend_data</span> <span class="ow">in</span> <span class="n">friends_data</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">Friend</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">friend_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">friend_data</span> <span class="ow">in</span> <span class="n">friends_data</span><span class="p">]</span>
 </code></pre></div>
         </details>
     </div>
@@ -2838,16 +2818,16 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">..roles</span> <span class="kn">import</span> <span class="n">Role</span>
     <span class="kn">from</span> <span class="nn">..groups</span> <span class="kn">import</span> <span class="n">Group</span>
-    <span class="n">roles_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/groups/roles&quot;</span><span class="p">)</span>
+    <span class="n">roles_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/groups/roles&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">roles_data</span> <span class="o">=</span> <span class="n">roles_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">[</span>
         <span class="n">Role</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">role_data</span><span class="p">[</span><span class="s2">&quot;role&quot;</span><span class="p">],</span>
             <span class="n">group</span><span class="o">=</span><span class="n">Group</span><span class="p">(</span>
-                <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+                <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
                 <span class="n">data</span><span class="o">=</span><span class="n">role_data</span><span class="p">[</span><span class="s2">&quot;group&quot;</span><span class="p">]</span>
             <span class="p">)</span>
         <span class="p">)</span> <span class="k">for</span> <span class="n">role_data</span> <span class="ow">in</span> <span class="n">roles_data</span>
@@ -2921,13 +2901,13 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
     <span class="c1"># this is so we can have special classes for other types</span>
     <span class="n">item_class</span> <span class="o">=</span> <span class="n">instance_classes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">item_type</span><span class="p">)</span> <span class="ow">or</span> <span class="n">ItemInstance</span>
 
-    <span class="n">instance_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/items/</span><span class="si">{</span><span class="n">item_type</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">item_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">instance_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;inventory&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/items/</span><span class="si">{</span><span class="n">item_type</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">item_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">instance_data</span> <span class="o">=</span> <span class="n">instance_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">instance_data</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">item_class</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">instance_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
@@ -2981,7 +2961,7 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">    Returns:</span>
 <span class="sd">        The user&#39;s presence, if they have an active presence.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">presences</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">presence_provider</span><span class="o">.</span><span class="n">get_user_presences</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">])</span>
+    <span class="n">presences</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">presence</span><span class="o">.</span><span class="n">get_user_presences</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">])</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">presences</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
@@ -3035,8 +3015,8 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">    Returns:</span>
 <span class="sd">        The user&#39;s promotion channels.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">channels_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;accountinformation&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/promotion-channels&quot;</span><span class="p">)</span>
+    <span class="n">channels_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;accountinformation&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/promotion-channels&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">channels_data</span> <span class="o">=</span> <span class="n">channels_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">UserPromotionChannels</span><span class="p">(</span>
@@ -3092,11 +3072,11 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">        A list of Roblox badges.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">badges_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;accountinformation&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/roblox-badges&quot;</span><span class="p">)</span>
+    <span class="n">badges_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;accountinformation&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/roblox-badges&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">badges_data</span> <span class="o">=</span> <span class="n">badges_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">RobloxBadge</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">badge_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">badge_data</span> <span class="ow">in</span> <span class="n">badges_data</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">RobloxBadge</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">badge_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">badge_data</span> <span class="ow">in</span> <span class="n">badges_data</span><span class="p">]</span>
 </code></pre></div>
         </details>
     </div>
@@ -3146,8 +3126,8 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">    Returns:</span>
 <span class="sd">        The user&#39;s status.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">status_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+    <span class="n">status_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
             <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/status&quot;</span>
         <span class="p">)</span>
     <span class="p">)</span>
@@ -3202,8 +3182,8 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">    Returns:</span>
 <span class="sd">        Whether the user has Premium or not.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">premium_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;premiumfeatures&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/validate-membership&quot;</span><span class="p">)</span>
+    <span class="n">premium_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;premiumfeatures&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/validate-membership&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">premium_data</span> <span class="o">=</span> <span class="n">premium_response</span><span class="o">.</span><span class="n">text</span>
     <span class="k">return</span> <span class="n">premium_data</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
@@ -3292,14 +3272,14 @@ BaseUser            (<a title="roblox.bases.baseitem.BaseItem" href="../baseitem
 <span class="sd">        A PageIterator containing the user&#39;s username history.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
-        <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+        <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
             <span class="s2">&quot;users&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/username-history&quot;</span>
         <span class="p">),</span>
         <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
         <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
         <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
-        <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
+        <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
     <span class="p">)</span>
 </code></pre></div>
         </details>

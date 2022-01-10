@@ -1676,20 +1676,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../utilities/shared/" class="md-nav__link">
-        shared
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../utilities/types/" class="md-nav__link">
         types
       </a>
@@ -2303,13 +2289,13 @@ Thumbnail        </code>
 <span class="sd">        image_url: Url of the image.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Arguments:</span>
-<span class="sd">            shared: Shared object.</span>
+<span class="sd">            client: Client object.</span>
 <span class="sd">            data: The data from the request.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">data</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">target_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;targetId&quot;</span><span class="p">]</span>
@@ -2327,12 +2313,12 @@ Thumbnail        </code>
 <span class="sd">        Returns:</span>
 <span class="sd">            A ThreeDThumbnail.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">threed_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">threed_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
             <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">image_url</span>
         <span class="p">)</span>
         <span class="n">threed_data</span> <span class="o">=</span> <span class="n">threed_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">ThreeDThumbnail</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">threed_data</span>
         <span class="p">)</span>
 </code></pre></div>
@@ -2355,7 +2341,7 @@ Thumbnail        </code>
 
 
 <h4 id="roblox.thumbnails.Thumbnail.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -2378,9 +2364,9 @@ Thumbnail        </code>
   </thead>
   <tbody>
       <tr>
-        <td><code>shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>Shared object.</p></td>
+        <td><code>client</code></td>
+        <td><code>Client</code></td>
+        <td><p>Client object.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
@@ -2393,13 +2379,13 @@ Thumbnail        </code>
 </table>
         <details class="quote">
           <summary>Source code in <code>roblox/thumbnails.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments:</span>
-<span class="sd">        shared: Shared object.</span>
+<span class="sd">        client: Client object.</span>
 <span class="sd">        data: The data from the request.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">data</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">target_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;targetId&quot;</span><span class="p">]</span>
@@ -2483,12 +2469,12 @@ Thumbnail        </code>
 <span class="sd">    Returns:</span>
 <span class="sd">        A ThreeDThumbnail.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">threed_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+    <span class="n">threed_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
         <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">image_url</span>
     <span class="p">)</span>
     <span class="n">threed_data</span> <span class="o">=</span> <span class="n">threed_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">ThreeDThumbnail</span><span class="p">(</span>
-        <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
+        <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
         <span class="n">data</span><span class="o">=</span><span class="n">threed_data</span>
     <span class="p">)</span>
 </code></pre></div>
@@ -2619,12 +2605,12 @@ ThumbnailProvider        </code>
 <span class="sd">    The ThumbnailProvider that provides multiple functions for generating user thumbnails.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Arguments:</span>
-<span class="sd">            shared: Shared object.</span>
+<span class="sd">            client: Client object.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_asset_thumbnails</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -2671,8 +2657,8 @@ ThumbnailProvider        </code>
 <span class="sd">        Returns:</span>
 <span class="sd">            A list of Thumbnails.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/assets&quot;</span><span class="p">),</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/assets&quot;</span><span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;assetIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">assets</span><span class="p">)),</span>
                 <span class="s2">&quot;returnPolicy&quot;</span><span class="p">:</span> <span class="n">return_policy</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -2683,7 +2669,7 @@ ThumbnailProvider        </code>
         <span class="p">)</span>
         <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
         <span class="p">]</span>
 
@@ -2697,14 +2683,14 @@ ThumbnailProvider        </code>
 <span class="sd">        Returns:</span>
 <span class="sd">            A Thumbnail.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">thumbnail_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+        <span class="n">thumbnail_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
                 <span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/assets-thumbnail-3d&quot;</span>
             <span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;assetId&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">asset</span><span class="p">)},</span>
         <span class="p">)</span>
         <span class="n">thumbnail_data</span> <span class="o">=</span> <span class="n">thumbnail_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_badge_icons</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
@@ -2727,8 +2713,8 @@ ThumbnailProvider        </code>
 <span class="sd">        Returns:</span>
 <span class="sd">            A list of Thumbnails.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/badges/icons&quot;</span><span class="p">),</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/badges/icons&quot;</span><span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;badgeIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">badges</span><span class="p">)),</span>
                 <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
@@ -2738,7 +2724,7 @@ ThumbnailProvider        </code>
         <span class="p">)</span>
         <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
         <span class="p">]</span>
 
@@ -2764,8 +2750,8 @@ ThumbnailProvider        </code>
 <span class="sd">        Returns:</span>
 <span class="sd">            A list of Thumbnails.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/game-passes&quot;</span><span class="p">),</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/game-passes&quot;</span><span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;gamePassIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">gamepasses</span><span class="p">)),</span>
                 <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
@@ -2775,7 +2761,7 @@ ThumbnailProvider        </code>
         <span class="p">)</span>
         <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
         <span class="p">]</span>
 
@@ -2807,8 +2793,8 @@ ThumbnailProvider        </code>
 <span class="sd">        Returns:</span>
 <span class="sd">            A list of Thumbnails.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/games/icons&quot;</span><span class="p">),</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/games/icons&quot;</span><span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;universeIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">universes</span><span class="p">)),</span>
                 <span class="s2">&quot;returnPolicy&quot;</span><span class="p">:</span> <span class="n">return_policy</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -2819,7 +2805,7 @@ ThumbnailProvider        </code>
         <span class="p">)</span>
         <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
         <span class="p">]</span>
 
@@ -2852,8 +2838,8 @@ ThumbnailProvider        </code>
 <span class="sd">        Returns:</span>
 <span class="sd">            A list of Thumbnails.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
                 <span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/games/multiget/thumbnails&quot;</span>
             <span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="p">{</span>
@@ -2867,7 +2853,7 @@ ThumbnailProvider        </code>
         <span class="p">)</span>
         <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">UniverseThumbnails</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="n">UniverseThumbnails</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
         <span class="p">]</span>
 
@@ -2893,8 +2879,8 @@ ThumbnailProvider        </code>
 <span class="sd">        Returns:</span>
 <span class="sd">            A list of Thumbnails.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/groups/icons&quot;</span><span class="p">),</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/groups/icons&quot;</span><span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;groupIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">groups</span><span class="p">)),</span>
                 <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
@@ -2904,7 +2890,7 @@ ThumbnailProvider        </code>
         <span class="p">)</span>
         <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
         <span class="p">]</span>
 
@@ -2935,8 +2921,8 @@ ThumbnailProvider        </code>
 <span class="sd">        Returns:</span>
 <span class="sd">            A List of Thumbnails.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/places/gameicons&quot;</span><span class="p">),</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/places/gameicons&quot;</span><span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;placeIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">places</span><span class="p">)),</span>
                 <span class="s2">&quot;returnPolicy&quot;</span><span class="p">:</span> <span class="n">return_policy</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -2947,7 +2933,7 @@ ThumbnailProvider        </code>
         <span class="p">)</span>
         <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
         <span class="p">]</span>
 
@@ -3004,8 +2990,8 @@ ThumbnailProvider        </code>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Avatar type is invalid.&quot;</span><span class="p">)</span>
 
-        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+        <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;userIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">users</span><span class="p">)),</span>
                 <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
@@ -3016,7 +3002,7 @@ ThumbnailProvider        </code>
 
         <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
         <span class="p">]</span>
 
@@ -3030,14 +3016,14 @@ ThumbnailProvider        </code>
 <span class="sd">        Returns:</span>
 <span class="sd">            A Thumbnail.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">thumbnail_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/users/avatar-3d&quot;</span><span class="p">),</span>
+        <span class="n">thumbnail_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/users/avatar-3d&quot;</span><span class="p">),</span>
             <span class="n">params</span><span class="o">=</span><span class="p">{</span>
                 <span class="s2">&quot;userId&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
             <span class="p">},</span>
         <span class="p">)</span>
         <span class="n">thumbnail_data</span> <span class="o">=</span> <span class="n">thumbnail_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
 </code></pre></div>
         </details>
 
@@ -3058,7 +3044,7 @@ ThumbnailProvider        </code>
 
 
 <h4 id="roblox.thumbnails.ThumbnailProvider.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -3081,21 +3067,21 @@ ThumbnailProvider        </code>
   </thead>
   <tbody>
       <tr>
-        <td><code>shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>Shared object.</p></td>
+        <td><code>client</code></td>
+        <td><code>Client</code></td>
+        <td><p>Client object.</p></td>
         <td><em>required</em></td>
       </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>roblox/thumbnails.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments:</span>
-<span class="sd">        shared: Shared object.</span>
+<span class="sd">        client: Client object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
 </code></pre></div>
         </details>
     </div>
@@ -3109,7 +3095,7 @@ ThumbnailProvider        </code>
 
 
 <h4 id="roblox.thumbnails.ThumbnailProvider.get_asset_thumbnail_3d" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_asset_thumbnail_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">bases</span><span class="o">.</span><span class="n">baseasset</span><span class="o">.</span><span class="n">BaseAsset</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Thumbnail</span></code>
+<code class="highlight language-python"><span class="n">get_asset_thumbnail_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">asset</span><span class="p">:</span> <span class="n">AssetOrAssetId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Thumbnail</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-async"><code>async</code></small>
@@ -3134,7 +3120,7 @@ ThumbnailProvider        </code>
   <tbody>
       <tr>
         <td><code>asset</code></td>
-        <td><code>Union[roblox.bases.baseasset.BaseAsset, int]</code></td>
+        <td><code>AssetOrAssetId</code></td>
         <td><p>Asset you want the thumbnails of.</p></td>
         <td><em>required</em></td>
       </tr>
@@ -3167,14 +3153,14 @@ ThumbnailProvider        </code>
 <span class="sd">    Returns:</span>
 <span class="sd">        A Thumbnail.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">thumbnail_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+    <span class="n">thumbnail_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
             <span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/assets-thumbnail-3d&quot;</span>
         <span class="p">),</span>
         <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;assetId&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">asset</span><span class="p">)},</span>
     <span class="p">)</span>
     <span class="n">thumbnail_data</span> <span class="o">=</span> <span class="n">thumbnail_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -3188,7 +3174,7 @@ ThumbnailProvider        </code>
 
 
 <h4 id="roblox.thumbnails.ThumbnailProvider.get_asset_thumbnails" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_asset_thumbnails</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">assets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">bases</span><span class="o">.</span><span class="n">baseasset</span><span class="o">.</span><span class="n">BaseAsset</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">return_policy</span><span class="p">:</span> <span class="n">ThumbnailReturnPolicy</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailReturnPolicy</span><span class="o">.</span><span class="n">place_holder</span><span class="p">:</span> <span class="s1">&#39;PlaceHolder&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">thumbnails</span><span class="o">.</span><span class="n">Thumbnail</span><span class="p">]</span></code>
+<code class="highlight language-python"><span class="n">get_asset_thumbnails</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">assets</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">AssetOrAssetId</span><span class="p">],</span> <span class="n">return_policy</span><span class="p">:</span> <span class="n">ThumbnailReturnPolicy</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailReturnPolicy</span><span class="o">.</span><span class="n">place_holder</span><span class="p">:</span> <span class="s1">&#39;PlaceHolder&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">30</span><span class="p">),</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-async"><code>async</code></small>
@@ -3237,7 +3223,7 @@ Supported sizes:<br />
   <tbody>
       <tr>
         <td><code>assets</code></td>
-        <td><code>List[Union[roblox.bases.baseasset.BaseAsset, int]]</code></td>
+        <td><code>List[AssetOrAssetId]</code></td>
         <td><p>Assets you want the thumbnails of.</p></td>
         <td><em>required</em></td>
       </tr>
@@ -3249,7 +3235,7 @@ Supported sizes:<br />
       </tr>
       <tr>
         <td><code>size</code></td>
-        <td><code>Union[Tuple[int, int], str]</code></td>
+        <td><code>SizeTupleOrString</code></td>
         <td><p>size of the image.</p></td>
         <td><code>(30, 30)</code></td>
       </tr>
@@ -3277,7 +3263,7 @@ Supported sizes:<br />
   </thead>
   <tbody>
     <tr>
-      <td><code>List[roblox.thumbnails.Thumbnail]</code></td>
+      <td><code>List[Thumbnail]</code></td>
       <td><p>A list of Thumbnails.</p></td>
     </tr>
   </tbody>
@@ -3329,8 +3315,8 @@ Supported sizes:<br />
 <span class="sd">    Returns:</span>
 <span class="sd">        A list of Thumbnails.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/assets&quot;</span><span class="p">),</span>
+    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/assets&quot;</span><span class="p">),</span>
         <span class="n">params</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;assetIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">assets</span><span class="p">)),</span>
             <span class="s2">&quot;returnPolicy&quot;</span><span class="p">:</span> <span class="n">return_policy</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -3341,7 +3327,7 @@ Supported sizes:<br />
     <span class="p">)</span>
     <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">[</span>
-        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
     <span class="p">]</span>
 </code></pre></div>
@@ -3357,7 +3343,7 @@ Supported sizes:<br />
 
 
 <h4 id="roblox.thumbnails.ThumbnailProvider.get_badge_icons" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_badge_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">badges</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">bases</span><span class="o">.</span><span class="n">basebadge</span><span class="o">.</span><span class="n">BaseBadge</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">thumbnails</span><span class="o">.</span><span class="n">Thumbnail</span><span class="p">]</span></code>
+<code class="highlight language-python"><span class="n">get_badge_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">badges</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">BadgeOrBadgeId</span><span class="p">],</span> <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-async"><code>async</code></small>
@@ -3384,13 +3370,13 @@ Supported sizes:<br />
   <tbody>
       <tr>
         <td><code>badges</code></td>
-        <td><code>List[Union[roblox.bases.basebadge.BaseBadge, int]]</code></td>
+        <td><code>List[BadgeOrBadgeId]</code></td>
         <td><p>Badges you want the thumbnails of.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>size</code></td>
-        <td><code>Union[Tuple[int, int], str]</code></td>
+        <td><code>SizeTupleOrString</code></td>
         <td><p>size of the image.</p></td>
         <td><code>(150, 150)</code></td>
       </tr>
@@ -3418,7 +3404,7 @@ Supported sizes:<br />
   </thead>
   <tbody>
     <tr>
-      <td><code>List[roblox.thumbnails.Thumbnail]</code></td>
+      <td><code>List[Thumbnail]</code></td>
       <td><p>A list of Thumbnails.</p></td>
     </tr>
   </tbody>
@@ -3446,8 +3432,8 @@ Supported sizes:<br />
 <span class="sd">    Returns:</span>
 <span class="sd">        A list of Thumbnails.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/badges/icons&quot;</span><span class="p">),</span>
+    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/badges/icons&quot;</span><span class="p">),</span>
         <span class="n">params</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;badgeIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">badges</span><span class="p">)),</span>
             <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
@@ -3457,7 +3443,7 @@ Supported sizes:<br />
     <span class="p">)</span>
     <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">[</span>
-        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
     <span class="p">]</span>
 </code></pre></div>
@@ -3473,7 +3459,7 @@ Supported sizes:<br />
 
 
 <h4 id="roblox.thumbnails.ThumbnailProvider.get_gamepass_icons" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_gamepass_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamepasses</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">bases</span><span class="o">.</span><span class="n">basegamepass</span><span class="o">.</span><span class="n">BaseGamePass</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">thumbnails</span><span class="o">.</span><span class="n">Thumbnail</span><span class="p">]</span></code>
+<code class="highlight language-python"><span class="n">get_gamepass_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gamepasses</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">GamePassOrGamePassId</span><span class="p">],</span> <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-async"><code>async</code></small>
@@ -3500,13 +3486,13 @@ Supported sizes:<br />
   <tbody>
       <tr>
         <td><code>gamepasses</code></td>
-        <td><code>List[Union[roblox.bases.basegamepass.BaseGamePass, int]]</code></td>
+        <td><code>List[GamePassOrGamePassId]</code></td>
         <td><p>Gamepasses you want the thumbnails of.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>size</code></td>
-        <td><code>Union[Tuple[int, int], str]</code></td>
+        <td><code>SizeTupleOrString</code></td>
         <td><p>size of the image.</p></td>
         <td><code>(150, 150)</code></td>
       </tr>
@@ -3534,7 +3520,7 @@ Supported sizes:<br />
   </thead>
   <tbody>
     <tr>
-      <td><code>List[roblox.thumbnails.Thumbnail]</code></td>
+      <td><code>List[Thumbnail]</code></td>
       <td><p>A list of Thumbnails.</p></td>
     </tr>
   </tbody>
@@ -3563,8 +3549,8 @@ Supported sizes:<br />
 <span class="sd">    Returns:</span>
 <span class="sd">        A list of Thumbnails.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/game-passes&quot;</span><span class="p">),</span>
+    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/game-passes&quot;</span><span class="p">),</span>
         <span class="n">params</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;gamePassIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">gamepasses</span><span class="p">)),</span>
             <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
@@ -3574,7 +3560,7 @@ Supported sizes:<br />
     <span class="p">)</span>
     <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">[</span>
-        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
     <span class="p">]</span>
 </code></pre></div>
@@ -3590,7 +3576,7 @@ Supported sizes:<br />
 
 
 <h4 id="roblox.thumbnails.ThumbnailProvider.get_group_icons" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_group_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">bases</span><span class="o">.</span><span class="n">basegroup</span><span class="o">.</span><span class="n">BaseGroup</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">thumbnails</span><span class="o">.</span><span class="n">Thumbnail</span><span class="p">]</span></code>
+<code class="highlight language-python"><span class="n">get_group_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">groups</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">GroupOrGroupId</span><span class="p">],</span> <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="p">(</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">),</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-async"><code>async</code></small>
@@ -3618,13 +3604,13 @@ Supported sizes:<br />
   <tbody>
       <tr>
         <td><code>groups</code></td>
-        <td><code>List[Union[roblox.bases.basegroup.BaseGroup, int]]</code></td>
+        <td><code>List[GroupOrGroupId]</code></td>
         <td><p>Groups you want the thumbnails of.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>size</code></td>
-        <td><code>Union[Tuple[int, int], str]</code></td>
+        <td><code>SizeTupleOrString</code></td>
         <td><p>size of the image.</p></td>
         <td><code>(150, 150)</code></td>
       </tr>
@@ -3652,7 +3638,7 @@ Supported sizes:<br />
   </thead>
   <tbody>
     <tr>
-      <td><code>List[roblox.thumbnails.Thumbnail]</code></td>
+      <td><code>List[Thumbnail]</code></td>
       <td><p>A list of Thumbnails.</p></td>
     </tr>
   </tbody>
@@ -3681,8 +3667,8 @@ Supported sizes:<br />
 <span class="sd">    Returns:</span>
 <span class="sd">        A list of Thumbnails.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/groups/icons&quot;</span><span class="p">),</span>
+    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/groups/icons&quot;</span><span class="p">),</span>
         <span class="n">params</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;groupIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">groups</span><span class="p">)),</span>
             <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
@@ -3692,7 +3678,7 @@ Supported sizes:<br />
     <span class="p">)</span>
     <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">[</span>
-        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
     <span class="p">]</span>
 </code></pre></div>
@@ -3708,7 +3694,7 @@ Supported sizes:<br />
 
 
 <h4 id="roblox.thumbnails.ThumbnailProvider.get_place_icons" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_place_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">places</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">bases</span><span class="o">.</span><span class="n">baseplace</span><span class="o">.</span><span class="n">BasePlace</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">return_policy</span><span class="p">:</span> <span class="n">ThumbnailReturnPolicy</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailReturnPolicy</span><span class="o">.</span><span class="n">place_holder</span><span class="p">:</span> <span class="s1">&#39;PlaceHolder&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">thumbnails</span><span class="o">.</span><span class="n">Thumbnail</span><span class="p">]</span></code>
+<code class="highlight language-python"><span class="n">get_place_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">places</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PlaceOrPlaceId</span><span class="p">],</span> <span class="n">return_policy</span><span class="p">:</span> <span class="n">ThumbnailReturnPolicy</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailReturnPolicy</span><span class="o">.</span><span class="n">place_holder</span><span class="p">:</span> <span class="s1">&#39;PlaceHolder&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-async"><code>async</code></small>
@@ -3740,7 +3726,7 @@ Supported sizes:<br />
   <tbody>
       <tr>
         <td><code>places</code></td>
-        <td><code>List[Union[roblox.bases.baseplace.BasePlace, int]]</code></td>
+        <td><code>List[PlaceOrPlaceId]</code></td>
         <td><p>Places you want the thumbnails of.</p></td>
         <td><em>required</em></td>
       </tr>
@@ -3752,7 +3738,7 @@ Supported sizes:<br />
       </tr>
       <tr>
         <td><code>size</code></td>
-        <td><code>Union[Tuple[int, int], str]</code></td>
+        <td><code>SizeTupleOrString</code></td>
         <td><p>size of the image.</p></td>
         <td><code>(50, 50)</code></td>
       </tr>
@@ -3780,7 +3766,7 @@ Supported sizes:<br />
   </thead>
   <tbody>
     <tr>
-      <td><code>List[roblox.thumbnails.Thumbnail]</code></td>
+      <td><code>List[Thumbnail]</code></td>
       <td><p>A List of Thumbnails.</p></td>
     </tr>
   </tbody>
@@ -3814,8 +3800,8 @@ Supported sizes:<br />
 <span class="sd">    Returns:</span>
 <span class="sd">        A List of Thumbnails.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/places/gameicons&quot;</span><span class="p">),</span>
+    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/places/gameicons&quot;</span><span class="p">),</span>
         <span class="n">params</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;placeIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">places</span><span class="p">)),</span>
             <span class="s2">&quot;returnPolicy&quot;</span><span class="p">:</span> <span class="n">return_policy</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -3826,7 +3812,7 @@ Supported sizes:<br />
     <span class="p">)</span>
     <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">[</span>
-        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
     <span class="p">]</span>
 </code></pre></div>
@@ -3842,7 +3828,7 @@ Supported sizes:<br />
 
 
 <h4 id="roblox.thumbnails.ThumbnailProvider.get_universe_icons" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_universe_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">universes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">bases</span><span class="o">.</span><span class="n">baseuniverse</span><span class="o">.</span><span class="n">BaseUniverse</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">return_policy</span><span class="p">:</span> <span class="n">ThumbnailReturnPolicy</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailReturnPolicy</span><span class="o">.</span><span class="n">place_holder</span><span class="p">:</span> <span class="s1">&#39;PlaceHolder&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">thumbnails</span><span class="o">.</span><span class="n">Thumbnail</span><span class="p">]</span></code>
+<code class="highlight language-python"><span class="n">get_universe_icons</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">universes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UniverseOrUniverseId</span><span class="p">],</span> <span class="n">return_policy</span><span class="p">:</span> <span class="n">ThumbnailReturnPolicy</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailReturnPolicy</span><span class="o">.</span><span class="n">place_holder</span><span class="p">:</span> <span class="s1">&#39;PlaceHolder&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-async"><code>async</code></small>
@@ -3874,7 +3860,7 @@ Supported sizes:<br />
   <tbody>
       <tr>
         <td><code>universes</code></td>
-        <td><code>List[Union[roblox.bases.baseuniverse.BaseUniverse, int]]</code></td>
+        <td><code>List[UniverseOrUniverseId]</code></td>
         <td><p>Universes you want the thumbnails of.</p></td>
         <td><em>required</em></td>
       </tr>
@@ -3886,7 +3872,7 @@ Supported sizes:<br />
       </tr>
       <tr>
         <td><code>size</code></td>
-        <td><code>Union[Tuple[int, int], str]</code></td>
+        <td><code>SizeTupleOrString</code></td>
         <td><p>size of the image.</p></td>
         <td><code>(50, 50)</code></td>
       </tr>
@@ -3914,7 +3900,7 @@ Supported sizes:<br />
   </thead>
   <tbody>
     <tr>
-      <td><code>List[roblox.thumbnails.Thumbnail]</code></td>
+      <td><code>List[Thumbnail]</code></td>
       <td><p>A list of Thumbnails.</p></td>
     </tr>
   </tbody>
@@ -3949,8 +3935,8 @@ Supported sizes:<br />
 <span class="sd">    Returns:</span>
 <span class="sd">        A list of Thumbnails.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/games/icons&quot;</span><span class="p">),</span>
+    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/games/icons&quot;</span><span class="p">),</span>
         <span class="n">params</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;universeIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">universes</span><span class="p">)),</span>
             <span class="s2">&quot;returnPolicy&quot;</span><span class="p">:</span> <span class="n">return_policy</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
@@ -3961,7 +3947,7 @@ Supported sizes:<br />
     <span class="p">)</span>
     <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">[</span>
-        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
     <span class="p">]</span>
 </code></pre></div>
@@ -3977,7 +3963,7 @@ Supported sizes:<br />
 
 
 <h4 id="roblox.thumbnails.ThumbnailProvider.get_universe_thumbnails" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_universe_thumbnails</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">universes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">bases</span><span class="o">.</span><span class="n">baseuniverse</span><span class="o">.</span><span class="n">BaseUniverse</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">768</span><span class="p">,</span> <span class="mi">432</span><span class="p">),</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">count_per_universe</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">defaults</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">thumbnails</span><span class="o">.</span><span class="n">UniverseThumbnails</span><span class="p">]</span></code>
+<code class="highlight language-python"><span class="n">get_universe_thumbnails</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">universes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UniverseOrUniverseId</span><span class="p">],</span> <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="p">(</span><span class="mi">768</span><span class="p">,</span> <span class="mi">432</span><span class="p">),</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">count_per_universe</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">defaults</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">UniverseThumbnails</span><span class="p">]</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-async"><code>async</code></small>
@@ -4008,13 +3994,13 @@ Supported sizes:<br />
   <tbody>
       <tr>
         <td><code>universes</code></td>
-        <td><code>List[Union[roblox.bases.baseuniverse.BaseUniverse, int]]</code></td>
+        <td><code>List[UniverseOrUniverseId]</code></td>
         <td><p>Universes you want the thumbnails of.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
         <td><code>size</code></td>
-        <td><code>Union[Tuple[int, int], str]</code></td>
+        <td><code>SizeTupleOrString</code></td>
         <td><p>size of the image.</p></td>
         <td><code>(768, 432)</code></td>
       </tr>
@@ -4054,7 +4040,7 @@ Supported sizes:<br />
   </thead>
   <tbody>
     <tr>
-      <td><code>List[roblox.thumbnails.UniverseThumbnails]</code></td>
+      <td><code>List[UniverseThumbnails]</code></td>
       <td><p>A list of Thumbnails.</p></td>
     </tr>
   </tbody>
@@ -4090,8 +4076,8 @@ Supported sizes:<br />
 <span class="sd">    Returns:</span>
 <span class="sd">        A list of Thumbnails.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
             <span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/games/multiget/thumbnails&quot;</span>
         <span class="p">),</span>
         <span class="n">params</span><span class="o">=</span><span class="p">{</span>
@@ -4105,7 +4091,7 @@ Supported sizes:<br />
     <span class="p">)</span>
     <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">[</span>
-        <span class="n">UniverseThumbnails</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+        <span class="n">UniverseThumbnails</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
     <span class="p">]</span>
 </code></pre></div>
@@ -4121,7 +4107,7 @@ Supported sizes:<br />
 
 
 <h4 id="roblox.thumbnails.ThumbnailProvider.get_user_avatar_thumbnail_3d" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_user_avatar_thumbnail_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">bases</span><span class="o">.</span><span class="n">baseuser</span><span class="o">.</span><span class="n">BaseUser</span><span class="p">,</span> <span class="nb">int</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Thumbnail</span></code>
+<code class="highlight language-python"><span class="n">get_user_avatar_thumbnail_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserOrUserId</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Thumbnail</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-async"><code>async</code></small>
@@ -4146,7 +4132,7 @@ Supported sizes:<br />
   <tbody>
       <tr>
         <td><code>user</code></td>
-        <td><code>Union[roblox.bases.baseuser.BaseUser, int]</code></td>
+        <td><code>UserOrUserId</code></td>
         <td><p>User you want the 3d thumbnail of.</p></td>
         <td><em>required</em></td>
       </tr>
@@ -4179,14 +4165,14 @@ Supported sizes:<br />
 <span class="sd">    Returns:</span>
 <span class="sd">        A Thumbnail.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">thumbnail_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/users/avatar-3d&quot;</span><span class="p">),</span>
+    <span class="n">thumbnail_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="s2">&quot;v1/users/avatar-3d&quot;</span><span class="p">),</span>
         <span class="n">params</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;userId&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
         <span class="p">},</span>
     <span class="p">)</span>
     <span class="n">thumbnail_data</span> <span class="o">=</span> <span class="n">thumbnail_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -4200,7 +4186,7 @@ Supported sizes:<br />
 
 
 <h4 id="roblox.thumbnails.ThumbnailProvider.get_user_avatar_thumbnails" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">get_user_avatar_thumbnails</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">users</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">bases</span><span class="o">.</span><span class="n">baseuser</span><span class="o">.</span><span class="n">BaseUser</span><span class="p">,</span> <span class="nb">int</span><span class="p">]],</span> <span class="nb">type</span><span class="p">:</span> <span class="n">AvatarThumbnailType</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">AvatarThumbnailType</span><span class="o">.</span><span class="n">full_body</span><span class="p">:</span> <span class="s1">&#39;full_body&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">roblox</span><span class="o">.</span><span class="n">thumbnails</span><span class="o">.</span><span class="n">Thumbnail</span><span class="p">]</span></code>
+<code class="highlight language-python"><span class="n">get_user_avatar_thumbnails</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">users</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">UserOrUserId</span><span class="p">],</span> <span class="nb">type</span><span class="p">:</span> <span class="n">AvatarThumbnailType</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">AvatarThumbnailType</span><span class="o">.</span><span class="n">full_body</span><span class="p">:</span> <span class="s1">&#39;full_body&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="n">SizeTupleOrString</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">image_format</span><span class="p">:</span> <span class="n">ThumbnailFormat</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">ThumbnailFormat</span><span class="o">.</span><span class="n">png</span><span class="p">:</span> <span class="s1">&#39;Png&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">is_circular</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-async"><code>async</code></small>
@@ -4328,7 +4314,7 @@ The valid sizes depend on the <code>type</code> parameter.</p>
   <tbody>
       <tr>
         <td><code>users</code></td>
-        <td><code>List[Union[roblox.bases.baseuser.BaseUser, int]]</code></td>
+        <td><code>List[UserOrUserId]</code></td>
         <td><p>Id of the users you want the thumbnails of.</p></td>
         <td><em>required</em></td>
       </tr>
@@ -4340,7 +4326,7 @@ The valid sizes depend on the <code>type</code> parameter.</p>
       </tr>
       <tr>
         <td><code>size</code></td>
-        <td><code>Union[Tuple[int, int], str]</code></td>
+        <td><code>SizeTupleOrString</code></td>
         <td><p>size of the image.</p></td>
         <td><code>None</code></td>
       </tr>
@@ -4368,7 +4354,7 @@ The valid sizes depend on the <code>type</code> parameter.</p>
   </thead>
   <tbody>
     <tr>
-      <td><code>List[roblox.thumbnails.Thumbnail]</code></td>
+      <td><code>List[Thumbnail]</code></td>
       <td><p>A list of Thumbnails.</p></td>
     </tr>
   </tbody>
@@ -4428,8 +4414,8 @@ The valid sizes depend on the <code>type</code> parameter.</p>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Avatar type is invalid.&quot;</span><span class="p">)</span>
 
-    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+    <span class="n">thumbnails_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/users/</span><span class="si">{</span><span class="n">uri</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
         <span class="n">params</span><span class="o">=</span><span class="p">{</span>
             <span class="s2">&quot;userIds&quot;</span><span class="p">:</span> <span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">users</span><span class="p">)),</span>
             <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="n">_to_size_string</span><span class="p">(</span><span class="n">size</span><span class="p">),</span>
@@ -4440,7 +4426,7 @@ The valid sizes depend on the <code>type</code> parameter.</p>
 
     <span class="n">thumbnails_data</span> <span class="o">=</span> <span class="n">thumbnails_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
     <span class="k">return</span> <span class="p">[</span>
-        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">thumbnails_data</span>
     <span class="p">]</span>
 </code></pre></div>
@@ -4785,19 +4771,19 @@ UniverseThumbnails        </code>
 <span class="sd">        thumbnails: List of thumbnails.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Arguments:</span>
-<span class="sd">            shared: Shared object.</span>
+<span class="sd">            client: Shared object.</span>
 <span class="sd">            data: The data from the request.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">data</span>
         <span class="c1"># todo add base universe maby</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">universe_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;universeId&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">thumbnails</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+            <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">]</span>
         <span class="p">]</span>
 </code></pre></div>
@@ -4820,7 +4806,7 @@ UniverseThumbnails        </code>
 
 
 <h4 id="roblox.thumbnails.UniverseThumbnails.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -4843,8 +4829,8 @@ UniverseThumbnails        </code>
   </thead>
   <tbody>
       <tr>
-        <td><code>shared</code></td>
-        <td><code>ClientSharedObject</code></td>
+        <td><code>client</code></td>
+        <td><code>Client</code></td>
         <td><p>Shared object.</p></td>
         <td><em>required</em></td>
       </tr>
@@ -4858,19 +4844,19 @@ UniverseThumbnails        </code>
 </table>
         <details class="quote">
           <summary>Source code in <code>roblox/thumbnails.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments:</span>
-<span class="sd">        shared: Shared object.</span>
+<span class="sd">        client: Shared object.</span>
 <span class="sd">        data: The data from the request.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">data</span>
     <span class="c1"># todo add base universe maby</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">universe_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;universeId&quot;</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">thumbnails</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Thumbnail</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
+        <span class="n">Thumbnail</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">thumbnail_data</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">thumbnail_data</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;thumbnails&quot;</span><span class="p">]</span>
     <span class="p">]</span>
 </code></pre></div>

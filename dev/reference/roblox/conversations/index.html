@@ -1463,20 +1463,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../utilities/shared/" class="md-nav__link">
-        shared
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../utilities/types/" class="md-nav__link">
         types
       </a>
@@ -1790,13 +1776,13 @@ Conversation            (<a title="roblox.bases.baseconversation.BaseConversatio
 <span class="sd">        conversation_universe: Specifies the universe associated with the conversation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Arguments:</span>
-<span class="sd">            shared: The shared object.</span>
+<span class="sd">            client: The Client object.</span>
 <span class="sd">            data: The conversation data.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">conversation_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">conversation_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span>
 
@@ -1804,11 +1790,11 @@ Conversation            (<a title="roblox.bases.baseconversation.BaseConversatio
         <span class="c1"># so this is a partialuser</span>
         <span class="c1"># Nikita Petko: Well uhhh, the initiator is of the ChatParticipant model,</span>
         <span class="c1"># where it can either be from User or System.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">initiator</span><span class="p">:</span> <span class="n">PartialUser</span> <span class="o">=</span> <span class="n">PartialUser</span><span class="p">(</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;initiator&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initiator</span><span class="p">:</span> <span class="n">PartialUser</span> <span class="o">=</span> <span class="n">PartialUser</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;initiator&quot;</span><span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">has_unread_messages</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;hasUnreadMessages&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">participants</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PartialUser</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">PartialUser</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">participant_data</span>
         <span class="p">)</span> <span class="k">for</span> <span class="n">participant_data</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;participants&quot;</span><span class="p">]]</span>
 
@@ -1819,7 +1805,7 @@ Conversation            (<a title="roblox.bases.baseconversation.BaseConversatio
         <span class="bp">self</span><span class="o">.</span><span class="n">last_updated</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;lastUpdated&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">conversation_universe</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ChatPartialUniverse</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span>
                                                                         <span class="s2">&quot;conversationUniverse&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">ChatPartialUniverse</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span>
+            <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;conversationUniverse&quot;</span><span class="p">]</span>
         <span class="p">)</span>
 
@@ -1845,7 +1831,7 @@ Conversation            (<a title="roblox.bases.baseconversation.BaseConversatio
 
 
 <h4 id="roblox.conversations.Conversation.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -1868,9 +1854,9 @@ Conversation            (<a title="roblox.bases.baseconversation.BaseConversatio
   </thead>
   <tbody>
       <tr>
-        <td><code>shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The shared object.</p></td>
+        <td><code>client</code></td>
+        <td><code>Client</code></td>
+        <td><p>The Client object.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
@@ -1883,13 +1869,13 @@ Conversation            (<a title="roblox.bases.baseconversation.BaseConversatio
 </table>
         <details class="quote">
           <summary>Source code in <code>roblox/conversations.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments:</span>
-<span class="sd">        shared: The shared object.</span>
+<span class="sd">        client: The Client object.</span>
 <span class="sd">        data: The conversation data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">conversation_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">conversation_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;title&quot;</span><span class="p">]</span>
 
@@ -1897,11 +1883,11 @@ Conversation            (<a title="roblox.bases.baseconversation.BaseConversatio
     <span class="c1"># so this is a partialuser</span>
     <span class="c1"># Nikita Petko: Well uhhh, the initiator is of the ChatParticipant model,</span>
     <span class="c1"># where it can either be from User or System.</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">initiator</span><span class="p">:</span> <span class="n">PartialUser</span> <span class="o">=</span> <span class="n">PartialUser</span><span class="p">(</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;initiator&quot;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">initiator</span><span class="p">:</span> <span class="n">PartialUser</span> <span class="o">=</span> <span class="n">PartialUser</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;initiator&quot;</span><span class="p">])</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">has_unread_messages</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;hasUnreadMessages&quot;</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">participants</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PartialUser</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">PartialUser</span><span class="p">(</span>
-        <span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span>
+        <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
         <span class="n">data</span><span class="o">=</span><span class="n">participant_data</span>
     <span class="p">)</span> <span class="k">for</span> <span class="n">participant_data</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;participants&quot;</span><span class="p">]]</span>
 
@@ -1912,7 +1898,7 @@ Conversation            (<a title="roblox.bases.baseconversation.BaseConversatio
     <span class="bp">self</span><span class="o">.</span><span class="n">last_updated</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;lastUpdated&quot;</span><span class="p">])</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">conversation_universe</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">ChatPartialUniverse</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span>
                                                                     <span class="s2">&quot;conversationUniverse&quot;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">ChatPartialUniverse</span><span class="p">(</span>
-        <span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span>
+        <span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span>
         <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;conversationUniverse&quot;</span><span class="p">]</span>
     <span class="p">)</span>
 </code></pre></div>

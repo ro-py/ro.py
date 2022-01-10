@@ -1459,20 +1459,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../utilities/shared/" class="md-nav__link">
-        shared
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../utilities/types/" class="md-nav__link">
         types
       </a>
@@ -1717,11 +1703,6 @@ BaseUniverse            (<a title="roblox.bases.baseitem.BaseItem" href="../base
   </thead>
   <tbody>
       <tr>
-        <td><code>_shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The ClientSharedObject.</p></td>
-      </tr>
-      <tr>
         <td><code>id</code></td>
         <td><code>int</code></td>
         <td><p>The universe ID.</p></td>
@@ -1735,18 +1716,17 @@ BaseUniverse            (<a title="roblox.bases.baseitem.BaseItem" href="../base
 <span class="sd">    Represents a Roblox universe ID.</span>
 
 <span class="sd">    Attributes:</span>
-<span class="sd">        _shared: The ClientSharedObject.</span>
 <span class="sd">        id: The universe ID.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">universe_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">universe_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Arguments:</span>
-<span class="sd">            shared: The ClientSharedObject.</span>
+<span class="sd">            client: The Client this object belongs to.</span>
 <span class="sd">            universe_id: The universe ID.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">universe_id</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_favorite_count</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
@@ -1756,8 +1736,8 @@ BaseUniverse            (<a title="roblox.bases.baseitem.BaseItem" href="../base
 <span class="sd">        Returns:</span>
 <span class="sd">            The universe&#39;s favorite count.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">favorite_count_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/favorites/count&quot;</span><span class="p">)</span>
+        <span class="n">favorite_count_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/favorites/count&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">favorite_count_data</span> <span class="o">=</span> <span class="n">favorite_count_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">favorite_count_data</span><span class="p">[</span><span class="s2">&quot;favoritesCount&quot;</span><span class="p">]</span>
@@ -1769,8 +1749,8 @@ BaseUniverse            (<a title="roblox.bases.baseitem.BaseItem" href="../base
 <span class="sd">        Returns:</span>
 <span class="sd">            Whether the authenticated user has favorited this game.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">is_favorited_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/favorites&quot;</span><span class="p">)</span>
+        <span class="n">is_favorited_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/favorites&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">is_favorited_data</span> <span class="o">=</span> <span class="n">is_favorited_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">is_favorited_data</span><span class="p">[</span><span class="s2">&quot;isFavorited&quot;</span><span class="p">]</span>
@@ -1790,8 +1770,8 @@ BaseUniverse            (<a title="roblox.bases.baseitem.BaseItem" href="../base
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;badges&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/universes/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/badges&quot;</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;badges&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/universes/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/badges&quot;</span><span class="p">),</span>
             <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
             <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
             <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
@@ -1806,8 +1786,8 @@ BaseUniverse            (<a title="roblox.bases.baseitem.BaseItem" href="../base
 <span class="sd">        Returns:</span>
 <span class="sd">            The universe&#39;s live stats.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">stats_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;develop&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/universes/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/live-stats&quot;</span><span class="p">)</span>
+        <span class="n">stats_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;develop&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/universes/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/live-stats&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">stats_data</span> <span class="o">=</span> <span class="n">stats_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">UniverseLiveStats</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">stats_data</span><span class="p">)</span>
@@ -1827,12 +1807,12 @@ BaseUniverse            (<a title="roblox.bases.baseitem.BaseItem" href="../base
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
-            <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/game-passes&quot;</span><span class="p">),</span>
+            <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/game-passes&quot;</span><span class="p">),</span>
             <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
             <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
             <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
-            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">GamePass</span><span class="p">(</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span>
+            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">GamePass</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span>
         <span class="p">)</span>
 
     <span class="k">async</span> <span class="k">def</span> <span class="nf">get_social_links</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">SocialLink</span><span class="p">]:</span>
@@ -1843,11 +1823,11 @@ BaseUniverse            (<a title="roblox.bases.baseitem.BaseItem" href="../base
 <span class="sd">            A list of the universe&#39;s social links.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">links_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/social-links/list&quot;</span><span class="p">)</span>
+        <span class="n">links_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/social-links/list&quot;</span><span class="p">)</span>
         <span class="p">)</span>
         <span class="n">links_data</span> <span class="o">=</span> <span class="n">links_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">SocialLink</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">link_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">link_data</span> <span class="ow">in</span> <span class="n">links_data</span><span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">SocialLink</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">link_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">link_data</span> <span class="ow">in</span> <span class="n">links_data</span><span class="p">]</span>
 </code></pre></div>
         </details>
 
@@ -1868,7 +1848,7 @@ BaseUniverse            (<a title="roblox.bases.baseitem.BaseItem" href="../base
 
 
 <h4 id="roblox.bases.baseuniverse.BaseUniverse.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">universe_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">universe_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -1891,9 +1871,9 @@ BaseUniverse            (<a title="roblox.bases.baseitem.BaseItem" href="../base
   </thead>
   <tbody>
       <tr>
-        <td><code>shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The ClientSharedObject.</p></td>
+        <td><code>client</code></td>
+        <td><code>Client</code></td>
+        <td><p>The Client this object belongs to.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
@@ -1906,14 +1886,14 @@ BaseUniverse            (<a title="roblox.bases.baseitem.BaseItem" href="../base
 </table>
         <details class="quote">
           <summary>Source code in <code>roblox/bases/baseuniverse.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">universe_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">universe_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments:</span>
-<span class="sd">        shared: The ClientSharedObject.</span>
+<span class="sd">        client: The Client this object belongs to.</span>
 <span class="sd">        universe_id: The universe ID.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">universe_id</span>
 </code></pre></div>
         </details>
@@ -2000,8 +1980,8 @@ BaseUniverse            (<a title="roblox.bases.baseitem.BaseItem" href="../base
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
-        <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;badges&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/universes/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/badges&quot;</span><span class="p">),</span>
+        <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;badges&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/universes/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/badges&quot;</span><span class="p">),</span>
         <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
         <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
         <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
@@ -2056,8 +2036,8 @@ BaseUniverse            (<a title="roblox.bases.baseitem.BaseItem" href="../base
 <span class="sd">    Returns:</span>
 <span class="sd">        The universe&#39;s favorite count.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">favorite_count_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/favorites/count&quot;</span><span class="p">)</span>
+    <span class="n">favorite_count_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/favorites/count&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">favorite_count_data</span> <span class="o">=</span> <span class="n">favorite_count_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">favorite_count_data</span><span class="p">[</span><span class="s2">&quot;favoritesCount&quot;</span><span class="p">]</span>
@@ -2146,12 +2126,12 @@ BaseUniverse            (<a title="roblox.bases.baseitem.BaseItem" href="../base
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
-        <span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/game-passes&quot;</span><span class="p">),</span>
+        <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/game-passes&quot;</span><span class="p">),</span>
         <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
         <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
         <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
-        <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">GamePass</span><span class="p">(</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span>
+        <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">GamePass</span><span class="p">(</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">),</span>
     <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -2204,8 +2184,8 @@ This data does not update live. These are just the stats that are shown on the w
 <span class="sd">    Returns:</span>
 <span class="sd">        The universe&#39;s live stats.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">stats_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;develop&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/universes/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/live-stats&quot;</span><span class="p">)</span>
+    <span class="n">stats_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;develop&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/universes/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/live-stats&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">stats_data</span> <span class="o">=</span> <span class="n">stats_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">UniverseLiveStats</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">stats_data</span><span class="p">)</span>
@@ -2259,11 +2239,11 @@ This data does not update live. These are just the stats that are shown on the w
 <span class="sd">        A list of the universe&#39;s social links.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">links_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/social-links/list&quot;</span><span class="p">)</span>
+    <span class="n">links_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/social-links/list&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">links_data</span> <span class="o">=</span> <span class="n">links_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">SocialLink</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">link_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">link_data</span> <span class="ow">in</span> <span class="n">links_data</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">SocialLink</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">link_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">link_data</span> <span class="ow">in</span> <span class="n">links_data</span><span class="p">]</span>
 </code></pre></div>
         </details>
     </div>
@@ -2313,8 +2293,8 @@ This data does not update live. These are just the stats that are shown on the w
 <span class="sd">    Returns:</span>
 <span class="sd">        Whether the authenticated user has favorited this game.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">is_favorited_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
-        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/favorites&quot;</span><span class="p">)</span>
+    <span class="n">is_favorited_response</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/favorites&quot;</span><span class="p">)</span>
     <span class="p">)</span>
     <span class="n">is_favorited_data</span> <span class="o">=</span> <span class="n">is_favorited_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">is_favorited_data</span><span class="p">[</span><span class="s2">&quot;isFavorited&quot;</span><span class="p">]</span>

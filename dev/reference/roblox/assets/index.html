@@ -1436,20 +1436,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../utilities/shared/" class="md-nav__link">
-        shared
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../utilities/types/" class="md-nav__link">
         types
       </a>
@@ -1997,13 +1983,13 @@ It is intended to parse data from <a href="https://economy.roblox.com/v2/assets/
 <span class="sd">        sale_availability_locations: Unknown</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Arguments:</span>
-<span class="sd">            shared: The ClientSharedObject to be used when getting information on assets.</span>
+<span class="sd">            client: The Client to be used when getting information on assets.</span>
 <span class="sd">            data: The data from the request.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;AssetId&quot;</span><span class="p">])</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;AssetId&quot;</span><span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">product_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ProductType&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;AssetId&quot;</span><span class="p">]</span>
@@ -2016,11 +2002,11 @@ It is intended to parse data from <a href="https://economy.roblox.com/v2/assets/
         <span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PartialUser</span><span class="p">,</span> <span class="n">AssetPartialGroup</span><span class="p">]</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">creator_type</span> <span class="o">==</span> <span class="n">CreatorType</span><span class="o">.</span><span class="n">user</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">:</span> <span class="n">PartialUser</span> <span class="o">=</span> <span class="n">PartialUser</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Creator&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">:</span> <span class="n">PartialUser</span> <span class="o">=</span> <span class="n">PartialUser</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Creator&quot;</span><span class="p">])</span>
         <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">creator_type</span> <span class="o">==</span> <span class="n">CreatorType</span><span class="o">.</span><span class="n">group</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">:</span> <span class="n">AssetPartialGroup</span> <span class="o">=</span> <span class="n">AssetPartialGroup</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Creator&quot;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">:</span> <span class="n">AssetPartialGroup</span> <span class="o">=</span> <span class="n">AssetPartialGroup</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Creator&quot;</span><span class="p">])</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">icon_image</span><span class="p">:</span> <span class="n">BaseAsset</span> <span class="o">=</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;IconImageAssetId&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">icon_image</span><span class="p">:</span> <span class="n">BaseAsset</span> <span class="o">=</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;IconImageAssetId&quot;</span><span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Created&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">updated</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Updated&quot;</span><span class="p">])</span>
@@ -2062,7 +2048,7 @@ It is intended to parse data from <a href="https://economy.roblox.com/v2/assets/
 
 
 <h4 id="roblox.assets.EconomyAsset.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -2085,9 +2071,9 @@ It is intended to parse data from <a href="https://economy.roblox.com/v2/assets/
   </thead>
   <tbody>
       <tr>
-        <td><code>shared</code></td>
-        <td><code>ClientSharedObject</code></td>
-        <td><p>The ClientSharedObject to be used when getting information on assets.</p></td>
+        <td><code>client</code></td>
+        <td><code>Client</code></td>
+        <td><p>The Client to be used when getting information on assets.</p></td>
         <td><em>required</em></td>
       </tr>
       <tr>
@@ -2100,13 +2086,13 @@ It is intended to parse data from <a href="https://economy.roblox.com/v2/assets/
 </table>
         <details class="quote">
           <summary>Source code in <code>roblox/assets.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments:</span>
-<span class="sd">        shared: The ClientSharedObject to be used when getting information on assets.</span>
+<span class="sd">        client: The Client to be used when getting information on assets.</span>
 <span class="sd">        data: The data from the request.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;AssetId&quot;</span><span class="p">])</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;AssetId&quot;</span><span class="p">])</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">product_type</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;ProductType&quot;</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;AssetId&quot;</span><span class="p">]</span>
@@ -2119,11 +2105,11 @@ It is intended to parse data from <a href="https://economy.roblox.com/v2/assets/
     <span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">PartialUser</span><span class="p">,</span> <span class="n">AssetPartialGroup</span><span class="p">]</span>
 
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">creator_type</span> <span class="o">==</span> <span class="n">CreatorType</span><span class="o">.</span><span class="n">user</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">:</span> <span class="n">PartialUser</span> <span class="o">=</span> <span class="n">PartialUser</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Creator&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">:</span> <span class="n">PartialUser</span> <span class="o">=</span> <span class="n">PartialUser</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Creator&quot;</span><span class="p">])</span>
     <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">creator_type</span> <span class="o">==</span> <span class="n">CreatorType</span><span class="o">.</span><span class="n">group</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">:</span> <span class="n">AssetPartialGroup</span> <span class="o">=</span> <span class="n">AssetPartialGroup</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Creator&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">creator</span><span class="p">:</span> <span class="n">AssetPartialGroup</span> <span class="o">=</span> <span class="n">AssetPartialGroup</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Creator&quot;</span><span class="p">])</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">icon_image</span><span class="p">:</span> <span class="n">BaseAsset</span> <span class="o">=</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">shared</span><span class="o">=</span><span class="n">shared</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;IconImageAssetId&quot;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">icon_image</span><span class="p">:</span> <span class="n">BaseAsset</span> <span class="o">=</span> <span class="n">BaseAsset</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">asset_id</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;IconImageAssetId&quot;</span><span class="p">])</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Created&quot;</span><span class="p">])</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">updated</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;Updated&quot;</span><span class="p">])</span>

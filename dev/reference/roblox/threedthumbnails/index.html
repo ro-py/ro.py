@@ -1455,20 +1455,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../utilities/shared/" class="md-nav__link">
-        shared
-      </a>
-    </li>
-  
-
-            
-          
-            
-              
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../utilities/types/" class="md-nav__link">
         types
       </a>
@@ -1751,13 +1737,13 @@ For more info, see <a href="https://robloxapi.wiki/wiki/3D_Thumbnails">https://r
 <span class="sd">        aabb: The AABB object.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">mtl</span><span class="p">:</span> <span class="n">ThumbnailCDNHash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">delivery_provider</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mtl&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">:</span> <span class="n">ThumbnailCDNHash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">delivery_provider</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mtl</span><span class="p">:</span> <span class="n">ThumbnailCDNHash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">delivery</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mtl&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">:</span> <span class="n">ThumbnailCDNHash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">delivery</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">textures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ThumbnailCDNHash</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">delivery_provider</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">cdn_hash</span><span class="p">)</span> <span class="k">for</span> <span class="n">cdn_hash</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;textures&quot;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">delivery</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">cdn_hash</span><span class="p">)</span> <span class="k">for</span> <span class="n">cdn_hash</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;textures&quot;</span><span class="p">]</span>
         <span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="p">:</span> <span class="n">ThreeDThumbnailCamera</span> <span class="o">=</span> <span class="n">ThreeDThumbnailCamera</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;camera&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">aabb</span><span class="p">:</span> <span class="n">ThreeDThumbnailAABB</span> <span class="o">=</span> <span class="n">ThreeDThumbnailAABB</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;aabb&quot;</span><span class="p">])</span>
@@ -1781,7 +1767,7 @@ For more info, see <a href="https://robloxapi.wiki/wiki/3D_Thumbnails">https://r
 
 
 <h4 id="roblox.threedthumbnails.ThreeDThumbnail.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -1794,13 +1780,13 @@ For more info, see <a href="https://robloxapi.wiki/wiki/3D_Thumbnails">https://r
 
         <details class="quote">
           <summary>Source code in <code>roblox/threedthumbnails.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="p">:</span> <span class="n">ClientSharedObject</span> <span class="o">=</span> <span class="n">shared</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">mtl</span><span class="p">:</span> <span class="n">ThumbnailCDNHash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">delivery_provider</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mtl&quot;</span><span class="p">])</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">:</span> <span class="n">ThumbnailCDNHash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">delivery_provider</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mtl</span><span class="p">:</span> <span class="n">ThumbnailCDNHash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">delivery</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;mtl&quot;</span><span class="p">])</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">:</span> <span class="n">ThumbnailCDNHash</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">delivery</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;obj&quot;</span><span class="p">])</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">textures</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">ThumbnailCDNHash</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_shared</span><span class="o">.</span><span class="n">delivery_provider</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">cdn_hash</span><span class="p">)</span> <span class="k">for</span> <span class="n">cdn_hash</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;textures&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">delivery</span><span class="o">.</span><span class="n">get_thumbnail_cdn_hash</span><span class="p">(</span><span class="n">cdn_hash</span><span class="p">)</span> <span class="k">for</span> <span class="n">cdn_hash</span> <span class="ow">in</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;textures&quot;</span><span class="p">]</span>
     <span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">camera</span><span class="p">:</span> <span class="n">ThreeDThumbnailCamera</span> <span class="o">=</span> <span class="n">ThreeDThumbnailCamera</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;camera&quot;</span><span class="p">])</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">aabb</span><span class="p">:</span> <span class="n">ThreeDThumbnailAABB</span> <span class="o">=</span> <span class="n">ThreeDThumbnailAABB</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;aabb&quot;</span><span class="p">])</span>
