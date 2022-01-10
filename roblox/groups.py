@@ -3,13 +3,17 @@
 Contains classes related to Roblox group data and parsing.
 
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .client import Client
 from typing import Optional, Tuple
 
 from .bases.basegroup import BaseGroup
 from .partials.partialuser import PartialUser
 from .shout import Shout
-from .utilities.shared import ClientSharedObject
 
 
 class Group(BaseGroup):
@@ -28,23 +32,23 @@ class Group(BaseGroup):
         is_locked: Is the group locked?
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
+    def __init__(self, client: Client, data: dict):
         """
         Arguments:
             data: The data we get back from the endpoint.
-            shared: The shared object, which is passed to all objects this client generates.
+            client: The Client object, which is passed to all objects this Client generates.
         """
-        super().__init__(shared, data["id"])
+        super().__init__(client, data["id"])
 
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
 
         self.id: int = data["id"]
         self.name: str = data["name"]
         self.description: str = data["description"]
-        self.owner: Optional[PartialUser] = PartialUser(shared=shared, data=data["owner"]) if data.get("owner") else \
+        self.owner: Optional[PartialUser] = PartialUser(client=client, data=data["owner"]) if data.get("owner") else \
             None
         self.shout: Optional[Shout] = Shout(
-            shared=self._shared,
+            client=self._client,
             data=data["shout"]
         ) if data.get("shout") else None
 
@@ -66,8 +70,8 @@ class Group(BaseGroup):
         Returns: 
             The old and new shout.
         """
-        shout_response = await self._requests.patch(
-            url=self._shared.url_generator.get_url("groups", f"v1/groups/{self.id}/status"),
+        shout_response = await self._client.requests.patch(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/status"),
             json={
                 "message": message
             }
@@ -77,7 +81,7 @@ class Group(BaseGroup):
 
         old_shout: Optional[Shout] = self.shout
         new_shout: Optional[Shout] = shout_data and Shout(
-            shared=self._shared,
+            client=self._client,
             data=shout_data
         ) or None
 

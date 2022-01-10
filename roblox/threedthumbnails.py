@@ -1,11 +1,15 @@
 """
 Contains classes related to 3D thumbnails.
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .client import Client
 from typing import List
 
 from .delivery import ThumbnailCDNHash
-from .utilities.shared import ClientSharedObject
 
 
 class ThreeDThumbnailVector3:
@@ -71,13 +75,13 @@ class ThreeDThumbnail:
         aabb: The AABB object.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
-        self._shared: ClientSharedObject = shared
+    def __init__(self, client: Client, data: dict):
+        self._client: Client = client
 
-        self.mtl: ThumbnailCDNHash = self._shared.delivery_provider.get_thumbnail_cdn_hash(data["mtl"])
-        self.obj: ThumbnailCDNHash = self._shared.delivery_provider.get_thumbnail_cdn_hash(data["obj"])
+        self.mtl: ThumbnailCDNHash = self._client.delivery.get_thumbnail_cdn_hash(data["mtl"])
+        self.obj: ThumbnailCDNHash = self._client.delivery.get_thumbnail_cdn_hash(data["obj"])
         self.textures: List[ThumbnailCDNHash] = [
-            self._shared.delivery_provider.get_thumbnail_cdn_hash(cdn_hash) for cdn_hash in data["textures"]
+            self._client.delivery.get_thumbnail_cdn_hash(cdn_hash) for cdn_hash in data["textures"]
         ]
         self.camera: ThreeDThumbnailCamera = ThreeDThumbnailCamera(data["camera"])
         self.aabb: ThreeDThumbnailAABB = ThreeDThumbnailAABB(data["aabb"])

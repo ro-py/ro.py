@@ -5,17 +5,21 @@ Contains objects related to Roblox chat conversations.
 
 
 """
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
 from datetime import datetime
+from dateutil.parser import parse
+
 from enum import Enum
 from typing import List, Optional
-
-from dateutil.parser import parse
 
 from .bases.baseconversation import BaseConversation
 from .partials.partialuniverse import ChatPartialUniverse
 from .partials.partialuser import PartialUser
-from .utilities.shared import ClientSharedObject
+
+if TYPE_CHECKING:
+    from .client import Client
 
 
 class ConversationType(Enum):
@@ -69,13 +73,13 @@ class Conversation(BaseConversation):
         conversation_universe: Specifies the universe associated with the conversation.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
+    def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            shared: The shared object.
+            client: The Client object.
             data: The conversation data.
         """
-        super().__init__(shared=shared, conversation_id=self.id)
+        super().__init__(client=client, conversation_id=self.id)
         self.id: int = data["id"]
         self.title: str = data["title"]
 
@@ -83,11 +87,11 @@ class Conversation(BaseConversation):
         # so this is a partialuser
         # Nikita Petko: Well uhhh, the initiator is of the ChatParticipant model,
         # where it can either be from User or System.
-        self.initiator: PartialUser = PartialUser(shared, data["initiator"])
+        self.initiator: PartialUser = PartialUser(client, data["initiator"])
 
         self.has_unread_messages: bool = data["hasUnreadMessages"]
         self.participants: List[PartialUser] = [PartialUser(
-            shared=shared,
+            client=client,
             data=participant_data
         ) for participant_data in data["participants"]]
 
@@ -98,7 +102,7 @@ class Conversation(BaseConversation):
         self.last_updated: datetime = parse(data["lastUpdated"])
         self.conversation_universe: Optional[ChatPartialUniverse] = data[
                                                                         "conversationUniverse"] and ChatPartialUniverse(
-            shared=shared,
+            client=client,
             data=data["conversationUniverse"]
         )
 

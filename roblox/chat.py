@@ -3,10 +3,14 @@
 Contains classes relating to the Roblox chat.
 
 """
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
 from .conversations import Conversation
 from .utilities.iterators import PageNumberIterator
-from .utilities.shared import ClientSharedObject
+
+if TYPE_CHECKING:
+    from .client import Client
 
 
 class ChatSettings:
@@ -38,12 +42,12 @@ class ChatProvider:
     Provides information and data related to the Roblox chat system.
     """
 
-    def __init__(self, shared: ClientSharedObject):
+    def __init__(self, client: Client):
         """
         Arguments:
-            shared: The ClientSharedObject for getting information about chat.
+            client: The Client for getting information about chat.
         """
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
 
     def __repr__(self):
         return f"<{self.__class__.__name__}>"
@@ -55,8 +59,8 @@ class ChatProvider:
         Returns: 
             The user's unread conversation count.
         """
-        unread_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("chat", "v2/get-unread-conversation-count")
+        unread_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("chat", "v2/get-unread-conversation-count")
         )
         unread_data = unread_response.json()
         return unread_data["count"]
@@ -68,8 +72,8 @@ class ChatProvider:
         Returns: 
             The user's chat settings.
         """
-        settings_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("chat", "v2/chat-settings")
+        settings_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("chat", "v2/chat-settings")
         )
         settings_data = settings_response.json()
         return ChatSettings(data=settings_data)
@@ -82,7 +86,7 @@ class ChatProvider:
             The user's conversations as a PageNumberIterator.
         """
         return PageNumberIterator(
-            shared=self._shared,
-            url=self._shared.url_generator.get_url("chat", "v2/get-user-conversations"),
-            handler=lambda shared, data: Conversation(shared=shared, data=data)
+            client=self._client,
+            url=self._client.url_generator.get_url("chat", "v2/get-user-conversations"),
+            handler=lambda client, data: Conversation(client=client, data=data)
         )

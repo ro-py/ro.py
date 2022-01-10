@@ -3,12 +3,16 @@
 Contains objects related to Roblox thumbnails.
 
 """
+from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .client import Client
 from enum import Enum
 from typing import Optional, List, Union, Tuple
 
 from .threedthumbnails import ThreeDThumbnail
-from .utilities.shared import ClientSharedObject
 from .utilities.types import AssetOrAssetId, BadgeOrBadgeId, GamePassOrGamePassId, GroupOrGroupId, PlaceOrPlaceId, \
     UniverseOrUniverseId, UserOrUserId
 
@@ -75,13 +79,13 @@ class Thumbnail:
         image_url: Url of the image.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
+    def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            shared: Shared object.
+            client: Client object.
             data: The data from the request.
         """
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
         self._data: dict = data
 
         self.target_id: int = data["targetId"]
@@ -99,12 +103,12 @@ class Thumbnail:
         Returns:
             A ThreeDThumbnail.
         """
-        threed_response = await self._shared.requests.get(
+        threed_response = await self._client.requests.get(
             url=self.image_url
         )
         threed_data = threed_response.json()
         return ThreeDThumbnail(
-            shared=self._shared,
+            client=self._client,
             data=threed_data
         )
 
@@ -119,19 +123,19 @@ class UniverseThumbnails:
         thumbnails: List of thumbnails.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
+    def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            shared: Shared object.
+            client: Shared object.
             data: The data from the request.
         """
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
         self._data: dict = data
         # todo add base universe maby
         self.universe_id: int = data["universeId"]
         self.error: Optional[str] = data["error"]
         self.thumbnails: List[Thumbnail] = [
-            Thumbnail(shared=self._shared, data=thumbnail_data)
+            Thumbnail(client=self._client, data=thumbnail_data)
             for thumbnail_data in data["thumbnails"]
         ]
 
@@ -141,12 +145,12 @@ class ThumbnailProvider:
     The ThumbnailProvider that provides multiple functions for generating user thumbnails.
     """
 
-    def __init__(self, shared: ClientSharedObject):
+    def __init__(self, client: Client):
         """
         Arguments:
-            shared: Shared object.
+            client: Client object.
         """
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
 
     async def get_asset_thumbnails(
             self,
@@ -193,8 +197,8 @@ class ThumbnailProvider:
         Returns:
             A list of Thumbnails.
         """
-        thumbnails_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("thumbnails", "v1/assets"),
+        thumbnails_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("thumbnails", "v1/assets"),
             params={
                 "assetIds": list(map(int, assets)),
                 "returnPolicy": return_policy.value,
@@ -205,7 +209,7 @@ class ThumbnailProvider:
         )
         thumbnails_data = thumbnails_response.json()["data"]
         return [
-            Thumbnail(shared=self._shared, data=thumbnail_data)
+            Thumbnail(client=self._client, data=thumbnail_data)
             for thumbnail_data in thumbnails_data
         ]
 
@@ -219,14 +223,14 @@ class ThumbnailProvider:
         Returns:
             A Thumbnail.
         """
-        thumbnail_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url(
+        thumbnail_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url(
                 "thumbnails", "v1/assets-thumbnail-3d"
             ),
             params={"assetId": int(asset)},
         )
         thumbnail_data = thumbnail_response.json()
-        return Thumbnail(shared=self._shared, data=thumbnail_data)
+        return Thumbnail(client=self._client, data=thumbnail_data)
 
     async def get_badge_icons(
             self,
@@ -249,8 +253,8 @@ class ThumbnailProvider:
         Returns:
             A list of Thumbnails.
         """
-        thumbnails_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("thumbnails", "v1/badges/icons"),
+        thumbnails_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("thumbnails", "v1/badges/icons"),
             params={
                 "badgeIds": list(map(int, badges)),
                 "size": _to_size_string(size),
@@ -260,7 +264,7 @@ class ThumbnailProvider:
         )
         thumbnails_data = thumbnails_response.json()["data"]
         return [
-            Thumbnail(shared=self._shared, data=thumbnail_data)
+            Thumbnail(client=self._client, data=thumbnail_data)
             for thumbnail_data in thumbnails_data
         ]
 
@@ -286,8 +290,8 @@ class ThumbnailProvider:
         Returns:
             A list of Thumbnails.
         """
-        thumbnails_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("thumbnails", "v1/game-passes"),
+        thumbnails_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("thumbnails", "v1/game-passes"),
             params={
                 "gamePassIds": list(map(int, gamepasses)),
                 "size": _to_size_string(size),
@@ -297,7 +301,7 @@ class ThumbnailProvider:
         )
         thumbnails_data = thumbnails_response.json()["data"]
         return [
-            Thumbnail(shared=self._shared, data=thumbnail_data)
+            Thumbnail(client=self._client, data=thumbnail_data)
             for thumbnail_data in thumbnails_data
         ]
 
@@ -329,8 +333,8 @@ class ThumbnailProvider:
         Returns:
             A list of Thumbnails.
         """
-        thumbnails_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("thumbnails", "v1/games/icons"),
+        thumbnails_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("thumbnails", "v1/games/icons"),
             params={
                 "universeIds": list(map(int, universes)),
                 "returnPolicy": return_policy.value,
@@ -341,7 +345,7 @@ class ThumbnailProvider:
         )
         thumbnails_data = thumbnails_response.json()["data"]
         return [
-            Thumbnail(shared=self._shared, data=thumbnail_data)
+            Thumbnail(client=self._client, data=thumbnail_data)
             for thumbnail_data in thumbnails_data
         ]
 
@@ -374,8 +378,8 @@ class ThumbnailProvider:
         Returns:
             A list of Thumbnails.
         """
-        thumbnails_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url(
+        thumbnails_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url(
                 "thumbnails", "v1/games/multiget/thumbnails"
             ),
             params={
@@ -389,7 +393,7 @@ class ThumbnailProvider:
         )
         thumbnails_data = thumbnails_response.json()["data"]
         return [
-            UniverseThumbnails(shared=self._shared, data=thumbnail_data)
+            UniverseThumbnails(client=self._client, data=thumbnail_data)
             for thumbnail_data in thumbnails_data
         ]
 
@@ -415,8 +419,8 @@ class ThumbnailProvider:
         Returns:
             A list of Thumbnails.
         """
-        thumbnails_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("thumbnails", "v1/groups/icons"),
+        thumbnails_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("thumbnails", "v1/groups/icons"),
             params={
                 "groupIds": list(map(int, groups)),
                 "size": _to_size_string(size),
@@ -426,7 +430,7 @@ class ThumbnailProvider:
         )
         thumbnails_data = thumbnails_response.json()["data"]
         return [
-            Thumbnail(shared=self._shared, data=thumbnail_data)
+            Thumbnail(client=self._client, data=thumbnail_data)
             for thumbnail_data in thumbnails_data
         ]
 
@@ -457,8 +461,8 @@ class ThumbnailProvider:
         Returns:
             A List of Thumbnails.
         """
-        thumbnails_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("thumbnails", "v1/places/gameicons"),
+        thumbnails_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("thumbnails", "v1/places/gameicons"),
             params={
                 "placeIds": list(map(int, places)),
                 "returnPolicy": return_policy.value,
@@ -469,7 +473,7 @@ class ThumbnailProvider:
         )
         thumbnails_data = thumbnails_response.json()["data"]
         return [
-            Thumbnail(shared=self._shared, data=thumbnail_data)
+            Thumbnail(client=self._client, data=thumbnail_data)
             for thumbnail_data in thumbnails_data
         ]
 
@@ -526,8 +530,8 @@ class ThumbnailProvider:
         else:
             raise ValueError("Avatar type is invalid.")
 
-        thumbnails_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("thumbnails", f"v1/users/{uri}"),
+        thumbnails_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("thumbnails", f"v1/users/{uri}"),
             params={
                 "userIds": list(map(int, users)),
                 "size": _to_size_string(size),
@@ -538,7 +542,7 @@ class ThumbnailProvider:
 
         thumbnails_data = thumbnails_response.json()["data"]
         return [
-            Thumbnail(shared=self._shared, data=thumbnail_data)
+            Thumbnail(client=self._client, data=thumbnail_data)
             for thumbnail_data in thumbnails_data
         ]
 
@@ -552,11 +556,11 @@ class ThumbnailProvider:
         Returns:
             A Thumbnail.
         """
-        thumbnail_response = await self._shared.requests.get(
-            url=self._shared.url_generator.get_url("thumbnails", "v1/users/avatar-3d"),
+        thumbnail_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("thumbnails", "v1/users/avatar-3d"),
             params={
                 "userId": int(user)
             },
         )
         thumbnail_data = thumbnail_response.json()
-        return Thumbnail(shared=self._shared, data=thumbnail_data)
+        return Thumbnail(client=self._client, data=thumbnail_data)

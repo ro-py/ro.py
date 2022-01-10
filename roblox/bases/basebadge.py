@@ -4,8 +4,13 @@ This file contains the BaseBadge object, which represents a Roblox badge ID.
 
 """
 
+from __future__ import annotations
+from typing import TYPE_CHECKING
+
 from .baseitem import BaseItem
-from ..utilities.shared import ClientSharedObject
+
+if TYPE_CHECKING:
+    from ..client import Client
 
 
 class BaseBadge(BaseItem):
@@ -13,16 +18,15 @@ class BaseBadge(BaseItem):
     Represents a Roblox badge ID.
 
     Attributes:
-        _shared: The ClientSharedObject.
         id: The badge ID.
     """
 
-    def __init__(self, shared: ClientSharedObject, badge_id: int):
+    def __init__(self, client: Client, badge_id: int):
         """
         Arguments:
-            shared: The ClientSharedObject.
+            client: The Client this object belongs to.
             badge_id: The badge ID.
         """
 
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
         self.id: int = badge_id

@@ -3,10 +3,14 @@
 This file contains partial objects related to Roblox groups.
 
 """
+from __future__ import annotations
+from typing import TYPE_CHECKING
 
 from ..bases.basegroup import BaseGroup
 from ..bases.baseuser import BaseUser
-from ..utilities.shared import ClientSharedObject
+
+if TYPE_CHECKING:
+    from ..client import Client
 
 
 class AssetPartialGroup(BaseGroup):
@@ -15,25 +19,25 @@ class AssetPartialGroup(BaseGroup):
     Intended to parse the `data[0]["creator"]` data from https://games.roblox.com/v1/games.
 
     Attributes:
-        _shared: The shared object, which is passed to all objects this client generates.
+        _client: The Client object, which is passed to all objects this Client generates.
         id: The group's name.
         creator: The group's owner.
         name: The group's name.
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
+    def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            shared: The ClientSharedObject.
+            client: The Client.
             data: The data from the endpoint.
         """
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
 
-        self.creator: BaseUser = BaseUser(shared=shared, user_id=data["Id"])
+        self.creator: BaseUser = BaseUser(client=client, user_id=data["Id"])
         self.id: int = data["CreatorTargetId"]
         self.name: str = data["Name"]
 
-        super().__init__(shared, self.id)
+        super().__init__(client, self.id)
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"
@@ -45,23 +49,23 @@ class UniversePartialGroup(BaseGroup):
 
     Attributes:
         _data: The data we get back from the endpoint.
-        _shared: The shared object, which is passed to all objects this client generates.
+        _client: The client object, which is passed to all objects this client generates.
         id: Id of the group
         name: Name of the group
     """
 
-    def __init__(self, shared: ClientSharedObject, data: dict):
+    def __init__(self, client: Client, data: dict):
         """
         Arguments:
-            shared: The ClientSharedObject.
+            client: The ClientSharedObject.
             data: The data from the endpoint.
         """
-        self._shared: ClientSharedObject = shared
+        self._client: Client = client
         self._data: dict = data
         self.id = data["id"]
         self.name: str = data["name"]
 
-        super().__init__(shared, self.id)
+        super().__init__(client, self.id)
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"
