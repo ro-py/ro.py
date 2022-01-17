@@ -1840,11 +1840,6 @@ Requests        </code>
         <td><code>str</code></td>
         <td><p>The header that will contain the Cross-Site Request Forgery token.</p></td>
       </tr>
-      <tr>
-        <td><code>url_generator</code></td>
-        <td></td>
-        <td><p>URL generator for ban parsing.</p></td>
-      </tr>
   </tbody>
 </table>
         <details class="quote">
@@ -1856,12 +1851,10 @@ Requests        </code>
 <span class="sd">    Attributes:</span>
 <span class="sd">        session: Base session object to use when sending requests.</span>
 <span class="sd">        xcsrf_token_name: The header that will contain the Cross-Site Request Forgery token.</span>
-<span class="sd">        url_generator: URL generator for ban parsing.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">url_generator</span><span class="p">:</span> <span class="n">URLGenerator</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">session</span><span class="p">:</span> <span class="n">CleanAsyncClient</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">xcsrf_token_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;X-CSRF-Token&quot;</span>
     <span class="p">):</span>
@@ -1869,9 +1862,7 @@ Requests        </code>
 <span class="sd">        Arguments:</span>
 <span class="sd">            session: A custom session object to use for sending requests, compatible with httpx.AsyncClient.</span>
 <span class="sd">            xcsrf_token_name: The header to place X-CSRF-Token data into.</span>
-<span class="sd">            url_generator: URL generator for ban parsing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_url_generator</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">URLGenerator</span><span class="p">]</span> <span class="o">=</span> <span class="n">url_generator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span> <span class="n">CleanAsyncClient</span>
 
         <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -2001,7 +1992,7 @@ Requests        </code>
 
 
 <h4 id="roblox.utilities.requests.Requests.__init__" class="doc doc-heading">
-<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url_generator</span><span class="p">:</span> <span class="n">URLGenerator</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">CleanAsyncClient</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">xcsrf_token_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;X-CSRF-Token&#39;</span><span class="p">)</span></code>
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="p">:</span> <span class="n">CleanAsyncClient</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">xcsrf_token_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;X-CSRF-Token&#39;</span><span class="p">)</span></code>
 
   <span class="doc doc-properties">
       <small class="doc doc-property doc-property-special"><code>special</code></small>
@@ -2035,19 +2026,12 @@ Requests        </code>
         <td><p>The header to place X-CSRF-Token data into.</p></td>
         <td><code>&#39;X-CSRF-Token&#39;</code></td>
       </tr>
-      <tr>
-        <td><code>url_generator</code></td>
-        <td><code>URLGenerator</code></td>
-        <td><p>URL generator for ban parsing.</p></td>
-        <td><code>None</code></td>
-      </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>roblox/utilities/requests.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
-        <span class="n">url_generator</span><span class="p">:</span> <span class="n">URLGenerator</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">session</span><span class="p">:</span> <span class="n">CleanAsyncClient</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">xcsrf_token_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;X-CSRF-Token&quot;</span>
 <span class="p">):</span>
@@ -2055,9 +2039,7 @@ Requests        </code>
 <span class="sd">    Arguments:</span>
 <span class="sd">        session: A custom session object to use for sending requests, compatible with httpx.AsyncClient.</span>
 <span class="sd">        xcsrf_token_name: The header to place X-CSRF-Token data into.</span>
-<span class="sd">        url_generator: URL generator for ban parsing.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_url_generator</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">URLGenerator</span><span class="p">]</span> <span class="o">=</span> <span class="n">url_generator</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="p">:</span> <span class="n">CleanAsyncClient</span>
 
     <span class="k">if</span> <span class="n">session</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>

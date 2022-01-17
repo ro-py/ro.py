@@ -1984,9 +1984,7 @@ Client        </code>
 <span class="sd">            base_url: The base URL to use when sending requests.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_url_generator</span><span class="p">:</span> <span class="n">URLGenerator</span> <span class="o">=</span> <span class="n">URLGenerator</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="p">:</span> <span class="n">Requests</span> <span class="o">=</span> <span class="n">Requests</span><span class="p">(</span>
-            <span class="n">url_generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_url_generator</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="p">:</span> <span class="n">Requests</span> <span class="o">=</span> <span class="n">Requests</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">url_generator</span><span class="p">:</span> <span class="n">URLGenerator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url_generator</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span> <span class="n">Requests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span>
@@ -2546,9 +2544,7 @@ Client        </code>
 <span class="sd">        base_url: The base URL to use when sending requests.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_url_generator</span><span class="p">:</span> <span class="n">URLGenerator</span> <span class="o">=</span> <span class="n">URLGenerator</span><span class="p">(</span><span class="n">base_url</span><span class="o">=</span><span class="n">base_url</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="p">:</span> <span class="n">Requests</span> <span class="o">=</span> <span class="n">Requests</span><span class="p">(</span>
-        <span class="n">url_generator</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_url_generator</span>
-    <span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span><span class="p">:</span> <span class="n">Requests</span> <span class="o">=</span> <span class="n">Requests</span><span class="p">()</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">url_generator</span><span class="p">:</span> <span class="n">URLGenerator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url_generator</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">requests</span><span class="p">:</span> <span class="n">Requests</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_requests</span>
