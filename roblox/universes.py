@@ -92,7 +92,6 @@ class Universe(BaseUniverse):
         """
 
         self._client: Client = client
-        self._data: dict = data
 
         self.id: int = data["id"]
         super().__init__(client=client, universe_id=self.id)

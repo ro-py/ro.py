@@ -39,7 +39,6 @@ class Place(BasePlace):
         super().__init__(client=client, place_id=data["placeId"])
 
         self._client: Client = client
-        self._data: dict = data
 
         self.id: int = data["placeId"]
         self.name: str = data["name"]

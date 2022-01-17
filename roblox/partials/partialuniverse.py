@@ -61,7 +61,6 @@ class ChatPartialUniverse(BaseUniverse):
             data: The raw data.
         """
         self._client: Client = client
-        self._data: dict = data
 
         self.id: int = data["universeId"]
 

@@ -39,7 +39,6 @@ class User(BaseUser):
         super().__init__(client=client, user_id=data["id"])
 
         self._client: Client = client
-        self._data: dict = data
 
         self.name: str = data["name"]
         self.display_name: str = data["displayName"]

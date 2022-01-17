@@ -86,7 +86,6 @@ class Thumbnail:
             data: The data from the request.
         """
         self._client: Client = client
-        self._data: dict = data
 
         self.target_id: int = data["targetId"]
         self.state: ThumbnailState = ThumbnailState(data["state"])
@@ -130,7 +129,6 @@ class UniverseThumbnails:
             data: The data from the request.
         """
         self._client: Client = client
-        self._data: dict = data
         # todo add base universe maby
         self.universe_id: int = data["universeId"]
         self.error: Optional[str] = data["error"]

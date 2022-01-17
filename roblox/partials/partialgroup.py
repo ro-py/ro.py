@@ -61,7 +61,6 @@ class UniversePartialGroup(BaseGroup):
             data: The data from the endpoint.
         """
         self._client: Client = client
-        self._data: dict = data
         self.id = data["id"]
         self.name: str = data["name"]
 
