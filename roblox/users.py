@@ -5,7 +5,7 @@ This module contains classes intended to parse and deal with data from Roblox us
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from .client import Client
@@ -43,7 +43,7 @@ class User(BaseUser):
 
         self.name: str = data["name"]
         self.display_name: str = data["displayName"]
-        self.external_app_display_name: str = data["externalAppDisplayName"]
+        self.external_app_display_name: Optional[str] = data["externalAppDisplayName"]
         self.id: int = data["id"]
         self.is_banned: bool = data["isBanned"]
         self.description: str = data["description"]
