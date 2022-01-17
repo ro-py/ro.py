@@ -55,9 +55,7 @@ class Client:
             base_url: The base URL to use when sending requests.
         """
         self._url_generator: URLGenerator = URLGenerator(base_url=base_url)
-        self._requests: Requests = Requests(
-            url_generator=self._url_generator
-        )
+        self._requests: Requests = Requests()
 
         self.url_generator: URLGenerator = self._url_generator
         self.requests: Requests = self._requests

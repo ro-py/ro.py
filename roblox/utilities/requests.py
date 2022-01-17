@@ -8,12 +8,11 @@ from __future__ import annotations
 
 import asyncio
 from json import JSONDecodeError
-from typing import Dict, Optional
+from typing import Dict
 
 from httpx import AsyncClient, Response
 
 from .exceptions import get_exception_from_status_code
-from ..utilities.url import URLGenerator
 
 _xcsrf_allowed_methods: Dict[str, bool] = {
     "post": True,
@@ -45,12 +44,10 @@ class Requests:
     Attributes:
         session: Base session object to use when sending requests.
         xcsrf_token_name: The header that will contain the Cross-Site Request Forgery token.
-        url_generator: URL generator for ban parsing.
     """
 
     def __init__(
             self,
-            url_generator: URLGenerator = None,
             session: CleanAsyncClient = None,
             xcsrf_token_name: str = "X-CSRF-Token"
     ):
@@ -58,9 +55,7 @@ class Requests:
         Arguments:
             session: A custom session object to use for sending requests, compatible with httpx.AsyncClient.
             xcsrf_token_name: The header to place X-CSRF-Token data into.
-            url_generator: URL generator for ban parsing.
         """
-        self._url_generator: Optional[URLGenerator] = url_generator
         self.session: CleanAsyncClient
 
         if session is None:
