@@ -4,7 +4,7 @@ Contains the Client, which is the core object at the center of all ro.py applica
 
 """
 
-from typing import Union, List
+from typing import Union, List, Optional
 
 from .account import AccountProvider
 from .assets import EconomyAsset
@@ -73,7 +73,7 @@ class Client:
         return f"<{self.__class__.__name__}>"
 
     # Authentication
-    def set_token(self, token: str) -> None:
+    def set_token(self, token: Optional[str] = None) -> None:
         """
         Authenticates the client with the passed .ROBLOSECURITY token.
         This method does not send any requests and will not throw if the token is invalid.
