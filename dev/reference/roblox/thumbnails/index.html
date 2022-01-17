@@ -2296,7 +2296,6 @@ Thumbnail        </code>
 <span class="sd">            data: The data from the request.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">data</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">target_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;targetId&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">:</span> <span class="n">ThumbnailState</span> <span class="o">=</span> <span class="n">ThumbnailState</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">])</span>
@@ -2386,7 +2385,6 @@ Thumbnail        </code>
 <span class="sd">        data: The data from the request.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">data</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">target_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;targetId&quot;</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">:</span> <span class="n">ThumbnailState</span> <span class="o">=</span> <span class="n">ThumbnailState</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;state&quot;</span><span class="p">])</span>
@@ -4778,7 +4776,6 @@ UniverseThumbnails        </code>
 <span class="sd">            data: The data from the request.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">data</span>
         <span class="c1"># todo add base universe maby</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">universe_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;universeId&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">]</span>
@@ -4851,7 +4848,6 @@ UniverseThumbnails        </code>
 <span class="sd">        data: The data from the request.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">data</span>
     <span class="c1"># todo add base universe maby</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">universe_id</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;universeId&quot;</span><span class="p">]</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">]</span>
