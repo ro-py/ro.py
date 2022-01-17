@@ -2002,7 +2002,7 @@ Client        </code>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 
     <span class="c1"># Authentication</span>
-    <span class="k">def</span> <span class="nf">set_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">set_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Authenticates the client with the passed .ROBLOSECURITY token.</span>
 <span class="sd">        This method does not send any requests and will not throw if the token is invalid.</span>
@@ -4393,7 +4393,7 @@ For more information on bases, please see <a href="/bases">Bases</a>.</p>
 
 
 <h4 id="roblox.client.Client.set_token" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">set_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
+<code class="highlight language-python"><span class="n">set_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span></code>
 
 
 <a href="#roblox.client.Client.set_token" class="headerlink" title="Permanent link">&para;</a></h4>
@@ -4416,15 +4416,15 @@ This method does not send any requests and will not throw if the token is invali
   <tbody>
       <tr>
         <td><code>token</code></td>
-        <td><code>str</code></td>
+        <td><code>Optional[str]</code></td>
         <td><p>A .ROBLOSECURITY token to authenticate the client with.</p></td>
-        <td><em>required</em></td>
+        <td><code>None</code></td>
       </tr>
   </tbody>
 </table>
         <details class="quote">
           <summary>Source code in <code>roblox/client.py</code></summary>
-          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">set_token</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Authenticates the client with the passed .ROBLOSECURITY token.</span>
 <span class="sd">    This method does not send any requests and will not throw if the token is invalid.</span>
