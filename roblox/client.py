@@ -105,7 +105,7 @@ class Client:
             )
         except NotFound as exception:
             raise UserNotFound(
-                message=f"Invalid user. {exception}",
+                message=f"Invalid user",
                 response=exception.response
             ) from None
         
