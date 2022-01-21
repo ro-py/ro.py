@@ -5,6 +5,7 @@ Contains the Client, which is the core object at the center of all ro.py applica
 """
 
 from typing import Union, List, Optional
+import json
 
 from .account import AccountProvider
 from .assets import EconomyAsset
@@ -99,13 +100,16 @@ class Client:
             user_response = await self._requests.get(
                 url=self.url_generator.get_url("users", f"v1/users/{user_id}")
             )
+            online_response = await self._requests.get(
+                url=self.url_generator.get_url("api", f"/users/{user_id}/onlinestatus")
+            )
         except NotFound as exception:
             raise UserNotFound(
-                message="Invalid user.",
+                message=f"Invalid user. {exception}",
                 response=exception.response
             ) from None
-        user_data = user_response.json()
-        return User(client=self, data=user_data)
+        
+        return User(client=self, data=json.loads(user_response.text) | json.loads(online_response.text))
 
     async def get_authenticated_user(
             self, expand: bool = True
