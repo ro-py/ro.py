@@ -1560,7 +1560,7 @@ sets of data and may use more memory. Because we turn this iterator into a list,
 <div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">user_search</span><span class="p">(</span><span class="s2">&quot;boatbomber&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 </code></pre></div>
-We can limit the amount of items in this list using the <code>max_ietms</code> argument:
+We can limit the amount of items in this list using the <code>max_items</code> argument:
 <div class="highlight"><pre><span></span><code><span class="k">for</span> <span class="n">user</span> <span class="ow">in</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">user_search</span><span class="p">(</span><span class="s2">&quot;builderman&quot;</span><span class="p">,</span> <span class="n">max_items</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
 </code></pre></div>
