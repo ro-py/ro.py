@@ -51,7 +51,7 @@ sets of data and may use more memory. Because we turn this iterator into a list,
 for user in await client.user_search("boatbomber").flatten():
     print(user.name)
 ```
-We can limit the amount of items in this list using the `max_ietms` argument:
+We can limit the amount of items in this list using the `max_items` argument:
 ```python
 for user in await client.user_search("builderman", max_items=10).flatten():
     print(user.name)
