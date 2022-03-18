@@ -57,6 +57,8 @@ Test it with `get_authenticated_user` and you should be all set!
     from dotenv import load_dotenv
     from roblox import Client
     
+    load_dotenv()
+
     client = Client(os.getenv("ROBLOXTOKEN"))
     
     async def main():
