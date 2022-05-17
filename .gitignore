@@ -17,3 +17,4 @@ udocs/
 build.*
 docsbuild.bat
 *.egg-info
+.pytest_cache

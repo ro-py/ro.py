@@ -1,0 +1,55 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - users.roblox.com
+      referer:
+      - www.roblox.com
+      user-agent:
+      - Roblox/WinInet
+    method: GET
+    uri: https://users.roblox.com/v1/users/search?cursor=&limit=10&sortOrder=Asc&keyword=123
+  response:
+    content: '{"previousPageCursor":null,"nextPageCursor":"eyJzdGFydEluZGV4IjoxMCwiZGlzY3JpbWluYXRvciI6ImtleXdvcmQ6MTIzIiwiY291bnQiOjEwfQpkNmZjYzFmMWMyY2UxNDY4YzA5ZmJkMGRhZmJlMWMyN2NiNzc0MDRjNTI1OWZlYTJiYTI4MTE5Yzc4MmYxMGE3","data":[{"previousUsernames":[],"id":3520498987,"name":"123yzxiphone","displayName":"123s"},{"previousUsernames":[],"id":3406006842,"name":"123jsbsF","displayName":"123s"},{"previousUsernames":[],"id":3383886644,"name":"123sadytr","displayName":"123s"},{"previousUsernames":[],"id":3241824850,"name":"123s4576","displayName":"123s"},{"previousUsernames":[],"id":893208081,"name":"XxOofWolfxX","displayName":"123s"},{"previousUsernames":[],"id":1994808987,"name":"guest12336011","displayName":"123s"},{"previousUsernames":[],"id":409374050,"name":"ss_u","displayName":"123"},{"previousUsernames":[],"id":1458958292,"name":"smalpp3445","displayName":"123"},{"previousUsernames":[],"id":488078337,"name":"EddeGameRYYY","displayName":"123s"},{"previousUsernames":[],"id":3070932786,"name":"KING_GUN01","displayName":"123S"}]}'
+    headers:
+      cache-control:
+      - no-cache
+      content-encoding:
+      - gzip
+      content-length:
+      - '429'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 17 May 2022 15:29:59 GMT
+      expires:
+      - '-1'
+      nel:
+      - '{"report_to":"network-errors","max_age":604800,"success_fraction":0.001,"failure_fraction":1}'
+      p3p:
+      - CP="CAO DSP COR CURa ADMa DEVa OUR IND PHY ONL UNI COM NAV INT DEM PRE"
+      pragma:
+      - no-cache
+      report-to:
+      - '{"group":"network-errors","max_age":604800,"endpoints":[{"url":"https://ncs.roblox.com/upload"}]}'
+      roblox-machine-id:
+      - CHI1-WEB9081
+      set-cookie:
+      - GuestData=UserID=-1650189457; domain=.roblox.com; expires=Sat, 02-Oct-2049
+        15:30:00 GMT; path=/
+      strict-transport-security:
+      - max-age=3600
+      vary:
+      - Accept-Encoding
+      x-frame-options:
+      - SAMEORIGIN
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

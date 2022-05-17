@@ -1,0 +1,53 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - economy.roblox.com
+      referer:
+      - www.roblox.com
+      user-agent:
+      - Roblox/WinInet
+    method: GET
+    uri: https://economy.roblox.com/v2/assets/20372960/details
+  response:
+    content: '{"TargetId":20372960,"ProductType":"User Product","AssetId":20372960,"ProductId":3413746,"Name":"Bed
+      Hair","Description":"When both sides of the bed are the wrong side.","AssetTypeId":41,"Creator":{"Id":1,"Name":"Roblox","CreatorType":"User","CreatorTargetId":1},"IconImageAssetId":0,"Created":"2010-01-08T00:28:43.887Z","Updated":"2016-12-02T14:28:30.693Z","PriceInRobux":80,"PriceInTickets":null,"Sales":0,"IsNew":false,"IsForSale":true,"IsPublicDomain":false,"IsLimited":false,"IsLimitedUnique":false,"Remaining":null,"MinimumMembershipLevel":0,"ContentRatingTypeId":0,"SaleAvailabilityLocations":null}'
+    headers:
+      cache-control:
+      - no-cache
+      content-encoding:
+      - gzip
+      content-length:
+      - '375'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 17 May 2022 15:30:02 GMT
+      expires:
+      - '-1'
+      nel:
+      - '{"report_to":"network-errors","max_age":604800,"success_fraction":0.001,"failure_fraction":1}'
+      p3p:
+      - CP="CAO DSP COR CURa ADMa DEVa OUR IND PHY ONL UNI COM NAV INT DEM PRE"
+      pragma:
+      - no-cache
+      report-to:
+      - '{"group":"network-errors","max_age":604800,"endpoints":[{"url":"https://ncs.roblox.com/upload"}]}'
+      roblox-machine-id:
+      - CHI1-WEB1464
+      strict-transport-security:
+      - max-age=3600
+      vary:
+      - Accept-Encoding
+      x-frame-options:
+      - SAMEORIGIN
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

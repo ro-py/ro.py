@@ -1,0 +1,56 @@
+interactions:
+- request:
+    body: '{"usernames": ["Boegie19", "local_ip"], "excludeBannedUsers": false}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '68'
+      content-type:
+      - application/json
+      host:
+      - users.roblox.com
+      referer:
+      - www.roblox.com
+      user-agent:
+      - Roblox/WinInet
+    method: POST
+    uri: https://users.roblox.com/v1/usernames/users
+  response:
+    content: '{"data":[{"requestedUsername":"Boegie19","id":117091179,"name":"Boegie19","displayName":"Boegie19"},{"requestedUsername":"local_ip","id":968108160,"name":"local_ip","displayName":"jmk"}]}'
+    headers:
+      cache-control:
+      - no-cache
+      content-encoding:
+      - gzip
+      content-length:
+      - '131'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 17 May 2022 15:29:56 GMT
+      expires:
+      - '-1'
+      nel:
+      - '{"report_to":"network-errors","max_age":604800,"success_fraction":0.001,"failure_fraction":1}'
+      p3p:
+      - CP="CAO DSP COR CURa ADMa DEVa OUR IND PHY ONL UNI COM NAV INT DEM PRE"
+      pragma:
+      - no-cache
+      report-to:
+      - '{"group":"network-errors","max_age":604800,"endpoints":[{"url":"https://ncs.roblox.com/upload"}]}'
+      roblox-machine-id:
+      - CHI1-WEB6070
+      strict-transport-security:
+      - max-age=3600
+      vary:
+      - Accept-Encoding
+      x-frame-options:
+      - SAMEORIGIN
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

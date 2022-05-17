@@ -1,0 +1,210 @@
+interactions:
+- request:
+    body: '{"userIds": [117091179, 2, 3], "excludeBannedUsers": false}'
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      content-length:
+      - '59'
+      content-type:
+      - application/json
+      host:
+      - users.roblox.com
+      referer:
+      - www.roblox.com
+      user-agent:
+      - Roblox/WinInet
+    method: POST
+    uri: https://users.roblox.com/v1/users
+  response:
+    content: '{"data":[{"id":117091179,"name":"Boegie19","displayName":"Boegie19"},{"id":2,"name":"John
+      Doe","displayName":"John Doe"},{"id":3,"name":"Jane Doe","displayName":"Jane
+      Doe"}]}'
+    headers:
+      cache-control:
+      - no-cache
+      content-encoding:
+      - gzip
+      content-length:
+      - '116'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 17 May 2022 15:29:56 GMT
+      expires:
+      - '-1'
+      nel:
+      - '{"report_to":"network-errors","max_age":604800,"success_fraction":0.001,"failure_fraction":1}'
+      p3p:
+      - CP="CAO DSP COR CURa ADMa DEVa OUR IND PHY ONL UNI COM NAV INT DEM PRE"
+      pragma:
+      - no-cache
+      report-to:
+      - '{"group":"network-errors","max_age":604800,"endpoints":[{"url":"https://ncs.roblox.com/upload"}]}'
+      roblox-machine-id:
+      - CHI1-WEB8776
+      strict-transport-security:
+      - max-age=3600
+      vary:
+      - Accept-Encoding
+      x-frame-options:
+      - SAMEORIGIN
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - users.roblox.com
+      referer:
+      - www.roblox.com
+      user-agent:
+      - Roblox/WinInet
+    method: GET
+    uri: https://users.roblox.com/v1/users/117091179
+  response:
+    content: '{"description":"a","created":"2016-03-27T11:34:29.01Z","isBanned":false,"externalAppDisplayName":null,"id":117091179,"name":"Boegie19","displayName":"Boegie19"}'
+    headers:
+      cache-control:
+      - no-cache
+      content-encoding:
+      - gzip
+      content-length:
+      - '146'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 17 May 2022 15:29:56 GMT
+      expires:
+      - '-1'
+      nel:
+      - '{"report_to":"network-errors","max_age":604800,"success_fraction":0.001,"failure_fraction":1}'
+      p3p:
+      - CP="CAO DSP COR CURa ADMa DEVa OUR IND PHY ONL UNI COM NAV INT DEM PRE"
+      pragma:
+      - no-cache
+      report-to:
+      - '{"group":"network-errors","max_age":604800,"endpoints":[{"url":"https://ncs.roblox.com/upload"}]}'
+      roblox-machine-id:
+      - CHI1-WEB9081
+      strict-transport-security:
+      - max-age=3600
+      vary:
+      - Accept-Encoding
+      x-frame-options:
+      - SAMEORIGIN
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - users.roblox.com
+      referer:
+      - www.roblox.com
+      user-agent:
+      - Roblox/WinInet
+    method: GET
+    uri: https://users.roblox.com/v1/users/2
+  response:
+    content: '{"description":"","created":"2006-02-27T21:06:40.3Z","isBanned":false,"externalAppDisplayName":null,"id":2,"name":"John
+      Doe","displayName":"John Doe"}'
+    headers:
+      cache-control:
+      - no-cache
+      content-encoding:
+      - gzip
+      content-length:
+      - '140'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 17 May 2022 15:29:56 GMT
+      expires:
+      - '-1'
+      nel:
+      - '{"report_to":"network-errors","max_age":604800,"success_fraction":0.001,"failure_fraction":1}'
+      p3p:
+      - CP="CAO DSP COR CURa ADMa DEVa OUR IND PHY ONL UNI COM NAV INT DEM PRE"
+      pragma:
+      - no-cache
+      report-to:
+      - '{"group":"network-errors","max_age":604800,"endpoints":[{"url":"https://ncs.roblox.com/upload"}]}'
+      roblox-machine-id:
+      - CHI1-WEB7884
+      strict-transport-security:
+      - max-age=3600
+      vary:
+      - Accept-Encoding
+      x-frame-options:
+      - SAMEORIGIN
+    http_version: HTTP/1.1
+    status_code: 200
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - users.roblox.com
+      referer:
+      - www.roblox.com
+      user-agent:
+      - Roblox/WinInet
+    method: GET
+    uri: https://users.roblox.com/v1/users/3
+  response:
+    content: '{"description":"","created":"2006-02-27T21:06:40.3Z","isBanned":false,"externalAppDisplayName":null,"id":3,"name":"Jane
+      Doe","displayName":"Jane Doe"}'
+    headers:
+      cache-control:
+      - no-cache
+      content-encoding:
+      - gzip
+      content-length:
+      - '140'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 17 May 2022 15:29:56 GMT
+      expires:
+      - '-1'
+      nel:
+      - '{"report_to":"network-errors","max_age":604800,"success_fraction":0.001,"failure_fraction":1}'
+      p3p:
+      - CP="CAO DSP COR CURa ADMa DEVa OUR IND PHY ONL UNI COM NAV INT DEM PRE"
+      pragma:
+      - no-cache
+      report-to:
+      - '{"group":"network-errors","max_age":604800,"endpoints":[{"url":"https://ncs.roblox.com/upload"}]}'
+      roblox-machine-id:
+      - CHI2-WEB2186
+      strict-transport-security:
+      - max-age=3600
+      vary:
+      - Accept-Encoding
+      x-frame-options:
+      - SAMEORIGIN
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1
