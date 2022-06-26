@@ -2,9 +2,9 @@
 One of the most common uses of ro.py is for Discord-Roblox bots, usually for managing groups. In this guide, we'll create a bot from scratch using [discord.py](https://discordpy.readthedocs.io/en/stable/) and ro.py to manage a group.
 While this will all work on its own, you will likely need to make modifications to have some parts work in your own bot (if you already have one).
 !!! note
-	This tutorial uses discord.py prefix commands, which will require the Message Content intent to be enabled on
-  September 1st, 2022. Concepts related to ro.py will likely still apply when using application commands, but this
-  guide does not use them.
+    This tutorial uses discord.py prefix commands, which will require the Message Content intent to be enabled on
+    September 1st, 2022. Concepts related to ro.py will likely still apply when using application commands, but this
+    guide does not use them.
 
 ## Prerequisites
 * Basic knowledge (and how to use [async/await syntax](https://realpython.com/async-io-python/#the-asyncawait-syntax-and-native-coroutines)) and installation of Python
@@ -22,7 +22,8 @@ import discord
 from discord.ext import commands
 import roblox
 
-bot = commands.Bot("!")
+bot = commands.Bot("!", intents=discord.Intents.default())
+# If your bot will do other things, you may need different intents. Check https://discordpy.readthedocs.io/en/stable/intents.html for information on how to use intents.
 client = roblox.Client("YOUR_TOKEN_HERE")
 ```
 Here, we've imported the discord.py package, the commands extension, and the ro.py package, then created a new Discord Bot Client and Roblox Client. Replace `YOUR_TOKEN_HERE` with your [.ROBLOSECURITY](https://ro.py.jmk.gg/dev/roblosecurity/) token.
