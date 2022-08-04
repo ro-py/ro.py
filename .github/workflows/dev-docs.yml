@@ -31,7 +31,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install git+https://github.com/squidfunk/mkdocs-material.git@8.0.0b2
-          pip install mkdocstrings httpx mkdocs-literate-nav mkdocs-gen-files mike
+          pip install mkdocstrings[python] httpx mkdocs-literate-nav mkdocs-gen-files mike
       
       - name: Configure Git user
         run: |
