@@ -23,22 +23,24 @@ Each version number below corresponds to its Git tag number.
 ## [v1.2.0.5]
 
 - **Ro.py now requires the `requests` module.**
-
-## [v1.2.0]
-
 - **Ro.py now requires the `lxml` module.**
 - Add support for checking friend requests.
 - Adds support for running text through the Roblox censorship filter.
 - Adds support for logging out.
+- Removes notifications.
+- Adds proper support for management of places.
+- Adds support for checking if a user has a badge.
 
 ## [v1.1.4]
 
 - Remove Anti-Captcha and Twocaptcha support.
-- Add support for audit logs. (@iranithan)
+- Add support for audit logs. (@iranithan).
+- HTTP errors now inherit the `APIError` class.
 
 ## [v1.1.3]
 
-- Add support for locked groups.
+- Adds support for locked groups.
+- Fixes bugs relating to `wxGlade`.
 
 ## [v1.1.2]
 
@@ -50,9 +52,9 @@ Each version number below corresponds to its Git tag number.
 
 ## [v1.1.0]
 
-- Improve caching.
-- Add classical HTTP error codes.
-
+- Adds support for events.
+- Adds a ClientSharedObject, which is code that is shared among most objects.
+- Adds classical HTTP error codes.
 
 ## [v1.0.7]
 
@@ -63,11 +65,13 @@ Each version number below corresponds to its Git tag number.
 
 - **Ro.py now requires `pytweening`.**
 - Minor documentation fixes.
+- Fixes dependency-related errors.
 
 ## [v1.0.5]
 
 - **Ro.py now requires `trio` and `greenback`.**
 - Make chat support asynchronous.
+- Adds support for game joining.
 
 ## [v1.0.4]
 
