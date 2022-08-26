@@ -279,10 +279,10 @@ class BaseGroup(BaseItem):
     def get_wall_posts(self, page_size: int = 10, sort_order: SortOrder = SortOrder.Ascending,
                        max_items: int = None) -> PageIterator:
         """
-        Gets all members of a group.
+        Gets wall posts of a group.
 
         Arguments:
-            page_size: How many members should be returned for each page.
+            page_size: How many posts should be returned for each page.
             sort_order: Order in which data should be grabbed.
             max_items: The maximum items to return when looping through this object.
 
