@@ -65,3 +65,35 @@ class AccountProvider:
                 "password": password
             }
         )
+    
+    async def get_description(self) -> string:
+        """
+        Gets the authenticated user's description.
+
+        Returns: 
+            The authenticated user's description.
+        """
+        description_response = await self._client.requests.get(
+            url=self._client.url_generator.get_url("accountinformation", "v1/description")
+        )
+        description_data = description_response.json()
+        return description_data["description"]
+    
+    async def set_description(
+            self,
+            description: string,
+    ):
+        """
+        Changes the authenticated user's description.
+        This endpoint *may* require your token, and requires an unlocked PIN.
+
+        Arguments:
+            description: A string object that represents the description to update the Client's account to.
+        """
+        await self._client.requests.post(
+            url=self._client.url_generator.get_url("accountinformation", "v1/description"),
+            json={
+                "description": description
+            }
+        )
+    
