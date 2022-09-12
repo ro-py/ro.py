@@ -84,7 +84,7 @@ class AccountProvider:
             description: string,
     ):
         """
-        Update's the authenticated user's description.
+        Updates the authenticated user's description.
         This endpoint *may* require your token, and requires an unlocked PIN.
 
         Arguments:
