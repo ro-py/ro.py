@@ -26,7 +26,7 @@ class Group(BaseGroup):
         description: description of the group.
         owner: player who owns the group.
         shout: the current group shout.
-        member_count: about of members in the group.
+        member_count: amount of members in the group.
         is_builders_club_only: can only people with builder club join.
         public_entry_allowed: can you join without your join request having to be accepted.
         is_locked: Is the group locked?
