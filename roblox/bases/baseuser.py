@@ -232,26 +232,6 @@ class BaseUser(BaseItem):
             ) for role_data in roles_data
         ]
 
-    async def get_role_in_group(self, group: GroupOrGroupId) -> Optional[Role]:
-        """
-        Gets the user's role in a group.
-
-        !!! warning
-            Getting a user's role in a group is not implemented in the Roblox web API. The only way to get a user's role
-            in a group is to either iterate through all of their roles or iterate through all of the group members.
-            For this reason, this function is essentially just a small filter for `BaseUser.get_group_roles()` and just
-            iterates through all of the roles until the one for the specified group is found.
-            If you are calling this method multiple times in your code you probably should use
-            `BaseUser.get_group_roles()` instead.
-
-        Returns:
-            The user's role in the group, or None if they are not in the group.
-        """
-        for role in await self.get_group_roles():
-            if role.group.id == int(group):
-                return role
-        return None
-
     async def get_roblox_badges(self) -> List[RobloxBadge]:
         """
         Gets the user's Roblox badges.
