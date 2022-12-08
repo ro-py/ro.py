@@ -28,6 +28,7 @@ class User(BaseUser):
         is_banned: If the user is banned.
         description: The description the current user wrote for themself.
         created: When the user created their account.
+        has_verified_badge: If the user has the verified badge.
     """
 
     def __init__(self, client: Client, data: dict):
@@ -47,6 +48,7 @@ class User(BaseUser):
         self.is_banned: bool = data["isBanned"]
         self.description: str = data["description"]
         self.created: datetime = parse(data["created"])
+        self.has_verified_badge: bool = data["hasVerifiedBadge"]
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id} name={self.name!r} display_name={self.display_name!r}>"
