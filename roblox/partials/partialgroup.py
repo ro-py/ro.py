@@ -23,6 +23,7 @@ class AssetPartialGroup(BaseGroup):
         id: The group's name.
         creator: The group's owner.
         name: The group's name.
+        has_verified_badge: If the group has a verified badge.
     """
 
     def __init__(self, client: Client, data: dict):
@@ -36,6 +37,7 @@ class AssetPartialGroup(BaseGroup):
         self.creator: BaseUser = BaseUser(client=client, user_id=data["Id"])
         self.id: int = data["CreatorTargetId"]
         self.name: str = data["Name"]
+        self.has_verified_badge: bool = data["HasVerifiedBadge"]
 
         super().__init__(client, self.id)
 
@@ -52,6 +54,7 @@ class UniversePartialGroup(BaseGroup):
         _client: The client object, which is passed to all objects this client generates.
         id: Id of the group
         name: Name of the group
+        has_verified_badge: If the group has a verified badge.
     """
 
     def __init__(self, client: Client, data: dict):
@@ -63,6 +66,7 @@ class UniversePartialGroup(BaseGroup):
         self._client: Client = client
         self.id = data["id"]
         self.name: str = data["name"]
+        self.has_verified_badge: bool = data["hasVerifiedBadge"]
 
         super().__init__(client, self.id)
 
