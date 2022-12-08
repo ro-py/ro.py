@@ -28,7 +28,7 @@ class User(BaseUser):
         is_banned: If the user is banned.
         description: The description the current user wrote for themself.
         created: When the user created their account.
-        has_verified_badge: If the user has the verified badge.
+        has_verified_badge: If the user has a verified badge.
     """
 
     def __init__(self, client: Client, data: dict):
