@@ -116,7 +116,7 @@ class Client:
         """
         username_req = await self.requests.post(
             url="https://users.roblox.com/v1/usernames/users",
-            data={
+            json={
                 "usernames": [
                     user_name
                 ],
