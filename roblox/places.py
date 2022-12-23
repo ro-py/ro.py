@@ -28,6 +28,7 @@ class Place(BasePlace):
         universe_root_place: The root place that the universe contains.
         price: How much it costs to play the game.
         image_token: Can be used to generate thumbnails for this place.
+        has_verified_badge: If the place has a verified badge.
     """
 
     def __init__(self, client: Client, data: dict):
