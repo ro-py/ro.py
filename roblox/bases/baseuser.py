@@ -41,21 +41,6 @@ class BaseUser(BaseItem):
         self._client: Client = client
         self.id: int = user_id
 
-    async def get_status(self) -> str:
-        """
-        Grabs the user's status.
-
-        Returns:
-            The user's status.
-        """
-        status_response = await self._client.requests.get(
-            url=self._client.url_generator.get_url(
-                "users", f"/v1/users/{self.id}/status"
-            )
-        )
-        status_data = status_response.json()
-        return status_data["status"]
-
     def username_history(
             self, page_size: int = 10, sort_order: SortOrder = SortOrder.Ascending, max_items: int = None
     ) -> PageIterator:
