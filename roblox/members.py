@@ -71,6 +71,7 @@ class Member(MemberRelationship):
         display_name: The member's display name.
         role: The member's role.
         group: The member's group.
+        has_verified_badge: If the member has a verified badge.
     """
 
     def __init__(self, client: Client, data: dict, group: BaseGroup):
@@ -79,6 +80,7 @@ class Member(MemberRelationship):
         self.id: int = data["user"]["userId"]
         self.name: str = data["user"]["username"]
         self.display_name: str = data["user"]["displayName"]
+        self.has_verified_badge: bool = data["user"]["hasVerifiedBadge"]
 
         super().__init__(client=self._client, user=self.id, group=group)
 

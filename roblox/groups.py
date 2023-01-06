@@ -30,6 +30,7 @@ class Group(BaseGroup):
         is_builders_club_only: can only people with builder club join.
         public_entry_allowed: can you join without your join request having to be accepted.
         is_locked: Is the group locked?
+        has_verified_badge: If the group has a verified badge.
     """
 
     def __init__(self, client: Client, data: dict):
@@ -56,6 +57,7 @@ class Group(BaseGroup):
         self.is_builders_club_only: bool = data["isBuildersClubOnly"]
         self.public_entry_allowed: bool = data["publicEntryAllowed"]
         self.is_locked: bool = data.get("isLocked") or False
+        self.has_verified_badge: bool = data["hasVerifiedBadge"]
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id} name={self.name!r} owner={self.owner}>"

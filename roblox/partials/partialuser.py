@@ -21,6 +21,7 @@ class PartialUser(BaseUser):
         id: The user's ID.
         name: The user's name.
         display_name: The user's display name.
+        has_verified_badge: If the user has a verified badge.
     """
 
     def __init__(self, client: Client, data: dict):
@@ -37,6 +38,7 @@ class PartialUser(BaseUser):
 
         self.name: str = data.get("name") or data.get("Name") or data.get("username") or data.get("Username")
         self.display_name: str = data.get("displayName")
+        self.has_verified_badge: bool = data["hasVerifiedBadge"]
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id} name={self.name!r} display_name={self.display_name!r}>"
