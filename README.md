@@ -41,7 +41,7 @@ pip install roblox
 
 To install the latest unstable version of ro.py, install [git-scm](https://git-scm.com/downloads) and run the following:
 ```
-pip install git+git://github.com/ro-py/ro.py.git
+pip install git+https://github.com/ro-py/ro.py.git
 ```
 
 # Tutorial
