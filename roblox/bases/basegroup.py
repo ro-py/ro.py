@@ -276,6 +276,17 @@ class BaseGroup(BaseItem):
             url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/users/{int(user)}")
         )
 
+    async def delete_all_messages(self, user: UserOrUserId):
+        """
+        Deletes all messages from a user in a group.
+
+        Arguments:
+            user: The user who will have their messages deleted.
+        """
+        await self._client.requests.delete(
+            url=self._client.url_generator.get_url("groups", f"/v1/groups/{self.id}/wall/users/{int(user)}/posts")
+        )
+
     def get_wall_posts(self, page_size: int = 10, sort_order: SortOrder = SortOrder.Ascending,
                        max_items: int = None) -> PageIterator:
         """

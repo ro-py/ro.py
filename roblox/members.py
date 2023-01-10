@@ -59,6 +59,12 @@ class MemberRelationship(BaseUser):
         Kicks this member from the group.
         """
         await self.group.kick_user(self)
+        
+    async def delete_all_messages(self):
+        """
+        Deletes all wall posts created by this member in the group.
+        """
+        await self.group.delete_all_messages(self)
 
 
 class Member(MemberRelationship):
