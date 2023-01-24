@@ -6,13 +6,17 @@ import asyncio
 from roblox import Client
 client = Client()
 
-
 async def main():
     group = await client.get_group(9695397)
+    group_members = await group.get_members().flatten()
 
     print("ID:", group.id)
     print("Name:", group.name)
-    print("Members:", group.member_count)
+    print("Member Count:", group.member_count)
+    print("Members: ")
+    for member in group_members:
+        print(f"ID:{member.id}, Name: {member.name}")
+    
     print("Owner:", group.owner.display_name)
     if group.shout:
         print("Shout:")
