@@ -72,3 +72,21 @@ class UniversePartialGroup(BaseGroup):
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"
+    
+class RequestedGroupnamePartialGroup(UniversePartialGroup):
+    """
+    Represents a partial group in the context of a search query.
+
+    Attributes:
+        requested_groupname: Group name they requested
+    """
+
+    def __init__(self, shared: ClientSharedObject, data: dict):
+        """
+        Arguments:
+            shared: The ClientSharedObject.
+            data: The data form the endpoint.
+        """
+        super().__init__(shared=shared, data=data)
+
+        self.requested_groupname: str = data.get("requestedGroupname")
