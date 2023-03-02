@@ -21,6 +21,7 @@ from .chat import ChatProvider
 from .delivery import DeliveryProvider
 from .groups import Group
 from .partials.partialuser import PartialUser, RequestedUsernamePartialUser, PreviousUsernamesPartialUser
+from .partials.partialgroup import UniversePartialGroup, RequestedGroupnamePartialGroup
 from .places import Place
 from .plugins import Plugin
 from .presence import PresenceProvider
@@ -291,6 +292,28 @@ class Client:
             A BaseGroup.
         """
         return BaseGroup(client=self, group_id=group_id)
+    
+    def groups_search(self, keyword: str, page_size: int = 10,
+                    max_items: int = None) -> PageIterator:
+        """
+        Search for users with a keyword.
+
+        Arguments:
+            keyword: A keyword to search for.
+            page_size: How many members should be returned for each page.
+            max_items: The maximum items to return when looping through this object.
+
+        Returns:
+            A PageIterator containing RequestedUsernamePartialUser.
+        """
+        return PageIterator(
+            shared=self._shared,
+            url=self._shared.url_generator.get_url("groups", f"v1/groups/search"),
+            page_size=page_size,
+            max_items=max_items,
+            extra_parameters={"keyword": keyword},
+            handler=lambda shared, data: RequestedGroupnamePartialGroup(shared, data),
+        )
 
     # Universes
     async def get_universes(self, universe_ids: List[int]) -> List[Universe]:
