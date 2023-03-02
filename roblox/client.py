@@ -293,7 +293,7 @@ class Client:
         """
         return BaseGroup(client=self, group_id=group_id)
     
-    def groups_search(self, keyword: str, page_size: int = 10,
+    def group_search(self, keyword: str, page_size: int = 10,
                     max_items: int = None) -> PageIterator:
         """
         Search for users with a keyword.
