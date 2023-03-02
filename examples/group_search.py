@@ -7,7 +7,7 @@ from roblox import Client
 client = Client()
 
 async def main():
-    users = client.groups_search("Roblox", max_items=10)
+    users = client.group_search("Roblox", max_items=10)
 
     async for user in users:
         print("ID:", group.id)
