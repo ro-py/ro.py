@@ -43,6 +43,12 @@
         </tr>
         <tr>
             <td>
+                <a href="./group_search.py">group_search.py</a>
+            </td>
+            <td>Searches for groups and prints 10 to the console.</td>
+        </tr>
+        <tr>
+            <td>
                 <a href="./group_information.py">group_information.py</a>
             </td>
             <td>Grabs group information and prints it to the console.</td>
