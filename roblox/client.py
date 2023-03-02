@@ -294,7 +294,7 @@ class Client:
         return BaseGroup(client=self, group_id=group_id)
     
     def group_search(self, keyword: str, page_size: int = 10,
-                    max_items: int = None) -> PageIterator:
+                    max_items: int = None, prioritize_match: bool = True) -> PageIterator:
         """
         Search for users with a keyword.
 
@@ -311,7 +311,7 @@ class Client:
             url=self._shared.url_generator.get_url("groups", f"v1/groups/search"),
             page_size=page_size,
             max_items=max_items,
-            extra_parameters={"keyword": keyword},
+            extra_parameters={"keyword": keyword, "prioritizeExactMatch": prioritize_match}
             handler=lambda shared, data: RequestedGroupnamePartialGroup(shared, data),
         )
 
