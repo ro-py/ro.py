@@ -32,7 +32,7 @@ class Friend(User):
         super().__init__(client=client, data=data)
 
         self.is_online: Optional[bool] = data.get("isOnline")
-        self.presence_type: int = data["presenceType"]
+        self.presence_type: Optional[int] = data.get("presenceType")
         self.is_deleted: bool = data["isDeleted"]
         self.friend_frequent_rank: int = data["friendFrequentRank"]
 
