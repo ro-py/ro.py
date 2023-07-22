@@ -33,6 +33,7 @@ class JoinRequest:
 
     Attributes:
         created: When this join request was sent.
+        requester: The user that sent the join request.
         group: The parent group that this join request is linked to.
     """
 
