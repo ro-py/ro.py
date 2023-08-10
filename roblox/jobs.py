@@ -18,7 +18,6 @@ from enum import Enum
 from .bases.basejob import BaseJob
 from .bases.baseplace import BasePlace
 from .bases.baseuser import BaseUser
-from .bases.baseitem import BaseItem
 from .partials.partialuser import PartialUser
 
 
