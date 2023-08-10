@@ -5,16 +5,21 @@ This module contains classes intended to parse and deal with data from Roblox se
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
+
+from roblox.client import Client
 
 if TYPE_CHECKING:
     from .client import Client
 
 from typing import List
+from enum import Enum
 
 from .bases.basejob import BaseJob
 from .bases.baseplace import BasePlace
 from .bases.baseuser import BaseUser
+from .bases.baseitem import BaseItem
+from .partials.partialuser import PartialUser
 
 
 class GameInstancePlayerThumbnail:
@@ -144,3 +149,95 @@ class GameInstances:
             ) for instance_data in data["Collection"]
         ]
         self.total_collection_size: int = data["TotalCollectionSize"]
+
+
+class ServerType(Enum):
+    """
+    Represents the type of server.
+    """
+    
+    Public = 0
+    Friend = 1
+
+
+class ServerPlayer(BaseUser):
+    """
+    Represents a single player in a server.
+    
+    Attributes:
+        id: The player's user id.
+        name: The player's username.
+        displayName: The player's display name.
+        player_token: The player's token.
+    """
+
+    def __init__(self, client: Client, data: dict):
+        super().__init__(client=client, user_id=data["id"])
+
+        self.player_token: str = data["playerToken"]
+        self.name: str = data["name"]
+        self.display_name: str = data["displayName"]
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id!r} name={self.name} display_name={self.display_name} player_token={self.player_token}>"
+
+
+class Server(BaseItem):
+    """
+    Represents a public server.
+
+    Attributes:
+        id: The server's job id.
+        max_players: The maximum number of players that can be in the server at once.
+        playing: The amount of players in the server.
+        player_tokens: A list of player tokens.
+        players: A list of players in the server. Only friends of the authenticated user will show up here.
+        fps: The server's fps.
+        ping: The server's ping.
+    """
+
+    def __init__(self, client: Client, data: dict):
+        self._client: Client = client
+
+        self.id: Optional[str] = data.get("id")
+        self.max_players: int = data["maxPlayers"]
+        self.playing: int = data.get("playing")
+        self.player_tokens: List[str] = data["playerTokens"]
+        self.players: List[ServerPlayer] = [
+            ServerPlayer(client=self._client, data=player_data) 
+            for player_data in data["players"]
+        ]
+
+        self.fps: float = data.get("fps")
+        self.ping: Optional[int] = data.get("ping")
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} playing={self.playing}>"
+    
+class PrivateServer(Server):
+    """
+    Represents a private server.
+
+    Attributes:
+        id: The private server's job id.
+        vip_server_id: The private server's vipServerId.
+        max_players: The maximum number of players that can be in the server at once.
+        playing: The amount of players in the server.
+        player_tokens: A list of player tokens.
+        players: A list of players in the server. Only friends of the authenticated user will show up here.
+        fps: The server's fps.
+        name: The private server's name.
+        accessCode: The private server's access code.
+        owner: The private server's owner.
+    """
+
+    def __init__(self, client: Client, data: dict):
+        super().__init__(client=client, data=data)
+
+        self.name: str = data["name"]
+        self.vip_server_id: int = data["vipServerId"]
+        self.accessCode: str = data["accessCode"]
+        self.owner: PartialUser = PartialUser(client=self._client, data=data["owner"])
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} name={self.name} vip_server_id={self.vip_server_id} owner={self.owner}>"
