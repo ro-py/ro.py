@@ -7,8 +7,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Optional
 
-from roblox.client import Client
-
 if TYPE_CHECKING:
     from .client import Client
 
