@@ -172,6 +172,12 @@ class ServerPlayer(BaseUser):
     """
 
     def __init__(self, client: Client, data: dict):
+        """
+        Arguments:
+            client: The Client this object belongs to.
+            data: A GameServerPlayerResponse object.
+        """
+
         super().__init__(client=client, user_id=data["id"])
 
         self.player_token: str = data["playerToken"]
@@ -179,10 +185,10 @@ class ServerPlayer(BaseUser):
         self.display_name: str = data["displayName"]
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id!r} name={self.name} display_name={self.display_name} player_token={self.player_token}>"
+        return f"<{self.__class__.__name__} id={self.id} name={self.name} display_name={self.display_name} player_token={self.player_token}>"
 
 
-class Server(BaseItem):
+class Server:
     """
     Represents a public server.
 
@@ -190,18 +196,24 @@ class Server(BaseItem):
         id: The server's job id.
         max_players: The maximum number of players that can be in the server at once.
         playing: The amount of players in the server.
-        player_tokens: A list of player tokens.
-        players: A list of players in the server. Only friends of the authenticated user will show up here.
+        player_tokens: A list of thumbnail tokens for all the players in the server.
+        players: A list of ServerPlayer objects reprisenting the players in the server. Only friends of the authenticated user will be included in the list.
         fps: The server's fps.
         ping: The server's ping.
     """
 
     def __init__(self, client: Client, data: dict):
+        """
+        Arguments:
+            client: The Client this object belongs to.
+            data: A GameServerResponse object.
+        """
+
         self._client: Client = client
 
         self.id: Optional[str] = data.get("id")
         self.max_players: int = data["maxPlayers"]
-        self.playing: int = data.get("playing")
+        self.playing: int = data.get("playing", 0)
         self.player_tokens: List[str] = data["playerTokens"]
         self.players: List[ServerPlayer] = [
             ServerPlayer(client=self._client, data=player_data) 
@@ -214,6 +226,14 @@ class Server(BaseItem):
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id} playing={self.playing}>"
     
+    def __eq__(self, other: object) -> bool:
+        return isinstance(other, self.__class__) and other.id == self.id
+    
+    def __ne__(self, other: object):
+        if isinstance(other, self.__class__): return other.id != self.id
+
+        return True
+    
 class PrivateServer(Server):
     """
     Represents a private server.
@@ -223,15 +243,21 @@ class PrivateServer(Server):
         vip_server_id: The private server's vipServerId.
         max_players: The maximum number of players that can be in the server at once.
         playing: The amount of players in the server.
-        player_tokens: A list of player tokens.
-        players: A list of players in the server. Only friends of the authenticated user will show up here.
+        player_tokens: A list of thumbnail tokens for all the players in the server.
+        players: A list of ServerPlayer objects reprisenting the players in the server. Only friends of the authenticated user will be included in the list.
         fps: The server's fps.
         name: The private server's name.
         accessCode: The private server's access code.
-        owner: The private server's owner.
+        owner: A PartialUser object reprisenting the owner of the private server.
     """
 
     def __init__(self, client: Client, data: dict):
+        """
+        Arguments:
+            client: The Client this object belongs to.
+            data: A PrivateServerResponse object.
+        """
+
         super().__init__(client=client, data=data)
 
         self.name: str = data["name"]
@@ -240,4 +266,4 @@ class PrivateServer(Server):
         self.owner: PartialUser = PartialUser(client=self._client, data=data["owner"])
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} name={self.name} vip_server_id={self.vip_server_id} owner={self.owner}>"
+        return f"<{self.__class__.__name__} name={self.name} playing={self.playing} vip_server_id={self.vip_server_id} owner={self.owner}>"
