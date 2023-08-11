@@ -159,7 +159,7 @@ class ServerType(Enum):
 
 class ServerPlayer(BaseUser):
     """
-    Represents a single player in a server.
+    Represents a player in a server.
     
     Attributes:
         id: The player's user id.
@@ -194,7 +194,7 @@ class Server:
         max_players: The maximum number of players that can be in the server at once.
         playing: The amount of players in the server.
         player_tokens: A list of thumbnail tokens for all the players in the server.
-        players: A list of ServerPlayer objects reprisenting the players in the server. Only friends of the authenticated user will be included in the list.
+        players: A list of ServerPlayer objects representing the players in the server. Only friends of the authenticated user will show up here.
         fps: The server's fps.
         ping: The server's ping.
     """
@@ -241,11 +241,12 @@ class PrivateServer(Server):
         max_players: The maximum number of players that can be in the server at once.
         playing: The amount of players in the server.
         player_tokens: A list of thumbnail tokens for all the players in the server.
-        players: A list of ServerPlayer objects reprisenting the players in the server. Only friends of the authenticated user will be included in the list.
+        players: A list of ServerPlayer objects representing the players in the server. Only friends of the authenticated user will show up here.
         fps: The server's fps.
+        ping: The server's ping.
         name: The private server's name.
         accessCode: The private server's access code.
-        owner: A PartialUser object reprisenting the owner of the private server.
+        owner: A PartialUser object representing the owner of the private server.
     """
 
     def __init__(self, client: Client, data: dict):
