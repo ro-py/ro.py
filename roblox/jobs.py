@@ -230,6 +230,7 @@ class Server:
         if isinstance(other, self.__class__): return other.id != self.id
 
         return True
+
     
 class PrivateServer(Server):
     """
