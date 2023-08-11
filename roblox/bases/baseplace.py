@@ -75,13 +75,13 @@ class BasePlace(BaseAsset):
         Grabs the place's servers.
 
         Arguments:
-            server_type: The type of servers to return
+            server_type: The type of servers to return.
             page_size: How many servers should be returned for each page.
             sort_order: Order in which data should be grabbed.
             exclude_full_games: Whether to exclude full servers.
             max_items: The maximum items to return when looping through this object.
         Returns:
-            A PageIterator containing the place's servers.
+            A PageIterator containing servers.
         """
         from ..jobs import Server
 
