@@ -16,6 +16,7 @@ from enum import Enum
 from .bases.basejob import BaseJob
 from .bases.baseplace import BasePlace
 from .bases.baseuser import BaseUser
+from .bases.baseitem import BaseItem
 from .partials.partialuser import PartialUser
 
 
@@ -153,8 +154,8 @@ class ServerType(Enum):
     Represents the type of server.
     """
     
-    Public = 0
-    Friend = 1
+    public = "Public"
+    friend = "Friend"
 
 
 class ServerPlayer(BaseUser):
@@ -164,7 +165,7 @@ class ServerPlayer(BaseUser):
     Attributes:
         id: The player's user id.
         name: The player's username.
-        displayName: The player's display name.
+        display_name: The player's display name.
         player_token: The player's token.
     """
 
@@ -185,7 +186,7 @@ class ServerPlayer(BaseUser):
         return f"<{self.__class__.__name__} id={self.id} name={self.name} display_name={self.display_name} player_token={self.player_token}>"
 
 
-class Server:
+class Server(BaseItem):
     """
     Represents a public server.
 
@@ -220,17 +221,6 @@ class Server:
         self.fps: float = data.get("fps")
         self.ping: Optional[int] = data.get("ping")
 
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} playing={self.playing}>"
-    
-    def __eq__(self, other: object) -> bool:
-        return isinstance(other, self.__class__) and other.id == self.id
-    
-    def __ne__(self, other: object):
-        if isinstance(other, self.__class__): return other.id != self.id
-
-        return True
-
     
 class PrivateServer(Server):
     """
@@ -246,7 +236,7 @@ class PrivateServer(Server):
         fps: The server's fps.
         ping: The server's ping.
         name: The private server's name.
-        accessCode: The private server's access code.
+        access_code: The private server's access code.
         owner: A PartialUser object representing the owner of the private server.
     """
 
@@ -261,8 +251,5 @@ class PrivateServer(Server):
 
         self.name: str = data["name"]
         self.vip_server_id: int = data["vipServerId"]
-        self.accessCode: str = data["accessCode"]
+        self.access_code: str = data["accessCode"]
         self.owner: PartialUser = PartialUser(client=self._client, data=data["owner"])
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} name={self.name} playing={self.playing} vip_server_id={self.vip_server_id} owner={self.owner}>"
