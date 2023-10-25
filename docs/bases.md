@@ -15,4 +15,4 @@ user = client.get_base_user(1)
 async for username in user.username_history():
     print(username)
 ```
-This code is functionally identical but won't send any unnecessary requests.
+This code is functionally identical but won't send any unnecessary requests. Note that `get_base_XYZ` functions are not asynchronous, so you do not need to await them.

@@ -221,7 +221,7 @@ class Client:
 
         !!! note
             This method does not send any requests - it just generates an object.
-            For more information on bases, please see [Bases](/bases).
+            For more information on bases, please see [Bases](/dev/bases).
 
         Arguments:
             user_id: A Roblox user ID.
@@ -282,7 +282,7 @@ class Client:
 
         !!! note
             This method does not send any requests - it just generates an object.
-            For more information on bases, please see [Bases](/bases).
+            For more information on bases, please see [Bases](/dev/bases).
 
         Arguments:
             group_id: A Roblox group ID.
@@ -335,7 +335,7 @@ class Client:
 
         !!! note
             This method does not send any requests - it just generates an object.
-            For more information on bases, please see [Bases](/bases).
+            For more information on bases, please see [Bases](/dev/bases).
 
         Arguments:
             universe_id: A Roblox universe ID.
@@ -389,7 +389,7 @@ class Client:
 
         !!! note
             This method does not send any requests - it just generates an object.
-            For more information on bases, please see [Bases](/bases).
+            For more information on bases, please see [Bases](/dev/bases).
 
         Arguments:
             place_id: A Roblox place ID.
@@ -430,7 +430,7 @@ class Client:
 
         !!! note
             This method does not send any requests - it just generates an object.
-            For more information on bases, please see [Bases](/bases).
+            For more information on bases, please see [Bases](/dev/bases).
 
         Arguments:
             asset_id: A Roblox asset ID.
@@ -484,7 +484,7 @@ class Client:
 
         !!! note
             This method does not send any requests - it just generates an object.
-            For more information on bases, please see [Bases](/bases).
+            For more information on bases, please see [Bases](/dev/bases).
 
         Arguments:
             plugin_id: A Roblox plugin ID.
@@ -525,7 +525,7 @@ class Client:
 
         !!! note
             This method does not send any requests - it just generates an object.
-            For more information on bases, please see [Bases](/bases).
+            For more information on bases, please see [Bases](/dev/bases).
 
         Arguments:
             badge_id: A Roblox badge ID.
@@ -542,7 +542,7 @@ class Client:
 
         !!! note
             This method does not send any requests - it just generates an object.
-            For more information on bases, please see [Bases](/bases).
+            For more information on bases, please see [Bases](/dev/bases).
 
         Arguments:
             gamepass_id: A Roblox gamepass ID.
