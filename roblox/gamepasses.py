@@ -33,6 +33,3 @@ class GamePass(BaseGamePass):
         self.display_name: str = data["displayName"]
         # TODO: add product here
         self.price: Optional[int] = data["price"]
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} price={self.price}>"

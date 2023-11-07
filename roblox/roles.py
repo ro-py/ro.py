@@ -48,9 +48,6 @@ class Role(BaseRole):
         self.rank: int = data["rank"]
         self.member_count: Optional[int] = data.get("memberCount")
 
-    def __repr__(self):
-        return f"<{self.__class__.__name__} name={self.name!r} rank={self.rank} member_count={self.member_count}>"
-
     def get_members(self, page_size: int = 10, sort_order: SortOrder = SortOrder.Ascending,
                     max_items: int = None) -> PageIterator:
         """
