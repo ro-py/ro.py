@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://ro.py.jmk.gg/dev/reference/roblox/client/">
       
       <link rel="icon" href="../../../assets/logo.svg">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.0.0b2">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-8.0.0b2">
     
     
       
@@ -2092,7 +2092,7 @@ Client        </code>
             <span class="k">raise</span> <span class="n">UserNotFound</span><span class="p">(</span>
                 <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid user.&quot;</span><span class="p">,</span>
                 <span class="n">response</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">response</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
         <span class="n">user_data</span> <span class="o">=</span> <span class="n">user_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">user_data</span><span class="p">)</span>
 
@@ -2202,7 +2202,7 @@ Client        </code>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">users</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">UserNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid username.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+            <span class="k">raise</span> <span class="n">UserNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid username.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">get_base_user</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseUser</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2261,7 +2261,7 @@ Client        </code>
             <span class="k">raise</span> <span class="n">GroupNotFound</span><span class="p">(</span>
                 <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid group.&quot;</span><span class="p">,</span>
                 <span class="n">response</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">response</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
         <span class="n">group_data</span> <span class="o">=</span> <span class="n">group_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">Group</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">group_data</span><span class="p">)</span>
 
@@ -2316,7 +2316,7 @@ Client        </code>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">universes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">UniverseNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid universe.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+            <span class="k">raise</span> <span class="n">UniverseNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid universe.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">get_base_universe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">universe_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BaseUniverse</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2370,7 +2370,7 @@ Client        </code>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">places</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">PlaceNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid place.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+            <span class="k">raise</span> <span class="n">PlaceNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid place.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">get_base_place</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">place_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BasePlace</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2409,7 +2409,7 @@ Client        </code>
             <span class="k">raise</span> <span class="n">AssetNotFound</span><span class="p">(</span>
                 <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid asset.&quot;</span><span class="p">,</span>
                 <span class="n">response</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">response</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
         <span class="n">asset_data</span> <span class="o">=</span> <span class="n">asset_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">EconomyAsset</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">asset_data</span><span class="p">)</span>
 
@@ -2465,7 +2465,7 @@ Client        </code>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">plugins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="n">PluginNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid plugin.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+            <span class="k">raise</span> <span class="n">PluginNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid plugin.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
 
     <span class="k">def</span> <span class="nf">get_base_plugin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">plugin_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BasePlugin</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2504,7 +2504,7 @@ Client        </code>
             <span class="k">raise</span> <span class="n">BadgeNotFound</span><span class="p">(</span>
                 <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid badge.&quot;</span><span class="p">,</span>
                 <span class="n">response</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">response</span>
-            <span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+            <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
         <span class="n">badge_data</span> <span class="o">=</span> <span class="n">badge_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">Badge</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">badge_data</span><span class="p">)</span>
 
@@ -2726,7 +2726,7 @@ Client        </code>
         <span class="k">raise</span> <span class="n">AssetNotFound</span><span class="p">(</span>
             <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid asset.&quot;</span><span class="p">,</span>
             <span class="n">response</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">response</span>
-        <span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+        <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
     <span class="n">asset_data</span> <span class="o">=</span> <span class="n">asset_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">EconomyAsset</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">asset_data</span><span class="p">)</span>
 </code></pre></div>
@@ -2892,7 +2892,7 @@ Client        </code>
         <span class="k">raise</span> <span class="n">BadgeNotFound</span><span class="p">(</span>
             <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid badge.&quot;</span><span class="p">,</span>
             <span class="n">response</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">response</span>
-        <span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+        <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
     <span class="n">badge_data</span> <span class="o">=</span> <span class="n">badge_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">Badge</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">badge_data</span><span class="p">)</span>
 </code></pre></div>
@@ -3583,7 +3583,7 @@ For more information on bases, please see <a href="/bases">Bases</a>.</p>
         <span class="k">raise</span> <span class="n">GroupNotFound</span><span class="p">(</span>
             <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid group.&quot;</span><span class="p">,</span>
             <span class="n">response</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">response</span>
-        <span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+        <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
     <span class="n">group_data</span> <span class="o">=</span> <span class="n">group_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">Group</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">group_data</span><span class="p">)</span>
 </code></pre></div>
@@ -3661,7 +3661,7 @@ For more information on bases, please see <a href="/bases">Bases</a>.</p>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">places</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">PlaceNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid place.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+        <span class="k">raise</span> <span class="n">PlaceNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid place.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
 </code></pre></div>
         </details>
     </div>
@@ -3818,7 +3818,7 @@ For more information on bases, please see <a href="/bases">Bases</a>.</p>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">plugins</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">PluginNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid plugin.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+        <span class="k">raise</span> <span class="n">PluginNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid plugin.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
 </code></pre></div>
         </details>
     </div>
@@ -3975,7 +3975,7 @@ For more information on bases, please see <a href="/bases">Bases</a>.</p>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">universes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">UniverseNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid universe.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+        <span class="k">raise</span> <span class="n">UniverseNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid universe.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
 </code></pre></div>
         </details>
     </div>
@@ -4135,7 +4135,7 @@ For more information on bases, please see <a href="/bases">Bases</a>.</p>
         <span class="k">raise</span> <span class="n">UserNotFound</span><span class="p">(</span>
             <span class="n">message</span><span class="o">=</span><span class="s2">&quot;Invalid user.&quot;</span><span class="p">,</span>
             <span class="n">response</span><span class="o">=</span><span class="n">exception</span><span class="o">.</span><span class="n">response</span>
-        <span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+        <span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
     <span class="n">user_data</span> <span class="o">=</span> <span class="n">user_response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">User</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">user_data</span><span class="p">)</span>
 </code></pre></div>
@@ -4233,7 +4233,7 @@ For more information on bases, please see <a href="/bases">Bases</a>.</p>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">users</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">UserNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid username.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="bp">None</span>
+        <span class="k">raise</span> <span class="n">UserNotFound</span><span class="p">(</span><span class="s2">&quot;Invalid username.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="kc">None</span>
 </code></pre></div>
         </details>
     </div>

@@ -11,7 +11,7 @@
         <link rel="canonical" href="https://ro.py.jmk.gg/dev/reference/roblox/bases/basegroup/">
       
       <link rel="icon" href="../../../../assets/logo.svg">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.0.0b2">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-8.0.0b2">
     
     
       
@@ -760,6 +760,13 @@
           <li class="md-nav__item">
   <a href="#roblox.bases.basegroup.BaseGroup.decline_user" class="md-nav__link">
     decline_user()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roblox.bases.basegroup.BaseGroup.delete_all_messages" class="md-nav__link">
+    delete_all_messages()
   </a>
   
 </li>
@@ -1755,6 +1762,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#roblox.bases.basegroup.BaseGroup.delete_all_messages" class="md-nav__link">
+    delete_all_messages()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#roblox.bases.basegroup.BaseGroup.get_join_request" class="md-nav__link">
     get_join_request()
   </a>
@@ -2190,6 +2204,17 @@ BaseGroup            (<a class="autorefs autorefs-internal" title="roblox.bases.
             <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/users/</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="p">)</span>
 
+    <span class="k">async</span> <span class="k">def</span> <span class="nf">delete_all_messages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserOrUserId</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Deletes all messages from a user in a group.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            user: The user who will have their messages deleted.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/wall/users/</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2">/posts&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">get_wall_posts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">:</span> <span class="n">SortOrder</span> <span class="o">=</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">Ascending</span><span class="p">,</span>
                        <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PageIterator</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -2501,6 +2526,62 @@ BaseGroup            (<a class="autorefs autorefs-internal" title="roblox.bases.
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
         <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/join-requests/users/</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="roblox.bases.basegroup.BaseGroup.delete_all_messages" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">delete_all_messages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserOrUserId</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-async"><code>async</code></small>
+  </span>
+
+<a href="#roblox.bases.basegroup.BaseGroup.delete_all_messages" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Deletes all messages from a user in a group.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>user</code></td>
+        <td><code>UserOrUserId</code></td>
+        <td><p>The user who will have their messages deleted.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/bases/basegroup.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">delete_all_messages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user</span><span class="p">:</span> <span class="n">UserOrUserId</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Deletes all messages from a user in a group.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        user: The user who will have their messages deleted.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">requests</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;/v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/wall/users/</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">user</span><span class="p">)</span><span class="si">}</span><span class="s2">/posts&quot;</span><span class="p">)</span>
     <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -3814,6 +3895,11 @@ JoinRequest        </code>
         <td><p>When this join request was sent.</p></td>
       </tr>
       <tr>
+        <td><code>requester</code></td>
+        <td></td>
+        <td><p>The user that sent the join request.</p></td>
+      </tr>
+      <tr>
         <td><code>group</code></td>
         <td><code>BaseGroup</code></td>
         <td><p>The parent group that this join request is linked to.</p></td>
@@ -3828,6 +3914,7 @@ JoinRequest        </code>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        created: When this join request was sent.</span>
+<span class="sd">        requester: The user that sent the join request.</span>
 <span class="sd">        group: The parent group that this join request is linked to.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
