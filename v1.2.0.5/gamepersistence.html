@@ -1,0 +1,1164 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.9.2" />
+<title>ro_py.gamepersistence API documentation</title>
+<meta name="description" content="This file houses functions used for tampering with Roblox Datastores" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+<style>
+.homelink {
+display: block;
+font-size: 2em;
+font-weight: bold;
+color: #555;
+padding-bottom: .5em;
+border-bottom: 1px solid silver;
+}
+.homelink img {
+max-height: 5em;
+margin: auto;
+margin-bottom: .3em;
+}
+::-webkit-scrollbar {
+width: 10px;
+}
+::-webkit-scrollbar-track {
+background: #333;
+}
+::-webkit-scrollbar-thumb {
+background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+background: #555;
+}
+body {
+background: #212121;
+color: white;
+}
+a {
+color: #0091EA;
+}
+a:hover {
+color: #40C4FF;
+}
+.name {
+background: #424242;
+}
+.name:hover {
+background: #424242;
+}
+.ident {
+color: #1DE9B6;
+}
+.admonition {
+color: black;
+}
+* {
+border-color: #424242 !important;
+}
+</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>ro_py.gamepersistence</code></h1>
+</header>
+<section id="section-intro">
+<p>This file houses functions used for tampering with Roblox Datastores</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;
+
+This file houses functions used for tampering with Roblox Datastores
+
+&#34;&#34;&#34;
+
+from urllib.parse import quote
+from math import floor
+import re
+
+from ro_py.utilities.url import url
+endpoint = url(&#34;gamepersistence&#34;)
+
+
+class DataStore:
+    &#34;&#34;&#34;
+    Represents the in-game datastore system for storing data for games (https://gamepersistence.roblox.com).
+    This is only available for authenticated clients, and games that they own.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    place_id : int
+        PlaceId to modify the DataStores for, 
+        if the currently authenticated user doesn&#39;t have sufficient permissions, 
+        it will raise a NotAuthorizedToModifyPlaceDataStores exception
+    name : str
+        The name of the DataStore, 
+        as in the Second Parameter of 
+        `std::shared_ptr&lt;RBX::Instance&gt; DataStoreService::getDataStore(const DataStoreService* this, std::string name, std::string scope = &#34;global&#34;)`
+    scope : str, optional
+        The scope of the DataStore,
+        as on the Second Parameter of
+         `std::shared_ptr&lt;RBX::Instance&gt; DataStoreService::getDataStore(const DataStoreService* this, std::string name, std::string scope = &#34;global&#34;)`
+    legacy : bool, optional
+        Describes whether or not this will use the legacy endpoints, 
+        over the new v1 endpoints (Does not apply to getSortedValues)
+    legacy_naming_scheme : bool, optional
+        Describes whether or not this will use legacy names for data stores, if true, the qkeys[idx].scope will match the current scope (global by default), 
+        there will be no qkeys[idx].target (normally the key that is passed into each method), 
+        and the qkeys[idx].key will match the key passed into each method.
+    &#34;&#34;&#34;
+
+    def __init__(self, requests, place_id, name, scope, legacy=True, legacy_naming_scheme=False):
+        self.requests = requests
+        self.place_id = place_id
+        self.legacy = legacy
+        self.legacy_naming_scheme = legacy_naming_scheme
+        self.name = name
+        self.scope = scope if scope is not None else &#34;global&#34;
+
+    async def get(self, key):
+        &#34;&#34;&#34;
+        Represents a get request to a data store,
+        using legacy works the same
+
+        Parameters
+        ----------
+        key : str
+            The key of the value you wish to get, 
+            as in the Second Parameter of 
+            `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        
+        Returns
+        -------
+        typing.Any
+        &#34;&#34;&#34;
+        if self.legacy:
+            data = f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target=&amp;qkeys[0].key={quote(key)}&#34; if self.legacy_naming_scheme == True else f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target={quote(key)}&amp;qkeys[0].key={quote(self.name)}&#34;
+            r = await self.requests.post(
+                url=endpoint + f&#34;persistence/getV2?placeId={str(self.place_id)}&amp;type=standard&amp;scope={quote(self.scope)}&#34;,
+                headers={
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                    &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+                }, data=data)
+            if len(r.json()[&#39;data&#39;]) == 0:
+                return None
+            else:
+                return r.json()[&#39;data&#39;][0][&#39;Value&#39;]
+        else:
+            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            r = await self.requests.get(
+                url=url,
+                headers={
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id)
+                })
+            if r.status_code == 204:
+                return None
+            else:
+                return r.text
+
+    async def set(self, key, value):
+        &#34;&#34;&#34;
+        Represents a set request to a data store,
+        using legacy works the same
+
+        Parameters
+        ----------
+        key : str
+            The key of the value you wish to get, 
+            as in the Second Parameter of 
+            `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        value
+            The value to set for the key,
+            as in the 3rd parameter of
+            `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        
+        Returns
+        -------
+        typing.Any
+        &#34;&#34;&#34;
+        if self.legacy:
+            data = f&#34;value={quote(str(value))}&#34;
+            url = endpoint + f&#34;persistence/set?placeId={self.place_id}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&#34;
+            r = await self.requests.post(
+                url=url,
+                headers={
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                    &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+                }, data=data)
+            if len(r.json()[&#39;data&#39;]) == 0:
+                return None
+            else:
+                return r.json()[&#39;data&#39;]
+        else:
+            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            r = await self.requests.post(
+                url=url,
+                headers={
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                    &#39;Content-Type&#39;: &#39;*/*&#39;,
+                    &#39;Content-Length&#39;: str(len(str(value)))
+                }, data=quote(str(value)))
+            if r.status_code == 200:
+                return value
+
+    async def set_if_value(self, key, value, expected_value):
+        &#34;&#34;&#34;
+        Represents a conditional set request to a data store,
+        only supports legacy
+
+        Parameters
+        ----------
+        key : str
+            The key of the value you wish to get, 
+            as in the Second Parameter of 
+            `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        value
+            The value to set for the key,
+            as in the 3rd parameter of
+            `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        expected_value
+            The expected_value for that key, if you know the key doesn&#39;t exist, then set this as None
+
+        Returns
+        -------
+        typing.Any
+        &#34;&#34;&#34;
+        data = f&#34;value={quote(str(value))}&amp;expectedValue={quote(str(expected_value)) if expected_value is not None else &#39;&#39;}&#34;
+        url = endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expected_value))) if expected_value is not None else str(0)}&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expected_value))) if expected_value is not None else str(0)}&#34;
+        r = await self.requests.post(
+            url=url,
+            headers={
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+            }, data=data)
+        try:
+            if r.json()[&#39;data&#39;] != 0:
+                return r.json()[&#39;data&#39;]
+        except KeyError:
+            return r.json()[&#39;error&#39;]
+
+    async def set_if_idx(self, key, value, idx):
+        &#34;&#34;&#34;
+        Represents a conditional set request to a data store,
+        only supports new endpoints,
+
+        Parameters
+        ----------
+        key : str
+            The key of the value you wish to get, 
+            as in the Second Parameter of 
+            `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        value
+            The value to set for the key,
+            as in the 3rd parameter of
+            `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        idx : int
+            The expectedidx, there
+
+        Returns
+        -------
+        typing.Any
+        &#34;&#34;&#34;
+        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn=0.0&#34;
+        r = await self.requests.post(
+            url=url,
+            headers={
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                &#39;Content-Type&#39;: &#39;*/*&#39;,
+                &#39;Content-Length&#39;: str(len(str(value)))
+            }, data=quote(str(value)))
+        if r.status_code == 409:
+            usn = r.headers[&#39;roblox-usn&#39;]
+            split = usn.split(&#39;.&#39;)
+            msn_hash = split[0]
+            current_value = split[1]
+            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn={msn_hash}.{hex(idx).split(&#39;x&#39;)[1]}&#34;
+            r2 = await self.requests.post(
+                url=url,
+                headers={
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                    &#39;Content-Type&#39;: &#39;*/*&#39;,
+                    &#39;Content-Length&#39;: str(len(str(value)))
+                }, data=quote(str(value)))
+            if r2.status_code == 409:
+                return &#34;Expected idx did not match current idx, current idx is &#34; + str(floor(int(current_value, 16)))
+            else:
+                return value
+
+    async def increment(self, key, delta=0):
+        &#34;&#34;&#34;
+        Represents a conditional set request to a data store,
+        only supports legacy
+
+        Parameters
+        ----------
+        key : str
+            The key of the value you wish to get, 
+            as in the Second Parameter of 
+            `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        delta : int, optional
+            The value to set for the key,
+            as in the 3rd parameter of
+            `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        
+        Returns
+        -------
+        typing.Any
+        &#34;&#34;&#34;
+        data = &#34;&#34;
+        url = endpoint + f&#34;persistence/increment?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;value={str(delta)}&#34; if self.legacy_naming_scheme else endpoint + f&#34;persistence/increment?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;value={str(delta)}&#34;
+
+        r = await self.requests.post(
+            url=url,
+            headers={
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+            }, data=data)
+        try:
+            if r.json()[&#39;data&#39;] != 0:
+                return r.json()[&#39;data&#39;]
+        except KeyError:
+            cap = re.search(&#34;\(.+\)&#34;, r.json()[&#39;error&#39;])
+            reason = cap.group(0).replace(&#34;(&#34;, &#34;&#34;).replace(&#34;)&#34;, &#34;&#34;)
+            if reason == &#34;ExistingValueNotNumeric&#34;:
+                return &#34;The requested key you tried to increment had a different value other than byte, short, int, long, long long, float, double or long double&#34;
+
+    async def remove(self, key):
+        &#34;&#34;&#34;
+        Represents a get request to a data store,
+        using legacy works the same
+
+        Parameters
+        ----------
+        key : str
+            The key of the value you wish to remove, 
+            as in the Second Parameter of 
+            `void DataStore::removeAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+
+        Returns
+        -------
+        typing.Any
+        &#34;&#34;&#34;
+        if self.legacy:
+            data = &#34;&#34;
+            url = endpoint + f&#34;persistence/remove?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme else endpoint + f&#34;persistence/remove?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            r = await self.requests.post(
+                url=url,
+                headers={
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                    &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+                }, data=data)
+            if r.json()[&#39;data&#39;] is None:
+                return None
+            else:
+                return r.json()[&#39;data&#39;]
+        else:
+            url = endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            r = await self.requests.post(
+                url=url,
+                headers={
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id)
+                })
+            if r.status_code == 204:
+                return None
+            else:
+                return r.text</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="ro_py.gamepersistence.DataStore"><code class="flex name class">
+<span>class <span class="ident">DataStore</span></span>
+<span>(</span><span>requests, place_id, name, scope, legacy=True, legacy_naming_scheme=False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents the in-game datastore system for storing data for games (<a href="https://gamepersistence.roblox.com">https://gamepersistence.roblox.com</a>).
+This is only available for authenticated clients, and games that they own.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>requests</code></strong> :&ensp;<code><a title="ro_py.utilities.requests.Requests" href="utilities/requests.html#ro_py.utilities.requests.Requests">Requests</a></code></dt>
+<dd>Requests object to use for API requests.</dd>
+<dt><strong><code>place_id</code></strong> :&ensp;<code>int</code></dt>
+<dd>PlaceId to modify the DataStores for,
+if the currently authenticated user doesn't have sufficient permissions,
+it will raise a NotAuthorizedToModifyPlaceDataStores exception</dd>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code></dt>
+<dd>The name of the DataStore,
+as in the Second Parameter of
+<code>std::shared_ptr&lt;RBX::Instance&gt; DataStoreService::getDataStore(const DataStoreService* this, std::string name, std::string scope = "global")</code></dd>
+<dt><strong><code>scope</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>The scope of the DataStore,
+as on the Second Parameter of
+<code>std::shared_ptr&lt;RBX::Instance&gt; DataStoreService::getDataStore(const DataStoreService* this, std::string name, std::string scope = "global")</code></dd>
+<dt><strong><code>legacy</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Describes whether or not this will use the legacy endpoints,
+over the new v1 endpoints (Does not apply to getSortedValues)</dd>
+<dt><strong><code>legacy_naming_scheme</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Describes whether or not this will use legacy names for data stores, if true, the qkeys[idx].scope will match the current scope (global by default),
+there will be no qkeys[idx].target (normally the key that is passed into each method),
+and the qkeys[idx].key will match the key passed into each method.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DataStore:
+    &#34;&#34;&#34;
+    Represents the in-game datastore system for storing data for games (https://gamepersistence.roblox.com).
+    This is only available for authenticated clients, and games that they own.
+
+    Parameters
+    ----------
+    requests : ro_py.utilities.requests.Requests
+        Requests object to use for API requests.
+    place_id : int
+        PlaceId to modify the DataStores for, 
+        if the currently authenticated user doesn&#39;t have sufficient permissions, 
+        it will raise a NotAuthorizedToModifyPlaceDataStores exception
+    name : str
+        The name of the DataStore, 
+        as in the Second Parameter of 
+        `std::shared_ptr&lt;RBX::Instance&gt; DataStoreService::getDataStore(const DataStoreService* this, std::string name, std::string scope = &#34;global&#34;)`
+    scope : str, optional
+        The scope of the DataStore,
+        as on the Second Parameter of
+         `std::shared_ptr&lt;RBX::Instance&gt; DataStoreService::getDataStore(const DataStoreService* this, std::string name, std::string scope = &#34;global&#34;)`
+    legacy : bool, optional
+        Describes whether or not this will use the legacy endpoints, 
+        over the new v1 endpoints (Does not apply to getSortedValues)
+    legacy_naming_scheme : bool, optional
+        Describes whether or not this will use legacy names for data stores, if true, the qkeys[idx].scope will match the current scope (global by default), 
+        there will be no qkeys[idx].target (normally the key that is passed into each method), 
+        and the qkeys[idx].key will match the key passed into each method.
+    &#34;&#34;&#34;
+
+    def __init__(self, requests, place_id, name, scope, legacy=True, legacy_naming_scheme=False):
+        self.requests = requests
+        self.place_id = place_id
+        self.legacy = legacy
+        self.legacy_naming_scheme = legacy_naming_scheme
+        self.name = name
+        self.scope = scope if scope is not None else &#34;global&#34;
+
+    async def get(self, key):
+        &#34;&#34;&#34;
+        Represents a get request to a data store,
+        using legacy works the same
+
+        Parameters
+        ----------
+        key : str
+            The key of the value you wish to get, 
+            as in the Second Parameter of 
+            `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        
+        Returns
+        -------
+        typing.Any
+        &#34;&#34;&#34;
+        if self.legacy:
+            data = f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target=&amp;qkeys[0].key={quote(key)}&#34; if self.legacy_naming_scheme == True else f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target={quote(key)}&amp;qkeys[0].key={quote(self.name)}&#34;
+            r = await self.requests.post(
+                url=endpoint + f&#34;persistence/getV2?placeId={str(self.place_id)}&amp;type=standard&amp;scope={quote(self.scope)}&#34;,
+                headers={
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                    &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+                }, data=data)
+            if len(r.json()[&#39;data&#39;]) == 0:
+                return None
+            else:
+                return r.json()[&#39;data&#39;][0][&#39;Value&#39;]
+        else:
+            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            r = await self.requests.get(
+                url=url,
+                headers={
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id)
+                })
+            if r.status_code == 204:
+                return None
+            else:
+                return r.text
+
+    async def set(self, key, value):
+        &#34;&#34;&#34;
+        Represents a set request to a data store,
+        using legacy works the same
+
+        Parameters
+        ----------
+        key : str
+            The key of the value you wish to get, 
+            as in the Second Parameter of 
+            `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        value
+            The value to set for the key,
+            as in the 3rd parameter of
+            `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        
+        Returns
+        -------
+        typing.Any
+        &#34;&#34;&#34;
+        if self.legacy:
+            data = f&#34;value={quote(str(value))}&#34;
+            url = endpoint + f&#34;persistence/set?placeId={self.place_id}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&#34;
+            r = await self.requests.post(
+                url=url,
+                headers={
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                    &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+                }, data=data)
+            if len(r.json()[&#39;data&#39;]) == 0:
+                return None
+            else:
+                return r.json()[&#39;data&#39;]
+        else:
+            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            r = await self.requests.post(
+                url=url,
+                headers={
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                    &#39;Content-Type&#39;: &#39;*/*&#39;,
+                    &#39;Content-Length&#39;: str(len(str(value)))
+                }, data=quote(str(value)))
+            if r.status_code == 200:
+                return value
+
+    async def set_if_value(self, key, value, expected_value):
+        &#34;&#34;&#34;
+        Represents a conditional set request to a data store,
+        only supports legacy
+
+        Parameters
+        ----------
+        key : str
+            The key of the value you wish to get, 
+            as in the Second Parameter of 
+            `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        value
+            The value to set for the key,
+            as in the 3rd parameter of
+            `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        expected_value
+            The expected_value for that key, if you know the key doesn&#39;t exist, then set this as None
+
+        Returns
+        -------
+        typing.Any
+        &#34;&#34;&#34;
+        data = f&#34;value={quote(str(value))}&amp;expectedValue={quote(str(expected_value)) if expected_value is not None else &#39;&#39;}&#34;
+        url = endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expected_value))) if expected_value is not None else str(0)}&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expected_value))) if expected_value is not None else str(0)}&#34;
+        r = await self.requests.post(
+            url=url,
+            headers={
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+            }, data=data)
+        try:
+            if r.json()[&#39;data&#39;] != 0:
+                return r.json()[&#39;data&#39;]
+        except KeyError:
+            return r.json()[&#39;error&#39;]
+
+    async def set_if_idx(self, key, value, idx):
+        &#34;&#34;&#34;
+        Represents a conditional set request to a data store,
+        only supports new endpoints,
+
+        Parameters
+        ----------
+        key : str
+            The key of the value you wish to get, 
+            as in the Second Parameter of 
+            `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        value
+            The value to set for the key,
+            as in the 3rd parameter of
+            `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        idx : int
+            The expectedidx, there
+
+        Returns
+        -------
+        typing.Any
+        &#34;&#34;&#34;
+        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn=0.0&#34;
+        r = await self.requests.post(
+            url=url,
+            headers={
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                &#39;Content-Type&#39;: &#39;*/*&#39;,
+                &#39;Content-Length&#39;: str(len(str(value)))
+            }, data=quote(str(value)))
+        if r.status_code == 409:
+            usn = r.headers[&#39;roblox-usn&#39;]
+            split = usn.split(&#39;.&#39;)
+            msn_hash = split[0]
+            current_value = split[1]
+            url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn={msn_hash}.{hex(idx).split(&#39;x&#39;)[1]}&#34;
+            r2 = await self.requests.post(
+                url=url,
+                headers={
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                    &#39;Content-Type&#39;: &#39;*/*&#39;,
+                    &#39;Content-Length&#39;: str(len(str(value)))
+                }, data=quote(str(value)))
+            if r2.status_code == 409:
+                return &#34;Expected idx did not match current idx, current idx is &#34; + str(floor(int(current_value, 16)))
+            else:
+                return value
+
+    async def increment(self, key, delta=0):
+        &#34;&#34;&#34;
+        Represents a conditional set request to a data store,
+        only supports legacy
+
+        Parameters
+        ----------
+        key : str
+            The key of the value you wish to get, 
+            as in the Second Parameter of 
+            `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        delta : int, optional
+            The value to set for the key,
+            as in the 3rd parameter of
+            `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+        
+        Returns
+        -------
+        typing.Any
+        &#34;&#34;&#34;
+        data = &#34;&#34;
+        url = endpoint + f&#34;persistence/increment?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;value={str(delta)}&#34; if self.legacy_naming_scheme else endpoint + f&#34;persistence/increment?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;value={str(delta)}&#34;
+
+        r = await self.requests.post(
+            url=url,
+            headers={
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+            }, data=data)
+        try:
+            if r.json()[&#39;data&#39;] != 0:
+                return r.json()[&#39;data&#39;]
+        except KeyError:
+            cap = re.search(&#34;\(.+\)&#34;, r.json()[&#39;error&#39;])
+            reason = cap.group(0).replace(&#34;(&#34;, &#34;&#34;).replace(&#34;)&#34;, &#34;&#34;)
+            if reason == &#34;ExistingValueNotNumeric&#34;:
+                return &#34;The requested key you tried to increment had a different value other than byte, short, int, long, long long, float, double or long double&#34;
+
+    async def remove(self, key):
+        &#34;&#34;&#34;
+        Represents a get request to a data store,
+        using legacy works the same
+
+        Parameters
+        ----------
+        key : str
+            The key of the value you wish to remove, 
+            as in the Second Parameter of 
+            `void DataStore::removeAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+
+        Returns
+        -------
+        typing.Any
+        &#34;&#34;&#34;
+        if self.legacy:
+            data = &#34;&#34;
+            url = endpoint + f&#34;persistence/remove?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme else endpoint + f&#34;persistence/remove?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            r = await self.requests.post(
+                url=url,
+                headers={
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                    &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+                }, data=data)
+            if r.json()[&#39;data&#39;] is None:
+                return None
+            else:
+                return r.json()[&#39;data&#39;]
+        else:
+            url = endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+            r = await self.requests.post(
+                url=url,
+                headers={
+                    &#39;Roblox-Place-Id&#39;: str(self.place_id)
+                })
+            if r.status_code == 204:
+                return None
+            else:
+                return r.text</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="ro_py.gamepersistence.DataStore.get"><code class="name flex">
+<span>async def <span class="ident">get</span></span>(<span>self, key)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a get request to a data store,
+using legacy works the same</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>key</code></strong> :&ensp;<code>str</code></dt>
+<dd>The key of the value you wish to get,
+as in the Second Parameter of
+<code>void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)</code></dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>typing.Any</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def get(self, key):
+    &#34;&#34;&#34;
+    Represents a get request to a data store,
+    using legacy works the same
+
+    Parameters
+    ----------
+    key : str
+        The key of the value you wish to get, 
+        as in the Second Parameter of 
+        `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+    
+    Returns
+    -------
+    typing.Any
+    &#34;&#34;&#34;
+    if self.legacy:
+        data = f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target=&amp;qkeys[0].key={quote(key)}&#34; if self.legacy_naming_scheme == True else f&#34;qkeys[0].scope={quote(self.scope)}&amp;qkeys[0].target={quote(key)}&amp;qkeys[0].key={quote(self.name)}&#34;
+        r = await self.requests.post(
+            url=endpoint + f&#34;persistence/getV2?placeId={str(self.place_id)}&amp;type=standard&amp;scope={quote(self.scope)}&#34;,
+            headers={
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+            }, data=data)
+        if len(r.json()[&#39;data&#39;]) == 0:
+            return None
+        else:
+            return r.json()[&#39;data&#39;][0][&#39;Value&#39;]
+    else:
+        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+        r = await self.requests.get(
+            url=url,
+            headers={
+                &#39;Roblox-Place-Id&#39;: str(self.place_id)
+            })
+        if r.status_code == 204:
+            return None
+        else:
+            return r.text</code></pre>
+</details>
+</dd>
+<dt id="ro_py.gamepersistence.DataStore.increment"><code class="name flex">
+<span>async def <span class="ident">increment</span></span>(<span>self, key, delta=0)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a conditional set request to a data store,
+only supports legacy</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>key</code></strong> :&ensp;<code>str</code></dt>
+<dd>The key of the value you wish to get,
+as in the Second Parameter of
+<code>void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)</code></dd>
+<dt><strong><code>delta</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>The value to set for the key,
+as in the 3rd parameter of
+<code>void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)</code></dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>typing.Any</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def increment(self, key, delta=0):
+    &#34;&#34;&#34;
+    Represents a conditional set request to a data store,
+    only supports legacy
+
+    Parameters
+    ----------
+    key : str
+        The key of the value you wish to get, 
+        as in the Second Parameter of 
+        `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+    delta : int, optional
+        The value to set for the key,
+        as in the 3rd parameter of
+        `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+    
+    Returns
+    -------
+    typing.Any
+    &#34;&#34;&#34;
+    data = &#34;&#34;
+    url = endpoint + f&#34;persistence/increment?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;value={str(delta)}&#34; if self.legacy_naming_scheme else endpoint + f&#34;persistence/increment?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;value={str(delta)}&#34;
+
+    r = await self.requests.post(
+        url=url,
+        headers={
+            &#39;Roblox-Place-Id&#39;: str(self.place_id),
+            &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+        }, data=data)
+    try:
+        if r.json()[&#39;data&#39;] != 0:
+            return r.json()[&#39;data&#39;]
+    except KeyError:
+        cap = re.search(&#34;\(.+\)&#34;, r.json()[&#39;error&#39;])
+        reason = cap.group(0).replace(&#34;(&#34;, &#34;&#34;).replace(&#34;)&#34;, &#34;&#34;)
+        if reason == &#34;ExistingValueNotNumeric&#34;:
+            return &#34;The requested key you tried to increment had a different value other than byte, short, int, long, long long, float, double or long double&#34;</code></pre>
+</details>
+</dd>
+<dt id="ro_py.gamepersistence.DataStore.remove"><code class="name flex">
+<span>async def <span class="ident">remove</span></span>(<span>self, key)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a get request to a data store,
+using legacy works the same</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>key</code></strong> :&ensp;<code>str</code></dt>
+<dd>The key of the value you wish to remove,
+as in the Second Parameter of
+<code>void DataStore::removeAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)</code></dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>typing.Any</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def remove(self, key):
+    &#34;&#34;&#34;
+    Represents a get request to a data store,
+    using legacy works the same
+
+    Parameters
+    ----------
+    key : str
+        The key of the value you wish to remove, 
+        as in the Second Parameter of 
+        `void DataStore::removeAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+
+    Returns
+    -------
+    typing.Any
+    &#34;&#34;&#34;
+    if self.legacy:
+        data = &#34;&#34;
+        url = endpoint + f&#34;persistence/remove?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme else endpoint + f&#34;persistence/remove?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+        r = await self.requests.post(
+            url=url,
+            headers={
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+            }, data=data)
+        if r.json()[&#39;data&#39;] is None:
+            return None
+        else:
+            return r.json()[&#39;data&#39;]
+    else:
+        url = endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py/remove?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+        r = await self.requests.post(
+            url=url,
+            headers={
+                &#39;Roblox-Place-Id&#39;: str(self.place_id)
+            })
+        if r.status_code == 204:
+            return None
+        else:
+            return r.text</code></pre>
+</details>
+</dd>
+<dt id="ro_py.gamepersistence.DataStore.set"><code class="name flex">
+<span>async def <span class="ident">set</span></span>(<span>self, key, value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a set request to a data store,
+using legacy works the same</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>key</code></strong> :&ensp;<code>str</code></dt>
+<dd>The key of the value you wish to get,
+as in the Second Parameter of
+<code>void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)</code></dd>
+<dt><strong><code>value</code></strong></dt>
+<dd>The value to set for the key,
+as in the 3rd parameter of
+<code>void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)</code></dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>typing.Any</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def set(self, key, value):
+    &#34;&#34;&#34;
+    Represents a set request to a data store,
+    using legacy works the same
+
+    Parameters
+    ----------
+    key : str
+        The key of the value you wish to get, 
+        as in the Second Parameter of 
+        `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+    value
+        The value to set for the key,
+        as in the 3rd parameter of
+        `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+    
+    Returns
+    -------
+    typing.Any
+    &#34;&#34;&#34;
+    if self.legacy:
+        data = f&#34;value={quote(str(value))}&#34;
+        url = endpoint + f&#34;persistence/set?placeId={self.place_id}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&#34;
+        r = await self.requests.post(
+            url=url,
+            headers={
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+            }, data=data)
+        if len(r.json()[&#39;data&#39;]) == 0:
+            return None
+        else:
+            return r.json()[&#39;data&#39;]
+    else:
+        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&#34;
+        r = await self.requests.post(
+            url=url,
+            headers={
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                &#39;Content-Type&#39;: &#39;*/*&#39;,
+                &#39;Content-Length&#39;: str(len(str(value)))
+            }, data=quote(str(value)))
+        if r.status_code == 200:
+            return value</code></pre>
+</details>
+</dd>
+<dt id="ro_py.gamepersistence.DataStore.set_if_idx"><code class="name flex">
+<span>async def <span class="ident">set_if_idx</span></span>(<span>self, key, value, idx)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a conditional set request to a data store,
+only supports new endpoints,</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>key</code></strong> :&ensp;<code>str</code></dt>
+<dd>The key of the value you wish to get,
+as in the Second Parameter of
+<code>void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)</code></dd>
+<dt><strong><code>value</code></strong></dt>
+<dd>The value to set for the key,
+as in the 3rd parameter of
+<code>void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)</code></dd>
+<dt><strong><code>idx</code></strong> :&ensp;<code>int</code></dt>
+<dd>The expectedidx, there</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>typing.Any</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def set_if_idx(self, key, value, idx):
+    &#34;&#34;&#34;
+    Represents a conditional set request to a data store,
+    only supports new endpoints,
+
+    Parameters
+    ----------
+    key : str
+        The key of the value you wish to get, 
+        as in the Second Parameter of 
+        `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+    value
+        The value to set for the key,
+        as in the 3rd parameter of
+        `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+    idx : int
+        The expectedidx, there
+
+    Returns
+    -------
+    typing.Any
+    &#34;&#34;&#34;
+    url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn=0.0&#34;
+    r = await self.requests.post(
+        url=url,
+        headers={
+            &#39;Roblox-Place-Id&#39;: str(self.place_id),
+            &#39;Content-Type&#39;: &#39;*/*&#39;,
+            &#39;Content-Length&#39;: str(len(str(value)))
+        }, data=quote(str(value)))
+    if r.status_code == 409:
+        usn = r.headers[&#39;roblox-usn&#39;]
+        split = usn.split(&#39;.&#39;)
+        msn_hash = split[0]
+        current_value = split[1]
+        url = endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(key)}&amp;scope={quote(self.scope)}&amp;target=&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;v1/persistence/ro_py?type=standard&amp;key={quote(self.name)}&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;usn={msn_hash}.{hex(idx).split(&#39;x&#39;)[1]}&#34;
+        r2 = await self.requests.post(
+            url=url,
+            headers={
+                &#39;Roblox-Place-Id&#39;: str(self.place_id),
+                &#39;Content-Type&#39;: &#39;*/*&#39;,
+                &#39;Content-Length&#39;: str(len(str(value)))
+            }, data=quote(str(value)))
+        if r2.status_code == 409:
+            return &#34;Expected idx did not match current idx, current idx is &#34; + str(floor(int(current_value, 16)))
+        else:
+            return value</code></pre>
+</details>
+</dd>
+<dt id="ro_py.gamepersistence.DataStore.set_if_value"><code class="name flex">
+<span>async def <span class="ident">set_if_value</span></span>(<span>self, key, value, expected_value)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Represents a conditional set request to a data store,
+only supports legacy</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>key</code></strong> :&ensp;<code>str</code></dt>
+<dd>The key of the value you wish to get,
+as in the Second Parameter of
+<code>void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)</code></dd>
+<dt><strong><code>value</code></strong></dt>
+<dd>The value to set for the key,
+as in the 3rd parameter of
+<code>void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)</code></dd>
+<dt><strong><code>expected_value</code></strong></dt>
+<dd>The expected_value for that key, if you know the key doesn't exist, then set this as None</dd>
+</dl>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>typing.Any</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def set_if_value(self, key, value, expected_value):
+    &#34;&#34;&#34;
+    Represents a conditional set request to a data store,
+    only supports legacy
+
+    Parameters
+    ----------
+    key : str
+        The key of the value you wish to get, 
+        as in the Second Parameter of 
+        `void DataStore::getAsync(const DataStore* this, std::string key, boost::function&lt;void(RBX::Reflection::Variant)&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+    value
+        The value to set for the key,
+        as in the 3rd parameter of
+        `void DataStore::setAsync(const DataStore* this, std::string key, RBX::Reflection::Variant value, boost::function&lt;void()&gt; resumeFunction, boost::function&lt;void(std::string)&gt; errorFunction)`
+    expected_value
+        The expected_value for that key, if you know the key doesn&#39;t exist, then set this as None
+
+    Returns
+    -------
+    typing.Any
+    &#34;&#34;&#34;
+    data = f&#34;value={quote(str(value))}&amp;expectedValue={quote(str(expected_value)) if expected_value is not None else &#39;&#39;}&#34;
+    url = endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(key)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target=&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expected_value))) if expected_value is not None else str(0)}&#34; if self.legacy_naming_scheme == True else endpoint + f&#34;persistence/set?placeId={str(self.place_id)}&amp;type=standard&amp;key={quote(self.name)}&amp;type=standard&amp;scope={quote(self.scope)}&amp;target={quote(key)}&amp;valueLength={str(len(str(value)))}&amp;expectedValueLength={str(len(str(expected_value))) if expected_value is not None else str(0)}&#34;
+    r = await self.requests.post(
+        url=url,
+        headers={
+            &#39;Roblox-Place-Id&#39;: str(self.place_id),
+            &#39;Content-Type&#39;: &#39;application/x-www-form-urlencoded&#39;
+        }, data=data)
+    try:
+        if r.json()[&#39;data&#39;] != 0:
+            return r.json()[&#39;data&#39;]
+    except KeyError:
+        return r.json()[&#39;error&#39;]</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<header>
+<a class="homelink" rel="home" title="ro.py Home" href="https://ro.py.jmksite.dev/">
+<img src="https://raw.githubusercontent.com/rbx-libdev/ro.py/main/resources/header.png" alt="ro.py">
+</a>
+</header>
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="ro_py" href="index.html">ro_py</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="ro_py.gamepersistence.DataStore" href="#ro_py.gamepersistence.DataStore">DataStore</a></code></h4>
+<ul class="two-column">
+<li><code><a title="ro_py.gamepersistence.DataStore.get" href="#ro_py.gamepersistence.DataStore.get">get</a></code></li>
+<li><code><a title="ro_py.gamepersistence.DataStore.increment" href="#ro_py.gamepersistence.DataStore.increment">increment</a></code></li>
+<li><code><a title="ro_py.gamepersistence.DataStore.remove" href="#ro_py.gamepersistence.DataStore.remove">remove</a></code></li>
+<li><code><a title="ro_py.gamepersistence.DataStore.set" href="#ro_py.gamepersistence.DataStore.set">set</a></code></li>
+<li><code><a title="ro_py.gamepersistence.DataStore.set_if_idx" href="#ro_py.gamepersistence.DataStore.set_if_idx">set_if_idx</a></code></li>
+<li><code><a title="ro_py.gamepersistence.DataStore.set_if_value" href="#ro_py.gamepersistence.DataStore.set_if_value">set_if_value</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.9.2</a>.</p>
+</footer>
+</body>
+</html>
