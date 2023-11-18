@@ -1,30 +1,30 @@
 # Overview
 
-<div align="center">
-    <img width="50%" src="assets/textlogo.svg">
-</div>
+<p align="center" width="100%">
+    <img src="./assets/logo-wordmark.svg" alt="ro.py" height="128" />
+    <br />
+</p> 
 
-Welcome to ro.py!
-ro.py is an asynchronous, object-oriented wrapper for the Roblox web API.  
+## Overview
+ro.py is an asynchronous, object-oriented wrapper for the Roblox web API.
 
 ## Features
-The key features are:  
-
 - **Asynchronous**: ro.py works well with asynchronous frameworks like [FastAPI](https://fastapi.tiangolo.com/) and 
 [discord.py](https://github.com/Rapptz/discord.py).  
-- **Easy**: ro.py's client-based model is intuitive and easy to learn for both the beginner and expert developer. It
-  abstracts away API requests and leaves you with simple objects that represent data types on the Roblox platform.
-- **Flexible**: ro.py's builtin Requests object allows the user to do things that we haven't already implemented
-ourselves without dealing with advanced Roblox-specific concepts.
+- **Easy**: ro.py's client-based model is intuitive and easy to learn. 
+  It abstracts away API requests and leaves you with simple objects that represent data on the Roblox platform.
+- **Flexible**: ro.py's Requests object allows you to extend ro.py beyond what we've already implemented.
 
 ## Installation
-To install ro.py from PyPI, you can install with pip:
+To install the latest stable version of ro.py, run the following command:
 ```
-pip install roblox
+python3 -m pip install roblox
 ```
 
-To install the latest unstable version of ro.py, install [git-scm](https://git-scm.com/downloads) and run the following:
+To install the latest **unstable** version of ro.py, install [git-scm](https://git-scm.com/downloads) and run the following:
 ```
-pip install git+git://github.com/ro-py/ro.py.git
-pip install git+https://github.com/ro-py/ro.py.git
+python3 -m pip install git+https://github.com/ro-py/ro.py.git
 ```
+
+## Support
+The [RoAPI Discord server](https://discord.gg/a69neqaNZ5) provides support for ro.py in the `#ro.py-support` channel.
