@@ -1,7 +1,6 @@
-<p align="center" width="100%">
-    <img src="./resources/logo-wordmark.svg" alt="ro.py" height="128" />
-    <br />
-</p> 
+<img align="left" src="./gh-assets/logo-wordmark.svg" alt="ro.py" height="96" />
+<a href="https://ro.py.jmk.gg"><img align="right" src="./gh-assets/docs-button.svg" alt="Docs"></a>
+<img src="./gh-assets/clearfloat.svg">
 
 ## Overview
 ro.py is an asynchronous, object-oriented wrapper for the Roblox web API.
