@@ -77,8 +77,5 @@ extra:
     - icon: fontawesome/brands/discord
       link: https://discord.gg/N8yUdkSJwA
       name: RoAPI Discord
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/jmkdev
-      name: jmkdev on Twitter
   version:
     provider: mike
