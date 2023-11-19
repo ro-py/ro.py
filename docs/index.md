@@ -1,12 +1,10 @@
-# Overview
-
 <p align="center">
     <img src="./assets/logo-wordmark.svg" alt="ro.py" width="50%" />
-    <br />
-</p> 
 
-## Overview
-ro.py is an asynchronous, object-oriented wrapper for the Roblox web API.
+    <br /> <br />
+
+    ro.py is an asynchronous, object-oriented wrapper for the Roblox web API.
+</p> 
 
 ## Features
 - **Asynchronous**: ro.py works well with asynchronous frameworks like [FastAPI](https://fastapi.tiangolo.com/) and 
