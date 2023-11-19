@@ -1,7 +1,7 @@
 # Overview
 
 <p align="center" width="100%">
-    <img src="./assets/logo-wordmark.svg" alt="ro.py" height="128" />
+    <img src="./assets/logo-wordmark.svg" alt="ro.py" height="128px" />
     <br />
 </p> 
 
