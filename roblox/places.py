@@ -37,26 +37,36 @@ class Place(BasePlace):
             client: The Client object, which is passed to all objects this Client generates.
             data: data to make the magic happen.
         """
-        super().__init__(client=client, place_id=data["placeId"])
+        super().__init__(client=client, place_id=data.get(
+            'placeId') or data.get('rootPlaceId'))
+
+        # sorry for goofy ahh changes, but it will work with other functions. This is just support to place search endpoint
 
         self._client: Client = client
 
-        self.id: int = data["placeId"]
+        self.id: int = data.get('placeId') or data.get('rootPlaceId')
         self.name: str = data["name"]
         self.description: str = data["description"]
-        self.url: str = data["url"]
+        self.url: str = data.get(
+            'url') or f'https://www.roblox.com/games/{self.id}'  # roblox would redirect automaticly if given just ID
 
-        self.builder: str = data["builder"]
-        self.builder_id: int = data["builderId"]
+        # the builder in place search is messed up (roblox side), for some reason only the top game and some games only return an actuall name. but rest just returns ""
+        self.builder: str = data.get('builder') or data.get('creatorName')
+        self.builder_id: int = data.get("builderId") or data.get('creatorId')
 
-        self.is_playable: bool = data["isPlayable"]
-        self.reason_prohibited: str = data["reasonProhibited"]
-        self.universe: BaseUniverse = BaseUniverse(client=self._client, universe_id=data["universeId"])
-        self.universe_root_place: BasePlace = BasePlace(client=self._client, place_id=data["universeRootPlaceId"])
-
-        self.price: int = data["price"]
-        self.image_token: str = data["imageToken"]
-        self.has_verified_badge: bool = data["hasVerifiedBadge"]
+        self.is_playable: bool = data.get("isPlayable") or True
+        self.reason_prohibited: str = data.get("reasonProhibited")
+        self.universe: BaseUniverse = BaseUniverse(
+            client=self._client, universe_id=data["universeId"])
+        if data.get('universeRootPlaceId'):  # not given in search endpoint
+            self.universe_root_place: BasePlace = BasePlace(
+                client=self._client, place_id=data["universeRootPlaceId"])
+        else:
+            self.universe_root_place = None
+        self.price: int = data.get("price") or 0
+        self.image_token: str = data.get("imageToken")
+        self.has_verified_badge: bool = data.get(
+            "hasVerifiedBadge") or data.get('creatorHasVerifiedBadge')
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"

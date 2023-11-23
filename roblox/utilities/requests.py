@@ -107,7 +107,6 @@ class Requests:
                 except JSONDecodeError:
                     pass
                 errors = data and data.get("errors")
-
             exception = get_exception_from_status_code(response.status_code)(
                 response=response,
                 errors=errors

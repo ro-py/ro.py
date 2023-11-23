@@ -32,6 +32,7 @@ from .utilities.exceptions import BadRequest, NotFound, AssetNotFound, BadgeNotF
 from .utilities.iterators import PageIterator
 from .utilities.requests import Requests
 from .utilities.url import URLGenerator
+import time
 
 
 class Client:
@@ -179,7 +180,8 @@ class Client:
         """
         users_response = await self._requests.post(
             url=self._url_generator.get_url("users", f"v1/usernames/users"),
-            json={"usernames": usernames, "excludeBannedUsers": exclude_banned_users},
+            json={"usernames": usernames,
+                  "excludeBannedUsers": exclude_banned_users},
         )
         users_data = users_response.json()["data"]
 
@@ -250,7 +252,8 @@ class Client:
             page_size=page_size,
             max_items=max_items,
             extra_parameters={"keyword": keyword},
-            handler=lambda client, data: PreviousUsernamesPartialUser(client=client, data=data),
+            handler=lambda client, data: PreviousUsernamesPartialUser(
+                client=client, data=data),
         )
 
     # Groups
@@ -266,7 +269,8 @@ class Client:
         """
         try:
             group_response = await self._requests.get(
-                url=self._url_generator.get_url("groups", f"v1/groups/{group_id}")
+                url=self._url_generator.get_url(
+                    "groups", f"v1/groups/{group_id}")
             )
         except BadRequest as exception:
             raise GroupNotFound(
@@ -382,6 +386,61 @@ class Client:
             return places[0]
         except IndexError:
             raise PlaceNotFound("Invalid place.") from None
+
+    async def search_places(self, keyword: str, max_items: int = 25) -> List[Place]:
+        """
+        Grabs a list of places corresponding to each ID in the list.
+
+        Arguments:
+            keyword: game(s) name
+            max_items: amount of games to be searched with similar keyword
+
+        Returns:
+            A list of Places.
+        """
+
+        # max_items=25 cuz at one point roblox somehow gives goofy ahh games that are some how related to the keyword. At 1000 it will start to give slightly related games
+        # also please note, this api has like no ratelimit while i was testing. its the same endpoint when u scroll down searching for a game in roblox UI
+        # so far i have gotten like 5k games withen a few mins, and no ratelimit at all.
+
+        itemsFound = {}
+
+        nextPagetoken = None
+        # roblox will use this to prevent games that have already been showen
+        sessionID = round(time.time())
+        while len(itemsFound.keys()) <= max_items:
+            places_response = await self._requests.get(
+                url=self._url_generator.get_url(
+                    "apis", f"search-api/omni-search"
+                ),
+                params={"searchQuery": keyword,
+                        "pageToken": nextPagetoken, 'sessionId': sessionID, 'pageType': 'all'},
+            )
+            places_data = places_response.json()
+            for gameJSON in places_data['searchResults']:
+                # the json is weird for this endpoint so i had to modify places.py
+                game = Place(client=self, data=gameJSON['contents'][0])
+                itemsFound[game.id] = game
+            nextPagetoken = places_data['nextPageToken']
+
+        # without [:max_items] it will give like 40+ its not exact
+        return [value for value in itemsFound.values()][:max_items]
+
+    async def search_place(self, keyword: str) -> Place:
+        '''
+        Could just use the other api for this, but already made search_places
+        search_places is already there so i just use [0]
+        [0] is always the best game (roblox already sorts it out)
+
+        Arguments:
+            keyword: Game name you want to search
+
+        Returns:
+            First result of game search  
+
+        '''
+        game = await self.search_places(keyword, 1)
+        return game[0]
 
     def get_base_place(self, place_id: int) -> BasePlace:
         """
