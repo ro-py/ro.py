@@ -205,6 +205,13 @@ class GroupNotFound(ItemNotFound):
     pass
 
 
+class CatalogItemNotFound(ItemNotFound):
+    """
+    Raised for invalid catalog item IDs.
+    """
+    pass
+
+
 class PlaceNotFound(ItemNotFound):
     """
     Raised for invalid place IDs.
