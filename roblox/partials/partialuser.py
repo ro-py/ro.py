@@ -79,3 +79,25 @@ class PreviousUsernamesPartialUser(PartialUser):
         super().__init__(client=client, data=data)
 
         self.previous_usernames: List[str] = data["previousUsernames"]
+
+
+class CatalogCreatorPartialUser(PartialUser):
+    """
+    Represents a partial user in the context of a catalog item.
+    Attributes:
+        id: Id of the user.
+        name: Name of the user.
+        has_verified_badge: If the user has a verified badge.
+    """
+
+    def __init__(self, client: Client, data: dict):
+        """
+        Arguments:
+            client: The Client.
+            data: The data from the endpoint.
+        """
+        super().__init__(client=client, data=data)
+
+        self.has_verified_badge: bool = data["creatorHasVerifiedBadge"]
+        self.id: int = data["creatorTargetId"]
+        self.name: str = data["creatorName"]
