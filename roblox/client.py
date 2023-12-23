@@ -4,7 +4,7 @@ Contains the Client, which is the core object at the center of all ro.py applica
 
 """
 
-from typing import Union, List, Optional
+from typing import Union, List, Optional, Literal, TypedDict
 
 from .account import AccountProvider
 from .assets import EconomyAsset
@@ -550,3 +550,47 @@ class Client:
         Returns: A BaseGamePass.
         """
         return BaseGamePass(client=self, gamepass_id=gamepass_id)
+
+    # Catalog
+    def get_catalog_items(self, catalog_item_array: List[TypedDict[catalog_id: int, catalog_item_type: Literal[1, 2]]]) -> List[CatalogItem]:
+        """
+        Gets a catalog item with the passed ID.
+
+        The catalog is also known as the Avatar Shop or the Marketplace.
+
+        Arguments:
+            catalog_id: A Roblox catalog item ID.
+            catalog_item_type: The type of item. 1 for an asset, and 2 for a bundle.
+
+        Returns:
+            A list of CatalogItem.
+        """
+        try:
+            catalog_item_response = await self._requests.post(
+                url=self._url_generator.get_url(
+                    "catalog", "v1/catalog/items/details"
+                ),
+                data={"data": catalog_item_array}
+            )
+        except NotFound as exception:
+            raise CatalogItemNotFound(
+                message="Invalid catalog item.",
+                response=exception.response
+            ) from None
+        catalog_item_data = catalog_item_response.json()
+        catalog_list: Literal[CatalogItem] = []
+        for catalog_item in catalog_item_data:
+            if data["collectibleItemId"]: # This is the only consistent indicator of an item's limited status
+                catalog_list.append(LimitedCatalogItem(client=self, data=catalog_item))
+            else:
+                catalog_list.append(CatalogItem(client=self, data=catalog_item))
+
+        return catalog_list
+
+    def get_base_catalog_items(self, catalog_item_array: List[TypedDict[catalog_id: int, catalog_item_type: Literal[1, 2]]]) -> List[CatalogItem]:
+        catalog_list: Literal[CatalogItem] = []
+
+        for catalog_item in catalog_item_array:
+            catalog_list.append(BaseCatalogItem(client=self, data=catalog_item))
+
+        return catalog_list
