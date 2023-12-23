@@ -28,7 +28,7 @@ setup_info = {
         "Examples": "https://github.com/ro-py/ro.py/tree/main/examples",
         "Twitter": "https://twitter.com/jmkdev"
     },
-    "python_requires": '>=3.7',
+    "python_requires": '>=3.8',
     "install_requires": [
         "httpx>=0.21.0",
         "python-dateutil>=2.8.0"
