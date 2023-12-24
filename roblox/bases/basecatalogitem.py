@@ -15,7 +15,7 @@ if TYPE_CHECKING:
 
 class BaseCatalogItem(BaseItem):
     """
-    Represents a Roblox instance ID.
+    Represents a catalog item ID.
     Instance IDs represent the ownership of a single Roblox item.
 
     Attributes:

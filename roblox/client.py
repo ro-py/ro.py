@@ -570,7 +570,7 @@ class Client:
                 url=self._url_generator.get_url(
                     "catalog", "v1/catalog/items/details"
                 ),
-                data={"data": catalog_item_array}
+                json={"data": catalog_item_array}
             )
         except NotFound as exception:
             raise CatalogItemNotFound(

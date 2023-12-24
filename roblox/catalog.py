@@ -5,12 +5,14 @@ This module contains classes intended to parse and deal with data from Roblox ca
 """
 from __future__ import annotations
 from datetime import datetime
+from uuid import UUID
+from dateutil.parser import parse
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .client import Client
-    from typing import Optional
+    from typing import Optional, Union
 from .bases.basecatalogitem import BaseCatalogItem
 from .bases.baseuser import BaseUser
 from .assets import AssetType
@@ -52,7 +54,7 @@ class CatalogItem(BaseCatalogItem):
         self.is_offsale: bool = data["isOffsale"]
 
         # Creator
-        self.creator: CatalogCreatorPartialUser or CatalogCreatorPartialGroup
+        self.creator: Union[CatalogCreatorPartialUser, CatalogCreatorPartialGroup]
         if data["creatorType"] == "User":
             self.creator = CatalogCreatorPartialUser(client=client, data=data)
         elif data["creatorType"] == "Group":
@@ -97,12 +99,12 @@ class LimitedCatalogItem(CatalogItem):
     def __init__(self, client=client, data=data):
         super.__init__(client=client, data=data)
 
-        self.collectible_item_id: str = data["collectibleItemId"]
+        self.collectible_item_id: UUID = UUID(data["collectibleItemId"])
         self.quantity_limit_per_user: int = data["quantityLimitPerUser"]
         self.units_available_for_consumption: int = data["unitsAvailableForConsumption"]
         self.total_quantity: int = data["totalQuantity"]
         self.has_resellers: bool = data["hasResellers"]
-        self.offsale_deadline: Optional[datetime] = datetime.fromtimestamp(data["offsaleDeadline"])
+        self.offsale_deadline: Optional[datetime] = parse(data["offsaleDeadline"])
         self.lowest_price: int = data["lowestPrice"]
         self.lowest_resale_price: int = data["lowestResalePrice"]
         self.price_status: str = data["priceStatus"]
