@@ -72,3 +72,34 @@ class UniversePartialGroup(BaseGroup):
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"
+
+
+class CatalogCreatorPartialGroup(BaseGroup):
+    """
+    Represents a partial group in the context of a catalog item.
+
+    Attributes:
+        _data: The data we get back from the endpoint.
+        _client: The client object, which is passed to all objects this client generates.
+        id: Id of the group
+        name: Name of the group
+        has_verified_badge: If the group has a verified badge.
+    """
+
+    def __init__(self, client: Client, data: dict):
+        """
+        Arguments:
+            client: The ClientSharedObject.
+            data: The data from the endpoint.
+        """
+        self._client: Client = client
+
+        super().__init__(client=client, data=data)
+
+        self.has_verified_badge: bool = data["creatorHasVerifiedBadge"]
+        self.id: int = data["creatorTargetId"]
+        self.name: str = data["creatorName"]
+
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"
