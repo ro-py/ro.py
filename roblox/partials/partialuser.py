@@ -38,7 +38,7 @@ class PartialUser(BaseUser):
 
         self.name: str = data.get("name") or data.get("Name") or data.get("username") or data.get("Username")
         self.display_name: str = data.get("displayName")
-        self.has_verified_badge: bool = data["hasVerifiedBadge"]
+        self.has_verified_badge: bool = data.get("hasVerifiedBadge", False) or data.get("HasVerifiedBadge", False)
 
     def __repr__(self):
         return f"<{self.__class__.__name__} id={self.id} name={self.name!r} display_name={self.display_name!r}>"
