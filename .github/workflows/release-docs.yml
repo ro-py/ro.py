@@ -20,23 +20,19 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: "3.9.7"
-      
+          python-version: "3.10.9"
+
       - name: Install dependencies
         run: |
           pip install git+https://github.com/squidfunk/mkdocs-material.git@8.0.0b2
-          pip install mkdocstrings httpx mkdocs-literate-nav mkdocs-gen-files mike
-      
-      - name: Build docs
-        run: |
-          mkdocs build
-      
+          pip install mkdocstrings[python-legacy] httpx mkdocs-literate-nav mkdocs-gen-files mike
+
       - name: Configure Git user
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-      
+
       - name: Deploy docs
         run: |
-          mike deploy --push --update-aliases ${{ github.event.release.tag_name }} latest
-          mike set-default --push latest
+          mike deploy ${{ github.event.release.tag_name }} --push
+          mike alias ${{ github.event.release.tag_name }} latest --update-aliases --push

@@ -22,9 +22,13 @@ theme:
     accent: blue
   features:
     - content.code.annotate
+    - navigation.tabs
 
 extra_css:
   - assets/theme.css
+
+watch:
+  - roblox
 
 plugins:
   - search
@@ -34,16 +38,13 @@ plugins:
   - literate-nav:
       nav_file: SUMMARY.md
   - mkdocstrings:
-      watch:
-        - roblox
       handlers:
         python:
           setup_commands:
           - import sys
           - sys.path.append("docs")
-          selection:
+          options:
             new_path_syntax: yes
-          rendering:
             show_if_no_docstring: yes
             show_signature_annotations: yes
             show_root_heading: yes
@@ -76,8 +77,5 @@ extra:
     - icon: fontawesome/brands/discord
       link: https://discord.gg/N8yUdkSJwA
       name: RoAPI Discord
-    - icon: fontawesome/brands/twitter
-      link: https://twitter.com/jmkdev
-      name: jmkdev on Twitter
   version:
     provider: mike
