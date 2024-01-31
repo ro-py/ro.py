@@ -92,6 +92,3 @@ class Member(MemberRelationship):
 
         self.role: PartialRole = PartialRole(client=self._client, data=data["role"])
         self.group: BaseGroup = group
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} role={self.role}>"

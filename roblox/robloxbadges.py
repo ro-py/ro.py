@@ -31,6 +31,3 @@ class RobloxBadge(BaseRobloxBadge):
         self.name: str = data["name"]
         self.description: str = data["description"]
         self.image_url: str = data["imageUrl"]
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} name={self.name!r}>"

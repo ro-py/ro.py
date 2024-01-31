@@ -123,6 +123,3 @@ class Universe(BaseUniverse):
         # gameRating seems to be null across all games, so I omitted it from this class.
         self.is_favorited_by_user: bool = data["isFavoritedByUser"]
         self.favorited_count: int = data["favoritedCount"]
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} creator={self.creator}>"

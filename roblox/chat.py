@@ -34,7 +34,7 @@ class ChatSettings:
         self.is_connect_tab_enabled: bool = data["isConnectTabEnabled"]
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} chat_enabled={self.chat_enabled}>"
+        return f"<{self.__class__.__name__} chat_enabled={self.chat_enabled} is_active_chat_user={self.is_active_chat_user} is_connect_tab_enabled={self.is_connect_tab_enabled}>"
 
 
 class ChatProvider:
