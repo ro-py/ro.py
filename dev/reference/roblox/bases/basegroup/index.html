@@ -807,6 +807,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#roblox.bases.basegroup.BaseGroup.get_name_history" class="md-nav__link">
+    get_name_history()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#roblox.bases.basegroup.BaseGroup.get_roles" class="md-nav__link">
     get_roles()
   </a>
@@ -872,6 +879,33 @@
           <li class="md-nav__item">
   <a href="#roblox.bases.basegroup.BaseGroup.update_shout" class="md-nav__link">
     update_shout()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roblox.bases.basegroup.GroupNameHistoryItem" class="md-nav__link">
+    GroupNameHistoryItem
+  </a>
+  
+    <nav class="md-nav" aria-label="GroupNameHistoryItem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#roblox.bases.basegroup.GroupNameHistoryItem.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roblox.bases.basegroup.GroupNameHistoryItem.__repr__" class="md-nav__link">
+    __repr__()
   </a>
   
 </li>
@@ -1804,6 +1838,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#roblox.bases.basegroup.BaseGroup.get_name_history" class="md-nav__link">
+    get_name_history()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#roblox.bases.basegroup.BaseGroup.get_roles" class="md-nav__link">
     get_roles()
   </a>
@@ -1869,6 +1910,33 @@
           <li class="md-nav__item">
   <a href="#roblox.bases.basegroup.BaseGroup.update_shout" class="md-nav__link">
     update_shout()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roblox.bases.basegroup.GroupNameHistoryItem" class="md-nav__link">
+    GroupNameHistoryItem
+  </a>
+  
+    <nav class="md-nav" aria-label="GroupNameHistoryItem">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#roblox.bases.basegroup.GroupNameHistoryItem.__init__" class="md-nav__link">
+    __init__()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roblox.bases.basegroup.GroupNameHistoryItem.__repr__" class="md-nav__link">
+    __repr__()
   </a>
   
 </li>
@@ -2349,6 +2417,34 @@ BaseGroup            (<a class="autorefs autorefs-internal" title="roblox.bases.
         <span class="p">)</span>
         <span class="n">links_data</span> <span class="o">=</span> <span class="n">links_response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s2">&quot;data&quot;</span><span class="p">]</span>
         <span class="k">return</span> <span class="p">[</span><span class="n">SocialLink</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">link_data</span><span class="p">)</span> <span class="k">for</span> <span class="n">link_data</span> <span class="ow">in</span> <span class="n">links_data</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">get_name_history</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span> 
+            <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> 
+            <span class="n">sort_order</span><span class="p">:</span> <span class="n">SortOrder</span> <span class="o">=</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">Ascending</span><span class="p">,</span> 
+            <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PageIterator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grabs the groups&#39;s name history.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            page_size: How many members should be returned for each page.</span>
+<span class="sd">            sort_order: Order in which data should be grabbed.</span>
+<span class="sd">            max_items: The maximum items to return when looping through this object.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            A PageIterator containing the groups&#39;s name history.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
+            <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+                <span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/name-history&quot;</span>
+            <span class="p">),</span>
+            <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
+            <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
+            <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
+            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">GroupNameHistoryItem</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">),</span>
+        <span class="p">)</span>
 </code></pre></div>
         </details>
 
@@ -2986,6 +3082,103 @@ BaseGroup            (<a class="autorefs autorefs-internal" title="roblox.bases.
         <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
         <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
         <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Member</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+    <span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="roblox.bases.basegroup.BaseGroup.get_name_history" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_name_history</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">sort_order</span><span class="p">:</span> <span class="n">SortOrder</span> <span class="o">=</span> <span class="o">&lt;</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">Ascending</span><span class="p">:</span> <span class="s1">&#39;Asc&#39;</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PageIterator</span></code>
+
+
+<a href="#roblox.bases.basegroup.BaseGroup.get_name_history" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+      <p>Grabs the groups's name history.</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>page_size</code></td>
+        <td><code>int</code></td>
+        <td><p>How many members should be returned for each page.</p></td>
+        <td><code>10</code></td>
+      </tr>
+      <tr>
+        <td><code>sort_order</code></td>
+        <td><code>SortOrder</code></td>
+        <td><p>Order in which data should be grabbed.</p></td>
+        <td><code>&lt;SortOrder.Ascending: &#39;Asc&#39;&gt;</code></td>
+      </tr>
+      <tr>
+        <td><code>max_items</code></td>
+        <td><code>int</code></td>
+        <td><p>The maximum items to return when looping through this object.</p></td>
+        <td><code>None</code></td>
+      </tr>
+  </tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>PageIterator</code></td>
+      <td><p>A PageIterator containing the groups's name history.</p></td>
+    </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/bases/basegroup.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_name_history</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> 
+        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> 
+        <span class="n">sort_order</span><span class="p">:</span> <span class="n">SortOrder</span> <span class="o">=</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">Ascending</span><span class="p">,</span> 
+        <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PageIterator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Grabs the groups&#39;s name history.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        page_size: How many members should be returned for each page.</span>
+<span class="sd">        sort_order: Order in which data should be grabbed.</span>
+<span class="sd">        max_items: The maximum items to return when looping through this object.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        A PageIterator containing the groups&#39;s name history.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
+        <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span>
+            <span class="s2">&quot;groups&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/groups/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/name-history&quot;</span>
+        <span class="p">),</span>
+        <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
+        <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
+        <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
+        <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">GroupNameHistoryItem</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">),</span>
     <span class="p">)</span>
 </code></pre></div>
         </details>
@@ -3660,6 +3853,182 @@ BaseGroup            (<a class="autorefs autorefs-internal" title="roblox.bases.
     <span class="p">)</span> <span class="ow">or</span> <span class="kc">None</span>
 
     <span class="k">return</span> <span class="n">new_shout</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+
+
+  </div>
+
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-class">
+
+
+
+<h3 id="roblox.bases.basegroup.GroupNameHistoryItem" class="doc doc-heading">
+        <code>
+GroupNameHistoryItem        </code>
+
+
+
+<a href="#roblox.bases.basegroup.GroupNameHistoryItem" class="headerlink" title="Permanent link">&para;</a></h3>
+
+    <div class="doc doc-contents ">
+
+      <p>Represents a group's previous name.</p>
+
+<p><strong>Attributes:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>name</code></td>
+        <td><code>str</code></td>
+        <td><p>The group's previous name.</p></td>
+      </tr>
+      <tr>
+        <td><code>created</code></td>
+        <td><code>datetime</code></td>
+        <td><p>A datetime object representing when this name was changed.</p></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/bases/basegroup.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">class</span> <span class="nc">GroupNameHistoryItem</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents a group&#39;s previous name.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        name: The group&#39;s previous name.</span>
+<span class="sd">        created: A datetime object representing when this name was changed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            client: The Client this object belongs to.</span>
+<span class="sd">            data: The group&#39;s previous name data.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;created&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> created=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
+</code></pre></div>
+        </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="roblox.bases.basegroup.GroupNameHistoryItem.__init__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#roblox.bases.basegroup.GroupNameHistoryItem.__init__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>client</code></td>
+        <td><code>Client</code></td>
+        <td><p>The Client this object belongs to.</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>data</code></td>
+        <td><code>dict</code></td>
+        <td><p>The group's previous name data.</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>roblox/bases/basegroup.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        client: The Client this object belongs to.</span>
+<span class="sd">        data: The group&#39;s previous name data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">:</span> <span class="n">Client</span> <span class="o">=</span> <span class="n">client</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">=</span> <span class="n">parse</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;created&quot;</span><span class="p">])</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h4 id="roblox.bases.basegroup.GroupNameHistoryItem.__repr__" class="doc doc-heading">
+<code class="highlight language-python"><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-special"><code>special</code></small>
+  </span>
+
+<a href="#roblox.bases.basegroup.GroupNameHistoryItem.__repr__" class="headerlink" title="Permanent link">&para;</a></h4>
+
+    <div class="doc doc-contents ">
+
+
+        <details class="quote">
+          <summary>Source code in <code>roblox/bases/basegroup.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;&lt;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2"> name=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">!r}</span><span class="s2"> created=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">created</span><span class="si">}</span><span class="s2">&gt;&quot;</span>
 </code></pre></div>
         </details>
     </div>
