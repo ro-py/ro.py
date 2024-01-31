@@ -182,9 +182,6 @@ class ServerPlayer(BaseUser):
         self.name: str = data["name"]
         self.display_name: str = data["displayName"]
 
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} name={self.name} display_name={self.display_name} player_token={self.player_token}>"
-
 
 class Server(BaseItem):
     """
