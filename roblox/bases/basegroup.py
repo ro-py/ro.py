@@ -94,6 +94,30 @@ class GroupSettings:
         self.can_change_group_name: bool = data["canChangeGroupName"]
 
 
+class GroupNameHistoryItem:
+    """
+    Represents a group's previous name.
+
+    Attributes:
+        name: The group's previous name.
+        created: A datetime object representing when this name was changed.
+    """
+
+    def __init__(self, client: Client, data: dict):
+        """
+        Arguments:
+            client: The Client this object belongs to.
+            data: The group's previous name data.
+        """
+             
+        self._client: Client = client
+        self.name: str = data["name"]
+        self.created: datetime = parse(data["created"])
+
+    def __repr__(self):
+        return f"<{self.__class__.__name__} name={self.name!r} created={self.created}>"
+
+
 class BaseGroup(BaseItem):
     """
     Represents a Roblox group ID.
@@ -422,3 +446,31 @@ class BaseGroup(BaseItem):
         )
         links_data = links_response.json()["data"]
         return [SocialLink(client=self._client, data=link_data) for link_data in links_data]
+
+    def get_name_history(
+            self, 
+            page_size: int = 10, 
+            sort_order: SortOrder = SortOrder.Ascending, 
+            max_items: int = None
+    ) -> PageIterator:
+        """
+        Grabs the groups's name history.
+
+        Arguments:
+            page_size: How many members should be returned for each page.
+            sort_order: Order in which data should be grabbed.
+            max_items: The maximum items to return when looping through this object.
+
+        Returns:
+            A PageIterator containing the groups's name history.
+        """
+        return PageIterator(
+            client=self._client,
+            url=self._client.url_generator.get_url(
+                "groups", f"v1/groups/{self.id}/name-history"
+            ),
+            page_size=page_size,
+            sort_order=sort_order,
+            max_items=max_items,
+            handler=lambda client, data: GroupNameHistoryItem(client=client, data=data),
+        )
