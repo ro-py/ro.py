@@ -39,9 +39,6 @@ class PartialUniverse(BaseUniverse):
         self.name: str = data["name"]
         self.root_place: BasePlace = BasePlace(client=client, place_id=data["rootPlaceId"])
 
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"
-
 
 class ChatPartialUniverse(BaseUniverse):
     """

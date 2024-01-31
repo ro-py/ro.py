@@ -39,6 +39,3 @@ class PartialBadge(BaseBadge):
         super().__init__(client=client, badge_id=self.id)
 
         self.awarded: datetime = parse(data["awardedDate"])
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} awarded={self.awarded}>"
