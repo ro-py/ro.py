@@ -41,9 +41,6 @@ class AssetPartialGroup(BaseGroup):
 
         super().__init__(client, self.id)
 
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"
-
 
 class UniversePartialGroup(BaseGroup):
     """
@@ -69,6 +66,3 @@ class UniversePartialGroup(BaseGroup):
         self.has_verified_badge: bool = data["hasVerifiedBadge"]
 
         super().__init__(client, self.id)
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"

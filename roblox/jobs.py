@@ -61,9 +61,6 @@ class GameInstancePlayer(BaseUser):
             data=data["Thumbnail"]
         )
 
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} name={self.name!r}>"
-
 
 class GameInstance(BaseJob):
     """
@@ -114,9 +111,6 @@ class GameInstance(BaseJob):
 
         self.join_script: str = data["JoinScript"]
         self.app_join_script: str = data["RobloxAppJoinScript"]
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id!r} capacity{self.capacity}>"
 
 
 class GameInstances:

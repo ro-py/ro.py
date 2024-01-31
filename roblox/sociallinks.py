@@ -45,6 +45,3 @@ class SocialLink(BaseUniverseSocialLink):
         self.title: str = data["title"]
         self.url: str = data["url"]
         self.type: SocialLinkType = SocialLinkType(data["type"])
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} url={self.url!r} type={self.type!r} title={self.title!r}"

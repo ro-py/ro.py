@@ -30,6 +30,3 @@ class PartialRole(BaseRole):
         super().__init__(client=self._client, role_id=self.id)
         self.name: str = data["name"]
         self.rank: int = data["rank"]
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} rank={self.rank}>"
