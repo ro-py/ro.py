@@ -54,7 +54,7 @@ class ConversationTitle:
         self.is_default_title: bool = data["isDefaultTitle"]
 
     def __repr__(self):
-        return f"<{self.__class__.__name__} title_for_viewer={self.title_for_viewer!r}>"
+        return f"<{self.__class__.__name__} title_for_viewer={self.title_for_viewer!r} is_default_title={self.is_default_title}>"
 
 
 class Conversation(BaseConversation):
@@ -105,6 +105,3 @@ class Conversation(BaseConversation):
             client=client,
             data=data["conversationUniverse"]
         )
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} title={self.title!r}>"

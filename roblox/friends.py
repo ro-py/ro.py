@@ -35,6 +35,3 @@ class Friend(User):
         self.presence_type: Optional[int] = data.get("presenceType")
         self.is_deleted: bool = data["isDeleted"]
         self.friend_frequent_rank: int = data["friendFrequentRank"]
-
-    def __repr__(self):
-        return f"<{self.__class__.__name__} id={self.id} name={self.name!r} is_online={self.is_online}>"
