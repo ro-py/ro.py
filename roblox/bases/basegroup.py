@@ -114,6 +114,9 @@ class GroupNameHistoryItem:
         self.name: str = data["name"]
         self.created: datetime = parse(data["created"])
 
+    def __repr__(self):
+        return f"<{self.__class__.__name__} name={self.name!r} created={self.created}>"
+
 
 class BaseGroup(BaseItem):
     """
