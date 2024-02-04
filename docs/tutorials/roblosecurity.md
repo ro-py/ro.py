@@ -35,18 +35,18 @@ To grab your .ROBLOSECURITY cookie, log into your account on the Roblox website 
     browser, clicking the arrow next to `roblox.com`, opening up the "Cookies" folder, clicking ".ROBLOSECURITY",
     clicking on the "Content" text once, pressing ++control+a++, and then pressing ++control+c++
     (make sure **not** to double-click this field as you won't select the entire value!)  
-    
-    ![](/assets/screenshots/ChromeCookie.png){: style="width: 400px"}
+
+    ![](../assets/screenshots/ChromeCookie.png){: style="width: 400px"}
     
     Alternatively, you can access the cookie by going to https://www.roblox.com/, pressing ++control+shift+i++ to access
     the Developer Tools, navigating to the "Application" tab, opening up the arrow next to "Cookies" on the sidebar on
     the left, clicking the `https://www.roblox.com` item underneath the Cookies button, and then copying the
     .ROBLOSECURITY token by double-clicking on the value and then hitting ++control+c++.
     
-    ![](/assets/screenshots/ChromeDevTools.png){: style="height: 436px"}
+    ![](../assets/screenshots/ChromeDevTools.png){: style="height: 436px"}
 === "Firefox"
     You can access the cookie by going to https://www.roblox.com/ and pressing ++shift+f9++,
     pressing the "Storage" tab button on the top, opening up the "Cookies" section in the sidebar on the left, 
     clicking the `https://www.roblox.com` item underneath it,
     and then copying the .ROBLOSECURITY token by double-clicking on the value and then hitting ++control+c++.
-    ![](/assets/screenshots/FirefoxCookie.jpeg)
+    ![](../assets/screenshots/FirefoxCookie.jpeg)

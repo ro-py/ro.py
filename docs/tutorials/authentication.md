@@ -1,6 +1,6 @@
 # Authentication
 To authenticate our client, we need our .ROBLOSECURITY token. To learn about why we need this and how to get it, 
-please see [ROBLOSECURITY](/roblosecurity). 
+please see [ROBLOSECURITY](./roblosecurity.md). 
 
 Once we have our token, we can add it to our client by passing it as the first parameter. 
 Use the following code and replace `TOKEN` with the .ROBLOSECURITY token grabbed earlier to authenticate your client.

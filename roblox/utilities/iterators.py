@@ -153,7 +153,7 @@ class RobloxIterator:
 class PageIterator(RobloxIterator):
     """
     Represents a cursor-based, paginated Roblox object. Learn more about iterators in the pagination tutorial:
-    [Pagination](/tutorial/pagination)
+    [Pagination](../../tutorials/pagination.md)
     For more information about how cursor-based pagination works, see https://robloxapi.wiki/wiki/Pagination.
 
     Attributes:
