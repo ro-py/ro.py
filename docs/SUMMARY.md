@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 * [Overview](index.md)
 * [Tutorials](tutorials/index.md)
     * [Get Started](tutorials/get-started.md)
@@ -7,6 +12,4 @@
 	* [Pagination](tutorials/pagination.md)
 	* [ROBLOSECURITY](tutorials/roblosecurity.md)
 	* [Bases](tutorials/bases.md)
-	* [Extensions](tutorials/extensions.md)
-	* [Migrating to v2.0](tutorials/migrating.md)
 * [Code Reference](reference/)

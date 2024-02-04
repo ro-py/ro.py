@@ -82,8 +82,7 @@ except Unauthorized as exception:
     print("URL:", exception.response.url)
 ```
 Roblox also returns extra error data, which is what you see in our error messages. 
-We can access this with the `.errors` attribute, which is a list of 
-[`ResponseError`](/reference/roblox/utilities/exceptions/#roblox.utilities.exceptions.ResponseError):
+We can access this with the `.errors` attribute, which is a list of [`ResponseError`][roblox.utilities.exceptions.ResponseError]:
 ```python
 group = await client.get_group(1)
 try:

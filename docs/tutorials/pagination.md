@@ -3,9 +3,9 @@ Certain Roblox endpoints are paginated. This means that going through their data
 pages of a book - you start at page 1 and then you can move forwards or backwards until you reach the start or the end.
 
 This can be annoying when all you want is "every member in a group" or "the last 10 posts on a group wall", so ro.py
-abstracts this away into a "PageIterator" that you can use to loop over your data.
+abstracts this away into an iterator that you can use to loop over your data.
 
-As an example, the `Client.user_search()` function takes in a keyword (like "builderman") and returns a `PageIterator`
+As an example, the [`Client.user_search()`][roblox.client.Client.user_search] function takes in a keyword (like "builderman") and returns a [`PageIterator`][roblox.utilities.iterators.PageIterator]
 which you can loop through to get the search results.
 
 ## Looping through items
@@ -45,7 +45,7 @@ async for page in client.user_search("builderman", page_size=100).pages():
 ```
 
 ## Flattening into a list
-If we want to turn all of this data into one list, we can use `flatten()`. Be careful, as this isn't ideal for large
+If we want to turn all of this data into one list, we can use [`flatten()`][roblox.utilities.iterators.PageIterator.flatten]. Be careful, as this isn't ideal for large
 sets of data and may use more memory. Because we turn this iterator into a list, we can use a normal for loop now:
 ```python
 for user in await client.user_search("boatbomber").flatten():
