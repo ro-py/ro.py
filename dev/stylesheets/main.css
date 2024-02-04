@@ -1,0 +1,107 @@
+:root {
+    /* font-size: 125% !important; */
+}
+
+[data-md-color-scheme=slate] {
+    --md-code-bg-color: hsl(0 0% 100% / 1.5%);
+    --md-default-bg-color: hsl(0 0% 6%);
+
+    --md-footer-bg-color: hsl(0 0% 12% / 75%);
+    --md-footer-bg-color--dark: transparent;
+
+}
+
+[data-md-color-scheme=slate] .md-header,
+[data-md-color-scheme=slate] .md-tabs {
+    background: hsl(0 0% 10% / 75%);
+}
+
+[data-md-color-scheme=slate] .md-typeset table {
+    --md-default-bg-color: hsl(0 0% 7.5%);
+    --md-typeset-table-color: hsl(0 0% 95% / 3%);
+}
+
+[data-md-color-scheme=slate] .md-typeset details {
+    background: hsl(0 0% 100% / 2%);
+}
+
+[data-md-color-scheme=default] {
+    --md-footer-bg-color: hsl(0 0% 97%);
+    --md-footer-bg-color--dark: transparent;
+    --md-footer-fg-color: hsl(0 0% 0%);
+    --md-footer-fg-color--lighter: hsl(0 0% 33%);
+    --md-footer-fg-color--light: hsl(0 0% 0%);
+    --md-code-bg-color: hsl(0 0% 0% / 2.33%);
+}
+
+[data-md-color-scheme=default] .md-header,
+[data-md-color-scheme=default] .md-tabs {
+    background: hsl(0 0% 100% / 75%);
+}
+
+[data-md-color-scheme=default] .md-search__form {
+    background: hsl(0 0% 0% / 5%);
+}
+
+[data-md-color-scheme=default] .md-search__form:hover {
+    background: hsl(0 0% 0% / 10%);
+}
+
+[data-md-color-scheme=default] .md-typeset details {
+    background: hsl(0 0% 0% / 0.5%);
+}
+
+.md-header, .md-tabs {
+    backdrop-filter: blur(32px);
+    -webkit-backdrop-filter: blur(32px);
+}
+
+.md-typeset table {
+    border-radius: .3rem !important;
+}
+
+.md-banner strong {
+    white-space: nowrap;
+}
+
+.md-banner a {
+    color: inherit;
+    font-size: 0.8rem;
+}
+
+.md-typeset .admonition, .md-typeset details {
+    border-width: 1px;
+    border-radius: .3rem !important;
+    overflow: clip;
+}
+
+.md-typeset details {
+    border: none;
+}
+
+.admonition-title {
+    border-radius: 0rem !important;
+}
+
+.md-header--shadow {
+    box-shadow: 0 0 .2rem #0000001a, 0 .2rem .4rem #0001;
+}
+
+.md-search__form {
+    border-radius: .15rem !important;
+}
+[data-md-toggle=search]:checked~.md-header .md-search__form {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius 0 !important;
+}
+
+.doc-contents .quote .highlight {
+    margin: 0;
+    margin-left: -.6rem;
+    margin-right: -.6rem;
+    --md-code-bg-color: transparent;
+}
+
+.doc-contents .quote .highlighttable {
+    margin: 0;
+}
