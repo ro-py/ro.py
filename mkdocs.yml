@@ -16,16 +16,30 @@ theme:
     code: JetBrains Mono
   icon:
     repo: fontawesome/brands/github
+
   palette:
-    scheme: slate
-    primary: black
-    accent: blue
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: white
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      accent: blue
+      toggle:
+        icon: material/brightness-3
+        name: Switch to light mode
+
   features:
     - content.code.annotate
     - navigation.tabs
 
 extra_css:
-  - assets/theme.css
+  - stylesheets/main.css
 
 watch:
   - roblox
@@ -34,20 +48,12 @@ plugins:
   - search
   - gen-files:
       scripts:
-        - docs/gen_doc_stubs.py
+        - docs/scripts/gen_ref_pages.py
   - literate-nav:
       nav_file: SUMMARY.md
-  - mkdocstrings:
-      handlers:
-        python:
-          setup_commands:
-          - import sys
-          - sys.path.append("docs")
-          options:
-            new_path_syntax: yes
-            show_if_no_docstring: yes
-            show_signature_annotations: yes
-            show_root_heading: yes
+  - mkdocstrings
+  - section-index
+
 
 markdown_extensions:
   - admonition

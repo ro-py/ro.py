@@ -1,3 +1,8 @@
+---
+search:
+  exclude: true
+---
+
 * [Overview](index.md)
 * [Tutorials](tutorials/index.md)
     * [Get Started](tutorials/get-started.md)

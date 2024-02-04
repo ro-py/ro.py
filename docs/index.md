@@ -1,16 +1,14 @@
 <p align="center">
-    <img src="./assets/logo-wordmark.svg" alt="ro.py" width="50%" />
-
+    <img src="./assets/logo-wordmark.svg" alt="ro.py" width="50%" /> 
     <br /> <br />
-
     ro.py is an asynchronous, object-oriented wrapper for the Roblox web API.
 </p> 
 
 ## Features
-- **Asynchronous**: ro.py works well with asynchronous frameworks like [FastAPI](https://fastapi.tiangolo.com/) and 
-[discord.py](https://github.com/Rapptz/discord.py).  
 - **Easy**: ro.py's client-based model is intuitive and easy to learn. 
   It abstracts away API requests and leaves you with simple objects that represent data on the Roblox platform.
+- **Asynchronous**: ro.py works well with asynchronous frameworks like [FastAPI](https://fastapi.tiangolo.com/) and 
+[discord.py](https://github.com/Rapptz/discord.py).  
 - **Flexible**: ro.py's Requests object allows you to extend ro.py beyond what we've already implemented.
 
 ## Installation
