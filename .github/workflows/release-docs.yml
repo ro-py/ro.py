@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
     inputs:
       name:
-        description: "Deploy Docs (release)"
+        description: "Deploy docs (release)"
 
 jobs:
   mkdocs:
@@ -24,8 +24,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install git+https://github.com/squidfunk/mkdocs-material.git@8.0.0b2
-          pip install mkdocstrings[python-legacy] httpx mkdocs-literate-nav mkdocs-gen-files mike
+          pip install mkdocs-material==9.5.7 mkdocs-section-index==0.3.8 mkdocstrings==0.24.0 mkdocstrings-python==1.8.0 mkdocs-literate-nav==0.6.1 mkdocs-gen-files==0.5.0 mkdocs-autorefs==0.5.0 mike==2.0.0
 
       - name: Configure Git user
         run: |
