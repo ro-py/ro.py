@@ -92,7 +92,7 @@
 }
 [data-md-toggle=search]:checked~.md-header .md-search__form {
     border-bottom-left-radius: 0 !important;
-    border-bottom-right-radius 0 !important;
+    border-bottom-right-radius: 0 !important;
 }
 
 .doc-contents .quote .highlight {
