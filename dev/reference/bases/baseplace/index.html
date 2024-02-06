@@ -958,6 +958,24 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#roblox.bases.baseplace.BasePlace.get_private_servers" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_private_servers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roblox.bases.baseplace.BasePlace.get_servers" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_servers
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2015,6 +2033,24 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#roblox.bases.baseplace.BasePlace.get_private_servers" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_private_servers
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#roblox.bases.baseplace.BasePlace.get_servers" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_servers
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2107,50 +2143,112 @@ Places are a form of Asset and as such this object derives from BaseAsset.</p>
 
             <details class="quote">
               <summary>Source code in <code>roblox/bases/baseplace.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span>
-<span class="normal">49</span>
-<span class="normal">50</span>
-<span class="normal">51</span>
-<span class="normal">52</span>
-<span class="normal">53</span>
-<span class="normal">54</span>
-<span class="normal">55</span>
-<span class="normal">56</span>
-<span class="normal">57</span>
-<span class="normal">58</span>
-<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BasePlace</span><span class="p">(</span><span class="n">BaseAsset</span><span class="p">):</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 18</span>
+<span class="normal"> 19</span>
+<span class="normal"> 20</span>
+<span class="normal"> 21</span>
+<span class="normal"> 22</span>
+<span class="normal"> 23</span>
+<span class="normal"> 24</span>
+<span class="normal"> 25</span>
+<span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span> <span class="nc">BasePlace</span><span class="p">(</span><span class="n">BaseAsset</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a Roblox place ID.</span>
 <span class="sd">    Places are a form of Asset and as such this object derives from BaseAsset.</span>
@@ -2177,6 +2275,9 @@ Places are a form of Asset and as such this object derives from BaseAsset.</p>
 <span class="sd">        This list always contains 10 items or fewer.</span>
 <span class="sd">        For more items, add 10 to the start index and repeat until no more items are available.</span>
 
+<span class="sd">        !!! warning</span>
+<span class="sd">            This method has been deprecated. Please rectify any code that uses this method.        </span>
+
 <span class="sd">        Arguments:</span>
 <span class="sd">            start_index: Where to start in the server index.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -2193,6 +2294,65 @@ Places are a form of Asset and as such this object derives from BaseAsset.</p>
         <span class="k">return</span> <span class="n">GameInstances</span><span class="p">(</span>
             <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
             <span class="n">data</span><span class="o">=</span><span class="n">instances_data</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_servers</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">server_type</span><span class="p">:</span> <span class="n">ServerType</span><span class="p">,</span>
+            <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> 
+            <span class="n">sort_order</span><span class="p">:</span> <span class="n">SortOrder</span> <span class="o">=</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">Descending</span><span class="p">,</span> 
+            <span class="n">exclude_full_games</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PageIterator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grabs the place&#39;s servers.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            server_type: The type of servers to return.</span>
+<span class="sd">            page_size: How many servers should be returned for each page.</span>
+<span class="sd">            sort_order: Order in which data should be grabbed.</span>
+<span class="sd">            exclude_full_games: Whether to exclude full servers.</span>
+<span class="sd">            max_items: The maximum items to return when looping through this object.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A PageIterator containing servers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">..jobs</span> <span class="kn">import</span> <span class="n">Server</span>
+
+        <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
+            <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/servers/</span><span class="si">{</span><span class="n">server_type</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+            <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
+            <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
+            <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
+            <span class="n">extra_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;excludeFullGames&quot;</span><span class="p">:</span> <span class="n">exclude_full_games</span><span class="p">},</span>
+            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Server</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">),</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_private_servers</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> 
+            <span class="n">sort_order</span><span class="p">:</span> <span class="n">SortOrder</span> <span class="o">=</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">Descending</span><span class="p">,</span> 
+            <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PageIterator</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Grabs the private servers of a place the authenticated user can access.</span>
+
+<span class="sd">        Arguments:</span>
+<span class="sd">            page_size: How many private servers should be returned for each page.</span>
+<span class="sd">            sort_order: Order in which data should be grabbed.</span>
+<span class="sd">            max_items: The maximum items to return when looping through this object.</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A PageIterator containing private servers.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">..jobs</span> <span class="kn">import</span> <span class="n">PrivateServer</span>
+
+        <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
+            <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/private-servers&quot;</span><span class="p">),</span>
+            <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
+            <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
+            <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
+            <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">PrivateServer</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">),</span>
         <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
@@ -2269,9 +2429,7 @@ Places are a form of Asset and as such this object derives from BaseAsset.</p>
 
           <details class="quote">
             <summary>Source code in <code>roblox/bases/baseplace.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">27</span>
 <span class="normal">28</span>
 <span class="normal">29</span>
 <span class="normal">30</span>
@@ -2279,7 +2437,9 @@ Places are a form of Asset and as such this object derives from BaseAsset.</p>
 <span class="normal">32</span>
 <span class="normal">33</span>
 <span class="normal">34</span>
-<span class="normal">35</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">place_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">:</span> <span class="n">Client</span><span class="p">,</span> <span class="n">place_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        client: The Client this object belongs to.</span>
@@ -2316,6 +2476,10 @@ Places are a form of Asset and as such this object derives from BaseAsset.</p>
       <p>Returns a list of this place's current active servers, known in the API as "game instances".
 This list always contains 10 items or fewer.
 For more items, add 10 to the start index and repeat until no more items are available.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This method has been deprecated. Please rectify any code that uses this method.        </p>
+</div>
 
 
 
@@ -2349,9 +2513,7 @@ For more items, add 10 to the start index and repeat until no more items are ava
 
           <details class="quote">
             <summary>Source code in <code>roblox/bases/baseplace.py</code></summary>
-            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
 <span class="normal">40</span>
 <span class="normal">41</span>
 <span class="normal">42</span>
@@ -2371,11 +2533,19 @@ For more items, add 10 to the start index and repeat until no more items are ava
 <span class="normal">56</span>
 <span class="normal">57</span>
 <span class="normal">58</span>
-<span class="normal">59</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">async</span> <span class="k">def</span> <span class="nf">get_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a list of this place&#39;s current active servers, known in the API as &quot;game instances&quot;.</span>
 <span class="sd">    This list always contains 10 items or fewer.</span>
 <span class="sd">    For more items, add 10 to the start index and repeat until no more items are available.</span>
+
+<span class="sd">    !!! warning</span>
+<span class="sd">        This method has been deprecated. Please rectify any code that uses this method.        </span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        start_index: Where to start in the server index.</span>
@@ -2393,6 +2563,310 @@ For more items, add 10 to the start index and repeat until no more items are ava
     <span class="k">return</span> <span class="n">GameInstances</span><span class="p">(</span>
         <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
         <span class="n">data</span><span class="o">=</span><span class="n">instances_data</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="roblox.bases.baseplace.BasePlace.get_private_servers" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">get_private_servers</span><span class="p">(</span><span class="n">page_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">Descending</span><span class="p">,</span> <span class="n">max_items</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#roblox.bases.baseplace.BasePlace.get_private_servers" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Grabs the private servers of a place the authenticated user can access.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>page_size</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>How many private servers should be returned for each page.</p>
+            </div>
+          </td>
+          <td>
+                <code>10</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>sort_order</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="roblox.utilities.iterators.SortOrder" href="../../utilities/iterators/#roblox.utilities.iterators.SortOrder">SortOrder</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Order in which data should be grabbed.</p>
+            </div>
+          </td>
+          <td>
+                <code><span title="roblox.utilities.iterators.SortOrder.Descending">Descending</span></code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>max_items</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The maximum items to return when looping through this object.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      
+
+          <details class="quote">
+            <summary>Source code in <code>roblox/bases/baseplace.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_private_servers</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> 
+        <span class="n">sort_order</span><span class="p">:</span> <span class="n">SortOrder</span> <span class="o">=</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">Descending</span><span class="p">,</span> 
+        <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PageIterator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Grabs the private servers of a place the authenticated user can access.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        page_size: How many private servers should be returned for each page.</span>
+<span class="sd">        sort_order: Order in which data should be grabbed.</span>
+<span class="sd">        max_items: The maximum items to return when looping through this object.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        A PageIterator containing private servers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">..jobs</span> <span class="kn">import</span> <span class="n">PrivateServer</span>
+
+    <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
+        <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/private-servers&quot;</span><span class="p">),</span>
+        <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
+        <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
+        <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
+        <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">PrivateServer</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">),</span>
+    <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+          </details>
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="roblox.bases.baseplace.BasePlace.get_servers" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">get_servers</span><span class="p">(</span><span class="n">server_type</span><span class="p">,</span> <span class="n">page_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">sort_order</span><span class="o">=</span><span class="n">SortOrder</span><span class="o">.</span><span class="n">Descending</span><span class="p">,</span> <span class="n">exclude_full_games</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">max_items</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+<a href="#roblox.bases.baseplace.BasePlace.get_servers" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Grabs the place's servers.</p>
+
+
+
+  <p><strong>Parameters:</strong></p>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Type</th>
+        <th>Description</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+        <tr>
+          <td><code>server_type</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="roblox.jobs.ServerType" href="../../jobs/#roblox.jobs.ServerType">ServerType</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The type of servers to return.</p>
+            </div>
+          </td>
+          <td>
+              <em>required</em>
+          </td>
+        </tr>
+        <tr>
+          <td><code>page_size</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>How many servers should be returned for each page.</p>
+            </div>
+          </td>
+          <td>
+                <code>10</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>sort_order</code></td>
+          <td>
+                <code><a class="autorefs autorefs-internal" title="roblox.utilities.iterators.SortOrder" href="../../utilities/iterators/#roblox.utilities.iterators.SortOrder">SortOrder</a></code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Order in which data should be grabbed.</p>
+            </div>
+          </td>
+          <td>
+                <code><span title="roblox.utilities.iterators.SortOrder.Descending">Descending</span></code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>exclude_full_games</code></td>
+          <td>
+                <code>bool</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>Whether to exclude full servers.</p>
+            </div>
+          </td>
+          <td>
+                <code>False</code>
+          </td>
+        </tr>
+        <tr>
+          <td><code>max_items</code></td>
+          <td>
+                <code>int</code>
+          </td>
+          <td>
+            <div class="doc-md-description">
+              <p>The maximum items to return when looping through this object.</p>
+            </div>
+          </td>
+          <td>
+                <code>None</code>
+          </td>
+        </tr>
+    </tbody>
+  </table>
+      
+
+          <details class="quote">
+            <summary>Source code in <code>roblox/bases/baseplace.py</code></summary>
+            <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span> <span class="nf">get_servers</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">server_type</span><span class="p">:</span> <span class="n">ServerType</span><span class="p">,</span>
+        <span class="n">page_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> 
+        <span class="n">sort_order</span><span class="p">:</span> <span class="n">SortOrder</span> <span class="o">=</span> <span class="n">SortOrder</span><span class="o">.</span><span class="n">Descending</span><span class="p">,</span> 
+        <span class="n">exclude_full_games</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">max_items</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PageIterator</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Grabs the place&#39;s servers.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        server_type: The type of servers to return.</span>
+<span class="sd">        page_size: How many servers should be returned for each page.</span>
+<span class="sd">        sort_order: Order in which data should be grabbed.</span>
+<span class="sd">        exclude_full_games: Whether to exclude full servers.</span>
+<span class="sd">        max_items: The maximum items to return when looping through this object.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        A PageIterator containing servers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">from</span> <span class="nn">..jobs</span> <span class="kn">import</span> <span class="n">Server</span>
+
+    <span class="k">return</span> <span class="n">PageIterator</span><span class="p">(</span>
+        <span class="n">client</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="p">,</span>
+        <span class="n">url</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_client</span><span class="o">.</span><span class="n">_url_generator</span><span class="o">.</span><span class="n">get_url</span><span class="p">(</span><span class="s2">&quot;games&quot;</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;v1/games/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="si">}</span><span class="s2">/servers/</span><span class="si">{</span><span class="n">server_type</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">),</span>
+        <span class="n">page_size</span><span class="o">=</span><span class="n">page_size</span><span class="p">,</span>
+        <span class="n">max_items</span><span class="o">=</span><span class="n">max_items</span><span class="p">,</span>
+        <span class="n">sort_order</span><span class="o">=</span><span class="n">sort_order</span><span class="p">,</span>
+        <span class="n">extra_parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;excludeFullGames&quot;</span><span class="p">:</span> <span class="n">exclude_full_games</span><span class="p">},</span>
+        <span class="n">handler</span><span class="o">=</span><span class="k">lambda</span> <span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Server</span><span class="p">(</span><span class="n">client</span><span class="o">=</span><span class="n">client</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">),</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
           </details>
