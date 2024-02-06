@@ -43,7 +43,7 @@ class BasePlace(BaseAsset):
         For more items, add 10 to the start index and repeat until no more items are available.
 
         !!! warning
-            This method has been deprecated. Please rectify any code that uses this method.        
+            This function has been deprecated. The Roblox endpoint used by this function has been removed. Please update any code using this method to use 
 
         Arguments:
             start_index: Where to start in the server index.
@@ -80,6 +80,7 @@ class BasePlace(BaseAsset):
             sort_order: Order in which data should be grabbed.
             exclude_full_games: Whether to exclude full servers.
             max_items: The maximum items to return when looping through this object.
+
         Returns:
             A PageIterator containing servers.
         """
@@ -108,6 +109,7 @@ class BasePlace(BaseAsset):
             page_size: How many private servers should be returned for each page.
             sort_order: Order in which data should be grabbed.
             max_items: The maximum items to return when looping through this object.
+
         Returns:
             A PageIterator containing private servers.
         """
