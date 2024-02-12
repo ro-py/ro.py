@@ -19,6 +19,7 @@ from .bases.baseuniverse import BaseUniverse
 
 if TYPE_CHECKING:
     from .client import Client
+    from .bases.baseuser import BaseUser
     from .utilities.types import UserOrUserId
 
 
@@ -44,6 +45,7 @@ class Presence:
         job: The job of the root place that the user is playing or editing.
         universe: The universe the user is playing or editing.
         last_online: When the user was last online.
+        user: The user this presence belongs to.
     """
 
     def __init__(self, client: Client, data: dict):
@@ -74,7 +76,7 @@ class Presence:
             universe_id=data["universeId"]
         ) if data.get("universeId") else None
 
-        # self.user: BaseUser = BaseUser(self._client, data["userId"])
+        self.user: BaseUser = client.get_base_user(data["userId"])
         self.last_online: datetime = parse(data["lastOnline"])
 
     def __repr__(self):
