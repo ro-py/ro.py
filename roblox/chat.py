@@ -78,7 +78,7 @@ class ChatProvider:
         settings_data = settings_response.json()
         return ChatSettings(data=settings_data)
 
-    def get_user_conversations(self):
+    def get_user_conversations(self) -> PageNumberIterator:
         """
         Gets the user's conversations.
 
