@@ -18,13 +18,18 @@ theme:
     repo: fontawesome/brands/github
 
   palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light theme
+
     - media: "(prefers-color-scheme: light)"
       scheme: default
       primary: white
       accent: blue
       toggle:
         icon: material/brightness-7
-        name: Switch to dark mode
+        name: Switch to dark theme
 
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
@@ -32,7 +37,7 @@ theme:
       accent: blue
       toggle:
         icon: material/brightness-3
-        name: Switch to light mode
+        name: Switch to automatic theme
 
   features:
     - content.code.annotate
