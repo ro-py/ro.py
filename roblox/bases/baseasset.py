@@ -12,6 +12,7 @@ from ..resale import AssetResaleData
 
 if TYPE_CHECKING:
     from ..client import Client
+    from httpx import Response
 
 
 class BaseAsset(BaseItem):
@@ -45,3 +46,19 @@ class BaseAsset(BaseItem):
         )
         resale_data = resale_response.json()
         return AssetResaleData(data=resale_data)
+
+    async def get_content(self) -> Response:
+        """
+        Gets the asset's raw content, usually in rxbm or xml format.
+        No parsing is performed.
+
+        Makes 2 requests: one to get the location, one to fetch from that location
+
+        Returns:
+            The asset's raw content response
+        """
+        return await self._client.requests.get(
+            url=self._client.url_generator.get_url("assetdelivery", "v1/asset/"),
+            params={"id": self.id},
+            follow_redirects=True,
+        )
