@@ -1,0 +1,63 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - groups.roblox.com
+      referer:
+      - www.roblox.com
+      user-agent:
+      - Roblox/WinInet
+    method: GET
+    uri: https://groups.roblox.com/v1/groups/10720185
+  response:
+    content: '{"id":10720185,"name":"Roblox Developer Community","description":"This
+      is the official group for Roblox Developers! All members of the community are
+      invited to join. The goal of this group is to foster teamwork and creativity
+      while providing updates on events going on in the Developer Community.\n\nJoin
+      the Developer Forum here: https://devforum.roblox.com/\n\nGet notifications
+      about our Game Jams and Challenges on the Forum here: https://devforum.roblox.com/g/Game-Jammers\n\nMember
+      of an international community? You can find international groups below:\nSpanish:
+      https://www.roblox.com/groups/7839291/Desarrolladores-de-Roblox#!/about\nPortuguese:
+      https://www.roblox.com/groups/4806497/Roblox-em-Portugu-s#!/about\nFrench: https://www.roblox.com/groups/4812353/Roblox-France#!/about\nRussian:
+      https://www.roblox.com/groups/12735774/Roblox#!/about\nFilipino: https://www.roblox.com/groups/13901188/Filipino-Roblox-Developers#!/about?nl=true","owner":{"buildersClubMembershipType":"None","userId":1912605079,"username":"Moxyll","displayName":"Moxyll"},"shout":{"body":"The
+      top ten community vote for the Developer Dream Jam is now live! Be sure to check
+      out our top games on the DevForum, and leave a vote for your favorite!","poster":{"buildersClubMembershipType":"None","userId":1912605079,"username":"Moxyll","displayName":"Moxyll"},"created":"2021-05-18T12:01:47.373Z","updated":"2022-04-01T16:24:44.633Z"},"memberCount":39962,"isBuildersClubOnly":false,"publicEntryAllowed":true}'
+    headers:
+      cache-control:
+      - no-cache
+      content-encoding:
+      - gzip
+      content-length:
+      - '733'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 17 May 2022 15:30:00 GMT
+      expires:
+      - '-1'
+      nel:
+      - '{"report_to":"network-errors","max_age":604800,"success_fraction":0.001,"failure_fraction":1}'
+      p3p:
+      - CP="CAO DSP COR CURa ADMa DEVa OUR IND PHY ONL UNI COM NAV INT DEM PRE"
+      pragma:
+      - no-cache
+      report-to:
+      - '{"group":"network-errors","max_age":604800,"endpoints":[{"url":"https://ncs.roblox.com/upload"}]}'
+      roblox-machine-id:
+      - CHI1-WEB2327
+      strict-transport-security:
+      - max-age=3600
+      vary:
+      - Accept-Encoding
+      x-frame-options:
+      - SAMEORIGIN
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1

@@ -1,0 +1,56 @@
+interactions:
+- request:
+    body: ''
+    headers:
+      accept:
+      - '*/*'
+      accept-encoding:
+      - gzip, deflate
+      connection:
+      - keep-alive
+      host:
+      - develop.roblox.com
+      referer:
+      - www.roblox.com
+      user-agent:
+      - Roblox/WinInet
+    method: GET
+    uri: https://develop.roblox.com/v1/plugins?pluginIds=948084095
+  response:
+    content: '{"data":[{"id":948084095,"name":"Tag Editor","description":"An editor
+      for CollectionService tags. Check out this dev forum post for more information:
+      https://devforum.roblox.com/t/tag-editor-plugin/101133\n\nSource code: tiffany352/Roblox-Tag-Editor
+      on GitHub. Links are censored, sorry.\n\nPM me your questions, suggestions,
+      and bug reports!","commentsEnabled":false,"versionId":10562865149,"created":"2017-07-29T21:46:49.41Z","updated":"2022-01-15T20:43:02.98Z"}]}'
+    headers:
+      cache-control:
+      - no-cache
+      content-encoding:
+      - gzip
+      content-length:
+      - '357'
+      content-type:
+      - application/json; charset=utf-8
+      date:
+      - Tue, 17 May 2022 15:30:02 GMT
+      expires:
+      - '-1'
+      nel:
+      - '{"report_to":"network-errors","max_age":604800,"success_fraction":0.001,"failure_fraction":1}'
+      p3p:
+      - CP="CAO DSP COR CURa ADMa DEVa OUR IND PHY ONL UNI COM NAV INT DEM PRE"
+      pragma:
+      - no-cache
+      report-to:
+      - '{"group":"network-errors","max_age":604800,"endpoints":[{"url":"https://ncs.roblox.com/upload"}]}'
+      roblox-machine-id:
+      - CHI1-WEB7960
+      strict-transport-security:
+      - max-age=3600
+      vary:
+      - Accept-Encoding
+      x-frame-options:
+      - SAMEORIGIN
+    http_version: HTTP/1.1
+    status_code: 200
+version: 1
