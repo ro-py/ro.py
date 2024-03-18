@@ -1,56 +1,60 @@
 # Get started
 
-At the beginning of every ro.py application is the client. The client represents a user's session on Roblox.
+At the beginning of every ro.py application is the client. The client represents a Roblox session, and it's your gateway to everything in ro.py.
+
 To initialize a client, import it from the `roblox` module:
 ```python title="main.py"
 from roblox import Client
 client = Client()
 ```
 
-Great, we've got a client! But how can we use it?  
-We start by calling `await client.get_OBJECT()` where `OBJECT` is a Roblox datatype, like a User, Group or Universe.
-But wait - if you tried to run code like this:
+We can use the client to get information from Roblox by calling `await client.get_TYPE()`, where `TYPE` is a Roblox datatype, like a user or group.
+
+There's a problem, though: if we run the following code...
 ```python title="main.py"
 from roblox import Client
 client = Client()
 await client.get_user(1)
 ```
-
-You would get an error like this:
+...it'll raise an error like this:
 ```pytb
-  File "<input>", line 1
+  File "...", line 1
 SyntaxError: 'await' outside function
 ```
 
-This may seem confusing - but this is [intended design.](https://lukasa.co.uk/2016/07/The_Function_Colour_Myth/)
-To fix this, we need to wrap our code in an asynchronous function, and then run it with `get_event_loop().run_until_complete`, like so:
+This is because ro.py, like many Python libraries, is based on [asyncio](https://docs.python.org/3/library/asyncio.html), a builtin Python library that allows for concurrent code. In the case of ro.py, this means your app can do something, like process Discord bot commands, while ro.py waits for Roblox to respond, saving tons of time and preventing one slow function from slowing down the whole program. Neat!
+
+This means we need to wrap our code in an **asynchronous function** and then run it with `asyncio.run`, like so:
+
 ```python title="main.py"
 import asyncio
 from roblox import Client
 client = Client()
 
 async def main():
-    await client.get_user(1)
+	await client.get_user(1)
 
-asyncio.get_event_loop().run_until_complete(main())
+asyncio.run(main())
 ```
 
-This is the basic structure of every ro.py application.
-Great, our code works - but it's not doing anything yet. Let's print out some information about this user by replacing
-the code in `main()` with this:
-```python
-user = await client.get_user(1)
+This is the basic structure of every simple ro.py application. More complicated apps might not work like this - for example, in a Discord bot, another library might already be handling the asyncio part for you - but for simple scripts, this is what you'll be doing.
+
+Now the error is gone, but our code doesn't do anything yet. Let's try printing out some information about this user. Add these lines to the end of your main function:
+
+```python title="main.py"
 print("Name:", user.name)
 print("Display Name:", user.display_name)
 print("Description:", user.description)
 ```
 
 Great! We now have a program that prints out a user's name, display name, and description. This same basic concept works
-for other kinds of objects on Roblox, like groups:
+for other kinds of objects on Roblox, like groups. Try replacing the code in your main function with this:
 ```python
 group = await client.get_group(1)
 print("Name:", group.name)
 print("Description:", group.description)
 ```
-But what if we want to send requests as if we are an actual, logged-in user browsing the site? For example, what if I wanted to change the group's shout?
-Because only users with permission to change the group shout can actually change it, we need to tell Roblox that we can change that shout by "authenticating".
+
+To see a list of everything you can do with the client, see [`Client`][roblox.client.Client] in the Code Reference.  
+
+So far, we've been using ro.py **unauthenticated**. Basically, we aren't logged in to Roblox, which means we can't perform any actions, like updating our description, or access any sensitive information, like which game our friend is playing right now. Your next mission, if you choose to accept it, is [authenticating your client](./authentication.md).
