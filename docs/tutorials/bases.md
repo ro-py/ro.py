@@ -13,7 +13,7 @@ To explain why, let's take a look at what ro.py is doing behind the scenes in th
 
 In this code, we call `await client.get_user()`, but we don't use any user information, like `user.name` or `user.description`. We don't need to make this request!  
 
-ro.py lets you do this with the `client.get_base_TYPE` functions. We'll can  the `client.get_base_user()` function to improve the code:
+ro.py lets you skip the "information request" with the `client.get_base_TYPE` methods. We can use the `client.get_base_user()` function to improve this code:
 ```py
 user = client.get_base_user(2067807455)  # no await!
 async for username in user.username_history():
@@ -30,7 +30,7 @@ user = client.get_base_user(2067807455)
 await group.kick_user(user)
 ```
 
-There's another technique we can use to optimize this example further. For functions that accept only one type, like `kick_user` which always accepts a user, ro.py accepts bare user IDs:
+There's another technique we can use to optimize this example further. For functions that accept only one type, like `kick_user` which always accepts a user, ro.py accepts bare IDs:
 ```py
 group = client.get_base_group(9695397)
 await group.kick_user(2067807455)
