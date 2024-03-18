@@ -1941,7 +1941,7 @@ This code works, but it has an issue: we're sending an unnecessary request to Ro
 - First, we call <code>await client.get_user(2067807455)</code>. ro.py asks Roblox for information about the user with the ID 2067807455 and returns it as a User object.<br />
 - Next, we iterate through <code>user.username_history</code>. ro.py asks Roblox for the username history for user 2067807455 and returns it to you.  </p>
 <p>In this code, we call <code>await client.get_user()</code>, but we don't use any user information, like <code>user.name</code> or <code>user.description</code>. We don't need to make this request!  </p>
-<p>ro.py lets you do this with the <code>client.get_base_TYPE</code> functions. We'll can  the <code>client.get_base_user()</code> function to improve the code:
+<p>ro.py lets you skip the "information request" with the <code>client.get_base_TYPE</code> methods. We can use the <code>client.get_base_user()</code> function to improve this code:
 <div class="highlight"><pre><span></span><code><span class="n">user</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_base_user</span><span class="p">(</span><span class="mi">2067807455</span><span class="p">)</span>  <span class="c1"># no await!</span>
 <span class="k">async</span> <span class="k">for</span> <span class="n">username</span> <span class="ow">in</span> <span class="n">user</span><span class="o">.</span><span class="n">username_history</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
@@ -1955,7 +1955,7 @@ This code works, but it has an issue: we're sending an unnecessary request to Ro
 <span class="n">user</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_base_user</span><span class="p">(</span><span class="mi">2067807455</span><span class="p">)</span>
 <span class="k">await</span> <span class="n">group</span><span class="o">.</span><span class="n">kick_user</span><span class="p">(</span><span class="n">user</span><span class="p">)</span>
 </code></pre></div></p>
-<p>There's another technique we can use to optimize this example further. For functions that accept only one type, like <code>kick_user</code> which always accepts a user, ro.py accepts bare user IDs:
+<p>There's another technique we can use to optimize this example further. For functions that accept only one type, like <code>kick_user</code> which always accepts a user, ro.py accepts bare IDs:
 <div class="highlight"><pre><span></span><code><span class="n">group</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">get_base_group</span><span class="p">(</span><span class="mi">9695397</span><span class="p">)</span>
 <span class="k">await</span> <span class="n">group</span><span class="o">.</span><span class="n">kick_user</span><span class="p">(</span><span class="mi">2067807455</span><span class="p">)</span>
 </code></pre></div></p>
