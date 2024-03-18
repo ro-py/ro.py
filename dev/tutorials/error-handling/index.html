@@ -2035,13 +2035,13 @@
 
 
 <h1 id="error-handling">Error handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h1>
-<p>You can import ro.py exceptions from the <code>roblox.utilities.exceptions</code> or just from the <code>roblox</code> library:
+<p>You can import ro.py exceptions from the <code>roblox.utilities.exceptions</code> module or from the main <code>roblox</code> module:</p>
 <div class="highlight"><pre><span></span><code><span class="kn">from</span> <span class="nn">roblox.utilities.exceptions</span> <span class="kn">import</span> <span class="n">InternalServerError</span>
+<span class="c1"># or</span>
 <span class="kn">from</span> <span class="nn">roblox</span> <span class="kn">import</span> <span class="n">InternalServerError</span>
-</code></pre></div></p>
+</code></pre></div>
 <h2 id="client-errors">Client errors<a class="headerlink" href="#client-errors" title="Permanent link">&para;</a></h2>
-<p>All of the <code>Client.get_SINGULAR()</code> methods, like <code>get_user()</code> and <code>get_group()</code>, raise exceptions when you pass an
-invalid input.</p>
+<p>All of the <code>Client.get_TYPE()</code> methods, like <code>get_user()</code> and <code>get_group()</code>, raise their own exceptions.</p>
 <table>
 <thead>
 <tr>
@@ -2084,29 +2084,27 @@ invalid input.</p>
 </tr>
 </tbody>
 </table>
-<p>Here is an example of catching a <code>UserNotFound</code> error:
-<div class="highlight"><pre><span></span><code><span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;InvalidUsername!!!&quot;</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_user_by_username</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ID:&quot;</span><span class="p">,</span> <span class="n">user</span><span class="o">.</span><span class="n">id</span><span class="p">)</span>
+<p>Here is an example of catching one of these exceptions:
+<div class="highlight"><pre><span></span><code><span class="k">try</span><span class="p">:</span>
+    <span class="n">user</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_user_by_username</span><span class="p">(</span><span class="s2">&quot;InvalidUsername!!!&quot;</span><span class="p">)</span>
 <span class="k">except</span> <span class="n">UserNotFound</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid username.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Invalid username!&quot;</span><span class="p">)</span>
 </code></pre></div></p>
-<p>All of these exceptions are subclasses of <code>ItemNotFound</code>.</p>
+<p>All of these exceptions are subclasses of <code>ItemNotFound</code>, which you can use as a catch-all.</p>
 <h2 id="http-errors">HTTP errors<a class="headerlink" href="#http-errors" title="Permanent link">&para;</a></h2>
-<p>ro.py also raises HTTP errors when Roblox says something is wrong.
-For example, if we try to shout on a group that we don't have permissions on, Roblox stops us and returns a 
+<p>When Roblox returns an error, ro.py raises an HTTP exception.  </p>
+<p>For example, if we try to post a group shout to a group that we don't the necessary permissions in, Roblox stops us and returns a 
 <code>401 Unauthorized</code> error:
 <div class="highlight"><pre><span></span><code><span class="n">group</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">await</span> <span class="n">group</span><span class="o">.</span><span class="n">update_shout</span><span class="p">(</span><span class="s2">&quot;Shout!&quot;</span><span class="p">)</span>
 </code></pre></div>
-When running this code, you will see an error message like this:
+This code will raise an error like this:
 <div class="highlight"><pre><span></span><code><span class="x">roblox.utilities.exceptions.Unauthorized: 401 Unauthorized: https://groups.roblox.com/v1/groups/1/status.</span>
 
 <span class="x">Errors:</span>
 <span class="x">    0: Authorization has been denied for this request.</span>
 </code></pre></div>
-Here is an example of catching a <code>Unauthorized</code> error:
+You can catch this error as follows::
 <div class="highlight"><pre><span></span><code><span class="n">group</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="k">await</span> <span class="n">group</span><span class="o">.</span><span class="n">update_shout</span><span class="p">(</span><span class="s2">&quot;Shout!&quot;</span><span class="p">)</span>
@@ -2114,7 +2112,7 @@ Here is an example of catching a <code>Unauthorized</code> error:
 <span class="k">except</span> <span class="n">Unauthorized</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not allowed to shout.&quot;</span><span class="p">)</span>
 </code></pre></div></p>
-<p>These are the different types of exceptions raised depending on the HTTP error Roblox returns:</p>
+<p>These are the different types of exceptions raised depending on the HTTP error code Roblox returns:</p>
 <table>
 <thead>
 <tr>
@@ -2145,8 +2143,7 @@ Here is an example of catching a <code>Unauthorized</code> error:
 </tr>
 </tbody>
 </table>
-<p>All of these exceptions are subclasses of the <code>HTTPException</code> error.
-For other unrecognized error codes, ro.py will fallback to the default <code>HTTPException</code>.</p>
+<p>All of these exceptions are subclasses of the <code>HTTPException</code> error, which you can use as a catch-all. For other unrecognized error codes, ro.py will fallback to the default <code>HTTPException</code>.</p>
 <h3 id="getting-more-error-information">Getting more error information<a class="headerlink" href="#getting-more-error-information" title="Permanent link">&para;</a></h3>
 <p>For all HTTP exceptions, ro.py exposes a <code>response</code> attribute so you can get the response information:
 <div class="highlight"><pre><span></span><code><span class="n">group</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
@@ -2157,7 +2154,7 @@ For other unrecognized error codes, ro.py will fallback to the default <code>HTT
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Not allowed to shout.&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;URL:&quot;</span><span class="p">,</span> <span class="n">exception</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>
 </code></pre></div>
-Roblox also returns extra error data, which is what you see in our error messages. 
+Roblox also returns extra error data, which is what you see in the default error message. 
 We can access this with the <code>.errors</code> attribute, which is a list of <a class="autorefs autorefs-internal" href="../../reference/utilities/exceptions/#roblox.utilities.exceptions.ResponseError"><code>ResponseError</code></a>:
 <div class="highlight"><pre><span></span><code><span class="n">group</span> <span class="o">=</span> <span class="k">await</span> <span class="n">client</span><span class="o">.</span><span class="n">get_group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
