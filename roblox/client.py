@@ -292,6 +292,28 @@ class Client:
         """
         return BaseGroup(client=self, group_id=group_id)
 
+    def group_search(self, keyword: str, page_size: int = 10,
+                    max_items: int = None) -> PageIterator:
+        """
+        Search for groups with a keyword.
+
+        Arguments:
+            keyword: A keyword to search for.
+            page_size: How many members should be returned for each page.
+            max_items: The maximum items to return when looping through this object.
+
+        Returns:
+            A PageIterator containing PartialUser.
+        """
+        return PageIterator(
+            client=self,
+            url=self._url_generator.get_url("groups", f"v1/groups/search"),
+            page_size=page_size,
+            max_items=max_items,
+            extra_parameters={"keyword": keyword},
+            handler=lambda client, data: PartialUser(client=client, data=data)
+        )
+    
     # Universes
     async def get_universes(self, universe_ids: List[int]) -> List[Universe]:
         """
