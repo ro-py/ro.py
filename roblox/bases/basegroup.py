@@ -40,7 +40,7 @@ class JoinRequest:
     def __init__(self, client: Client, data: dict, group: Union[BaseGroup, int]):
         self._client: Client = client
         self.created: datetime = parse(data["created"])
-        self.requester = PartialUser(client=self._client, data=data["requester"])
+        self.requester: PartialUser = PartialUser(client=self._client, data=data["requester"])
         self.group: BaseGroup
         if isinstance(group, int):
             self.group = BaseGroup(client=self._client, group_id=group)
