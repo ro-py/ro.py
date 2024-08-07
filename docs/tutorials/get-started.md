@@ -32,7 +32,7 @@ from roblox import Client
 client = Client()
 
 async def main():
-	await client.get_user(1)
+	user = await client.get_user(1)
 
 asyncio.run(main())
 ```
