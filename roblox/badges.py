@@ -44,16 +44,16 @@ class Badge(BaseBadge):
     Represents a badge from the API.
 
     Attributes:
-        id: The badge Id.
+        id: The badge's Id.
         name: The name of the badge.
         description: The badge description.
         display_name: The localized name of the badge.
         display_description: The localized badge description.
         enabled: Whether or not the badge is enabled.
-        icon: The badge icon.
+        icon: The badge's icon.
         display_icon: The localized badge icon.
         created: When the badge was created.
-        updated: When the badge was updated.
+        updated: When the badge was last updated.
         statistics: Badge award statistics.
         awarding_universe: The universe the badge is being awarded from.
     """
