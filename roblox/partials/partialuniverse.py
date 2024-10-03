@@ -19,7 +19,7 @@ class PartialUniverse(BaseUniverse):
 
     Attributes:.
         _client: The Client object, which is passed to all objects this Client generates.
-        id: The universe ID.
+        id: The universe's ID.
         name: The name of the universe.
         root_place: The universe's root place.
     """
@@ -47,7 +47,7 @@ class ChatPartialUniverse(BaseUniverse):
     Attributes:
         _data: The data we get back from the endpoint.
         _client: The client object, which is passed to all objects this client generates.
-        id: The universe ID.
+        id: The universe's ID.
         root_place: The universe's root place.
     """
 
