@@ -23,7 +23,7 @@ class Shout:
     Attributes:
         body: The text of the shout.
         created: When the shout was created.
-        updated: When the shout was updated.
+        updated: When the shout was last updated.
         poster: Who posted the shout.
     """
 
