@@ -21,12 +21,12 @@ class User(BaseUser):
     Represents a single conversation.
 
     Attributes:
-        id: The id of the current user.
-        name: The name of the current user.
-        display_name: The display name of the current user.
-        external_app_display_name: The external app display name of the current user.
+        id: The ID of the user.
+        name: The name of the user.
+        display_name: The display name of the user.
+        external_app_display_name: The external app display name of the user.
         is_banned: If the user is banned.
-        description: The description the current user wrote for themself.
+        description: The description of the user.
         created: When the user created their account.
         has_verified_badge: If the user has a verified badge.
     """
