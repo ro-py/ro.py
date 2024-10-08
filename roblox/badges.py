@@ -44,7 +44,7 @@ class Badge(BaseBadge):
     Represents a badge from the API.
 
     Attributes:
-        id: The badge's Id.
+        id: The badge's ID.
         name: The name of the badge.
         description: The badge description.
         display_name: The localized name of the badge.
