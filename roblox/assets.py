@@ -119,25 +119,25 @@ class EconomyAsset(BaseAsset):
     It is intended to parse data from https://economy.roblox.com/v2/assets/ASSETID/details.
 
     Attributes:
-        id: Id of the Asset.
-        product_id: Product id of the asset.
+        id: ID of the Asset.
+        product_id: The product id of the asset.
         name: Name of the Asset.
         description: Description of the Asset.
         type: Type of the Asset.
-        creator_type: Type of creator can be user or group see enum.
-        creator: creator can be a user or group object.
+        creator_type: Specifies whether the creator is a user or a group.
+        creator: The user or group that created the asset.
         icon_image: A [BaseAsset][roblox.bases.baseasset.BaseAsset] representing the asset's icon.
         created: When the asset was created.
-        updated:  When the asset was updated for the las time.
-        price: price of the asset.
-        sales: amount of sales of the asset.
-        is_new: if the asset it new.
-        is_for_sale: if the asset is for sale.
-        is_public_domain: if the asset is public domain.
-        is_limited: if the asset is a limited item.
-        is_limited_unique: if the asset is a unique limited item.
+        updated: When the asset was last updated.
+        price: How much the asset costs.
+        sales: The amount of sales of the asset.
+        is_new: If the asset is new.
+        is_for_sale: If the asset is for sale.
+        is_public_domain: If the asset is public domain.
+        is_limited: If the asset is a limited item.
+        is_limited_unique: If the asset is a unique limited item.
         remaining: How many items there are remaining if it is limited.
-        minimum_membership_level: Minimum membership level required to buy item.
+        minimum_membership_level: Minimum membership level required to buy the asset.
         content_rating_type_id: Unknown.
         sale_availability_locations: Unknown.
     """
