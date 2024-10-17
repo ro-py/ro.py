@@ -76,7 +76,7 @@ class Client:
     def set_token(self, token: Optional[str] = None) -> None:
         """
         Authenticates the client with the passed .ROBLOSECURITY token.
-        This method does not send any requests and will not throw if the token is invalid.
+        This method does not send any requests and will not throw an exception if the token is invalid.
 
         Arguments:
             token: A .ROBLOSECURITY token to authenticate the client with.

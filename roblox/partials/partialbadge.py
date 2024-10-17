@@ -21,8 +21,8 @@ class PartialBadge(BaseBadge):
 
     Attributes:
         _data: The data we get back from the endpoint.
-        _client: The cCient object, which is passed to all objects this Client generates.
-        id: The universe ID.
+        _client: The Client object, which is passed to all objects this Client generates.
+        id: The badge's ID.
         awarded: The date when the badge was awarded.
     """
 

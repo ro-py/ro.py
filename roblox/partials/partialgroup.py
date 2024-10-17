@@ -20,7 +20,7 @@ class AssetPartialGroup(BaseGroup):
 
     Attributes:
         _client: The Client object, which is passed to all objects this Client generates.
-        id: The group's name.
+        id: The group's ID.
         creator: The group's owner.
         name: The group's name.
         has_verified_badge: If the group has a verified badge.

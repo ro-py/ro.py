@@ -60,28 +60,28 @@ class Universe(BaseUniverse):
 
     Attributes:
         id: The ID of this specific universe
-        root_place: The thumbnail provider object.
-        name: The delivery provider object.
-        description: The description of the game.
-        creator_type: Is the creator a group or a user.
-        creator: creator information.
-        price: how much you need to pay to play the game.
-        allowed_gear_genres: Unknown
-        allowed_gear_categories: Unknown
-        is_genre_enforced: Unknown
-        copying_allowed: are you allowed to copy the game.
-        playing: amount of people currently playing the game.
-        visits: amount of visits to the game.
-        max_players: the maximum amount of players ber server.
-        created: when the game was created.
-        updated: when the game as been updated for the last time.
-        studio_access_to_apis_allowed: does studio have access to the apis.
-        create_vip_servers_allowed: can you create a vip server?
-        universe_avatar_type: type of avatars in the game.
-        genre: what genre the game is.
-        is_all_genre: if it is all genres?
-        is_favorited_by_user: if the authenticated user has it favorited.
-        favorited_count: the total amount of people who favorited the game.
+        root_place: The root place of the universe.
+        name: The name of the universe.
+        description: The description of the universe.
+        creator_type: Specifies whether the creator is a user or a group.
+        creator: The user or group that created the universe.
+        price: How much you need to pay to play the universe.
+        allowed_gear_genres: Unknown.
+        allowed_gear_categories: Unknown.
+        is_genre_enforced: Unknown.
+        copying_allowed: If you are allowed to copy the universe.
+        playing: The amount of people currently playing the universe.
+        visits: The amount of visits on the universe.
+        max_players: The maximum amount of players every server.
+        created: When the universe was created.
+        updated: When the universe was last updated.
+        studio_access_to_apis_allowed: Does studio have access to the apis.
+        create_vip_servers_allowed: If you can create a vip server.
+        universe_avatar_type: The type of avatars allowed in the universe.
+        genre: What genre the universe is.
+        is_all_genre: If the universe is all genres?
+        is_favorited_by_user: If the authenticated user favorited the universe.
+        favorited_count: The total amount of people who favorited the universe.
     """
 
     def __init__(self, client: Client, data: dict):

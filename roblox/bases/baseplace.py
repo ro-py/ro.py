@@ -43,7 +43,7 @@ class BasePlace(BaseAsset):
         For more items, add 10 to the start index and repeat until no more items are available.
 
         !!! warning
-            This function has been deprecated. The Roblox endpoint used by this function has been removed. Please update any code using this method to use 
+            This function has been deprecated. The Roblox endpoint used by this function has been removed. Please update any code using this method to use [get_servers][roblox.bases.baseplace.BasePlace.get_servers] or [get_private_servers][roblox.bases.baseplace.BasePlace.get_private_servers].
 
         Arguments:
             start_index: Where to start in the server index.

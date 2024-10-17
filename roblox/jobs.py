@@ -157,7 +157,7 @@ class ServerPlayer(BaseUser):
     Represents a player in a server.
     
     Attributes:
-        id: The player's user id.
+        id: The player's user ID.
         name: The player's username.
         display_name: The player's display name.
         player_token: The player's token.
@@ -182,7 +182,7 @@ class Server(BaseItem):
     Represents a public server.
 
     Attributes:
-        id: The server's job id.
+        id: The server's job ID.
         max_players: The maximum number of players that can be in the server at once.
         playing: The amount of players in the server.
         player_tokens: A list of thumbnail tokens for all the players in the server.
@@ -218,7 +218,7 @@ class PrivateServer(Server):
     Represents a private server.
 
     Attributes:
-        id: The private server's job id.
+        id: The private server's job ID.
         vip_server_id: The private server's vipServerId.
         max_players: The maximum number of players that can be in the server at once.
         playing: The amount of players in the server.
@@ -228,7 +228,7 @@ class PrivateServer(Server):
         ping: The server's ping.
         name: The private server's name.
         access_code: The private server's access code.
-        owner: A PartialUser object representing the owner of the private server.
+        owner: The user that owns the private server.
     """
 
     def __init__(self, client: Client, data: dict):
