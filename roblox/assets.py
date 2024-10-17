@@ -119,18 +119,18 @@ class EconomyAsset(BaseAsset):
     It is intended to parse data from https://economy.roblox.com/v2/assets/ASSETID/details.
 
     Attributes:
-        id: ID of the Asset.
-        product_id: The product id of the asset.
-        name: Name of the Asset.
-        description: Description of the Asset.
-        type: Type of the Asset.
+        id: The asset's ID.
+        product_id: The asset's product ID.
+        name: The asset's name.
+        description: A description of the asset.
+        type: Specifies the type of the asset.
         creator_type: Specifies whether the creator is a user or a group.
         creator: The user or group that created the asset.
         icon_image: A [BaseAsset][roblox.bases.baseasset.BaseAsset] representing the asset's icon.
         created: When the asset was created.
         updated: When the asset was last updated.
         price: How much the asset costs.
-        sales: The amount of sales of the asset.
+        sales: The amount of times this asset has been sold.
         is_new: If the asset is new.
         is_for_sale: If the asset is for sale.
         is_public_domain: If the asset is public domain.
