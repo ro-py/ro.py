@@ -6,10 +6,11 @@ It also contains the GroupSettings object, which represents a group's settings.
 """
 
 from __future__ import annotations
-from typing import Optional, List, Union, TYPE_CHECKING
+from typing import Dict, Optional, List, Union, TYPE_CHECKING
 
 from datetime import datetime
 from dateutil.parser import parse
+from enum import Enum
 
 from .baseitem import BaseItem
 from ..members import Member, MemberRelationship
@@ -18,13 +19,23 @@ from ..roles import Role
 from ..shout import Shout
 from ..sociallinks import SocialLink
 from ..utilities.exceptions import InvalidRole
-from ..utilities.iterators import PageIterator, SortOrder
+from ..utilities.iterators import PageIterator, RowIterator, SortOrder
 from ..wall import WallPost, WallPostRelationship
+from ..groups import GroupRelationshipRequest
 
 if TYPE_CHECKING:
     from ..client import Client
     from .baseuser import BaseUser
     from ..utilities.types import UserOrUserId, RoleOrRoleId
+
+
+class GroupRelationshipType(Enum):
+    """
+    Represents a group's relationship type.
+    """
+    
+    allies = "allies"
+    enemies = "enemies"
 
 
 class JoinRequest:
@@ -474,3 +485,22 @@ class BaseGroup(BaseItem):
             max_items=max_items,
             handler=lambda client, data: GroupNameHistoryItem(client=client, data=data),
         )
+    
+    def get_relationship_requests(
+            self, 
+            relationshipType: GroupRelationshipType = GroupRelationshipType.allies,
+            sort_order: SortOrder = SortOrder.Ascending,
+            max_items: int = None
+    ) -> RowIterator:
+        return RowIterator(
+            client=self._client,
+            url=self._client._url_generator.get_url("groups", f"v1/groups/{self.id}/relationships/{relationshipType.value}/requests"),
+            data_field_name="relatedGroups",
+            sort_order=sort_order,
+            max_rows=max_items,
+            handler=lambda client, data, group_id, relationship_type: GroupRelationshipRequest(client, data, group_id, relationship_type),
+            handler_kwargs={"group_id": self.id, "relationship_type": relationshipType}
+        )
+    
+    def get_relationships(self, relationshipType: GroupRelationshipType = GroupRelationshipType.allies):
+        return NotImplementedError()
