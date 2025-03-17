@@ -5,7 +5,7 @@ This module contains iterators used internally by ro.py to provide paginated inf
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Dict, List
 
 if TYPE_CHECKING:
     from ..client import Client
@@ -312,6 +312,80 @@ class PageNumberIterator(RobloxIterator):
             raise NoMoreItems("No more items.")
 
         self.page_number += 1
+
+        if self.handler:
+            data = [
+                self.handler(
+                    client=self._client,
+                    data=item_data,
+                    **self.handler_kwargs
+                ) for item_data in data
+            ]
+
+        return data
+
+class RowIterator(RobloxIterator):
+    """
+    Represents an iterator that is meant to iterate over rows, like those seen on groups.roblox.com.
+
+    Attributes:
+        url: The endpoint to hit for new row data.
+        starting_row_index: The starting row number.
+        max_rows: The maximum amount of rows to return.
+        extra_parameters: Extra parameters to pass to the endpoint.
+        handler: A callable object to use to convert raw endpoint data to parsed objects.
+        handler_kwargs: Extra keyword arguments to pass to the handler.
+    """
+
+    def __init__(
+        self,
+        client: Client,
+        url: str,
+        data_field_name: str,
+        sort_order: SortOrder = SortOrder.Ascending,
+        row_index: int = 0,
+        max_rows: int = 10,
+        extra_parameters: Optional[dict] = None,
+        handler: Optional[Callable] = None,
+        handler_kwargs: Optional[dict] = None
+    ):
+        super().__init__()
+
+        self._client: Client = client
+
+        self.url: str = url
+        self.data_field_name: str = data_field_name
+        self.sort_order: SortOrder = sort_order
+        self.row_index: int = row_index
+        self.max_items: int = max_rows
+
+        self.extra_parameters: Dict = extra_parameters or {}
+        self.handler: Callable = handler
+        self.handler_kwargs: Dict = handler_kwargs or {}
+
+        self.iterator_position = 0
+        self.iterator_items = []
+
+    async def next(self) -> List:
+        """
+        Advances the iterator to the next set of rows.
+        """
+
+        page_response = await self._client.requests.get(
+            url=self.url,
+            params={
+                "startRowIndex": self.row_index,
+                "maxRows": self.max_items,
+                "sortOrder": self.sort_order,
+                **self.extra_parameters
+            }
+        )
+        data = page_response.json()[self.data_field_name]
+
+        if len(data) == 0:
+            raise NoMoreItems("No more items.")
+
+        self.row_index += self.max_items
 
         if self.handler:
             data = [
