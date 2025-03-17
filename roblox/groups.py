@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from .client import Client
 from typing import Optional, Tuple
 
-from .bases.basegroup import BaseGroup
+from .bases.basegroup import BaseGroup, GroupRelationshipType
 from .partials.partialuser import PartialUser
 from .shout import Shout
 
@@ -88,3 +88,37 @@ class Group(BaseGroup):
             self.shout = new_shout
 
         return old_shout, new_shout
+
+class GroupRelationship:
+    """
+    Represents a group's relationship with another group.
+
+    Attributes:
+        client: The Client this object belongs to.
+        relationship_type: The type of relationship established.
+        groupId: The group id. 
+        related_group: The related group.
+    """
+
+    def __init__(self, client: Client, data: dict):
+        self._client: Client = client
+        self.group_id: int = data.get("groupId")
+        self.relationship_type: GroupRelationshipType = data.get("relationshipType")
+        self.related_group: Group = Group(client=client, data=data)
+
+class GroupRelationshipRequest:
+    """
+    Represents a request to establish a relationship with a group.
+
+    Attributes:
+        client: The Client this object belongs to.
+        relationship_type: The type of relationship to be established.
+        groupId: The group id.
+        related_group: The related group.
+    """
+
+    def __init__(self, client: Client, data: dict, group_id: int, relationship_type: GroupRelationshipType):
+        self._client: Client = client
+        self.relationship_type: GroupRelationshipType = relationship_type
+        self.group_id: int = group_id
+        self.related_group: Group = Group(client=client, data=data) 
