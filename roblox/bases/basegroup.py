@@ -6,7 +6,7 @@ It also contains the GroupSettings object, which represents a group's settings.
 """
 
 from __future__ import annotations
-from typing import Dict, Optional, List, Union, TYPE_CHECKING
+from typing import Optional, List, Union, TYPE_CHECKING
 
 from datetime import datetime
 from dateutil.parser import parse
