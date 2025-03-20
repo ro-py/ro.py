@@ -330,8 +330,11 @@ class RowIterator(RobloxIterator):
 
     Attributes:
         url: The endpoint to hit for new row data.
-        starting_row_index: The starting row number.
-        max_rows: The maximum amount of rows to return.
+        data_field_name: The name of the field containing the data.
+        sort_order: The sort order to use for returned data.
+        row_index: The starting row index.
+        rows: The maximum amount of rows to return on each iteration.
+        max_rows: The maximum amount of items to return when this iterator is looped through.
         extra_parameters: Extra parameters to pass to the endpoint.
         handler: A callable object to use to convert raw endpoint data to parsed objects.
         handler_kwargs: Extra keyword arguments to pass to the handler.
@@ -344,7 +347,8 @@ class RowIterator(RobloxIterator):
         data_field_name: str,
         sort_order: SortOrder = SortOrder.Ascending,
         row_index: int = 0,
-        max_rows: int = 10,
+        rows: int = 50,
+        max_rows: int = None,
         extra_parameters: Optional[dict] = None,
         handler: Optional[Callable] = None,
         handler_kwargs: Optional[dict] = None
@@ -357,14 +361,12 @@ class RowIterator(RobloxIterator):
         self.data_field_name: str = data_field_name
         self.sort_order: SortOrder = sort_order
         self.row_index: int = row_index
+        self.rows: int = rows
         self.max_items: int = max_rows
 
         self.extra_parameters: Dict = extra_parameters or {}
         self.handler: Callable = handler
         self.handler_kwargs: Dict = handler_kwargs or {}
-
-        self.iterator_position = 0
-        self.iterator_items = []
 
     async def next(self) -> List:
         """
@@ -375,17 +377,19 @@ class RowIterator(RobloxIterator):
             url=self.url,
             params={
                 "startRowIndex": self.row_index,
-                "maxRows": self.max_items,
-                "sortOrder": self.sort_order,
+                "maxRows": self.rows,
+                "sortOrder": self.sort_order.value,
                 **self.extra_parameters
             }
         )
-        data = page_response.json()[self.data_field_name]
+        body: dict = page_response.json()
+        next_row_index: int = body.get("nextRowIndex")
+        data = body.get(self.data_field_name)
 
         if len(data) == 0:
             raise NoMoreItems("No more items.")
 
-        self.row_index += self.max_items
+        self.row_index = next_row_index
 
         if self.handler:
             data = [
