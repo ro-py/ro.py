@@ -25,7 +25,7 @@ from ..wall import WallPost, WallPostRelationship
 if TYPE_CHECKING:
     from ..client import Client
     from .baseuser import BaseUser
-    from ..utilities.types import UserOrUserId, RoleOrRoleId
+    from ..utilities.types import UserOrUserId, RoleOrRoleId, GroupOrGroupId
 
 
 class JoinRequest:
@@ -614,7 +614,7 @@ class BaseGroup(BaseItem):
     
     async def request_relationship(
             self, 
-            group: Union[int, BaseGroup], 
+            group: GroupOrGroupId, 
             relationshipType: GroupRelationshipType = GroupRelationshipType.allies
     ):
         """
@@ -631,7 +631,7 @@ class BaseGroup(BaseItem):
 
     async def decline_relationship_requests(
             self,
-            groups: List[Union[int, BaseGroup]],
+            groups: List[GroupOrGroupId],
             relationshipType: GroupRelationshipType = GroupRelationshipType.allies
     ):
         """
@@ -651,7 +651,7 @@ class BaseGroup(BaseItem):
 
     async def accept_relationship_requests(
             self,
-            groups: List[Union[int, BaseGroup]],
+            groups: List[GroupOrGroupId],
             relationshipType: GroupRelationshipType = GroupRelationshipType.allies
     ):
         """
