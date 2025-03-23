@@ -133,13 +133,20 @@ class GroupRelationship:
     Represents a relationship between two groups.
 
     Attributes:
-        client: The Client this object belongs to.
-        relationship_type: The type of relationship established.
+        relationship_type: The type of relationship between both groups.
         group: The group.
         related_group: The related group.
     """
 
     def __init__(self, client: Client, data: dict, group: BaseGroup, relationship_type: GroupRelationshipType):
+        """
+        Arguments:
+            client: The Client this object belongs to.
+            data: A GroupDetailResponse Object.
+            group: The group getting queried for it's relationships.
+            relationship_type: The type of relationship between both groups.
+        """
+
         from ..groups import Group
 
         self._client: Client = client
@@ -149,7 +156,7 @@ class GroupRelationship:
 
     async def remove(self):
         """
-        Removes a relationship with another group.
+        Severs the relationship between both groups.
         """
 
         await self._client.requests.delete(
@@ -159,16 +166,23 @@ class GroupRelationship:
 
 class GroupRelationshipRequest:
     """
-    Represents a request to establish a relationship with a group.
+    Represents a request to establish a relationship with another group.
 
     Attributes:
-        client: The Client this object belongs to.
-        relationship_type: The type of relationship to be established.
+        relationship_type: The type of relationship to be established between both groups.
         group: The group that received the request.
         related_group: The group that sent the request.
     """
 
     def __init__(self, client: Client, data: dict, group: BaseGroup, relationship_type: GroupRelationshipType):
+        """
+        Arguments:
+            client: The Client this object belongs to.
+            data: A GroupDetailResponse Object.
+            group: The group that received the request.
+            relationship_type: The type of relationship to be established between both groups.
+        """
+
         from ..groups import Group
 
         self._client: Client = client
@@ -178,7 +192,7 @@ class GroupRelationshipRequest:
 
     async def accept(self):
         """
-        Accepts the incoming relationship request.
+        Accepts the relationship request.
         """
 
         await self._client.requests.post(
@@ -187,7 +201,7 @@ class GroupRelationshipRequest:
 
     async def decline(self):
         """
-        Declines the incoming relationship request.
+        Declines the relationship request.
         """
                 
         await self._client.requests.delete(
@@ -559,10 +573,10 @@ class BaseGroup(BaseItem):
             max_items: int = None
     ) -> RowIterator:
         """
-        Grabs the group's pending relationship requests from other groups.
+        Returns the group's pending ally requests from other groups.
 
         Arguments:
-            rows: How many relationship requests should be returned for each iteration.
+            rows: How many ally requests should be returned for each iteration.
             sort_order: Order in which data should be grabbed.
             max_items: The maximum items to return when looping through this object.
 
@@ -589,7 +603,7 @@ class BaseGroup(BaseItem):
             max_items: int = None,
     ) -> RowIterator:
         """
-        Grabs the groups's relationships with other groups.
+        Returns established relationships with other groups.
 
         Arguments:
             relationshipType: The type of relationship established between both groups.
