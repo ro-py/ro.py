@@ -10,6 +10,7 @@ from typing import Optional, List, Union, TYPE_CHECKING
 
 from datetime import datetime
 from dateutil.parser import parse
+from enum import Enum
 
 from .baseitem import BaseItem
 from ..members import Member, MemberRelationship
@@ -18,13 +19,13 @@ from ..roles import Role
 from ..shout import Shout
 from ..sociallinks import SocialLink
 from ..utilities.exceptions import InvalidRole
-from ..utilities.iterators import PageIterator, SortOrder
+from ..utilities.iterators import PageIterator, RowIterator, SortOrder
 from ..wall import WallPost, WallPostRelationship
 
 if TYPE_CHECKING:
     from ..client import Client
     from .baseuser import BaseUser
-    from ..utilities.types import UserOrUserId, RoleOrRoleId
+    from ..utilities.types import UserOrUserId, RoleOrRoleId, GroupOrGroupId
 
 
 class JoinRequest:
@@ -116,6 +117,96 @@ class GroupNameHistoryItem:
 
     def __repr__(self):
         return f"<{self.__class__.__name__} name={self.name!r} created={self.created}>"
+
+
+class GroupRelationshipType(Enum):
+    """
+    Represents a type of relationship between two groups.
+    """
+    
+    allies = "allies"
+    enemies = "enemies"
+
+
+class GroupRelationship:
+    """
+    Represents a relationship between two groups.
+
+    Attributes:
+        relationship_type: The type of relationship between both groups.
+        group: The group.
+        related_group: The related group.
+    """
+
+    def __init__(self, client: Client, data: dict, group: BaseGroup, relationship_type: GroupRelationshipType):
+        """
+        Arguments:
+            client: The Client this object belongs to.
+            data: A GroupDetailResponse Object.
+            group: The group getting queried for it's relationships.
+            relationship_type: The type of relationship between both groups.
+        """
+
+        from ..groups import Group
+
+        self._client: Client = client
+        self.relationship_type: GroupRelationshipType = relationship_type
+        self.group: BaseGroup = group
+        self.related_group: Group = Group(client=client, data=data)
+
+    async def remove(self):
+        """
+        Severs the relationship between both groups.
+        """
+
+        await self._client.requests.delete(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.group.id}/relationships/{self.relationship_type.value}/{self.related_group.id}")
+        )
+
+
+class GroupRelationshipRequest:
+    """
+    Represents a request to establish a relationship with another group.
+
+    Attributes:
+        relationship_type: The type of relationship to be established between both groups.
+        group: The group that received the request.
+        related_group: The group that sent the request.
+    """
+
+    def __init__(self, client: Client, data: dict, group: BaseGroup, relationship_type: GroupRelationshipType):
+        """
+        Arguments:
+            client: The Client this object belongs to.
+            data: A GroupDetailResponse Object.
+            group: The group that received the request.
+            relationship_type: The type of relationship to be established between both groups.
+        """
+
+        from ..groups import Group
+
+        self._client: Client = client
+        self.relationship_type: GroupRelationshipType = relationship_type
+        self.group: BaseGroup = group
+        self.related_group: Group = Group(client=client, data=data) 
+
+    async def accept(self):
+        """
+        Accepts the relationship request.
+        """
+
+        await self._client.requests.post(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.group.id}/relationships/{self.relationship_type.value}/requests/{self.related_group.id}")
+        )
+
+    async def decline(self):
+        """
+        Declines the relationship request.
+        """
+                
+        await self._client.requests.delete(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.group.id}/relationships/{self.relationship_type.value}/requests/{self.related_group.id}")
+        )
 
 
 class BaseGroup(BaseItem):
@@ -473,4 +564,121 @@ class BaseGroup(BaseItem):
             sort_order=sort_order,
             max_items=max_items,
             handler=lambda client, data: GroupNameHistoryItem(client=client, data=data),
+        )
+    
+    def get_ally_relationship_requests(
+            self, 
+            rows: int = 50,
+            sort_order: SortOrder = SortOrder.Ascending,
+            max_items: int = None
+    ) -> RowIterator:
+        """
+        Returns the group's pending ally requests from other groups.
+
+        Arguments:
+            rows: How many ally requests should be returned for each iteration.
+            sort_order: Order in which data should be grabbed.
+            max_items: The maximum items to return when looping through this object.
+
+        Returns:
+            A RowIterator containing the groups's pending relationship requests.
+        """
+
+        return RowIterator(
+            client=self._client,
+            url=self._client._url_generator.get_url("groups", f"v1/groups/{self.id}/relationships/{GroupRelationshipType.allies.value}/requests"),
+            data_field_name="relatedGroups",
+            sort_order=sort_order,
+            rows=rows,
+            max_rows=max_items,
+            handler=lambda client, data, group, relationship_type: GroupRelationshipRequest(client, data, group, relationship_type),
+            handler_kwargs={"group": self, "relationship_type": GroupRelationshipType.allies}
+        )
+    
+    def get_relationships(
+            self, 
+            relationshipType: GroupRelationshipType = GroupRelationshipType.allies,
+            rows: int = 50,
+            sort_order: SortOrder = SortOrder.Ascending,
+            max_items: int = None,
+    ) -> RowIterator:
+        """
+        Returns established relationships with other groups.
+
+        Arguments:
+            relationshipType: The type of relationship established between both groups.
+            rows: How many relationships should be returned for each iteration.
+            sort_order: Order in which data should be grabbed.
+            max_items: The maximum items to return when looping through this object.
+
+        Returns:
+            A RowIterator containing the groups's relationships.
+        """
+
+        return RowIterator(
+            client=self._client,
+            url=self._client._url_generator.get_url("groups", f"v1/groups/{self.id}/relationships/{relationshipType.value}"),
+            data_field_name="relatedGroups",
+            sort_order=sort_order,
+            rows=rows,
+            max_rows=max_items,
+            handler=lambda client, data, group, relationship_type: GroupRelationship(client, data, group, relationship_type),
+            handler_kwargs={"group": self, "relationship_type": relationshipType}
+        )
+    
+    async def request_relationship(
+            self, 
+            group: GroupOrGroupId, 
+            relationshipType: GroupRelationshipType = GroupRelationshipType.allies
+    ):
+        """
+        Requests to establish a relationship with another group.
+
+        Arguments:
+            group: The group to prepose the relationship with.
+            relationshipType: The type of relationship to be established.
+        """
+                
+        await self._client.requests.post(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/relationships/{relationshipType.value}/{int(group)}")
+        )
+
+    async def decline_relationship_requests(
+            self,
+            groups: List[GroupOrGroupId],
+            relationshipType: GroupRelationshipType = GroupRelationshipType.allies
+    ):
+        """
+        Declines all relationship requests from a list of groups.
+
+        Arguments:
+            groups: A list of groups to decline.
+            relationshipType: The type of relationship.
+        """
+                
+        await self._client.requests.delete(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/relationships/{relationshipType.value}/requests"),
+            json={ 
+                "GroupIds": list(map(int, groups))
+            }
+        )
+
+    async def accept_relationship_requests(
+            self,
+            groups: List[GroupOrGroupId],
+            relationshipType: GroupRelationshipType = GroupRelationshipType.allies
+    ):
+        """
+        Accepts all relationship requests from a list of groups.
+
+        Arguments:
+            groups: A list of groups to accept.
+            relationshipType: The type of relationship.
+        """
+                
+        await self._client.requests.post(
+            url=self._client.url_generator.get_url("groups", f"v1/groups/{self.id}/relationships/{relationshipType.value}/requests"),
+            json={ 
+                "GroupIds": list(map(int, groups))
+            }
         )
