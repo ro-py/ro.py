@@ -77,7 +77,7 @@ class Presence:
         ) if data.get("universeId") else None
 
         self.user: BaseUser = client.get_base_user(data["userId"])
-        self.last_online: datetime = parse(data["lastOnline"])
+        self.last_online: datetime = parse(data["lastOnline"]) if data.get("lastOnline") else None
 
     def __repr__(self):
         return f"<{self.__class__.__name__} user_presence_type={self.user_presence_type}>"
