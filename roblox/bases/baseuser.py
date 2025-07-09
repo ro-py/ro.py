@@ -5,6 +5,7 @@ This file contains the BaseUser object, which represents a Roblox user ID.
 """
 
 from __future__ import annotations
+from enum import Enum
 from typing import Optional, List, TYPE_CHECKING
 
 from .baseitem import BaseItem
@@ -14,13 +15,17 @@ from ..partials.partialbadge import PartialBadge
 from ..presence import Presence
 from ..promotionchannels import UserPromotionChannels
 from ..robloxbadges import RobloxBadge
-from ..utilities.iterators import PageIterator, SortOrder
+from ..utilities.iterators import PageIterator, CursoredPageIterator, SortOrder
 
 if TYPE_CHECKING:
     from ..client import Client
-    from ..friends import Friend
     from ..roles import Role
     from ..utilities.types import AssetOrAssetId, GamePassOrGamePassId, GroupOrGroupId
+
+
+class UserSort(Enum):
+    FriendScore = "FriendScore"
+    FriendshipCreatedDate = "CreatedDate"
 
 
 class BaseUser(BaseItem):
@@ -79,20 +84,27 @@ class BaseUser(BaseItem):
         except IndexError:
             return None
 
-    async def get_friends(self) -> List[Friend]:
+    def get_friends(self, page_size: int = 50, sort_order: UserSort = UserSort.FriendScore) -> CursoredPageIterator:
         """
         Grabs the user's friends.
+
+        Arguments:
+            page_size: How many friends should be returned for each page.
+            sort_order: Order in which data should be grabbed.
 
         Returns:
             A list of the user's friends.
         """
 
-        from ..friends import Friend
-        friends_response = await self._client.requests.get(
-            url=self._client.url_generator.get_url("friends", f"v1/users/{self.id}/friends")
+        return CursoredPageIterator(
+            self._client,
+            self._client.url_generator.get_url("friends", f"v1/users/{self.id}/friends/find"),
+            {
+                "limit": page_size,
+                "userSort": sort_order.value
+            },
+            handler=lambda client, data: BaseUser(client, data["id"])
         )
-        friends_data = friends_response.json()["data"]
-        return [Friend(client=self._client, data=friend_data) for friend_data in friends_data]
 
     async def get_currency(self) -> int:
         """
@@ -256,16 +268,16 @@ class BaseUser(BaseItem):
             self,
             channel: str,
             page_size: int = 10,
-            sort_order: SortOrder = SortOrder.Ascending, max_items: int = None
+            sort_order: SortOrder = SortOrder.Ascending, 
+            max_items: int = None
     ) -> PageIterator:
-        from ..friends import Friend
         return PageIterator(
             client=self._client,
             url=self._client.url_generator.get_url("friends", f"v1/users/{self.id}/{channel}"),
             page_size=page_size,
             sort_order=sort_order,
             max_items=max_items,
-            handler=lambda client, data: Friend(client=client, data=data)
+            handler=lambda client, data: BaseUser(client=client, user_id=data["id"])
         )
 
     async def get_friend_count(self) -> int:
@@ -316,7 +328,8 @@ class BaseUser(BaseItem):
     def get_followings(
             self,
             page_size: int = 10,
-            sort_order: SortOrder = SortOrder.Ascending, max_items: int = None
+            sort_order: SortOrder = SortOrder.Ascending, 
+            max_items: int = None
     ) -> PageIterator:
         """
         Gets the user's followings.
