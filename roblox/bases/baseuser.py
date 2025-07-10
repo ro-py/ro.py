@@ -24,8 +24,13 @@ if TYPE_CHECKING:
 
 
 class UserSort(Enum):
-    FriendScore = "FriendScore"
-    FriendshipCreatedDate = "CreatedDate"
+    friend_score = "FriendScore"
+    friendship_created_date = "CreatedDate"
+
+
+class FriendType(Enum):
+    friend = 0
+    trusted_friend = 1
 
 
 class BaseUser(BaseItem):
@@ -84,12 +89,13 @@ class BaseUser(BaseItem):
         except IndexError:
             return None
 
-    def get_friends(self, page_size: int = 50, sort_order: UserSort = UserSort.FriendScore) -> CursoredPageIterator:
+    def get_friends(self, friend_type: FriendType = FriendType.friend, page_size: int = 50, sort_order: UserSort = UserSort.friend_score) -> CursoredPageIterator:
         """
         Grabs the user's friends.
 
         Arguments:
-            page_size: How many friends should be returned for each page.
+            friend_type: The type of friend to iterate through.
+            page_size: How many friends should be returned for each page. Can only be a number between 1 to 50.
             sort_order: Order in which data should be grabbed.
 
         Returns:
@@ -101,7 +107,8 @@ class BaseUser(BaseItem):
             self._client.url_generator.get_url("friends", f"v1/users/{self.id}/friends/find"),
             {
                 "limit": page_size,
-                "userSort": sort_order.value
+                "userSort": sort_order.value,
+                "findFriendsType": friend_type.value
             },
             handler=lambda client, data: BaseUser(client, data["id"])
         )
