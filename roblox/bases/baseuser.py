@@ -29,8 +29,9 @@ class UserSort(Enum):
 
 
 class FriendType(Enum):
-    friend = 0
+    all = 0
     trusted_friend = 1
+    friend = 2
 
 
 class BaseUser(BaseItem):
@@ -89,12 +90,12 @@ class BaseUser(BaseItem):
         except IndexError:
             return None
 
-    def get_friends(self, friend_type: FriendType = FriendType.friend, page_size: int = 50, sort_order: UserSort = UserSort.friend_score) -> CursoredPageIterator:
+    def get_friends(self, friend_type: FriendType = FriendType.all, page_size: int = 50, sort_order: UserSort = UserSort.friend_score) -> CursoredPageIterator:
         """
         Grabs the user's friends.
 
         Arguments:
-            friend_type: The type of friend to iterate through.
+            friend_type: The type of friends to iterate through.
             page_size: How many friends should be returned for each page. Can only be a number between 1 to 50.
             sort_order: Order in which data should be grabbed.
 
