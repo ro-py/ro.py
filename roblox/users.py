@@ -9,12 +9,11 @@ from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from .client import Client
-from datetime import datetime
 
+from datetime import datetime
 from dateutil.parser import parse
 
 from .bases.baseuser import BaseUser
-
 
 class User(BaseUser):
     """
@@ -24,7 +23,6 @@ class User(BaseUser):
         id: The id of the current user.
         name: The name of the current user.
         display_name: The display name of the current user.
-        external_app_display_name: The external app display name of the current user.
         is_banned: If the user is banned.
         description: The description the current user wrote for themself.
         created: When the user created their account.
@@ -43,8 +41,6 @@ class User(BaseUser):
 
         self.name: str = data["name"]
         self.display_name: str = data["displayName"]
-        self.external_app_display_name: Optional[str] = data["externalAppDisplayName"]
-        self.id: int = data["id"]
         self.is_banned: bool = data["isBanned"]
         self.description: str = data["description"]
         self.created: datetime = parse(data["created"])

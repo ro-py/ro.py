@@ -44,7 +44,6 @@ class Presence:
         root_place: The root place of the parent universe of the last place the user is playing or editing.
         job: The job of the root place that the user is playing or editing.
         universe: The universe the user is playing or editing.
-        last_online: When the user was last online.
         user: The user this presence belongs to.
     """
 
@@ -77,7 +76,6 @@ class Presence:
         ) if data.get("universeId") else None
 
         self.user: BaseUser = client.get_base_user(data["userId"])
-        self.last_online: datetime = parse(data["lastOnline"])
 
     def __repr__(self):
         return f"<{self.__class__.__name__} user_presence_type={self.user_presence_type}>"

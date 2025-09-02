@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from ..client import Client
 
 from enum import Enum
-from typing import Callable, Optional, AsyncIterator
+from typing import Callable, Optional, AsyncIterator, Any
 
 from .exceptions import NoMoreItems
 
@@ -23,7 +23,6 @@ class SortOrder(Enum):
 
     Ascending = "Asc"
     Descending = "Desc"
-
 
 class IteratorItems(AsyncIterator):
     """
@@ -323,3 +322,87 @@ class PageNumberIterator(RobloxIterator):
             ]
 
         return data
+
+class CursoredPageIterator(RobloxIterator):
+    """
+    An iterator wrapper for Roblox.Paging.CursoredPagedResult responses.
+
+    Attributes:
+        _client: The Client.
+        url: The endpoint to hit for new page data.
+        extra_url_parameters: Extra url parameters to pass to the endpoint.
+        handler: A callable object to use to convert raw endpoint data to parsed objects.
+        handler_kwargs: Extra keyword arguments to pass to the handler.
+    """
+
+    def __init__(
+            self,
+            client: Client,
+            url: str,
+            extra_url_parameters: dict,
+            max_items: Optional[int] = None,
+            handler: Optional[Callable] = None,
+            handler_kwargs: Optional[dict] = None
+    ) -> None:
+        """
+        Parameters:
+            client: The Client.
+            url: The endpoint to hit for new page data.
+            max_items: The maximum amount of items to return when this iterator is looped through.
+            extra_url_parameters: Extra url parameters to pass to the endpoint.
+            handler: A callable object to use to convert raw endpoint data to parsed objects.
+            handler_kwargs: Extra keyword arguments to pass to the handler.
+        """
+        super().__init__(max_items=max_items)
+
+        self._client: Client = client
+
+        # store some basic arguments in the object
+        self.url: str = url
+
+        self.extra_url_parameters: dict = extra_url_parameters or {}
+        self.handler: Optional[Callable] = handler
+        self.handler_kwargs: dict = handler_kwargs or {}
+
+        # cursors to use for next, previous
+        self.started: bool = False
+        self.next_cursor: Optional[str] = None
+        self.previous_cursor: Optional[str] = None
+
+    async def next(self) -> list[Any]:
+        """
+        Advances the iterator to the next page.
+        """
+        if self.started and not self.next_cursor:
+            """
+            If we just started and there is no cursor, this is the last page, because we can go back but not forward.
+            We should raise an exception here.
+            """
+            raise NoMoreItems("No more items.")
+        
+        if not self.started:
+            self.started = True
+
+        response = await self._client.requests.get(
+            url=self.url,
+            params={
+                "cursor": self.next_cursor if self.next_cursor else "",
+                **self.extra_url_parameters
+            }
+        )
+        response_json: dict = response.json()
+        self.previous_cursor = response_json["PreviousCursor"]
+        self.next_cursor = response_json["NextCursor"]
+
+        page_items: list[Any] = response_json["PageItems"]
+
+        if self.handler:
+            page_items = [
+                self.handler(
+                    client=self._client,
+                    data=page_data,
+                    **self.handler_kwargs
+                ) for page_data in page_items
+            ]
+
+        return page_items
